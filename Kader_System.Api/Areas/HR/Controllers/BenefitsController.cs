@@ -23,7 +23,7 @@ public class BenefitsController(IBenefitService service) : ControllerBase
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
-            return StatusCode(statusCode: StatusCodes.Status226IMUsed, response);
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
 
