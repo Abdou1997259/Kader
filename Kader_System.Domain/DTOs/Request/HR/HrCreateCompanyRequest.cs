@@ -1,9 +1,9 @@
 ﻿namespace Kader_System.Domain.Dtos.Request.HR;
 
-public class           HrCreateCompanyRequest 
+public class    HrCreateCompanyRequest 
 {
     [Display(Name = Annotations.NameInEnglish), Required(ErrorMessage = Annotations.FieldIsRequired)]
-    public required string Name_en { get; set; }
+   public required string Name_en { get; set; }
 
     [Display(Name = Annotations.NameInArabic), Required(ErrorMessage = Annotations.FieldIsRequired)]
     public required string Name_ar { get; set; }

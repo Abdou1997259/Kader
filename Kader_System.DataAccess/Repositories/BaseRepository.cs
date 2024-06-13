@@ -11,6 +11,14 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     public async Task<T> GetByIdAsync(int id) =>
        (await dbSet.FindAsync(id))!;
 
+
+
+
+
+
+
+
+
     public async Task<IEnumerable<TType>> GetSpecificSelectAsync<TType>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, TType>> select,
@@ -20,6 +28,8 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!
        ) where TType : class
     {
+
+
         IQueryable<T> query = dbSet.AsNoTracking();
 
         if (includeProperties != null)
