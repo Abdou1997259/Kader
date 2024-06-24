@@ -9,7 +9,7 @@ namespace Kader_System.Services.Services.HR
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
-        public async Task<Response<IEnumerable<ListOfLoansResponse>>> ListLoansAsync()
+        public async Task<Response<IEnumerable<ListOfLoansResponse>>> ListLoansAsync(string lang)
         {
             var result =
                   await _unitOfWork.LoanRepository.GetSpecificSelectAsync(null!,

@@ -275,6 +275,15 @@ public static class SD
             public const string GetDepartmentById = "department/getById/{id}";
             public const string DeleteDepartment = "department/delete/{id}";
         }
+        public class Loan
+        {
+            public const string ListOfLoans = "loan/getListOfloans";
+            public const string GetAllloans = "loan/getAll";
+            public const string Createloan = "loan/create";
+            public const string Updateloan = "loan/update/{id}";
+            public const string GetloanById = "loan/getById/{id}";
+            public const string Deleteloan = "loan/delete/{id}";
+        }
         public class Benefit
         {
             public const string ListOfBenefits = "benefit/getListOfBenefits";
