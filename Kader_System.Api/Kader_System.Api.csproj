@@ -4,10 +4,11 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Trimming>full</Trimming>
+    <!--<Trimming>full</Trimming>-->
     <!--<InvariantGlobalization>true</InvariantGlobalization>-->
-    <UseSSL>true</UseSSL>
-    <SSLPort>44300</SSLPort>
+    <!--<UseSSL>true</UseSSL>
+    <SSLPort>44300</SSLPort>-->
+    
   </PropertyGroup>
 
   <ItemGroup>

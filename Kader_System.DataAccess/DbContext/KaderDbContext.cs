@@ -9,6 +9,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     #region Data Sets
 
     public DbSet<ApplicationUserDevice> UserDevices { get; set; }
+    public DbSet<HrLoan> Loans { get; set; }
     public DbSet<ComLog> Logs { get; set; }
     public DbSet<StMainScreen> MainScreenCategories { get; set; }
     public DbSet<Screen> Screens { get; set; }
@@ -58,7 +59,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrNationality> Nationalities { get; set; }
     public DbSet<HrRelegion> Relegions { get; set; }
     public DbSet<HrMaritalStatus> MaritalStatus { get; set; }
-    
+
     #endregion
     //
 

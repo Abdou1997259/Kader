@@ -3,7 +3,6 @@ using Kader_System.DataAccess.Repositories.Logging;
 using Kader_System.DataAccess.Repositories.StaticDataRepository;
 using Kader_System.DataAccesss.DbContext;
 using Kader_System.Domain;
-using Kader_System.Domain.Customization.Attributes;
 using Kader_System.Domain.Customization.Middleware;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Domain.Interfaces.Logging;
@@ -17,15 +16,12 @@ using Kader_System.Services.Services.Setting;
 using Kader_System.Services.Services.Trans;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using System.ComponentModel;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using DateTimeConverter = Kader_System.Api.Helpers.DateTimeConverter;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = new ConfigurationBuilder()
