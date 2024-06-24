@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.Models.HR;
+﻿using Kader_System.Domain.DTOs.Request.HR.Loan;
+using Kader_System.Domain.Models.HR;
 
 namespace Kader_System.Api.Profiles;
 
@@ -16,7 +17,7 @@ public class HrProfile : Profile
 
         #region Department
 
-        CreateMap<HrDepartment,CreateDepartmentRequest>()
+        CreateMap<HrDepartment, CreateDepartmentRequest>()
             .ReverseMap();
 
         #endregion
@@ -24,7 +25,7 @@ public class HrProfile : Profile
         #region Employee
         CreateMap<HrEmployee, CreateEmployeeRequest>()
             .IgnoreAllPropertiesWithAnInaccessibleSetter()
-            .ForMember(dest=>dest.account_no,opt=>opt.MapFrom(src=>src.AccountNo))
+            .ForMember(dest => dest.account_no, opt => opt.MapFrom(src => src.AccountNo))
             .ForMember(dest => dest.address, opt => opt.MapFrom(src => src.Address))
             .ForMember(dest => dest.birth_date, opt => opt.MapFrom(src => src.BirthDate))
             .ForMember(dest => dest.hiring_date, opt => opt.MapFrom(src => src.HiringDate))
@@ -57,7 +58,7 @@ public class HrProfile : Profile
             .ForMember(dest => dest.vacation_id, opt => opt.MapFrom(src => src.VacationId))
             .ForMember(dest => dest.shift_id, opt => opt.MapFrom(src => src.ShiftId))
             .ReverseMap();
-        CreateMap<HrEmployee,EmployeesData>()
+        CreateMap<HrEmployee, EmployeesData>()
             .ForMember(dest => dest.Company, opt => opt.MapFrom(src => src.Company!.NameAr))
             .ForMember(dest => dest.Management, opt => opt.MapFrom(src => src.Management!.NameAr));
 
@@ -66,7 +67,7 @@ public class HrProfile : Profile
 
 
         #region Contract
-        CreateMap<HrContract,CreateContractRequest>()
+        CreateMap<HrContract, CreateContractRequest>()
             .ForMember(dest => dest.Details, opt => opt.MapFrom(src => src.ListOfAllowancesDetails.Select(d => new CreateContractDetailsRequest
             {
                 AllowanceId = d.AllowanceId,
@@ -85,11 +86,19 @@ public class HrProfile : Profile
         CreateMap<HrFingerPrint, CreateFingerPrintDeviceRequest>()
             .IgnoreAllPropertiesWithAnInaccessibleSetter()
             .ReverseMap();
-  
+
         CreateMap<HrFingerPrint, GetFingerPrintDeviceByIdResponse>()
             .ForMember(dest => dest.CompanyName, opt => opt.MapFrom(src => src.Company!.NameAr))
             .ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.Company!.Id))
             .IgnoreAllPropertiesWithAnInaccessibleSetter()
+            .ReverseMap();
+        #endregion
+
+
+        #region  loan
+        CreateMap<HrLoan, CreateLoanRequest>()
+        .ReverseMap();
+        CreateMap<HrLoan, UpdateLoanRequest>()
             .ReverseMap();
         #endregion
     }

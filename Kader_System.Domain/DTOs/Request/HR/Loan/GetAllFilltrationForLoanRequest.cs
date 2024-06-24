@@ -2,5 +2,6 @@
 {
     public class GetAllFilltrationForLoanRequest : PaginationRequest
     {
+        public DateTime LoanDate { get; set; }
     }
 }

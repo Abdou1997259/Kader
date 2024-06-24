@@ -147,6 +147,9 @@
   <data name="IsExist" xml:space="preserve">
     <value>{0} is exist</value>
   </data>
+  <data name="Loan" xml:space="preserve">
+    <value>Loan</value>
+  </data>
   <data name="MainScreen" xml:space="preserve">
     <value>Main screen</value>
   </data>

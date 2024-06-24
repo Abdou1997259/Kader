@@ -56,7 +56,7 @@ public static class SD
     }
     public static class UserRole
     {
-       
+
         public static string Id = "0ffa8112-ba0d-4416-b0ed-992897ac896e";
         public static string RoleNameInAr = "مستخدم";
         public static string RoleNameInEn = "User";
@@ -66,7 +66,7 @@ public static class SD
         public const string Administrative = "Administrative";
         public const string User = "User";
         public const string SuperAdmin = "SuperAdmin";
-      
+
     }
     public static class RequestClaims
     {
@@ -466,6 +466,7 @@ public static class SD
         public const string Qualification = "Qualification";
         public const string Shift = "Shift";
         public const string Deduction = "Deduction";
+        public const string Laon = "Loan";
         public const string Vacation = "Vacation";
         public const string Image = "Image";
         public const string CompanyIsNotActive = "Company is not active";

@@ -5,7 +5,7 @@ namespace Kader_System.Services.IServices.HR
 {
     public interface ILoanService
     {
-        Task<Response<ListOfLoansResponse>> ListLoansAsync();
+        Task<Response<IEnumerable<ListOfLoansResponse>>> ListLoansAsync();
         Task<Response<GetAllLoansResponse>> GetAllLoanAsync(string lang, GetAllFilltrationForLoanRequest model, string host);
         Task<Response<CreateLoanRequest>> CreateLoanAsync(CreateLoanRequest model);
         Task<Response<GetLoanByIdReponse>> GetLoanByIdAsync(int id);
@@ -15,4 +15,4 @@ namespace Kader_System.Services.IServices.HR
         Task<Response<string>> DeleteLoanAsync(int id);
     }
 }
-}
+

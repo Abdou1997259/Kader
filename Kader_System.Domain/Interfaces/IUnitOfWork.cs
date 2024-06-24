@@ -3,7 +3,7 @@
 public interface IUnitOfWork : IDisposable
 {
     IDatabaseTransaction BeginTransaction();
-
+    ILoanRepository LoanRepository { get; }
     IUserRepository Users { get; }
     IRoleClaimRepository RoleClaims { get; }
     IUserClaimRepository UserClaims { get; }

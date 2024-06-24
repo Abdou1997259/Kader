@@ -147,6 +147,9 @@
   <data name="IsExist" xml:space="preserve">
     <value>{0} موجود بالفعل</value>
   </data>
+  <data name="Loan" xml:space="preserve">
+    <value>السلف</value>
+  </data>
   <data name="MainScreen" xml:space="preserve">
     <value>الشاشة الرئيسية</value>
   </data>
