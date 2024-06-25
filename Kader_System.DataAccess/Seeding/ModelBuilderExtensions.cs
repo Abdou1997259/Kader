@@ -1,7 +1,4 @@
 ﻿using Kader_System.Domain.Constants.Enums;
-using Kader_System.Domain.Models.HR;
-using Kader_System.Domain.Models.Setting;
-using Kader_System.Domain.Models.Trans;
 
 namespace Kader_System.DataAccess.Seeding;
 
@@ -20,7 +17,7 @@ public static class ModelBuilderExtensions
                 Title_name_ar = SuperAdmin.RoleNameInAr,
                 ConcurrencyStamp = "1",
                 NormalizedName = "SUPERADMIN"
-            },new ApplicationRole()
+            }, new ApplicationRole()
             {
                 Id = UserRole.Id,
                 Name = UserRole.RoleNameInEn,
@@ -58,19 +55,19 @@ public static class ModelBuilderExtensions
 
         modelBuilder.Entity<StAction>()
             .HasData(
-           new() { Id = 1, Name = "إظهار", NameInEnglish = ActionsEnums.View.ToString()},
-           new() { Id = 2, Name = "اضافة", NameInEnglish = ActionsEnums.Add.ToString()},
-           new() { Id = 3, Name = "تعديل", NameInEnglish = ActionsEnums.Edit.ToString()},
-           new() { Id = 4, Name = "حذف", NameInEnglish = ActionsEnums.Delete.ToString()},
-           new() { Id = 5, Name = "حذف نهائى", NameInEnglish = ActionsEnums.ForceDelete.ToString()},   
-           new() { Id = 6, Name = "طباعة", NameInEnglish = ActionsEnums.Print.ToString()}
+           new() { Id = 1, Name = "إظهار", NameInEnglish = ActionsEnums.View.ToString() },
+           new() { Id = 2, Name = "اضافة", NameInEnglish = ActionsEnums.Add.ToString() },
+           new() { Id = 3, Name = "تعديل", NameInEnglish = ActionsEnums.Edit.ToString() },
+           new() { Id = 4, Name = "حذف", NameInEnglish = ActionsEnums.Delete.ToString() },
+           new() { Id = 5, Name = "حذف نهائى", NameInEnglish = ActionsEnums.ForceDelete.ToString() },
+           new() { Id = 6, Name = "طباعة", NameInEnglish = ActionsEnums.Print.ToString() }
            );
 
         modelBuilder.Entity<HrVacationType>()
             .HasData(
-           new() { Id = 1, Name = "عام كامل", NameInEnglish = "Full year"},
-           new() { Id = 2, Name = "من تاريخ التعيين", NameInEnglish = "From hiring date"},
-           new() { Id = 3, Name = "من تاريخ الاستحقاق", NameInEnglish = "After hiring days"}
+           new() { Id = 1, Name = "عام كامل", NameInEnglish = "Full year" },
+           new() { Id = 2, Name = "من تاريخ التعيين", NameInEnglish = "From hiring date" },
+           new() { Id = 3, Name = "من تاريخ الاستحقاق", NameInEnglish = "After hiring days" }
            );
 
         modelBuilder.Entity<HrSalaryCalculator>()
@@ -132,6 +129,19 @@ public static class ModelBuilderExtensions
                 new() { Id = 1, Name = "مقيم", NameInEnglish = "Resident" },
                 new() { Id = 2, Name = "مواطن", NameInEnglish = "Citizen" }
            );
+        modelBuilder.Entity<AdvancedType>()
+         .HasData(
+             new() { Id = 1, ADvancesTypeName = "سلفة" },
+             new() { Id = 2, ADvancesTypeName = "مخالفة مرورية" },
+             new() { Id = 3, ADvancesTypeName = "حوادث وأصلاحات" },
+             new() { Id = 4, ADvancesTypeName = "نقل خدمات" },
+             new() { Id = 5, ADvancesTypeName = "مخالفة مرورية" },
+             new() { Id = 6, ADvancesTypeName = "تأمينات" },
+             new() { Id = 7, ADvancesTypeName = "تسويات اخري" }
+
+
+
+        );
 
         modelBuilder.Entity<HrValueType>()
             .HasData(

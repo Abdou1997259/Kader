@@ -2,10 +2,11 @@
 using Kader_System.Domain.DTOs.Request.HR.Loan;
 using Kader_System.Domain.DTOs.Response.Loan;
 
-namespace Kader_System.Services.Services.HR
+namespace Kader_System.Services.Services.Trans
 {
-    public class LoanService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ILoanService
+    public class TransLoanService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransLoanService
     {
+
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
@@ -20,7 +21,8 @@ namespace Kader_System.Services.Services.HR
 
 
                   }, orderBy: x =>
-                    x.OrderByDescending(x => x.Id));
+                    x.OrderByDescending(x => x.Id), includeProperties: "Hr_Employees");
+
 
             if (!result.Any())
             {
@@ -34,6 +36,7 @@ namespace Kader_System.Services.Services.HR
                 };
             }
 
+
             return new()
             {
                 Data = result,
@@ -41,12 +44,13 @@ namespace Kader_System.Services.Services.HR
             };
         }
 
-        public async Task<Response<CreateLoanRequest>> CreateLoanAsync(CreateLoanRequest model)
+        public async Task<Response<CreateLoanReponse>> CreateLoanAsync(CreateLoanRequest model)
         {
             bool exists = false;
             exists = await _unitOfWork.LoanRepository.ExistAsync(x => x.LoanDate == model.LoanDate);
+            var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmpolyeeId);
 
-            if (exists)
+            if (exists || empolyee is null)
             {
                 string resultMsg = string.Format(_sharLocalizer[Localization.IsExist],
                     _sharLocalizer[Localization.Deduction]);
@@ -58,16 +62,36 @@ namespace Kader_System.Services.Services.HR
                 };
             }
 
-            var loan = _mapper.Map<HrLoan>(model);
+            var loan = _mapper.Map<TransLoan>(model);
             await _unitOfWork.LoanRepository.AddAsync(loan
             );
             await _unitOfWork.CompleteAsync();
+
+            var creatingResponse = new CreateLoanReponse
+            {
+                InstallmentCount = model.InstallmentCount,
+                DocumentDate = model.DocumentDate,
+                IsDeductedFromSalary = model.IsDeductedFromSalary,
+                EndDoDate = model.EndDoDate,
+                LoanAmount = model.LoanAmount,
+                LoanDate = model.LoanDate,
+                MonthlyDeducted = model.MonthlyDeducted,
+                PrevDedcutedAmount = model.PrevDedcutedAmount,
+                Notes = model.Notes,
+                TransLoanslookups = new TransLoanslookups
+                {
+                    HrEmployees = await _unitOfWork.Employees.GetAllAsync(),
+                    AdvancedTypes = await _unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes()
+                }
+
+
+            };
 
             return new()
             {
                 Msg = _sharLocalizer[Localization.Done],
                 Check = true,
-                Data = model
+                Data = creatingResponse
             };
         }
 
@@ -101,8 +125,8 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<GetAllLoansResponse>> GetAllLoanAsync(string lang, GetAllFilltrationForLoanRequest model, string host)
         {
-            Expression<Func<HrLoan, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-                                                          (string.IsNullOrEmpty(model.Word) || x.LoanDate == model.LoanDate);
+            Expression<Func<TransLoan, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
+                                                           (string.IsNullOrEmpty(model.Word) || x.LoanDate == model.LoanDate);
             var totalRecords = await _unitOfWork.LoanRepository.CountAsync(filter: filter);
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
@@ -123,12 +147,10 @@ namespace Kader_System.Services.Services.HR
                      select: x => new ListOfLoansResponse
                      {
                          Id = x.Id,
-                         LoanDate = x.LoanDate,
-                         EndDoDate = x.EndDoDate,
-                         DocumentDate = x.DocumentDate,
-                         DocumentType = x.DocumentType,
+                         EmpolyeeName = Localization.Arabic == lang ? x.HrEmployee.FirstNameAr : x.HrEmployee.FirstNameEn
+
                      }, orderBy: x =>
-                       x.OrderByDescending(x => x.Id))).ToList(),
+                       x.OrderByDescending(x => x.Id), includeProperties: "Hr_Employees")).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -238,18 +260,38 @@ namespace Kader_System.Services.Services.HR
             throw new NotImplementedException();
         }
 
-        public async Task<Response<UpdateLoanRequest>> UpdateLoanAsync(int id, UpdateLoanRequest model)
+        public async Task<Response<UpdateLoanReponse>> UpdateLoanAsync(int id, UpdateLoanRequest model)
         {
             var obj = await _unitOfWork.LoanRepository.GetByIdAsync(id);
+            var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmpolyeeId);
+            var updateLoanResponse = new UpdateLoanReponse
+            {
+                InstallmentCount = model.InstallmentCount,
+                DocumentDate = model.DocumentDate,
+                IsDeductedFromSalary = model.IsDeductedFromSalary,
+                EndDoDate = model.EndDoDate,
+                LoanAmount = model.LoanAmount,
+                LoanDate = model.LoanDate,
+                MonthlyDeducted = model.MonthlyDeducted,
+                PrevDedcutedAmount = model.PrevDedcutedAmount,
+                Notes = model.Notes,
+                TransLoanslookups = new TransLoanslookups
+                {
+                    HrEmployees = await _unitOfWork.Employees.GetAllAsync(),
+                    AdvancedTypes = await _unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes()
+                }
 
-            if (obj == null)
+
+            };
+
+            if (obj == null || empolyee is null)
             {
                 string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
                     _sharLocalizer[Localization.Laon]);
 
                 return new()
                 {
-                    Data = model,
+                    Data = updateLoanResponse,
                     Error = resultMsg,
                     Msg = resultMsg
                 };
@@ -260,12 +302,14 @@ namespace Kader_System.Services.Services.HR
             _unitOfWork.LoanRepository.Update(obj);
             await _unitOfWork.CompleteAsync();
 
+
             return new()
             {
                 Check = true,
-                Data = model,
+                Data = updateLoanResponse,
                 Msg = _sharLocalizer[Localization.Updated]
             };
         }
+
     }
 }

@@ -1,5 +1,4 @@
-﻿using Kader_System.Domain.DTOs.Request.HR.Loan;
-using Kader_System.Domain.Models.HR;
+﻿using Kader_System.Domain.Models.HR;
 
 namespace Kader_System.Api.Profiles;
 
@@ -95,11 +94,5 @@ public class HrProfile : Profile
         #endregion
 
 
-        #region  loan
-        CreateMap<HrLoan, CreateLoanRequest>()
-        .ReverseMap();
-        CreateMap<HrLoan, UpdateLoanRequest>()
-            .ReverseMap();
-        #endregion
     }
 }

@@ -4,7 +4,8 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly KaderDbContext _context;
     protected readonly IConfiguration _config;
-    public ILoanRepository LoanRepository { get; private set; }
+    public IAdvancedTypesRepository AdvancedTypesRepository { get; private set; }
+    public ITransLoanRepository LoanRepository { get; private set; }
     public IUserRepository Users { get; private set; }
     public IRoleClaimRepository RoleClaims { get; private set; }
     public IUserClaimRepository UserClaims { get; private set; }
@@ -61,7 +62,7 @@ public class UnitOfWork : IUnitOfWork
         _config = config;
         Nationalities = new NationalityRepository(_context);
         MaritalStatus = new MaritalStatusRepository(_context);
-
+        AdvancedTypesRepository = new AdavnacedTypeRepository(_context);
         Genders = new GenderRepository(_context);
         Religions = new ReligionRepository(_context);
         Users = new UserRepository(_context);
@@ -110,7 +111,7 @@ public class UnitOfWork : IUnitOfWork
         TransDeductions = new TransDeductionRepository(_context);
         TransCovenants = new TransCovenantRepository(_context);
         TransVacations = new TransVacationRepository(_context);
-        LoanRepository = new LoanRepository(_context);
+        LoanRepository = new TransLoanRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>

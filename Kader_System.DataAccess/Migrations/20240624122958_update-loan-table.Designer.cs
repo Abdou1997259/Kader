@@ -4,6 +4,7 @@ using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    partial class KaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240624122958_update-loan-table")]
+    partial class updateloantable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9ebc8de4-8137-42e6-b234-1d03a6aec086",
+                            ConcurrencyStamp = "1f474006-ac21-4807-acb6-a4c6b5e00559",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDeZf+1YqXPgfg/0LAL2YVWC31bD64bTQ0f3ui4Rq/kz9OM5D/CDqy2QV8HskZ/9EA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJdwEpRfQj5pxkTH99x+YwksrSvPXWiiD5+Hn7/I99DsTYi0iCHI0qxCbO6pAO7S5Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e37f25ab-d290-49b6-a0e8-2f2fe7a62aff",
+                            SecurityStamp = "322913ae-dc4c-4b08-bbf6-37747cd56d5c",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -2968,60 +2971,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("TitleId");
 
                     b.ToTable("TitlePermissions");
-                });
-
-            modelBuilder.Entity("Kader_System.Domain.Models.Trans.AdvancedType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ADvancesTypeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Advanced_Types");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ADvancesTypeName = "سلفة"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ADvancesTypeName = "مخالفة مرورية"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ADvancesTypeName = "حوادث وأصلاحات"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ADvancesTypeName = "نقل خدمات"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ADvancesTypeName = "مخالفة مرورية"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            ADvancesTypeName = "تأمينات"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            ADvancesTypeName = "تسويات اخري"
-                        });
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransAllowance", b =>

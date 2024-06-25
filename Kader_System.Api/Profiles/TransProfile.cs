@@ -1,5 +1,6 @@
 ﻿
 
+using Kader_System.Domain.DTOs.Request.HR.Loan;
 using Kader_System.Domain.DTOs.Response.Trans;
 
 namespace Kader_System.Api.Profiles
@@ -13,8 +14,8 @@ namespace Kader_System.Api.Profiles
             CreateMap<TransAllowance, CreateTransAllowanceRequest>()
                 .ReverseMap();
             CreateMap<TransactionAllowanceGetByIdResponse, TransAllowance>()
-                .ForMember(dest => dest.Add_date, 
-                    opt => 
+                .ForMember(dest => dest.Add_date,
+                    opt =>
                         opt.MapFrom(src => src.AddedOn))
                 .ReverseMap();
 
@@ -44,7 +45,7 @@ namespace Kader_System.Api.Profiles
                 .ReverseMap();
             CreateMap<GetTransDeductionById, TransDeduction>()
                 .ForMember(dest => dest.Add_date
-                    , opt => 
+                    , opt =>
                         opt.MapFrom(src => src.AddedOn))
                 .ReverseMap();
 
@@ -66,6 +67,14 @@ namespace Kader_System.Api.Profiles
             CreateMap<GetTransCovenantById, TransCovenant>()
                 .ReverseMap();
 
+            #endregion
+
+            #region Loans
+            CreateMap<TransLoan, CreateLoanRequest>()
+           .ReverseMap();
+
+            CreateMap<TransLoan, UpdateLoanRequest>()
+             .ReverseMap();
             #endregion
         }
     }

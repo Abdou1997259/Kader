@@ -9,7 +9,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     #region Data Sets
 
     public DbSet<ApplicationUserDevice> UserDevices { get; set; }
-    public DbSet<HrLoan> Loans { get; set; }
+    public DbSet<TransLoan> Loans { get; set; }
     public DbSet<ComLog> Logs { get; set; }
     public DbSet<StMainScreen> MainScreenCategories { get; set; }
     public DbSet<Screen> Screens { get; set; }
@@ -52,6 +52,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<TransSalaryEffect> TransSalaryEffects { get; set; }
     public DbSet<TransVacation> TransVacations { get; set; }
     public DbSet<HrJob> HrJobs { get; set; }
+    public DbSet<AdvancedType> AdvancedTypes { get; set; }
     public DbSet<HrQualification> HrQualifications { get; set; }
     public DbSet<HrManagement> Managements { get; set; }
     public DbSet<Title> Titles { get; set; }
@@ -108,6 +109,17 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
         //    .WithOne(y => y.Employee)
         //    .HasForeignKey<ApplicationUser>(z => z.Employee_Id);
 
+        modelBuilder.Entity<TransLoan>()
+                .Property(p => p.LoanAmount)
+                .HasPrecision(18, 2);
+
+        modelBuilder.Entity<TransLoan>()
+           .Property(p => p.PrevDedcutedAmount)
+           .HasPrecision(18, 2);
+
+        modelBuilder.Entity<TransLoan>()
+           .Property(p => p.MonthlyDeducted)
+           .HasPrecision(18, 2);
         #endregion
     }
 

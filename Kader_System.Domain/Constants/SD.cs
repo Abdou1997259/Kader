@@ -305,6 +305,7 @@ public static class SD
             public const string GetDeductionById = "deduction/getById/{id}";
             public const string DeleteDeduction = "deduction/delete/{id}";
         }
+
         public class Employee
         {
             public const string ListOfEmployees = "employee/getListOfEmployees";

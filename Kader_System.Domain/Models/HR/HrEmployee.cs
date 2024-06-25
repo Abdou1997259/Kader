@@ -44,7 +44,7 @@ public class HrEmployee : BaseEntity
     public required DateOnly HiringDate { get; set; }
     public required DateOnly ImmediatelyDate { get; set; }
     public required bool IsActive { get; set; }
-  
+
     public required double TotalSalary { get; set; }
     public int GenderId { get; set; }
     [ForeignKey(nameof(GenderId))]
@@ -57,7 +57,7 @@ public class HrEmployee : BaseEntity
 
     public required string Phone { get; set; }
     public required string Email { get; set; }
-    public  string NationalId { get; set; }
+    public string NationalId { get; set; }
     public string JobNumber { get; set; }
 
     public int SalaryPaymentWayId { get; set; }
@@ -75,6 +75,9 @@ public class HrEmployee : BaseEntity
     public int ShiftId { get; set; }
     [ForeignKey(nameof(ShiftId))]
     public HrShift Shift { get; set; } = default!;
+
+
+
     public int CompanyId { get; set; }
     [ForeignKey(nameof(CompanyId))]
     public HrCompany? Company { get; set; } = default!;
@@ -128,4 +131,6 @@ public class HrEmployee : BaseEntity
     public ICollection<HrEmployeeAttachment> ListOfAttachments { get; set; } = [];
 
 
+
+    public ICollection<TransLoan> TransLoans { get; set; } = [];
 }

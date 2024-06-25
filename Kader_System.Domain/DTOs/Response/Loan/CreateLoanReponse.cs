@@ -1,8 +1,7 @@
 ﻿namespace Kader_System.Domain.DTOs.Response.Loan
 {
-    public class ListOfLoansResponse
+    public class CreateLoanReponse
     {
-        public int Id { get; set; }
         public DateTime LoanDate { get; set; }
         public DateTime StartLoanDate { get; set; }
         public DateTime EndDoDate { get; set; }
@@ -11,12 +10,20 @@
         public decimal MonthlyDeducted { get; set; }
         public decimal LoanAmount { get; set; }
         public decimal PrevDedcutedAmount { get; set; }
-        public string EmpolyeeName { get; set; }
+        public int EmpolyeeId { get; set; }
         public int InstallmentCount { get; set; }
         public bool MakePaymentJournal { get; set; }
         public bool IsDeductedFromSalary { get; set; }
 
 
         public string? Notes { get; set; }
+        public TransLoanslookups TransLoanslookups { get; set; }
+    }
+    public class TransLoanslookups
+    {
+        public IEnumerable<HrEmployee> HrEmployees { get; set; }
+
+        public IEnumerable<AdvancedType> AdvancedTypes { get; set; }
+
     }
 }

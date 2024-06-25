@@ -1,14 +1,18 @@
 ﻿using Kader_System.Domain.DTOs.Request.HR.Loan;
+using Kader_System.Services.IServices.Trans;
 
-namespace Kader_System.Api.Areas.HR.Controllers
+namespace Kader_System.Api.Areas.Trans
 {
     [Area(Modules.HR)]
-    [Authorize(Permissions.HR.View)]
-    [ApiExplorerSettings(GroupName = Modules.HR)]
+    [Authorize(Permissions.Transaction.View)]
+    [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class LoanController(ILoanService service) : ControllerBase
+    public class TransLoanController(ITransLoanService service) : ControllerBase
+
     {
+
+
 
         #region Retrieve
 
@@ -96,4 +100,5 @@ namespace Kader_System.Api.Areas.HR.Controllers
             HttpContext.Request.Path.Value;
         #endregion
     }
+
 }

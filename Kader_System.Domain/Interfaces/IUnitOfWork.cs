@@ -2,8 +2,10 @@
 
 public interface IUnitOfWork : IDisposable
 {
+
     IDatabaseTransaction BeginTransaction();
-    ILoanRepository LoanRepository { get; }
+    public IAdvancedTypesRepository AdvancedTypesRepository { get; }
+    ITransLoanRepository LoanRepository { get; }
     IUserRepository Users { get; }
     IRoleClaimRepository RoleClaims { get; }
     IUserClaimRepository UserClaims { get; }
