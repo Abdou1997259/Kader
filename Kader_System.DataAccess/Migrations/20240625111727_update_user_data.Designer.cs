@@ -4,6 +4,7 @@ using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    partial class KaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240625111727_update_user_data")]
+    partial class update_user_data
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5c947b04-0911-407a-8c11-6f76fc72cab6",
+                            ConcurrencyStamp = "28c3504f-bc4f-4f83-9a73-5a8d140bcd61",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENFPhpLtwNPL450kxYhbbCyRf15DwnmsOpIJWAvya03dq+8t1Ly0M2JRAMKUNXAing==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGbxuJ0QgnLqk8Va3OsoM/avHkvEfX2v5oD5vNYgwO5nExixnq/HA9XN4gp5XdTFIg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b4d4c224-8894-48d1-bc32-fba4ebaba397",
+                            SecurityStamp = "d7c9af0f-0c60-45f3-ae83-57b04146ed93",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -2743,51 +2746,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("MainScreenId");
 
                     b.ToTable("St_MainScreenCats");
-                });
-
-            modelBuilder.Entity("Kader_System.Domain.Models.Setting.StResonsiblity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("Add_date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Added_by")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DeleteBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeleteDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("StResponsiblity_Name_Ar")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StResponsiblity_Name_En")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdateBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("St_Resonsiblities");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StScreenAction", b =>

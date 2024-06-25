@@ -56,10 +56,15 @@ public class UnitOfWork : IUnitOfWork
     public IMaritalStatusRepository MaritalStatus { get; private set; }
     public IGenderRepository Genders { get; private set; }
     public IReligionRepository Religions { get; private set; }
+
+    public IStResonsiblityRepository StResonsiblityRepository { get; private set; }
+
+
     public UnitOfWork(KaderDbContext context, IConfiguration config)
     {
         _context = context;
         _config = config;
+        StResonsiblityRepository = new StResonsiblityRepository(_context);
         Nationalities = new NationalityRepository(_context);
         MaritalStatus = new MaritalStatusRepository(_context);
         AdvancedTypesRepository = new AdavnacedTypeRepository(_context);

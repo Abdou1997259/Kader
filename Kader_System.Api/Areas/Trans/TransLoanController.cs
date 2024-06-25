@@ -3,7 +3,7 @@ using Kader_System.Services.IServices.Trans;
 
 namespace Kader_System.Api.Areas.Trans
 {
-    [Area(Modules.HR)]
+    [Area(Modules.Trans)]
     [Authorize(Permissions.Transaction.View)]
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
@@ -36,6 +36,15 @@ namespace Kader_System.Api.Areas.Trans
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
+        [HttpGet(ApiRoutes.Loan.GetLookups)]
+        public async Task<IActionResult> GetLookUpsAsync()
+        {
+            var response = await service.GetDeductionsLookUpsData(GetCurrentRequestLanguage());
+            if (response.Check)
+                return Ok(response);
+            else
+                return BadRequest(response);
+        }
         #endregion
 
 
@@ -46,7 +55,7 @@ namespace Kader_System.Api.Areas.Trans
         {
             if (ModelState.IsValid)
             {
-                var result = await service.CreateLoanAsync(request);
+                var result = await service.CreateLoanAsync(request, GetCurrentRequestLanguage());
                 if (result.Check) return Ok(result);
                 else if (!result.Check) return BadRequest(result);
                 return BadRequest(result);
@@ -65,7 +74,7 @@ namespace Kader_System.Api.Areas.Trans
         {
             if (ModelState.IsValid)
             {
-                var result = await service.UpdateLoanAsync(id, request);
+                var result = await service.UpdateLoanAsync(id, request, GetCurrentRequestLanguage());
                 if (result.Check) return Ok(result);
                 else if (!result.Check) return BadRequest(result);
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, request);

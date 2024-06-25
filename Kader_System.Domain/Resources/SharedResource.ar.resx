@@ -144,8 +144,14 @@
   <data name="Done" xml:space="preserve">
     <value>تم الحفظ بنجاح</value>
   </data>
+  <data name="Employee" xml:space="preserve">
+    <value>الموظف</value>
+  </data>
   <data name="IsExist" xml:space="preserve">
     <value>{0} موجود بالفعل</value>
+  </data>
+  <data name="IsNotExisted" xml:space="preserve">
+    <value>ليس موجود</value>
   </data>
   <data name="Loan" xml:space="preserve">
     <value>السلف</value>
@@ -161,6 +167,9 @@
   </data>
   <data name="Qualification" xml:space="preserve">
     <value>المؤهل</value>
+  </data>
+  <data name="Resonsiblities" xml:space="preserve">
+    <value>المسئوليات</value>
   </data>
   <data name="Restored" xml:space="preserve">
     <value>تمت الاستعاده بنجاح</value>

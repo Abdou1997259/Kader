@@ -134,6 +134,15 @@ public static class SD
             public const string GetSubMainScreenById = "screen_sub/{id}";
             public const string DeleteSubMainScreen = "screen_sub/{id}";
         }
+        public class StResponsiblity
+        {
+            public const string GetAllResponsiblitites = "responsiblity/getAllResponsiblities";
+            public const string CreateResponsiblity = "responsiblity/create";
+            public const string UpdateResponsiblity = "responsiblity/update/{id}";
+            public const string GetResponsiblityById = "responsiblity/getById/{id}";
+            public const string DeleteResponsiblity = "responsiblity/delelte/{id}";
+
+        }
         public class User
         {
             public const string GetAllUsers = "GetAllUsers";
@@ -283,6 +292,7 @@ public static class SD
             public const string Updateloan = "loan/update/{id}";
             public const string GetloanById = "loan/getById/{id}";
             public const string Deleteloan = "loan/delete/{id}";
+            public const string GetLookups = "loan/geLookups";
         }
         public class Benefit
         {
@@ -431,7 +441,7 @@ public static class SD
         public const string Email = "Email";
         public const string PasswordNotmatch = "PasswordNotmatch";
         public const string Role = "Role";
-
+        public const string IsNotExisted = "IsNotExisted";
         public const string Employee = "Employee";
         public const string Contract = "Contract";
         public const string ContractDetail = "ContractDetail";
@@ -476,7 +486,7 @@ public static class SD
         public const string Qualification = "Qualification";
         public const string Shift = "Shift";
         public const string Deduction = "Deduction";
-        public const string Laon = "Loan";
+        public const string Loan = "Loan";
         public const string Vacation = "Vacation";
         public const string Image = "Image";
         public const string CompanyIsNotActive = "Company is not active";
@@ -559,6 +569,7 @@ public static class SD
         public const string ReqExitPermission = "ReqExitPermission";
         public const string ReqAddvance = "ReqAddvance";
         public const string ThisCannotBeDoneDueToThePresenceOf = "ThisCannotBeDoneDueToThePresenceOf";
+        public const string Resonsiblitites = "Resonsiblities";
     }
 
     public class LoggingMessages

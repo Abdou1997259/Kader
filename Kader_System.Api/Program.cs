@@ -236,6 +236,7 @@ builder.Services.AddScoped<ITransDeductionService, TransDeductionService>();
 builder.Services.AddScoped<ITransVacationService, TransVacationService>();
 builder.Services.AddScoped<ITransCovenantService, TransCovenantService>();
 builder.Services.AddScoped<ITransLoanService, TransLoanService>();
+builder.Services.AddScoped<IStResonsiblityService, StResonsiblityService>();
 #endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");
 var httpsPort = builder.Configuration.GetValue<int>("KestrelServer:Https.Port");

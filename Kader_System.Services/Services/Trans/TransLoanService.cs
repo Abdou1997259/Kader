@@ -44,16 +44,26 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<CreateLoanReponse>> CreateLoanAsync(CreateLoanRequest model)
+        public async Task<Response<CreateLoanReponse>> CreateLoanAsync(CreateLoanRequest model, string lang)
         {
             bool exists = false;
             exists = await _unitOfWork.LoanRepository.ExistAsync(x => x.LoanDate == model.LoanDate);
             var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmpolyeeId);
 
-            if (exists || empolyee is null)
+            if (empolyee is null)
+            {
+                string resultMsg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.IsNotExisted]} ";
+                return new()
+                {
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
+
+            if (exists)
             {
                 string resultMsg = string.Format(_sharLocalizer[Localization.IsExist],
-                    _sharLocalizer[Localization.Deduction]);
+                    _sharLocalizer[Localization.Loan]);
 
                 return new()
                 {
@@ -80,7 +90,11 @@ namespace Kader_System.Services.Services.Trans
                 Notes = model.Notes,
                 TransLoanslookups = new TransLoanslookups
                 {
-                    HrEmployees = await _unitOfWork.Employees.GetAllAsync(),
+                    HrEmployees = (await _unitOfWork.Employees.GetAllAsync()).Select(x => new EmpolyeeLookup
+                    {
+                        Id = x.Id,
+                        EmpolyeeName = Localization.Arabic == lang ? x.FamilyNameAr : x.FamilyNameEn
+                    }),
                     AdvancedTypes = await _unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes()
                 }
 
@@ -102,7 +116,7 @@ namespace Kader_System.Services.Services.Trans
             if (obj == null)
             {
                 string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                    _sharLocalizer[Localization.Laon]);
+                    _sharLocalizer[Localization.Loan]);
 
                 return new()
                 {
@@ -208,10 +222,66 @@ namespace Kader_System.Services.Services.Trans
                 {
                     Id = id,
                     LoanDate = obj.LoanDate,
+                    StartLoanDate = obj.StartLoanDate,
+                    EndDoDate = obj.EndDoDate,
+                    DocumentDate = obj.DocumentDate,
+                    DocumentType = obj.DocumentType,
+                    MonthlyDeducted = obj.MonthlyDeducted,
+                    LoanAmount = obj.LoanAmount,
+                    PrevDedcutedAmount = obj.PrevDedcutedAmount,
+                    InstallmentCount = obj.InstallmentCount,
+                    MakePaymentJournal = obj.MakePaymentJournal,
+                    IsDeductedFromSalary = obj.IsDeductedFromSalary,
+                    Notes = obj.Notes,
+                    EmpolyeeId = obj.EmpolyeeId
+
 
                 },
                 Check = true
             };
+        }
+        public async Task<Response<TransLoanslookups>> GetDeductionsLookUpsData(string lang)
+        {
+            try
+            {
+                var employees = await unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
+                    select: x => new EmpolyeeLookup
+                    {
+                        Id = x.Id,
+                        EmpolyeeName = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn
+                    });
+
+                var advancesTypes = await unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes();
+
+
+
+
+                return new Response<TransLoanslookups>()
+                {
+                    Check = true,
+                    IsActive = true,
+                    Error = "",
+                    Msg = "",
+                    Data = new TransLoanslookups()
+                    {
+                        HrEmployees = employees.ToArray(),
+                        AdvancedTypes = advancesTypes.ToArray(),
+
+                    }
+                };
+            }
+            catch (Exception exception)
+            {
+                return new Response<TransLoanslookups>()
+                {
+                    Error = exception.InnerException != null ? exception.InnerException.Message : exception.Message,
+                    Msg = "Can not able to Get Data",
+                    Check = false,
+                    Data = null,
+                    IsActive = false
+                };
+            }
+
         }
 
 
@@ -223,7 +293,7 @@ namespace Kader_System.Services.Services.Trans
             if (obj == null)
             {
                 string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                    _sharLocalizer[Localization.Laon]);
+                    _sharLocalizer[Localization.Loan]);
 
                 return new()
                 {
@@ -260,7 +330,7 @@ namespace Kader_System.Services.Services.Trans
             throw new NotImplementedException();
         }
 
-        public async Task<Response<UpdateLoanReponse>> UpdateLoanAsync(int id, UpdateLoanRequest model)
+        public async Task<Response<UpdateLoanReponse>> UpdateLoanAsync(int id, UpdateLoanRequest model, string lang)
         {
             var obj = await _unitOfWork.LoanRepository.GetByIdAsync(id);
             var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmpolyeeId);
@@ -277,17 +347,34 @@ namespace Kader_System.Services.Services.Trans
                 Notes = model.Notes,
                 TransLoanslookups = new TransLoanslookups
                 {
-                    HrEmployees = await _unitOfWork.Employees.GetAllAsync(),
+                    HrEmployees = (await _unitOfWork.Employees.GetAllAsync()).Select(x => new EmpolyeeLookup
+                    {
+                        Id = x.Id,
+                        EmpolyeeName = Localization.Arabic == lang ? x.FamilyNameAr : x.FamilyNameEn
+                    }),
                     AdvancedTypes = await _unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes()
                 }
 
 
             };
-
-            if (obj == null || empolyee is null)
+            if (empolyee is null)
             {
                 string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                    _sharLocalizer[Localization.Laon]);
+                    _sharLocalizer[Localization.Employee]);
+
+                return new()
+                {
+                    Data = updateLoanResponse,
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+
+            }
+
+            if (obj == null)
+            {
+                string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+                    _sharLocalizer[Localization.Loan]);
 
                 return new()
                 {

@@ -144,8 +144,14 @@
   <data name="Done" xml:space="preserve">
     <value>Saved successfully</value>
   </data>
+  <data name="Employee" xml:space="preserve">
+    <value>Employee</value>
+  </data>
   <data name="IsExist" xml:space="preserve">
     <value>{0} is exist</value>
+  </data>
+  <data name="IsNotExisted" xml:space="preserve">
+    <value>Is Not Exited</value>
   </data>
   <data name="Loan" xml:space="preserve">
     <value>Loan</value>
@@ -161,6 +167,9 @@
   </data>
   <data name="Qualification" xml:space="preserve">
     <value>Qualification</value>
+  </data>
+  <data name="Resonsiblities" xml:space="preserve">
+    <value>Resonsiblities</value>
   </data>
   <data name="Restored" xml:space="preserve">
     <value>Restored Successfully</value>

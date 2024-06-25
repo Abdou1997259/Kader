@@ -21,9 +21,15 @@
     }
     public class TransLoanslookups
     {
-        public IEnumerable<HrEmployee> HrEmployees { get; set; }
+        public IEnumerable<EmpolyeeLookup> HrEmployees { get; set; }
 
         public IEnumerable<AdvancedType> AdvancedTypes { get; set; }
+
+    }
+    public class EmpolyeeLookup
+    {
+        public int Id { get; set; }
+        public string EmpolyeeName { get; set; }
 
     }
 }
