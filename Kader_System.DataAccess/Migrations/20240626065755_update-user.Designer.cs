@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    [Migration("20240625111727_update_user_data")]
-    partial class update_user_data
+    [Migration("20240626065755_update-user")]
+    partial class updateuser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -224,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "28c3504f-bc4f-4f83-9a73-5a8d140bcd61",
+                            ConcurrencyStamp = "a45c3fc2-1492-4ec3-b5d0-e163b100fdcc",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -232,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGbxuJ0QgnLqk8Va3OsoM/avHkvEfX2v5oD5vNYgwO5nExixnq/HA9XN4gp5XdTFIg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEK1TT8KgcWidBKQr7QfpbzFSSVazwIkN6TrQhABstI6FOXOinxPDH56PyR3MpyTxHA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d7c9af0f-0c60-45f3-ae83-57b04146ed93",
+                            SecurityStamp = "1dd06bf4-057c-498e-b747-90b1a3825685",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"

@@ -18,10 +18,26 @@ namespace Kader_System.Services.Services.Trans
                   {
                       Id = x.Id,
                       LoanDate = x.LoanDate,
+                      LoanAmount = x.LoanAmount,
+                      StartCalculationDate = x.StartCalculationDate,
+                      EndCalculationDate = x.EndCalculationDate,
+                      StartLoanDate = x.StartLoanDate,
+                      EndDoDate = x.EndDoDate,
+                      DocumentDate = x.DocumentDate,
+                      AdvanceType = x.AdvanceType,
+                      MonthlyDeducted = x.MonthlyDeducted,
+                      InstallmentCount = x.InstallmentCount,
+                      Notes = x.Notes,
+                      LoanType = x.LoanType,
+
+                      EmployeeName = Localization.Arabic == lang ? x.HrEmployee.FirstNameAr : x.HrEmployee.FirstNameEn,
+                      PrevDedcutedAmount = x.PrevDedcutedAmount,
+
+
 
 
                   }, orderBy: x =>
-                    x.OrderByDescending(x => x.Id), includeProperties: "Hr_Employees");
+                    x.OrderByDescending(x => x.Id), includeProperties: "HrEmployee");
 
 
             if (!result.Any())
@@ -46,9 +62,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<CreateLoanReponse>> CreateLoanAsync(CreateLoanRequest model, string lang)
         {
-            bool exists = false;
-            exists = await _unitOfWork.LoanRepository.ExistAsync(x => x.LoanDate == model.LoanDate);
-            var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmpolyeeId);
+
+            var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
 
             if (empolyee is null)
             {
@@ -60,57 +75,41 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
-            if (exists)
-            {
-                string resultMsg = string.Format(_sharLocalizer[Localization.IsExist],
-                    _sharLocalizer[Localization.Loan]);
-
-                return new()
-                {
-                    Error = resultMsg,
-                    Msg = resultMsg
-                };
-            }
 
             var loan = _mapper.Map<TransLoan>(model);
-            await _unitOfWork.LoanRepository.AddAsync(loan
-            );
+
+            await _unitOfWork.LoanRepository.AddAsync(loan);
             await _unitOfWork.CompleteAsync();
 
-            var creatingResponse = new CreateLoanReponse
+            var startMonth = model.StartCalculationDate;
+            for (int i = 1; i <= model.InstallmentCount; i++)
             {
-                InstallmentCount = model.InstallmentCount,
-                DocumentDate = model.DocumentDate,
-                IsDeductedFromSalary = model.IsDeductedFromSalary,
-                EndDoDate = model.EndDoDate,
-                LoanAmount = model.LoanAmount,
-                LoanDate = model.LoanDate,
-                MonthlyDeducted = model.MonthlyDeducted,
-                PrevDedcutedAmount = model.PrevDedcutedAmount,
-                Notes = model.Notes,
-                TransLoanslookups = new TransLoanslookups
+
+                await _unitOfWork.TransLoanDetails.AddAsync(new TransLoanDetails
                 {
-                    HrEmployees = (await _unitOfWork.Employees.GetAllAsync()).Select(x => new EmpolyeeLookup
-                    {
-                        Id = x.Id,
-                        EmpolyeeName = Localization.Arabic == lang ? x.FamilyNameAr : x.FamilyNameEn
-                    }),
-                    AdvancedTypes = await _unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes()
-                }
+                    DeductionDate = startMonth,
+                    Amount = model.MonthlyDeducted,
+                    TransLoanId = loan.Id,
 
 
-            };
+                });
+                startMonth = startMonth.AddMonths(1);
+            }
+            await _unitOfWork.CompleteAsync();
+
+
 
             return new()
             {
                 Msg = _sharLocalizer[Localization.Done],
                 Check = true,
-                Data = creatingResponse
+                Data = null
             };
         }
 
         public async Task<Response<string>> DeleteLoanAsync(int id)
         {
+
             var obj = await _unitOfWork.LoanRepository.GetByIdAsync(id);
 
             if (obj == null)
@@ -126,6 +125,9 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
+            var details = await _unitOfWork.TransLoanDetails.GetSpecificSelectAsync(x => x.TransLoanId == id, x => x);
+            _unitOfWork.TransLoanDetails.RemoveRange(details);
+            await _unitOfWork.CompleteAsync();
             _unitOfWork.LoanRepository.Remove(obj);
             await _unitOfWork.CompleteAsync();
 
@@ -161,10 +163,27 @@ namespace Kader_System.Services.Services.Trans
                      select: x => new ListOfLoansResponse
                      {
                          Id = x.Id,
-                         EmpolyeeName = Localization.Arabic == lang ? x.HrEmployee.FirstNameAr : x.HrEmployee.FirstNameEn
+                         EmployeeName = Localization.Arabic == lang ? x.HrEmployee.FirstNameAr : x.HrEmployee.FirstNameEn,
+
+                         LoanDate = x.LoanDate,
+                         LoanAmount = x.LoanAmount,
+                         StartCalculationDate = x.StartCalculationDate,
+                         EndCalculationDate = x.EndCalculationDate,
+                         StartLoanDate = x.StartLoanDate,
+                         EndDoDate = x.EndDoDate,
+                         DocumentDate = x.DocumentDate,
+                         AdvanceType = x.AdvanceType,
+                         MonthlyDeducted = x.MonthlyDeducted,
+                         InstallmentCount = x.InstallmentCount,
+                         Notes = x.Notes,
+                         LoanType = x.LoanType,
+
+                         PrevDedcutedAmount = x.PrevDedcutedAmount,
+
+
 
                      }, orderBy: x =>
-                       x.OrderByDescending(x => x.Id), includeProperties: "Hr_Employees")).ToList(),
+                       x.OrderByDescending(x => x.Id), includeProperties: "HrEmployee")).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -200,9 +219,12 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<GetLoanByIdReponse>> GetLoanByIdAsync(int id)
+        public async Task<Response<GetLoanByIdReponse>> GetLoanByIdAsync(int id, string lang)
         {
-            var obj = await _unitOfWork.LoanRepository.GetByIdAsync(id);
+            var obj = (await _unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.Id == id, x => x, includeProperties: "TransLoanDetails")).FirstOrDefault();
+            var empolyee = await _unitOfWork.Employees.GetByIdAsync(obj.EmployeeId);
+            var empolyees = await _unitOfWork.Employees.GetAllAsync();
+            var advancedTypes = await _unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes();
 
             if (obj is null)
             {
@@ -225,17 +247,33 @@ namespace Kader_System.Services.Services.Trans
                     StartLoanDate = obj.StartLoanDate,
                     EndDoDate = obj.EndDoDate,
                     DocumentDate = obj.DocumentDate,
-                    DocumentType = obj.DocumentType,
+                    AdvanceType = obj.AdvanceType,
                     MonthlyDeducted = obj.MonthlyDeducted,
                     LoanAmount = obj.LoanAmount,
                     PrevDedcutedAmount = obj.PrevDedcutedAmount,
                     InstallmentCount = obj.InstallmentCount,
-                    MakePaymentJournal = obj.MakePaymentJournal,
-                    IsDeductedFromSalary = obj.IsDeductedFromSalary,
+                    StartCalculationDate = obj.StartCalculationDate,
+                    EndCalculationDate = obj.EndCalculationDate,
+                    LoanType = obj.LoanType,
                     Notes = obj.Notes,
-                    EmpolyeeId = obj.EmpolyeeId
-
-
+                    EmpolyeeName = Localization.Arabic == lang ? empolyee.FirstNameAr : empolyee.FirstNameEn,
+                    TransLoanDetails = obj.TransLoanDetails.Select(x => new TransLoanDetailsReponse
+                    {
+                        Amount = x.Amount,
+                        Id = x.Id,
+                        DeductionDate = x.DeductionDate,
+                        DelayCount = x.DelayCount,
+                        PaymentDate = x.PaymentDate,
+                    }),
+                    TransLoanslookups = new TransLoanslookups
+                    {
+                        AdvancedTypes = advancedTypes,
+                        HrEmployees = empolyees.Select(x => new EmployeeLookup
+                        {
+                            EmployeeName = Localization.Arabic == lang ? x.FirstNameAr : x.FirstNameEn,
+                            Id = x.Id,
+                        })
+                    }
                 },
                 Check = true
             };
@@ -245,10 +283,10 @@ namespace Kader_System.Services.Services.Trans
             try
             {
                 var employees = await unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
-                    select: x => new EmpolyeeLookup
+                    select: x => new EmployeeLookup
                     {
                         Id = x.Id,
-                        EmpolyeeName = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn
+                        EmployeeName = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn
                     });
 
                 var advancesTypes = await unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes();
@@ -286,7 +324,7 @@ namespace Kader_System.Services.Services.Trans
 
 
 
-        public async Task<Response<GetLoanByIdReponse>> RestoreLoanAsync(int id)
+        public async Task<Response<object>> RestoreLoanAsync(int id, string lang)
         {
             var obj = await _unitOfWork.LoanRepository.GetByIdAsync(id);
 
@@ -310,17 +348,13 @@ namespace Kader_System.Services.Services.Trans
             await _unitOfWork.CompleteAsync();
             return new()
             {
+                Data = obj,
                 Check = true,
                 Error = string.Empty,
                 LookUps = null,
-                Data = new GetLoanByIdReponse()
-                {
-                    Id = obj.Id,
-                    LoanDate = obj.LoanDate,
+                Msg = sharLocalizer[Localization.Restored]
 
-                },
-                Msg = string.Format(_sharLocalizer[Localization.Updated],
-                    _sharLocalizer[Localization.Deduction]),
+
 
             };
         }
@@ -332,31 +366,10 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<UpdateLoanReponse>> UpdateLoanAsync(int id, UpdateLoanRequest model, string lang)
         {
-            var obj = await _unitOfWork.LoanRepository.GetByIdAsync(id);
-            var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmpolyeeId);
-            var updateLoanResponse = new UpdateLoanReponse
-            {
-                InstallmentCount = model.InstallmentCount,
-                DocumentDate = model.DocumentDate,
-                IsDeductedFromSalary = model.IsDeductedFromSalary,
-                EndDoDate = model.EndDoDate,
-                LoanAmount = model.LoanAmount,
-                LoanDate = model.LoanDate,
-                MonthlyDeducted = model.MonthlyDeducted,
-                PrevDedcutedAmount = model.PrevDedcutedAmount,
-                Notes = model.Notes,
-                TransLoanslookups = new TransLoanslookups
-                {
-                    HrEmployees = (await _unitOfWork.Employees.GetAllAsync()).Select(x => new EmpolyeeLookup
-                    {
-                        Id = x.Id,
-                        EmpolyeeName = Localization.Arabic == lang ? x.FamilyNameAr : x.FamilyNameEn
-                    }),
-                    AdvancedTypes = await _unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes()
-                }
+            Expression<Func<TransLoan, bool>> filter = x => x.Id == id;
+            var obj = (await _unitOfWork.LoanRepository.GetSpecificSelectAsync(filter: filter, select: x => x, includeProperties: "TransLoanDetails")).FirstOrDefault();
+            var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
 
-
-            };
             if (empolyee is null)
             {
                 string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
@@ -364,7 +377,7 @@ namespace Kader_System.Services.Services.Trans
 
                 return new()
                 {
-                    Data = updateLoanResponse,
+                    Data = null,
                     Error = resultMsg,
                     Msg = resultMsg
                 };
@@ -378,13 +391,31 @@ namespace Kader_System.Services.Services.Trans
 
                 return new()
                 {
-                    Data = updateLoanResponse,
+                    Data = null,
                     Error = resultMsg,
                     Msg = resultMsg
                 };
             }
 
             _mapper.Map(model, obj);
+
+            var startMonth = model.StartCalculationDate;
+            var objOfDetails = await _unitOfWork.TransLoanDetails.GetSpecificSelectAsync(x => x.TransLoanId == id, x => x);
+            _unitOfWork.TransLoanDetails.RemoveRange(objOfDetails);
+            await _unitOfWork.CompleteAsync();
+            for (int i = 1; i <= model.InstallmentCount; i++)
+            {
+                await _unitOfWork.TransLoanDetails.AddAsync(new TransLoanDetails
+                {
+                    DeductionDate = startMonth,
+                    Amount = model.MonthlyDeducted,
+                    TransLoanId = id
+
+                });
+
+                startMonth.AddMonths(1);
+            }
+            await _unitOfWork.CompleteAsync();
 
             _unitOfWork.LoanRepository.Update(obj);
             await _unitOfWork.CompleteAsync();
@@ -393,10 +424,61 @@ namespace Kader_System.Services.Services.Trans
             return new()
             {
                 Check = true,
-                Data = updateLoanResponse,
+                Data = null,
                 Msg = _sharLocalizer[Localization.Updated]
             };
         }
 
+        public async Task<Response<string>> PayForLoanDetails(PayForLoanDetailsRequest model)
+        {
+            var obj = await _unitOfWork.TransLoanDetails.GetByIdAsync(model.LoanDetialsId);
+            if (obj == null)
+            {
+
+                return new()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = _sharLocalizer[Localization.NotFoundData]
+                };
+
+
+            }
+            obj.PaymentDate = model.PaymentDate;
+            _unitOfWork.TransLoanDetails.Update(obj);
+            await _unitOfWork.CompleteAsync();
+            return new()
+            {
+                Check = true,
+                Data = null,
+                Msg = _sharLocalizer[Localization.PaidSuccessfuly]
+            };
+        }
+
+        public async Task<Response<string>> DelayForLoanDetails(DelayForTransLoanRequest model)
+        {
+            var obj = await _unitOfWork.TransLoanDetails.GetByIdAsync(model.LoanDetialsId);
+            if (obj == null)
+            {
+
+                return new()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = _sharLocalizer[Localization.NotFoundData]
+                };
+
+
+            }
+            obj.DeductionDate = model.DeductionDate;
+            _unitOfWork.TransLoanDetails.Update(obj);
+            await _unitOfWork.CompleteAsync();
+            return new()
+            {
+                Check = true,
+                Data = null,
+                Msg = _sharLocalizer[Localization.DelayedSuccessfully]
+            };
+        }
     }
 }

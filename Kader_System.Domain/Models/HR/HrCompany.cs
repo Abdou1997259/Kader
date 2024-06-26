@@ -16,4 +16,5 @@ public class HrCompany : BaseEntity
 
     public ICollection<HrCompanyContract> ListOfsContract { get; set; } = [];
     public ICollection<CompanyLicense> Licenses { get; set; } = [];
+
 }

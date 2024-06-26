@@ -4,7 +4,7 @@
     public class AdvancedType
     {
         public int Id { get; set; }
-        public string ADvancesTypeName { get; set; }
+        public string AdvanceTypeName { get; set; }
 
     }
 }

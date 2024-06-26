@@ -4,7 +4,7 @@ public interface IUnitOfWork : IDisposable
 {
 
     IDatabaseTransaction BeginTransaction();
-    IStResonsiblityRepository StResonsiblityRepository { get; }
+    ITransLoanDetailsRepository TransLoanDetails { get; }
     IAdvancedTypesRepository AdvancedTypesRepository { get; }
     ITransLoanRepository LoanRepository { get; }
     IUserRepository Users { get; }

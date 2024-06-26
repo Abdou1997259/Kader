@@ -60,7 +60,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrNationality> Nationalities { get; set; }
     public DbSet<HrRelegion> Relegions { get; set; }
     public DbSet<HrMaritalStatus> MaritalStatus { get; set; }
-    public DbSet<StResonsiblity> StResonsiblities { get; set; }
+
 
     #endregion
     //
@@ -121,6 +121,9 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
         modelBuilder.Entity<TransLoan>()
            .Property(p => p.MonthlyDeducted)
            .HasPrecision(18, 2);
+        modelBuilder.Entity<TransLoanDetails>()
+            .Property(p => p.Amount)
+            .HasPrecision(18, 2);
         #endregion
     }
 

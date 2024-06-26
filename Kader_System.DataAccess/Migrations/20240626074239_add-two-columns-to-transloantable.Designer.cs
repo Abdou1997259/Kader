@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    [Migration("20240625111905_add-responsiblity_table")]
-    partial class addresponsiblity_table
+    [Migration("20240626074239_add-two-columns-to-transloantable")]
+    partial class addtwocolumnstotransloantable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -224,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5c947b04-0911-407a-8c11-6f76fc72cab6",
+                            ConcurrencyStamp = "53d57b16-5535-41aa-9356-f13c21b7683d",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -232,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENFPhpLtwNPL450kxYhbbCyRf15DwnmsOpIJWAvya03dq+8t1Ly0M2JRAMKUNXAing==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJ4kXJAbKhLnb/s2kWcb4PBqmXYHywi+xirzTw/jOQnLnSNcYbje94g614a/Y7QXMA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b4d4c224-8894-48d1-bc32-fba4ebaba397",
+                            SecurityStamp = "4bb0673e-e3a9-4a2d-9737-097037b11bad",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -2748,51 +2748,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.ToTable("St_MainScreenCats");
                 });
 
-            modelBuilder.Entity("Kader_System.Domain.Models.Setting.StResonsiblity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("Add_date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Added_by")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DeleteBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeleteDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("StResponsiblity_Name_Ar")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StResponsiblity_Name_En")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdateBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("St_Resonsiblities");
-                });
-
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StScreenAction", b =>
                 {
                     b.Property<int>("Id")
@@ -3442,6 +3397,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int>("EmpolyeeId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("EndCalculationDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime>("EndDoDate")
                         .HasColumnType("datetime2");
 
@@ -3477,6 +3435,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<decimal>("PrevDedcutedAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("StartCalculationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("StartLoanDate")
                         .HasColumnType("datetime2");

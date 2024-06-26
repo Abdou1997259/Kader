@@ -290,6 +290,9 @@ public static class SD
             public const string GetAllloans = "loan/getAll";
             public const string Createloan = "loan/create";
             public const string Updateloan = "loan/update/{id}";
+            public const string RestoreLoan = "loan/restore/{id}";
+            public const string UpdatePaymentLoan = "loan/payloan";
+            public const string UpdateDelayLoan = "loan/delayloan";
             public const string GetloanById = "loan/getById/{id}";
             public const string Deleteloan = "loan/delete/{id}";
             public const string GetLookups = "loan/geLookups";
@@ -412,12 +415,12 @@ public static class SD
 
         public const string Restored = "Restored";
         public const string Departments = "Departments";
-
+        public const string DelayedSuccessfully = "DelayedSuccessfully";
         public const string MainScreenCategory = "MainScreenCategory";
         public const string MainScreen = "MainScreen";
         public const string Screen = "Screen";
         public const string SubMainScreen = "SubMainScreen";
-
+        public const string PaidSuccessfuly = "PaidSuccessfuly";
         public const string DepartmentsExist = "DepartmentsExist";
         public const string Jobs = "Jobs";
         public const string JobExist = "JobExist";
@@ -629,5 +632,6 @@ public static class SD
         public const string StartDate = "Start date";
         public const string EndDate = "End date";
         public const string RememberMe = "Remember me?";
+
     }
 }

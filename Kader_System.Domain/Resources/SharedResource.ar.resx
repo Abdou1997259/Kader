@@ -138,6 +138,9 @@
   <data name="Deduction" xml:space="preserve">
     <value>اسم الخصم</value>
   </data>
+  <data name="DelayedSuccessfully" xml:space="preserve">
+    <value>تم التأجيل</value>
+  </data>
   <data name="Deleted" xml:space="preserve">
     <value>تم الحذف بنجاح</value>
   </data>
@@ -164,6 +167,9 @@
   </data>
   <data name="NotFoundData" xml:space="preserve">
     <value>لا يوجد بيانات</value>
+  </data>
+  <data name="PaidSuccessfuly" xml:space="preserve">
+    <value>تم الدفع بنجاح</value>
   </data>
   <data name="Qualification" xml:space="preserve">
     <value>المؤهل</value>

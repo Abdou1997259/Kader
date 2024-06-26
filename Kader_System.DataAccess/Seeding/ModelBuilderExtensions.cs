@@ -131,13 +131,13 @@ public static class ModelBuilderExtensions
            );
         modelBuilder.Entity<AdvancedType>()
          .HasData(
-             new() { Id = 1, ADvancesTypeName = "سلفة" },
-             new() { Id = 2, ADvancesTypeName = "مخالفة مرورية" },
-             new() { Id = 3, ADvancesTypeName = "حوادث وأصلاحات" },
-             new() { Id = 4, ADvancesTypeName = "نقل خدمات" },
-             new() { Id = 5, ADvancesTypeName = "مخالفة مرورية" },
-             new() { Id = 6, ADvancesTypeName = "تأمينات" },
-             new() { Id = 7, ADvancesTypeName = "تسويات اخري" }
+             new() { Id = 1, AdvanceTypeName = "سلفة" },
+             new() { Id = 2, AdvanceTypeName = "مخالفة مرورية" },
+             new() { Id = 3, AdvanceTypeName = "حوادث وأصلاحات" },
+             new() { Id = 4, AdvanceTypeName = "نقل خدمات" },
+             new() { Id = 5, AdvanceTypeName = "مخالفة مرورية" },
+             new() { Id = 6, AdvanceTypeName = "تأمينات" },
+             new() { Id = 7, AdvanceTypeName = "تسويات اخري" }
 
 
 

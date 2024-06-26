@@ -57,14 +57,13 @@ public class UnitOfWork : IUnitOfWork
     public IGenderRepository Genders { get; private set; }
     public IReligionRepository Religions { get; private set; }
 
-    public IStResonsiblityRepository StResonsiblityRepository { get; private set; }
-
+    public ITransLoanDetailsRepository TransLoanDetails { get; private set; }
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
     {
         _context = context;
         _config = config;
-        StResonsiblityRepository = new StResonsiblityRepository(_context);
+        TransLoanDetails = new TransLoanDetailsRepository(_context);
         Nationalities = new NationalityRepository(_context);
         MaritalStatus = new MaritalStatusRepository(_context);
         AdvancedTypesRepository = new AdavnacedTypeRepository(_context);

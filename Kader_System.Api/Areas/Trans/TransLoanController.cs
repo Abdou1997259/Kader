@@ -29,7 +29,7 @@ namespace Kader_System.Api.Areas.Trans
         [HttpGet(ApiRoutes.Loan.GetloanById)]
         public async Task<IActionResult> GetById(int id)
         {
-            var response = await service.GetLoanByIdAsync(id);
+            var response = await service.GetLoanByIdAsync(id, GetCurrentRequestLanguage());
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -80,6 +80,46 @@ namespace Kader_System.Api.Areas.Trans
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, request);
             }
             return BadRequest(request);
+        }
+        [HttpPut(ApiRoutes.Loan.RestoreLoan)]
+        public async Task<IActionResult> RestoreTask(int id)
+        {
+            var result = await service.RestoreLoanAsync(id, GetCurrentRequestLanguage());
+            if (ModelState.IsValid)
+            {
+
+                if (result.Check) return Ok(result);
+                else if (!result.Check) return BadRequest(result);
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, result);
+            }
+            return BadRequest(result);
+        }
+
+        [HttpPut(ApiRoutes.Loan.UpdatePaymentLoan)]
+        public async Task<IActionResult> PayTask([FromForm] PayForLoanDetailsRequest request)
+        {
+            var result = await service.PayForLoanDetails(request);
+            if (ModelState.IsValid)
+            {
+
+                if (result.Check) return Ok(result);
+                else if (!result.Check) return BadRequest(result);
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, result);
+            }
+            return BadRequest(result);
+        }
+        [HttpPut(ApiRoutes.Loan.UpdateDelayLoan)]
+        public async Task<IActionResult> DelayTask([FromForm] DelayForTransLoanRequest request)
+        {
+            var result = await service.DelayForLoanDetails(request);
+            if (ModelState.IsValid)
+            {
+
+                if (result.Check) return Ok(result);
+                else if (!result.Check) return BadRequest(result);
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, result);
+            }
+            return BadRequest(result);
         }
 
 

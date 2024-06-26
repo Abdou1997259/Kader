@@ -9,19 +9,25 @@
         public DateTime StartLoanDate { get; set; }
         public DateTime EndDoDate { get; set; }
         public DateTime DocumentDate { get; set; }
-        public short DocumentType { get; set; }
+        public short AdvanceType { get; set; }
         public decimal MonthlyDeducted { get; set; }
 
         public decimal LoanAmount { get; set; }
         public decimal PrevDedcutedAmount { get; set; }
 
         public int InstallmentCount { get; set; }
-        public bool MakePaymentJournal { get; set; }
-        public bool IsDeductedFromSalary { get; set; }
+
+        public short LoanType { get; set; }
+
         public string? Notes { get; set; }
-        public int EmpolyeeId { get; set; }
-        [ForeignKey(nameof(EmpolyeeId))]
+        public DateTime StartCalculationDate { get; set; }
+        public DateTime EndCalculationDate { get; set; }
+
+        public int EmployeeId { get; set; }
+        [ForeignKey(nameof(EmployeeId))]
         public HrEmployee HrEmployee { get; set; } = default!;
+        public ICollection<TransLoanDetails> TransLoanDetails { get; set; }
+
 
 
     }
