@@ -1,8 +1,4 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-
-namespace Kader_System.DataAccess.Repositories;
+﻿namespace Kader_System.DataAccess.Repositories;
 
 public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> where T : class
 {
@@ -40,7 +36,7 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
                 query = query.Include(includeProperty).IgnoreQueryFilters();
         }
 
-      
+
 
         if (filter != null)
             query = query.Where(filter);
@@ -196,12 +192,12 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
         dbSet.Update(entity);
         return entity;
     }
-  
+
     public async Task<int> CountAsync(Expression<Func<T, bool>> filter = null!, string includeProperties = null!)
     {
         IQueryable<T> query = dbSet.AsNoTracking();
 
-       var xx= query.ToList();
+        var xx = query.ToList();
 
         if (filter != null)
             query = query.Where(filter);
@@ -234,7 +230,7 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     //    IQueryable<T> query = dbSet;
 
     //    bool isSucceded = await query.Where(filter).ExecuteUpdate(setters => setters);
-        
+
     //    return entity;
     //}
 
@@ -245,5 +241,6 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
         bool isSucceded = await query.Where(filter).ExecuteDeleteAsync() > 0;
         return isSucceded;
     }
+
 
 }

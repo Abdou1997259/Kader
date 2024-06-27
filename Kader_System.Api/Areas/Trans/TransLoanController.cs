@@ -96,9 +96,9 @@ namespace Kader_System.Api.Areas.Trans
         }
 
         [HttpPut(ApiRoutes.Loan.UpdatePaymentLoan)]
-        public async Task<IActionResult> PayTask([FromForm] PayForLoanDetailsRequest request)
+        public async Task<IActionResult> PayTask([FromBody] PayForLoanDetailsRequest request, int id)
         {
-            var result = await service.PayForLoanDetails(request);
+            var result = await service.PayForLoanDetails(request, id);
             if (ModelState.IsValid)
             {
 
@@ -109,9 +109,9 @@ namespace Kader_System.Api.Areas.Trans
             return BadRequest(result);
         }
         [HttpPut(ApiRoutes.Loan.UpdateDelayLoan)]
-        public async Task<IActionResult> DelayTask([FromForm] DelayForTransLoanRequest request)
+        public async Task<IActionResult> DelayTask([FromBody] DelayForTransLoanRequest request, int id)
         {
-            var result = await service.DelayForLoanDetails(request);
+            var result = await service.DelayForLoanDetails(request, id);
             if (ModelState.IsValid)
             {
 
@@ -121,8 +121,20 @@ namespace Kader_System.Api.Areas.Trans
             }
             return BadRequest(result);
         }
+        [HttpPut(ApiRoutes.Loan.ReInstallment)]
+        public async Task<IActionResult> ReInstallment(ReInstallmentRequest request, int id)
+        {
+            var result = await service.ReInstallmentAsync(request, id);
+            if (ModelState.IsValid)
+            {
 
+                if (result.Check) return Ok(result);
+                else if (!result.Check) return BadRequest(result);
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, result);
+            }
+            return BadRequest(result);
 
+        }
         #endregion
 
         #region Delete

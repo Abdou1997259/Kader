@@ -3,8 +3,10 @@
     public class DelayForTransLoanRequest
     {
 
-        public int LoanDetialsId { get; set; }
-        public DateTime DeductionDate { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public DateOnly DeductionDate { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public decimal Amount { get; set; }
 
 
     }

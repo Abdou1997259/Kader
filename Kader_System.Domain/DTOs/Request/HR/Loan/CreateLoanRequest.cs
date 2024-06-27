@@ -4,19 +4,33 @@ namespace Kader_System.Domain.DTOs.Request.HR.Loan
 {
     public class CreateLoanRequest
     {
-        public DateTime LoanDate { get; set; }
-        public DateTime StartLoanDate { get; set; }
-        public DateTime EndDoDate { get; set; }
-        public DateTime DocumentDate { get; set; }
-        public short AdvanceType { get; set; }
-        public decimal MonthlyDeducted { get; set; }
-        public decimal LoanAmount { get; set; }
-        public decimal PrevDedcutedAmount { get; set; }
-        public int EmployeeId { get; set; }
-        public int InstallmentCount { get; set; }
-        public DateTime StartCalculationDate { get; set; }
-        public DateTime EndCalculationDate { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public DateOnly LoanDate { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public DateOnly StartLoanDate { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public DateOnly EndDoDate { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public DateOnly DocumentDate { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
 
+        public short AdvanceType { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public decimal MonthlyDeducted { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public decimal LoanAmount { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public decimal PrevDedcutedAmount { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public int EmployeeId { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public int InstallmentCount { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public DateOnly StartCalculationDate { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public DateOnly EndCalculationDate { get; set; }
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        [Range(1, 2, ErrorMessage = "The Value must be 1 or 2")]
         public short LoanType { get; set; }
 
 

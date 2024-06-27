@@ -43,5 +43,6 @@
     Task<int> CountAsync(Expression<Func<T, bool>> filter = null!, string includeProperties = null!);
     Task<bool> AnyAsync(Expression<Func<T, bool>> filter = null!);
     void RemoveRange(IEnumerable<T> entities);
+    Task<bool> ExecuteDeleteAsync(Expression<Func<T, bool>> filter);
     void UpdateRange(IEnumerable<T> entities);
 }

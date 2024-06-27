@@ -90,6 +90,8 @@ namespace Kader_System.Services.Services.Trans
                     DeductionDate = startMonth,
                     Amount = model.MonthlyDeducted,
                     TransLoanId = loan.Id,
+                    PaymentDate = null
+
 
 
                 });
@@ -142,7 +144,7 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<GetAllLoansResponse>> GetAllLoanAsync(string lang, GetAllFilltrationForLoanRequest model, string host)
         {
             Expression<Func<TransLoan, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-                                                           (string.IsNullOrEmpty(model.Word) || x.LoanDate == model.LoanDate);
+                                                           (string.IsNullOrEmpty(model.Word) || x.LoanDate.ToString() == model.Word);
             var totalRecords = await _unitOfWork.LoanRepository.CountAsync(filter: filter);
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
@@ -243,20 +245,26 @@ namespace Kader_System.Services.Services.Trans
                 Data = new()
                 {
                     Id = id,
+                    EmployeeId = obj.EmployeeId,
                     LoanDate = obj.LoanDate,
                     StartLoanDate = obj.StartLoanDate,
                     EndDoDate = obj.EndDoDate,
                     DocumentDate = obj.DocumentDate,
-                    AdvanceType = obj.AdvanceType,
+                    LoanType = obj.LoanType switch
+                    {
+                        1 => Localization.Arabic == lang ? "أنشاء سند دفع" : "Create Payment Voucher ",
+                        2 => Localization.Arabic == lang ? " تخصم من الراتب" : "Deducted From Salary "
+
+                    },
                     MonthlyDeducted = obj.MonthlyDeducted,
                     LoanAmount = obj.LoanAmount,
                     PrevDedcutedAmount = obj.PrevDedcutedAmount,
                     InstallmentCount = obj.InstallmentCount,
                     StartCalculationDate = obj.StartCalculationDate,
                     EndCalculationDate = obj.EndCalculationDate,
-                    LoanType = obj.LoanType,
+                    AdvanceType = obj.AdvanceType,
                     Notes = obj.Notes,
-                    EmpolyeeName = Localization.Arabic == lang ? empolyee.FirstNameAr : empolyee.FirstNameEn,
+                    EmployeeName = Localization.Arabic == lang ? empolyee.FirstNameAr : empolyee.FirstNameEn,
                     TransLoanDetails = obj.TransLoanDetails.Select(x => new TransLoanDetailsReponse
                     {
                         Amount = x.Amount,
@@ -409,11 +417,13 @@ namespace Kader_System.Services.Services.Trans
                 {
                     DeductionDate = startMonth,
                     Amount = model.MonthlyDeducted,
+                    PaymentDate = null,
                     TransLoanId = id
+
 
                 });
 
-                startMonth.AddMonths(1);
+                startMonth = startMonth.AddMonths(1);
             }
             await _unitOfWork.CompleteAsync();
 
@@ -429,9 +439,9 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<string>> PayForLoanDetails(PayForLoanDetailsRequest model)
+        public async Task<Response<PayForLoanDetailsResponse>> PayForLoanDetails(PayForLoanDetailsRequest model, int id)
         {
-            var obj = await _unitOfWork.TransLoanDetails.GetByIdAsync(model.LoanDetialsId);
+            var obj = await _unitOfWork.TransLoanDetails.GetByIdAsync(id);
             if (obj == null)
             {
 
@@ -450,14 +460,24 @@ namespace Kader_System.Services.Services.Trans
             return new()
             {
                 Check = true,
-                Data = null,
+                Data = new()
+                {
+                    Id = obj.Id,
+                    Amount = obj.Amount,
+                    DeductionDate = obj.DeductionDate,
+                    PaymentDate = obj.PaymentDate,
+                    DelayCount = obj.DelayCount
+
+
+
+                },
                 Msg = _sharLocalizer[Localization.PaidSuccessfuly]
             };
         }
 
-        public async Task<Response<string>> DelayForLoanDetails(DelayForTransLoanRequest model)
+        public async Task<Response<DelayForTransLoanResponse>> DelayForLoanDetails(DelayForTransLoanRequest model, int id)
         {
-            var obj = await _unitOfWork.TransLoanDetails.GetByIdAsync(model.LoanDetialsId);
+            var obj = await _unitOfWork.TransLoanDetails.GetByIdAsync(id);
             if (obj == null)
             {
 
@@ -471,13 +491,78 @@ namespace Kader_System.Services.Services.Trans
 
             }
             obj.DeductionDate = model.DeductionDate;
+            obj.DelayCount += 1;
+
             _unitOfWork.TransLoanDetails.Update(obj);
             await _unitOfWork.CompleteAsync();
             return new()
             {
                 Check = true,
-                Data = null,
+                Data = new DelayForTransLoanResponse
+                {
+                    Id = obj.Id,
+                    DeductionDate = obj.DeductionDate,
+                    PaymentDate = obj.PaymentDate,
+                    Amount = obj.Amount,
+                    DelayCount = obj.DelayCount
+
+                },
                 Msg = _sharLocalizer[Localization.DelayedSuccessfully]
+            };
+        }
+
+        public async Task<Response<IEnumerable<ReInstallmentResponse>>> ReInstallmentAsync(ReInstallmentRequest request, int id)
+        {
+            var loanDetail = await _unitOfWork.TransLoanDetails.GetSpecificSelectAsync(x => x.TransLoanId == id, x => x);
+            if (loanDetail == null)
+            {
+                return new()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = _sharLocalizer[Localization.NotFoundData]
+                };
+
+            }
+
+            await _unitOfWork.TransLoanDetails.ExecuteDeleteAsync(x => x.TransLoanId == id && x.PaymentDate == null);
+            await _unitOfWork.CompleteAsync();
+            var startMonth = request.StartCalculationDate;
+            var monthlyDeducted = request.InstallmentCount != 0 ? request.RestAmount / (decimal)request.InstallmentCount : 0m;
+
+            for (int i = 1; i <= request.InstallmentCount; i++)
+            {
+                await _unitOfWork.TransLoanDetails.AddAsync(new TransLoanDetails
+                {
+                    DeductionDate = startMonth,
+                    Amount = monthlyDeducted,
+                    PaymentDate = null,
+                    TransLoanId = id
+
+
+                });
+
+                startMonth = startMonth.AddMonths(1);
+            }
+
+            await _unitOfWork.CompleteAsync();
+            var loanDetails = await _unitOfWork.TransLoanDetails.GetSpecificSelectAsync(x => x.TransLoanId == id && x.PaymentDate == null, x => x);
+
+
+            return new()
+            {
+                Check = true,
+                Data = loanDetails.Select(x => new ReInstallmentResponse
+                {
+                    DelayCount = x.DelayCount,
+                    Id = x.Id,
+                    TransLoanId = x.TransLoanId,
+                    Amount = x.Amount,
+                    PaymentDate = x.PaymentDate,
+                    DeductionDate = x.DeductionDate
+                })
+                ,
+                Msg = _sharLocalizer[Localization.Updated]
             };
         }
     }

@@ -3,10 +3,10 @@
     public class GetLoanByIdReponse
     {
         public int Id { get; set; }
-        public DateTime LoanDate { get; set; }
-        public DateTime StartLoanDate { get; set; }
-        public DateTime EndDoDate { get; set; }
-        public DateTime DocumentDate { get; set; }
+        public DateOnly LoanDate { get; set; }
+        public DateOnly StartLoanDate { get; set; }
+        public DateOnly EndDoDate { get; set; }
+        public DateOnly DocumentDate { get; set; }
         public short AdvanceType { get; set; }
         public decimal MonthlyDeducted { get; set; }
 
@@ -14,26 +14,27 @@
         public decimal PrevDedcutedAmount { get; set; }
 
         public int InstallmentCount { get; set; }
+        public int EmployeeId { get; set; }
 
-
-        public short LoanType { get; set; }
+        public string LoanType { get; set; }
 
         public string? Notes { get; set; }
-        public DateTime StartCalculationDate { get; set; }
-        public DateTime EndCalculationDate { get; set; }
-        public string? EmpolyeeName { get; set; }
+        public DateOnly StartCalculationDate { get; set; }
+        public DateOnly EndCalculationDate { get; set; }
+        public string? EmployeeName { get; set; }
         public TransLoanslookups TransLoanslookups { get; set; }
         public IEnumerable<TransLoanDetailsReponse> TransLoanDetails { get; set; }
     }
     public class TransLoanDetailsReponse
     {
         public int Id { get; set; }
-        public DateTime DeductionDate { get; set; }
+        public DateOnly DeductionDate { get; set; }
 
         public decimal Amount { get; set; }
 
-        public DateTime PaymentDate { get; set; }
+        public DateOnly? PaymentDate { get; set; }
         public int DelayCount { get; set; }
+        public bool IsPaid => PaymentDate != null;
 
     }
 

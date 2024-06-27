@@ -60,6 +60,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrNationality> Nationalities { get; set; }
     public DbSet<HrRelegion> Relegions { get; set; }
     public DbSet<HrMaritalStatus> MaritalStatus { get; set; }
+    public DbSet<MainScreenTree> MainScreenTrees { get; set; }
 
 
     #endregion
@@ -93,6 +94,12 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasForeignKey(detail => detail.ContractId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MainScreenTree>()
+            .HasOne(p => p.Parent)
+            .WithMany(p => p.Children)
+            .HasForeignKey(p => p.ParentId)
+            .IsRequired(false);
         #region Fluent Api
         //modelBuilder.Entity<HrManagement>()
         //    .HasOne(m => m.Manager)

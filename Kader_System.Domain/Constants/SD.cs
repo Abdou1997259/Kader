@@ -291,8 +291,9 @@ public static class SD
             public const string Createloan = "loan/create";
             public const string Updateloan = "loan/update/{id}";
             public const string RestoreLoan = "loan/restore/{id}";
-            public const string UpdatePaymentLoan = "loan/payloan";
-            public const string UpdateDelayLoan = "loan/delayloan";
+            public const string UpdatePaymentLoan = "loan/payloan/{id}";
+            public const string UpdateDelayLoan = "loan/delayloan/{id}";
+            public const string ReInstallment = "loan/reinstallment/{id}";
             public const string GetloanById = "loan/getById/{id}";
             public const string Deleteloan = "loan/delete/{id}";
             public const string GetLookups = "loan/geLookups";

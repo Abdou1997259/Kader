@@ -5,10 +5,10 @@
     {
         [Key]
         public int Id { get; set; }
-        public DateTime LoanDate { get; set; }
-        public DateTime StartLoanDate { get; set; }
-        public DateTime EndDoDate { get; set; }
-        public DateTime DocumentDate { get; set; }
+        public DateOnly LoanDate { get; set; }
+        public DateOnly StartLoanDate { get; set; }
+        public DateOnly EndDoDate { get; set; }
+        public DateOnly DocumentDate { get; set; }
         public short AdvanceType { get; set; }
         public decimal MonthlyDeducted { get; set; }
 
@@ -20,8 +20,8 @@
         public short LoanType { get; set; }
 
         public string? Notes { get; set; }
-        public DateTime StartCalculationDate { get; set; }
-        public DateTime EndCalculationDate { get; set; }
+        public DateOnly StartCalculationDate { get; set; }
+        public DateOnly EndCalculationDate { get; set; }
 
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]

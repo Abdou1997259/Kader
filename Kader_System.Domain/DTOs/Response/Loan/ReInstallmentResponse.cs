@@ -1,9 +1,9 @@
-﻿namespace Kader_System.Domain.Models.Trans
+﻿
+namespace Kader_System.Domain.DTOs.Response.Loan
 {
-    [Table("Trans_Loan_Details")]
-    public class TransLoanDetails : BaseEntity
+    public class ReInstallmentResponse
     {
-        [Key]
+
         public int Id { get; set; }
         public DateOnly DeductionDate { get; set; }
 
@@ -13,8 +13,6 @@
         public int DelayCount { get; set; }
         public int TransLoanId { get; set; }
 
-        [ForeignKey(nameof(TransLoanId))]
-        public TransLoan TransLoan { get; set; }
 
     }
 }
