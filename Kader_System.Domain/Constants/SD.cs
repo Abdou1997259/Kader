@@ -448,6 +448,7 @@ public static class SD
         public const string IsNotExisted = "IsNotExisted";
         public const string Employee = "Employee";
         public const string Contract = "Contract";
+        public const string ContractNotFound = "ContractNotFound";
         public const string ContractDetail = "ContractDetail";
         public const string EmployeeExist = "EmployeeExist";
         public const string ThereAreNotAttachments = "ThereAreNotAttachments";

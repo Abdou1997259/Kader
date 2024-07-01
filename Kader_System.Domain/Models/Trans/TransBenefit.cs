@@ -6,7 +6,7 @@ public class TransBenefit : BaseEntity
     [Key]
     public int Id { get; set; }
     public DateOnly ActionMonth { get; set; }
-  
+
     public int AmountTypeId { get; set; }
     [ForeignKey(nameof(AmountTypeId))]
     public TransAmountType AmountType { get; set; } = default!;
@@ -25,4 +25,5 @@ public class TransBenefit : BaseEntity
     public string? Notes { get; set; }
     public string? Attachment { get; set; }
     public string? AttachmentExtension { get; set; }
+    public int? CacluateSalaryId { get; set; }
 }

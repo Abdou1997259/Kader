@@ -17,4 +17,5 @@ public class TransCovenant : BaseEntity
 
     public string? Attachment { get; set; }
     public string? AttachmentExtension { get; set; }
+
 }

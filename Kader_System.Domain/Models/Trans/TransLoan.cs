@@ -26,6 +26,7 @@
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public HrEmployee HrEmployee { get; set; } = default!;
+        public int? CacluateSalaryId { get; set; }
         public ICollection<TransLoanDetails> TransLoanDetails { get; set; }
 
 

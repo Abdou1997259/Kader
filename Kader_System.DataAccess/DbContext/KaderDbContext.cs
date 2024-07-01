@@ -7,7 +7,8 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public IHttpContextAccessor Accessor { get; set; } = accessor;
 
     #region Data Sets
-
+    public DbSet<CacluateSalary> CacluateSalaries { get; set; }
+    public DbSet<SpCacluateSalary> SpCacluateSalariesModel { get; set; }
     public DbSet<ApplicationUserDevice> UserDevices { get; set; }
     public DbSet<TransLoan> Loans { get; set; }
     public DbSet<ComLog> Logs { get; set; }
@@ -100,6 +101,15 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .WithMany(p => p.Children)
             .HasForeignKey(p => p.ParentId)
             .IsRequired(false);
+
+        modelBuilder.Entity<TransLoan>()
+            .HasMany(x => x.TransLoanDetails)
+            .WithOne(x => x.TransLoan)
+            .HasForeignKey(x => x.TransLoanId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<SpCacluateSalary>().HasNoKey();
+
         #region Fluent Api
         //modelBuilder.Entity<HrManagement>()
         //    .HasOne(m => m.Manager)
@@ -133,7 +143,14 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasPrecision(18, 2);
         #endregion
     }
+    public virtual async Task<IEnumerable<SpCacluateSalary>> SpCacluateSalaries(DateOnly actionDate, int EmpId)
+    {
 
+        var result = await SpCacluateSalariesModel.FromSql($"exec Sp_Cacluate_Salary {actionDate},{EmpId}").ToListAsync();
+
+        return result;
+
+    }
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
     {
         DateTime dateNow = new DateTime().NowEg();

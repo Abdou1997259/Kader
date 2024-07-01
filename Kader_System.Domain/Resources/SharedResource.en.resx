@@ -135,6 +135,9 @@
   <data name="Company" xml:space="preserve">
     <value>Company</value>
   </data>
+  <data name="ContractNotFound" xml:space="preserve">
+    <value>Doesn't have a contract</value>
+  </data>
   <data name="Deduction" xml:space="preserve">
     <value>Deduction</value>
   </data>

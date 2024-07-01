@@ -16,7 +16,7 @@
         public int InstallmentCount { get; set; }
         public int EmployeeId { get; set; }
 
-        public string LoanType { get; set; }
+        public short LoanType { get; set; }
 
         public string? Notes { get; set; }
         public DateOnly StartCalculationDate { get; set; }

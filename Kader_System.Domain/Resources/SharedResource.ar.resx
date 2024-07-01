@@ -135,6 +135,9 @@
   <data name="Company" xml:space="preserve">
     <value>الشركة</value>
   </data>
+  <data name="ContractNotFound" xml:space="preserve">
+    <value>ليس لديه عقد عمل </value>
+  </data>
   <data name="Deduction" xml:space="preserve">
     <value>اسم الخصم</value>
   </data>

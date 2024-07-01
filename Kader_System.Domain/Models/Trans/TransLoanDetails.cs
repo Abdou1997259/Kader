@@ -11,10 +11,10 @@
 
         public DateOnly? PaymentDate { get; set; }
         public int DelayCount { get; set; }
-        public int TransLoanId { get; set; }
+        public int? TransLoanId { get; set; }
 
         [ForeignKey(nameof(TransLoanId))]
-        public TransLoan TransLoan { get; set; }
+        public TransLoan? TransLoan { get; set; }
 
     }
 }

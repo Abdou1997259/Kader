@@ -10,7 +10,7 @@ namespace Kader_System.Services.IServices.Trans
 
         Task<Response<CreateLoanReponse>> CreateLoanAsync(CreateLoanRequest model, string lang);
         Task<Response<GetLoanByIdReponse>> GetLoanByIdAsync(int id, string lang);
-        Task<Response<TransLoanslookups>> GetDeductionsLookUpsData(string lang);
+        Task<Response<TransLoanslookups>> GetLookUpsData(string lang);
         Task<Response<UpdateLoanReponse>> UpdateLoanAsync(int id, UpdateLoanRequest model, string lang);
         Task<Response<IEnumerable<ReInstallmentResponse>>> ReInstallmentAsync(ReInstallmentRequest request, int id);
         Task<Response<object>> RestoreLoanAsync(int id, string lang);

@@ -39,7 +39,7 @@ namespace Kader_System.Api.Areas.Trans
         [HttpGet(ApiRoutes.Loan.GetLookups)]
         public async Task<IActionResult> GetLookUpsAsync()
         {
-            var response = await service.GetDeductionsLookUpsData(GetCurrentRequestLanguage());
+            var response = await service.GetLookUpsData(GetCurrentRequestLanguage());
             if (response.Check)
                 return Ok(response);
             else

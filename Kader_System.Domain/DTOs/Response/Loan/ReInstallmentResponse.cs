@@ -11,7 +11,7 @@ namespace Kader_System.Domain.DTOs.Response.Loan
 
         public DateOnly? PaymentDate { get; set; }
         public int DelayCount { get; set; }
-        public int TransLoanId { get; set; }
+        public int? TransLoanId { get; set; }
 
 
     }

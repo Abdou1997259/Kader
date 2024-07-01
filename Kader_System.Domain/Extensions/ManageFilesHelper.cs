@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace Kader_System.Domain.Extensions;
+﻿namespace Kader_System.Domain.Extensions;
 
 public static class ManageFilesHelper
 {
@@ -42,21 +40,21 @@ public static class ManageFilesHelper
 
 
 
-    public static GetFileNameAndExtension SaveBase64StringToFile(string base64String, string filePath,string fileName)
+    public static GetFileNameAndExtension SaveBase64StringToFile(string base64String, string filePath, string fileName)
     {
         try
         {
-           
+
             // Convert Base64 string to byte array
             byte[] fileBytes = Convert.FromBase64String(base64String);
-            var extension= GetFileExtension(fileBytes);
+            var extension = GetFileExtension(fileBytes);
             if (fileName.Contains('.'))
             {
                 extension = "";
             }
             string createdFileName = Guid.NewGuid() + "_" + fileName + extension;
-            string finalFilePath = Path.Combine(Directory.GetCurrentDirectory() + filePath, createdFileName);
-            if (Directory.Exists(Directory.GetCurrentDirectory()+filePath))
+            string finalFilePath = Path.Combine(filePath, createdFileName);
+            if (Directory.Exists(Directory.GetCurrentDirectory() + filePath))
             {
                 // Save byte array to a file
                 File.WriteAllBytes(finalFilePath, fileBytes);
@@ -85,9 +83,9 @@ public static class ManageFilesHelper
         {
             return "Unknown";
         }
-
+        var eightBytes = bytes.Take(8).ToArray();
         // Extract the first 8 bytes (file signature) as a hexadecimal string
-        string hexSignature = BitConverter.ToString(bytes.Take(8).ToArray()).Replace("-", "");
+        string hexSignature = BitConverter.ToString(eightBytes).Replace("-", "");
 
         // Map file signatures to file extensions
         switch (hexSignature)
@@ -142,7 +140,7 @@ public static class ManageFilesHelper
     {
         try
         {
-            string fullPath = Directory.GetCurrentDirectory()+ file;
+            string fullPath = Directory.GetCurrentDirectory() + file;
             if (File.Exists(fullPath))
             {
 

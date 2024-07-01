@@ -26,4 +26,5 @@ public class TransDeduction : BaseEntity
     public string? Notes { get; set; }
     public string? Attachment { get; set; }
     public string? AttachmentExtension { get; set; }
+    public int? CacluateSalaryId { get; set; }
 }

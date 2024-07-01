@@ -4,6 +4,7 @@ using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    partial class KaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240701123015_add-CacluateSalary-table")]
+    partial class addCacluateSalarytable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "79c06291-e027-4478-901d-e9ef2599af44",
+                            ConcurrencyStamp = "35516848-a162-4211-834d-c5d5fec6ff39",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPOgr2bA5S4At5XLYqCWlvpvMGXeAYEaFLXsmKmh0nprNfkSPU4nxbbMRzcykoZXLQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP/XzM0O03zl2JOTX/eemrEzLzllNxEDFYpqLNlFIOsazIqpyPG9zQxA54G2Uu8SJQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8045f7a4-eddd-4bb5-80d4-2b779bc6d335",
+                            SecurityStamp = "ec2411aa-3572-4e58-8df1-0c9b1c21e922",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -3110,7 +3113,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int>("EmpolyeeId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -3130,7 +3133,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId")
+                    b.HasIndex("EmpolyeeId")
                         .IsUnique();
 
                     b.ToTable("Cacluate_Salary");
@@ -3158,9 +3161,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
-
-                    b.Property<int?>("CacluateSalaryId")
-                        .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
@@ -3303,9 +3303,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int>("BenefitId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CacluateSalaryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -3440,9 +3437,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("AttachmentExtension")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CacluateSalaryId")
-                        .HasColumnType("int");
-
                     b.Property<int>("DeductionId")
                         .HasColumnType("int");
 
@@ -3502,9 +3496,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<short>("AdvanceType")
                         .HasColumnType("smallint");
-
-                    b.Property<int?>("CacluateSalaryId")
-                        .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
@@ -4273,7 +4264,7 @@ namespace Kader_System.DataAccess.Migrations
                 {
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
                         .WithOne("CacluateSalary")
-                        .HasForeignKey("Kader_System.Domain.Models.Trans.CacluateSalary", "EmployeeId")
+                        .HasForeignKey("Kader_System.Domain.Models.Trans.CacluateSalary", "EmpolyeeId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 

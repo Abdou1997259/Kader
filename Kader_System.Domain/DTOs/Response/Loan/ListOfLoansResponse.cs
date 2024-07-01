@@ -9,7 +9,7 @@
         public DateOnly DocumentDate { get; set; }
         public DateOnly AddedOn { get; set; }
 
-        public short LoanType { get; set; }
+        public string LoanType { get; set; }
         public short AdvanceType { get; set; }
         public decimal MonthlyDeducted { get; set; }
         public decimal LoanAmount { get; set; }

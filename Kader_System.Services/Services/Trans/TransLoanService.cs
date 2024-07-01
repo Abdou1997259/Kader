@@ -17,7 +17,7 @@ namespace Kader_System.Services.Services.Trans
                   select: x => new ListOfLoansResponse
                   {
                       Id = x.Id,
-                      LoanDate = x.LoanDate,
+
                       LoanAmount = x.LoanAmount,
                       StartCalculationDate = x.StartCalculationDate,
                       EndCalculationDate = x.EndCalculationDate,
@@ -28,7 +28,9 @@ namespace Kader_System.Services.Services.Trans
                       MonthlyDeducted = x.MonthlyDeducted,
                       InstallmentCount = x.InstallmentCount,
                       Notes = x.Notes,
-                      LoanType = x.LoanType,
+                      LoanType = x.LoanType == 1 ? (Localization.Arabic == lang ? "أنشاء سند دفع" : "Create Payment Voucher ") :
+                   x.LoanType == 2 ? (Localization.Arabic == lang ? " تخصم من الراتب" : "Deducted From Salary ") :
+                   "",
 
                       EmployeeName = Localization.Arabic == lang ? x.HrEmployee.FirstNameAr : x.HrEmployee.FirstNameEn,
                       PrevDedcutedAmount = x.PrevDedcutedAmount,
@@ -64,10 +66,21 @@ namespace Kader_System.Services.Services.Trans
         {
 
             var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == empolyee.Id, x => x)).FirstOrDefault();
+
 
             if (empolyee is null)
             {
                 string resultMsg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.IsNotExisted]} ";
+                return new()
+                {
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
+            if (contract is null)
+            {
+                string resultMsg = $" {_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.ContractNotFound]}";
                 return new()
                 {
                     Error = resultMsg,
@@ -166,7 +179,9 @@ namespace Kader_System.Services.Services.Trans
                      {
                          Id = x.Id,
                          EmployeeName = Localization.Arabic == lang ? x.HrEmployee.FirstNameAr : x.HrEmployee.FirstNameEn,
-
+                         LoanType = x.LoanType == 1 ? (Localization.Arabic == lang ? "أنشاء سند دفع" : "Create Payment Voucher ") :
+                    x.LoanType == 2 ? (Localization.Arabic == lang ? " تخصم من الراتب" : "Deducted From Salary ") :
+                   "",
                          LoanDate = x.LoanDate,
                          LoanAmount = x.LoanAmount,
                          StartCalculationDate = x.StartCalculationDate,
@@ -178,7 +193,7 @@ namespace Kader_System.Services.Services.Trans
                          MonthlyDeducted = x.MonthlyDeducted,
                          InstallmentCount = x.InstallmentCount,
                          Notes = x.Notes,
-                         LoanType = x.LoanType,
+
 
                          PrevDedcutedAmount = x.PrevDedcutedAmount,
 
@@ -225,6 +240,7 @@ namespace Kader_System.Services.Services.Trans
         {
             var obj = (await _unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.Id == id, x => x, includeProperties: "TransLoanDetails")).FirstOrDefault();
             var empolyee = await _unitOfWork.Employees.GetByIdAsync(obj.EmployeeId);
+            var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == empolyee.Id, x => x)).FirstOrDefault();
             var empolyees = await _unitOfWork.Employees.GetAllAsync();
             var advancedTypes = await _unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes();
 
@@ -250,12 +266,7 @@ namespace Kader_System.Services.Services.Trans
                     StartLoanDate = obj.StartLoanDate,
                     EndDoDate = obj.EndDoDate,
                     DocumentDate = obj.DocumentDate,
-                    LoanType = obj.LoanType switch
-                    {
-                        1 => Localization.Arabic == lang ? "أنشاء سند دفع" : "Create Payment Voucher ",
-                        2 => Localization.Arabic == lang ? " تخصم من الراتب" : "Deducted From Salary "
-
-                    },
+                    LoanType = obj.LoanType,
                     MonthlyDeducted = obj.MonthlyDeducted,
                     LoanAmount = obj.LoanAmount,
                     PrevDedcutedAmount = obj.PrevDedcutedAmount,
@@ -276,26 +287,27 @@ namespace Kader_System.Services.Services.Trans
                     TransLoanslookups = new TransLoanslookups
                     {
                         AdvancedTypes = advancedTypes,
-                        HrEmployees = empolyees.Select(x => new EmployeeLookup
+                        HrEmployees = contract != null ? empolyees.Select(x => new EmployeeLookup
                         {
                             EmployeeName = Localization.Arabic == lang ? x.FirstNameAr : x.FirstNameEn,
                             Id = x.Id,
-                        })
+                        }) : null
                     }
                 },
                 Check = true
             };
         }
-        public async Task<Response<TransLoanslookups>> GetDeductionsLookUpsData(string lang)
+        public async Task<Response<TransLoanslookups>> GetLookUpsData(string lang)
         {
             try
             {
-                var employees = await unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
+                var employees = await _unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
                     select: x => new EmployeeLookup
                     {
                         Id = x.Id,
                         EmployeeName = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn
                     });
+
 
                 var advancesTypes = await unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes();
 
