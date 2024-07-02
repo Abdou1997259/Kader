@@ -4,6 +4,7 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly KaderDbContext _context;
     protected readonly IConfiguration _config;
+
     public IAdvancedTypesRepository AdvancedTypesRepository { get; private set; }
     public ITransLoanRepository LoanRepository { get; private set; }
     public IUserRepository Users { get; private set; }
@@ -59,11 +60,19 @@ public class UnitOfWork : IUnitOfWork
 
     public ITransLoanDetailsRepository TransLoanDetails { get; private set; }
 
+    public IStoredProcuduresRepo StoredProcuduresRepo { get; private set; }
+
+    public ITransSalaryCalculatorRepo TransSalaryCalculator { get; private set; }
+
+    public ITransSalaryCalculatorDetailsRepo TransSalaryCalculatorDetailsRepo { get; private set; }
     public UnitOfWork(KaderDbContext context, IConfiguration config)
     {
         _context = context;
         _config = config;
+        TransSalaryCalculator = new TransSalaryCalculatorRepo(_context);
+        TransSalaryCalculatorDetailsRepo = new TransSalaryCalculatorDetailsRepo(_context);
         TransLoanDetails = new TransLoanDetailsRepository(_context);
+        StoredProcuduresRepo = new StoredProcuduresRepo(_context);
         Nationalities = new NationalityRepository(_context);
         MaritalStatus = new MaritalStatusRepository(_context);
         AdvancedTypesRepository = new AdavnacedTypeRepository(_context);

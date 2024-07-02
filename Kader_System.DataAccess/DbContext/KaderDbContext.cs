@@ -1,4 +1,6 @@
-﻿namespace Kader_System.DataAccesss.DbContext;
+﻿using Kader_System.Domain.Constants.Enums;
+
+namespace Kader_System.DataAccesss.DbContext;
 
 public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpContextAccessor accessor) : IdentityDbContext<ApplicationUser, ApplicationRole, string,
              ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin,
@@ -7,7 +9,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public IHttpContextAccessor Accessor { get; set; } = accessor;
 
     #region Data Sets
-    public DbSet<CacluateSalary> CacluateSalaries { get; set; }
+
     public DbSet<SpCacluateSalary> SpCacluateSalariesModel { get; set; }
     public DbSet<ApplicationUserDevice> UserDevices { get; set; }
     public DbSet<TransLoan> Loans { get; set; }
@@ -20,6 +22,8 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<StSubMainScreenAction> SubMainScreenActions { get; set; }
 
     public DbSet<HrSalaryCalculator> AccountingWays { get; set; }
+    public DbSet<TransSalaryCalculator> SalaryCalculator { get; set; }
+    public DbSet<TransSalaryCalculatorDetail> TransSalaryCalculatorsDetails { get; set; }
     public DbSet<HrAllowance> Allowances { get; set; }
     public DbSet<HrBenefit> Benefits { get; set; }
     public DbSet<HrCompany> Companys { get; set; }
@@ -109,6 +113,11 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SpCacluateSalary>().HasNoKey();
+        modelBuilder.Entity<SpCacluateSalary>().Property(x => x.JournalType).HasConversion(
+
+            v => v.ToString(),
+            v => (JournalType)Enum.Parse(typeof(JournalType), v)
+            );
 
         #region Fluent Api
         //modelBuilder.Entity<HrManagement>()
@@ -143,14 +152,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasPrecision(18, 2);
         #endregion
     }
-    public virtual async Task<IEnumerable<SpCacluateSalary>> SpCacluateSalaries(DateOnly actionDate, int EmpId)
-    {
 
-        var result = await SpCacluateSalariesModel.FromSql($"exec Sp_Cacluate_Salary {actionDate},{EmpId}").ToListAsync();
-
-        return result;
-
-    }
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
     {
         DateTime dateNow = new DateTime().NowEg();

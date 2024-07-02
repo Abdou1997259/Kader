@@ -394,8 +394,9 @@ public static class SD
         public const string Project = "Project";
         public const string Task = "Task";
         public const string Notification = "Notification";
+        public const string IsNotExistedIn = "IsNotExistedIn";
         public const string CanNotAddingToNotThereIsProjectAndDepartment = "CanNotAddingToNotThereIsProjectAndDepartment";
-
+        public const string CalculatedAready = "CalculatedAready";
         public const string CannotUpdateTaskStatus = "CannotUpdateTaskStatus";
         public const string TaskExist = "TaskExist";
         public const string Department = "Department";

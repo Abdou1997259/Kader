@@ -126,6 +126,9 @@
   <data name="Benefit" xml:space="preserve">
     <value>Benefit</value>
   </data>
+  <data name="CalculatedAready" xml:space="preserve">
+    <value>This Employee's Salary has been calculated this month.</value>
+  </data>
   <data name="CannotBeFound" xml:space="preserve">
     <value>{0} cannot be found</value>
   </data>
@@ -158,6 +161,9 @@
   </data>
   <data name="IsNotExisted" xml:space="preserve">
     <value>Is Not Exited</value>
+  </data>
+  <data name="IsNotExistedIn" xml:space="preserve">
+    <value>Not Exited in </value>
   </data>
   <data name="Loan" xml:space="preserve">
     <value>Loan</value>

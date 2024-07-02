@@ -1,4 +1,4 @@
-﻿using Kader_System.DataAccesss.DbContext;
+﻿using Kader_System.Services.IServices.Trans;
 
 namespace Kader_System.Api.Areas.Trans
 {
@@ -7,13 +7,13 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransCacluateSalaryController(KaderDbContext context) : ControllerBase
+    public class TransCacluateSalaryController(ITransCalcluateSalaryService service) : ControllerBase
     {
 
-        [HttpGet]
-        public async Task<IActionResult> getDetailsSalary(int empId, DateOnly date)
+        [HttpPost]
+        public async Task<IActionResult> getDetailsSalary([FromBody] CalcluateSalaryModelRequest model)
         {
-            return Ok(await context.SpCacluateSalaries(date, empId));
+            return Ok(await service.CalculateSalary(model));
         }
     }
 }

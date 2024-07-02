@@ -10,6 +10,8 @@ public class TransBenefit : BaseEntity
     public int AmountTypeId { get; set; }
     [ForeignKey(nameof(AmountTypeId))]
     public TransAmountType AmountType { get; set; } = default!;
+
+
     public double Amount { get; set; }
     public int SalaryEffectId { get; set; }
     [ForeignKey(nameof(SalaryEffectId))]

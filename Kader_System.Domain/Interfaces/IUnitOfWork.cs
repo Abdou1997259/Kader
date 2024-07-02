@@ -6,6 +6,7 @@ public interface IUnitOfWork : IDisposable
     IDatabaseTransaction BeginTransaction();
     ITransLoanDetailsRepository TransLoanDetails { get; }
     IAdvancedTypesRepository AdvancedTypesRepository { get; }
+    IStoredProcuduresRepo StoredProcuduresRepo { get; }
     ITransLoanRepository LoanRepository { get; }
     IUserRepository Users { get; }
     IRoleClaimRepository RoleClaims { get; }
@@ -38,6 +39,8 @@ public interface IUnitOfWork : IDisposable
     IJobRepository Jobs { get; }
     IQualificationRepository Qualifications { get; }
     ISalaryPaymentWayRepository SalaryPaymentWays { get; }
+    ITransSalaryCalculatorRepo TransSalaryCalculator { get; }
+    ITransSalaryCalculatorDetailsRepo TransSalaryCalculatorDetailsRepo { get; }
     ISectionDepartmentRepository SectionDepartments { get; }
     IManagementRepository Managements { get; }
     ISectionRepository Sections { get; }

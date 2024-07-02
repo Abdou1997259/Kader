@@ -131,6 +131,6 @@ public class HrEmployee : BaseEntity
     public ICollection<HrEmployeeAttachment> ListOfAttachments { get; set; } = [];
 
 
-    public CacluateSalary CacluateSalary { get; set; } = default!;
+
     public ICollection<TransLoan> TransLoans { get; set; } = [];
 }
