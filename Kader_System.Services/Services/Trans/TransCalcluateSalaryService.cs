@@ -4,195 +4,95 @@
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _localizer = localizer;
+
         public async Task<Response<object>> CalculateSalary(CalcluateSalaryModelRequest model)
         {
-            var dateOfCalculation = DateTime.Now.ToGetOnlyDate();
-            var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
 
-            var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
-            var company = await _unitOfWork.Companies.GetByIdAsync(model.CompanyId);
-            var isInCompany = empolyee?.CompanyId == company?.Id;
+            var empolyees = await _unitOfWork.Employees.GetSpecificSelectAsync(x =>
+            (!model.EmployeeId.HasValue || x.Id == model.EmployeeId) &&
+            (!model.CompanyId.HasValue || x.CompanyId == model.CompanyId) &&
+            (!model.ManagerId.HasValue || x.ManagementId == model.ManagerId)
+            , x => x);
 
-            if (company is null)
+
+
+
+
+
+            if (empolyees is null)
             {
-                string resultMsg = $"{_localizer[Localization.Company]} {_localizer[Localization.IsNotExisted]} ";
+                var msg = _localizer[Localization.NotFoundData];
                 return new()
                 {
-                    Msg = resultMsg,
-                    Error = resultMsg,
-                    Data = null
+                    Data = null,
+                    Msg = msg,
+                    Check = false
                 };
             }
-            if (empolyee == null)
-            {
-
-                string resultMsg = $"{_localizer[Localization.Employee]} {_localizer[Localization.IsNotExisted]} ";
-                return new()
-                {
-                    Msg = resultMsg,
-                    Error = resultMsg,
-                    Data = null
-                };
-            }
-            if (!isInCompany)
-            {
-                string resultMsg = $"{_localizer[Localization.Employee]} {_localizer[Localization.IsNotExistedIn]} {_localizer[Localization.Company]} ";
-                return new()
-                {
-                    Msg = resultMsg,
-                    Error = resultMsg,
-                    Data = null
-                };
-
-            }
-            if (contract == null)
-            {
-
-                string resultMsg = $" {_localizer[Localization.Employee]} {_localizer[Localization.ContractNotFound]}";
-                return new()
-                {
-                    Error = resultMsg,
-                    Msg = resultMsg
-                };
-
-            }
 
 
-            var spCacluateSalaries = await _unitOfWork.StoredProcuduresRepo.SpCacluateSalaries(model.StartActionDate, model.EmployeeId);
-            var caculatedBasedOnJournalType = spCacluateSalaries
-                                           .GroupBy(x => x.JournalType)
-                                           .Select(x => new
-                                           {
-                                               JournalType = x.Key,
-                                               TotalCalc = x.Sum(x => x.CalculatedSalary),
-                                               ActionDate = x.Select(x => x.JournalDate).FirstOrDefault(),
-                                               Id = x.Select(x => x.Id).FirstOrDefault(),
-                                               CacluateSalaryId = x.Select(x => x.CacluateSalaryId).FirstOrDefault()
-                                           }).ToList();
 
-            var allValueCalculated = spCacluateSalaries.Sum(x => x.CalculatedSalary);
 
+            var empolyeeWithCaculatedSalary = await _unitOfWork.StoredProcuduresRepo.SpCalculateSalary(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()));
+
+            var spcaculatedSalarydetils = await _unitOfWork.StoredProcuduresRepo.SpCalculateSalaryDetails(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()));
+            var spcaculatedSalarytransDetils = await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()));
             var transcation = _unitOfWork.BeginTransaction();
             try
             {
 
+                var TransCalculatorMaster = (await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.DocumentDate.Month == 11, x => x)).FirstOrDefault();
 
-
-                var transSalaryCalculators = (await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.DocumentDate.Month == DateTime.Today.Month, x => x)).FirstOrDefault();
-
-                if (transSalaryCalculators is null)
+                if (TransCalculatorMaster == null)
                 {
-
-
-                    var salaryCalculator = new TransSalaryCalculator
+                    TransCalculatorMaster = new TransSalaryCalculator
                     {
                         DocumentDate = model.DocumentDate,
                         CompanyId = model.CompanyId,
-                        IsMigrated = model.IsMigrated,
-
-
+                        ManagementId = model.ManagerId,
+                        IsMigrated = true
                     };
 
 
-                    transSalaryCalculators = await _unitOfWork.TransSalaryCalculator.AddAsync(salaryCalculator);
+                    TransCalculatorMaster = await _unitOfWork.TransSalaryCalculator.AddAsync(TransCalculatorMaster);
                     await _unitOfWork.CompleteAsync();
 
-
-
-
-
-
                 }
-                var transSalaryCalculatorDetails = (await _unitOfWork.TransSalaryCalculatorDetailsRepo.
-                    GetSpecificSelectAsync(x => x.TransSalaryCalculatorsId == transSalaryCalculators.Id && x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
-                if (transSalaryCalculatorDetails is not null)
+
+
+                var listoftransDetails = new List<TransSalaryCalculatorDetail>();
+                foreach (var empolyee in empolyeeWithCaculatedSalary)
                 {
-                    string resultMsg = $" {_localizer[Localization.CalculatedAready]}";
-                    return new()
+                    var calculatedBefore = await _unitOfWork.TransSalaryCalculatorDetailsRepo.ExistAsync(
+                        x => x.EmployeeId == empolyee.EmployeeId
+                        && x.TransSalaryCalculatorsId == TransCalculatorMaster.Id);
+
+                    if (!calculatedBefore)
                     {
-                        Error = resultMsg,
-                        Msg = resultMsg
-                    };
+                        var transDetails = new TransSalaryCalculatorDetail
+                        {
+                            EmployeeId = empolyee.EmployeeId,
+                            Salary = empolyee.CalculatedSalary + empolyee.TotalSalary,
+                            TransSalaryCalculatorsId = TransCalculatorMaster.Id,
 
-                }
-                double totalSalary = 0;
-                if (spCacluateSalaries is null)
-                {
-                    totalSalary = contract.TotalSalary;
-                    goto DontUpdate;
-                }
-                else
-                    totalSalary = contract.TotalSalary + allValueCalculated;
-
-                var transSalaryCalculatorDetailsModel = new TransSalaryCalculatorDetail
-                {
-                    EmployeeId = model.EmployeeId,
-                    Salary = totalSalary,
-                    TransSalaryCalculatorsId = transSalaryCalculators.Id
-                };
-                await _unitOfWork.TransSalaryCalculatorDetailsRepo.AddAsync(transSalaryCalculatorDetailsModel);
-                await _unitOfWork.CompleteAsync();
-
-
-                foreach (var transcationOnSalary in spCacluateSalaries)
-                {
-
-
-                    switch (transcationOnSalary.JournalType)
-                    {
-                        case JournalType.Deduction:
-                            if (transcationOnSalary.CacluateSalaryId is null)
-                            {
-                                var deductions = await _unitOfWork.TransDeductions.GetByIdAsync(transcationOnSalary.Id);
-
-                                deductions.CacluateSalaryId = transSalaryCalculatorDetailsModel.Id;
-                                _unitOfWork.TransDeductions.Update(deductions);
-
-                            }
-
-                            break;
-                        case JournalType.Allowance:
-                            if (transcationOnSalary.CacluateSalaryId is null)
-                            {
-                                var allowances = await _unitOfWork.TransAllowances.GetByIdAsync(transcationOnSalary.Id);
-
-                                allowances.CacluateSalaryId = transSalaryCalculatorDetailsModel.Id;
-                                _unitOfWork.TransAllowances.Update(allowances);
-                            }
-                            break;
-                        case JournalType.Benefit:
-                            if (transcationOnSalary.CacluateSalaryId is null)
-                            {
-                                var benefits = await _unitOfWork.TransBenefits.GetByIdAsync(transcationOnSalary.Id);
-
-                                benefits.CacluateSalaryId = transSalaryCalculatorDetailsModel.Id;
-                                _unitOfWork.TransBenefits.Update(benefits);
-
-
-                            }
-
-                            break;
-                        case JournalType.Loan:
-                            if (transcationOnSalary.CacluateSalaryId is null)
-                            {
-                                var loans = await _unitOfWork.LoanRepository.GetByIdAsync(transcationOnSalary.Id);
-
-                                loans.CacluateSalaryId = transSalaryCalculatorDetailsModel.Id;
-                                _unitOfWork.LoanRepository.Update(loans);
-
-                            }
-
-                            break;
-
+                        };
+                        listoftransDetails.Add(transDetails);
 
 
                     }
 
-
-
                 }
+                await _unitOfWork.TransSalaryCalculatorDetailsRepo.AddRangeAsync(listoftransDetails);
                 await _unitOfWork.CompleteAsync();
-            DontUpdate:
+
+
+
+
+
+
+
+
+
 
                 transcation.Commit();
 
@@ -208,9 +108,9 @@
             {
                 Data = new
                 {
-                    ListOfsp = spCacluateSalaries,
-                    caluculatedEvery = caculatedBasedOnJournalType,
-                    sumvalue = allValueCalculated
+                    ListOfsp = spcaculatedSalarytransDetils,
+                    caluculatedEvery = empolyeeWithCaculatedSalary,
+                    sumvalue = spcaculatedSalarytransDetils
 
                 },
                 Msg = null,

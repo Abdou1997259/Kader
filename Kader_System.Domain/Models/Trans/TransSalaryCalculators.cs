@@ -9,9 +9,9 @@
         public DateOnly DocumentDate { get; set; }
 
 
-        public int CompanyId { get; set; }
-        public int BranchId { get; set; }
-        public int ManagementId { get; set; }
+        public int? CompanyId { get; set; }
+        public int? BranchId { get; set; }
+        public int? ManagementId { get; set; }
         public bool IsMigrated { get; set; }
         public ICollection<TransSalaryCalculatorDetail>? TransSalaryCalculatorsDetails { get; set; } = [];
 

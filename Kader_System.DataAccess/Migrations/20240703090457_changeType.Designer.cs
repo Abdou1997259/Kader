@@ -4,6 +4,7 @@ using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    partial class KaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240703090457_changeType")]
+    partial class changeType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "6c448634-93b5-43b4-b08d-dd0d9ddc7193",
+                            ConcurrencyStamp = "cd7a49c0-e114-418f-a054-003984a90797",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEM/zLectsqF8NaNibyH2SKIy++2u6MzW4aQHABHkpAKMA91AZUzTUZfAuyUB7qpwlA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEas8rD7V8ruo7W6E9ZVvbebS7K4aHVVCzL6dcpnkdShKdcKMc0vuiRzOLY7NpEjjw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f5061761-85d4-47ba-885d-3c6ebec6b496",
+                            SecurityStamp = "66c02608-3d43-47a7-8be4-726419ffa670",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -3087,7 +3090,7 @@ namespace Kader_System.DataAccess.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCaclauateSalaryDetailedTrans", b =>
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCacluateSalary", b =>
                 {
                     b.Property<int?>("CacluateSalaryId")
                         .HasColumnType("int");
@@ -3098,44 +3101,15 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.Property<DateOnly>("JournalDate")
                         .HasColumnType("date");
 
                     b.Property<string>("JournalType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("TransId")
-                        .HasColumnType("int");
-
-                    b.ToTable("SpCaclauateSalaryDetailedTransModel");
-                });
-
-            modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCaclauateSalaryDetails", b =>
-                {
-                    b.Property<double>("CalculatedSalary")
-                        .HasColumnType("float");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("JournalType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToTable("SpCaclauateSalaryDetailsModel");
-                });
-
-            modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCacluateSalary", b =>
-                {
-                    b.Property<double>("CalculatedSalary")
-                        .HasColumnType("float");
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<double>("TotalSalary")
-                        .HasColumnType("float");
 
                     b.ToTable("SpCacluateSalariesModel");
                 });
@@ -3646,10 +3620,10 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("BranchId")
+                    b.Property<int>("BranchId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CompanyId")
+                    b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
@@ -3670,7 +3644,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsMigrated")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ManagementId")
+                    b.Property<int>("ManagementId")
                         .HasColumnType("int");
 
                     b.Property<string>("UpdateBy")

@@ -11,6 +11,9 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     #region Data Sets
 
     public DbSet<SpCacluateSalary> SpCacluateSalariesModel { get; set; }
+    public DbSet<SpCaclauateSalaryDetails> SpCaclauateSalaryDetailsModel { get; set; }
+    public DbSet<SpCaclauateSalaryDetailedTrans> SpCaclauateSalaryDetailedTransModel { get; set; }
+
     public DbSet<ApplicationUserDevice> UserDevices { get; set; }
     public DbSet<TransLoan> Loans { get; set; }
     public DbSet<ComLog> Logs { get; set; }
@@ -113,11 +116,23 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<SpCacluateSalary>().HasNoKey();
-        modelBuilder.Entity<SpCacluateSalary>().Property(x => x.JournalType).HasConversion(
+        //modelBuilder.Entity<SpCacluateSalary>().Property(x => ).HasConversion(
 
-            v => v.ToString(),
-            v => (JournalType)Enum.Parse(typeof(JournalType), v)
-            );
+        //    v => v.ToString(),
+        //    v => (JournalType)Enum.Parse(typeof(JournalType), v)
+        //    );
+
+
+        modelBuilder.Entity<SpCaclauateSalaryDetails>().HasNoKey();
+
+        modelBuilder.Entity<SpCaclauateSalaryDetails>().Property(x => x.JournalType)
+            .HasConversion(x => x.ToString(), x => (JournalType)Enum.Parse(typeof(JournalType), x));
+
+        modelBuilder.Entity<SpCaclauateSalaryDetailedTrans>().HasNoKey();
+        modelBuilder.Entity<SpCaclauateSalaryDetailedTrans>()
+            .Property(x => x.JournalType)
+            .HasConversion(x => x.ToString(), x => (JournalType)Enum.Parse(typeof(JournalType), x));
+
 
         #region Fluent Api
         //modelBuilder.Entity<HrManagement>()

@@ -393,6 +393,7 @@ public static class SD
         public const string IsExist = "IsExist";
         public const string Project = "Project";
         public const string Task = "Task";
+        public const string SalaryMoreThanInstallment = "SalaryMoreThanInstallment";
         public const string Notification = "Notification";
         public const string IsNotExistedIn = "IsNotExistedIn";
         public const string CanNotAddingToNotThereIsProjectAndDepartment = "CanNotAddingToNotThereIsProjectAndDepartment";

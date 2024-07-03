@@ -192,6 +192,9 @@
   <data name="Role" xml:space="preserve">
     <value>Role</value>
   </data>
+  <data name="SalaryMoreThanInstallment" xml:space="preserve">
+    <value>Salary More Than Installment</value>
+  </data>
   <data name="SubMainScreen" xml:space="preserve">
     <value>Sub main screen</value>
   </data>
