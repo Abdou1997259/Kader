@@ -2,6 +2,10 @@
 {
     public interface ITransCalcluateSalaryService
     {
-        Task<Response<object>> CalculateSalary(CalcluateSalaryModelRequest model);
+        Task<Response<IEnumerable<GetSalariesEmployeeResponse>>> GetDetailsOfCalculation(CalcluateEmpolyeeFilters model, string lang);
+
+        public Task<Response<string>> CalculateSalaryDetailedTrans(CalcluateSalaryModelRequest model);
+
+
     }
 }

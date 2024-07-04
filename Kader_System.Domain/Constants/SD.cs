@@ -244,6 +244,7 @@ public static class SD
             public const string DeleteTransDeduction = "transDeduction/delete/{id}";
             public const string GetLookUps = "transDeduction/getLookUps";
         }
+
         public class TransVacation
         {
             public const string ListOfTransVacations = "transVacation/getListOftransVacations";
@@ -255,6 +256,7 @@ public static class SD
             public const string GetTransVacationById = "transVacation/getById/{id}";
             public const string DeleteTransVacation = "transVacation/delete/{id}";
         }
+
         public class TransCovenant
         {
             public const string ListOfTransCovenants = "transCovenant/getListOftransCovenants";
@@ -265,6 +267,14 @@ public static class SD
             public const string RestoreTransCovenant = "transCovenant/restore/{id}";
             public const string GetTransCovenantById = "transCovenant/getById/{id}";
             public const string DeleteTransCovenant = "transCovenant/delete/{id}";
+        }
+        public class TransSalaryCalculatorEndpoint
+        {
+            public const string DetailedCalculations = "transSalary/getdetailedcalculation";
+            public const string Calculate = "transSalary/calculate";
+
+
+
         }
         public class Management
         {

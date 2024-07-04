@@ -7,42 +7,47 @@ namespace Kader_System.DataAccess.Repositories
         private readonly KaderDbContext _db = db;
         public async Task<IEnumerable<SpCacluateSalary>> SpCalculateSalary(DateOnly startCalculationDate, int days, string listEmployeesString)
         {
-            // Assuming model.StartCalculationDate is already DateOnly
+            // Calculate the end of the month based on startCalculationDate
             int year = startCalculationDate.Year;
             int month = startCalculationDate.Month;
-            startCalculationDate = new DateOnly(year, month, days);
-            var endCalculationDate = startCalculationDate.AddMonths(1).AddDays(-1);
+            var startOfMonth = new DateOnly(year, month, 1);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
-            var empsParamter = new SqlParameter
+            // Adjust endCalculationDate to the last day of the month with the specified day
+            var endCalculationDate = new DateOnly(year, month, days).AddMonths(1).AddDays(-1);
+
+            // Create SqlParameter for listEmployeesString
+            var empsParameter = new SqlParameter
             {
                 ParameterName = "@listEmployeesString",
                 SqlDbType = SqlDbType.VarChar,
-                Value = listEmployeesString,
-
-
+                Value = listEmployeesString
             };
-            var result = await _db.SpCacluateSalariesModel.FromSql($"exec Sp_Cacluate_Salary {startCalculationDate},{endCalculationDate},{empsParamter}").ToListAsync();
 
-
+            // Execute stored procedure and return result
+            var result = await _db.SpCacluateSalariesModel
+                .FromSqlInterpolated($"exec Sp_Cacluate_Salary {startOfMonth}, {endCalculationDate}, {empsParameter}")
+                .ToListAsync();
 
             return result;
-
         }
+
         public async Task<IEnumerable<SpCaclauateSalaryDetails>> SpCalculateSalaryDetails(DateOnly startCalculationDate, int days, string listEmployeesString)
         {
             int year = startCalculationDate.Year;
             int month = startCalculationDate.Month;
-            startCalculationDate = new DateOnly(year, month, days);
-            var endCalculationDate = startCalculationDate.AddMonths(1).AddDays(-1);
-            var empsParamter = new SqlParameter
+            var startOfMonth = new DateOnly(year, month, 1);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+            // Adjust endCalculationDate to the last day of the month with the specified day
+            var endCalculationDate = new DateOnly(year, month, days).AddMonths(1).AddDays(-1);
+            var empsParameter = new SqlParameter
             {
                 ParameterName = "@listEmployeesString",
                 SqlDbType = SqlDbType.VarChar,
-                Value = listEmployeesString,
-
-
+                Value = listEmployeesString
             };
-            var result = await _db.SpCaclauateSalaryDetailsModel.FromSql($"exec Sp_Cacluate_Salary_Details {startCalculationDate},{endCalculationDate},{empsParamter}").ToListAsync();
+            var result = await _db.SpCaclauateSalaryDetailsModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_Details {startOfMonth}, {endCalculationDate}, {empsParameter}").ToListAsync();
 
 
 
@@ -55,18 +60,21 @@ namespace Kader_System.DataAccess.Repositories
         {
             int year = startCalculationDate.Year;
             int month = startCalculationDate.Month;
-            startCalculationDate = new DateOnly(year, month, days);
-            var endCalculationDate = startCalculationDate.AddMonths(1).AddDays(-1);
-            var empsParamter = new SqlParameter
+            var startOfMonth = new DateOnly(year, month, 1);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+            // Adjust endCalculationDate to the last day of the month with the specified day
+            var endCalculationDate = new DateOnly(year, month, days).AddMonths(1).AddDays(-1);
+            var empsParameter = new SqlParameter
             {
                 ParameterName = "@listEmployeesString",
                 SqlDbType = SqlDbType.VarChar,
-                Value = listEmployeesString,
-
-
+                Value = listEmployeesString
             };
+            IEnumerable<SpCaclauateSalaryDetailedTrans> result = null;
 
-            var result = await _db.SpCaclauateSalaryDetailedTransModel.FromSql($"exec Sp_Cacluate_Salary_DetailedTrans {startCalculationDate},{endCalculationDate},{empsParamter}").ToListAsync();
+
+            result = await _db.SpCaclauateSalaryDetailedTransModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_DetailedTrans {startOfMonth}, {endCalculationDate}, {empsParameter}").ToListAsync();
 
 
 

@@ -12,6 +12,7 @@ public class HrEmployee : BaseEntity
     public required string GrandFatherNameEn { get; set; }
     public required string FamilyNameAr { get; set; }
     public required string FamilyNameEn { get; set; }
+    public required double AccommodationAllowance { get; set; }
 
     [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public string FullNameAr

@@ -10,10 +10,20 @@ namespace Kader_System.Api.Areas.Trans
     public class TransCacluateSalaryController(ITransCalcluateSalaryService service) : ControllerBase
     {
 
-        [HttpPost]
-        public async Task<IActionResult> getDetailsSalary([FromBody] CalcluateSalaryModelRequest model)
+        [HttpPost(ApiRoutes.TransSalaryCalculatorEndpoint.Calculate)]
+        public async Task<IActionResult> Calculate([FromBody] CalcluateSalaryModelRequest model)
         {
-            return Ok(await service.CalculateSalary(model));
+            return Ok(await service.CalculateSalaryDetailedTrans(model));
         }
+        [HttpPost(ApiRoutes.TransSalaryCalculatorEndpoint.DetailedCalculations)]
+        public async Task<IActionResult> DetailedCalculation([FromBody] CalcluateEmpolyeeFilters model)
+        {
+            return Ok(await service.GetDetailsOfCalculation(model, GetCurrentRequestLanguage()));
+        }
+        private string GetCurrentRequestLanguage() =>
+         Request.Headers.AcceptLanguage.ToString().Split(',').First();
+        private string GetCurrentHost() =>
+            HttpContext.Request.Host.Value +
+            HttpContext.Request.Path.Value;
     }
 }
