@@ -221,6 +221,7 @@ public static class SD
             public const string GetTransAllowanceById = "transAllowance/getById/{id}";
             public const string DeleteTransAllowance = "transAllowance/delete/{id}";
         }
+
         public class TransBenefit
         {
             public const string ListOfTransBenefits = "transBenefit/getListOftransBenefits";

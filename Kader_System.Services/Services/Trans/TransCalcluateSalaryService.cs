@@ -1,4 +1,6 @@
-﻿namespace Kader_System.Services.Services.Trans
+﻿
+
+namespace Kader_System.Services.Services.Trans
 {
     public class TransCalcluateSalaryService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> localizer) : ITransCalcluateSalaryService
     {
@@ -102,7 +104,9 @@
                         {
                             var allownce = await _unitOfWork.TransAllowances.GetByIdAsync(trans.TransId);
 
-                            allownce.CacluateSalaryId = cacluateSalaryId?.Id;
+                            allownce.CalculateSalaryDetailsId = cacluateSalaryId?.Id;
+                            allownce.CalculateSalaryId = TransCalculatorMaster.Id;
+
                             allownces.Add(allownce);
 
                         }
@@ -112,7 +116,8 @@
 
 
 
-                            deduction.CacluateSalaryId = cacluateSalaryId?.Id;
+                            deduction.CalculateSalaryDetailsId = cacluateSalaryId?.Id;
+                            deduction.CalculateSalaryId = TransCalculatorMaster.Id;
                             deductions.Add(deduction);
 
                         }
@@ -122,7 +127,8 @@
 
 
 
-                            benefit.CacluateSalaryId = cacluateSalaryId?.Id;
+                            benefit.CalculateSalaryDetailsId = cacluateSalaryId?.Id;
+                            benefit.CalculateSalaryId = TransCalculatorMaster.Id;
                             benefits.Add(benefit);
 
                         }
@@ -132,7 +138,8 @@
 
 
 
-                            loan.CacluateSalaryId = cacluateSalaryId?.Id;
+                            loan.CalculateSalaryDetailsId = cacluateSalaryId?.Id;
+                            loan.CalculateSalaryId = TransCalculatorMaster.Id;
                             loans.Add(loan);
 
 
@@ -186,10 +193,8 @@
         public async Task<Response<IEnumerable<GetSalariesEmployeeResponse>>> GetDetailsOfCalculation(CalcluateEmpolyeeFilters model, string lang)
         {
             var empolyees = await _unitOfWork.Employees.GetSpecificSelectAsync(x =>
-          (!model.EmployeeId.HasValue || x.Id == model.EmployeeId) &&
-          (!model.CompanyId.HasValue || x.CompanyId == model.CompanyId) &&
-          (!model.ManagerId.HasValue || x.ManagementId == model.ManagerId) &&
-          (!model.ManagerId.HasValue || x.DepartmentId == model.DepartmentId)
+          (!model.EmployeeId.HasValue || x.Id == model.EmployeeId)
+
           , x => x);
             var empolyeeWithCaculatedSalary = await _unitOfWork.StoredProcuduresRepo.SpCalculateSalary(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()));
             var spcaculatedSalarytransDetils = await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()));

@@ -12,6 +12,7 @@ public class AuthController(IAuthService service) : ControllerBase
 
     [AllowAnonymous]
     [HttpPost(ApiRoutes.User.LoginUser)]
+
     public async Task<IActionResult> LoginUserAsync(AuthLoginUserRequest model)
     {
         var response = await _service.LoginUserAsync(model);
@@ -64,9 +65,9 @@ public class AuthController(IAuthService service) : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("upload")]
-    public IActionResult UploadFile([FromBody]string image)
+    public IActionResult UploadFile([FromBody] string image)
     {
-       var ii= ManageFilesHelper.SaveBase64StringToFile(image, Directory.GetCurrentDirectory(), "test");
+        var ii = ManageFilesHelper.SaveBase64StringToFile(image, Directory.GetCurrentDirectory(), "test");
 
         return Ok(ii.FileExtension);
     }

@@ -1,6 +1,4 @@
 ﻿using Kader_System.Services.IServices.Trans;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Kader_System.Api.Areas.Trans
 {
@@ -23,7 +21,7 @@ namespace Kader_System.Api.Areas.Trans
         [HttpGet(ApiRoutes.TransBenefit.GetTransBenefitById)]
         public async Task<IActionResult> GetTransDeductionById(int id)
         {
-            var response = await service.GetTransBenefitByIdAsync(id,GetCurrentRequestLanguage());
+            var response = await service.GetTransBenefitByIdAsync(id, GetCurrentRequestLanguage());
 
             var lookUps = await service.GetBenefitsLookUpsData(GetCurrentRequestLanguage());
 
@@ -56,7 +54,9 @@ namespace Kader_System.Api.Areas.Trans
 
         #region Create
 
+
         [HttpPost(ApiRoutes.TransBenefit.CreateTransBenefit)]
+
         public async Task<IActionResult> CreateTransBenefit([FromBody] CreateTransBenefitRequest request)
         {
             if (ModelState.IsValid)

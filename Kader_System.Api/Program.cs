@@ -195,6 +195,7 @@ builder.Services.AddSwaggerGen(x =>
             Array.Empty<string>()
         }
   });
+
     x.SchemaFilter<SwaggerTest>();
 });
 

@@ -221,7 +221,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0fd05a5c-50e7-4875-8121-4a877c6fc07d",
+                            ConcurrencyStamp = "765dd646-1952-4b97-ab01-d0c8bcaf5922",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +229,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIBvb+w9og1KvaSBuSTLA4wo7Xg4lajC3ndY7HUjAn5BZyZFmbXG0/89UpM7sRjiwA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENh4C2TArejVqEzCavvXnJHYpfG9mpwmYnL9ALoQ7VeDOayj1pcLt+10aGlCSHyHrA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b212b13c-33cb-4c31-a988-cea2d883cc91",
+                            SecurityStamp = "c6d8c69e-c8f3-4806-82b3-fbaf2357afb9",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -3092,6 +3092,9 @@ namespace Kader_System.DataAccess.Migrations
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCaclauateSalaryDetailedTrans", b =>
                 {
+                    b.Property<double?>("AccommodationAllowance")
+                        .HasColumnType("float");
+
                     b.Property<int?>("CacluateSalaryId")
                         .HasColumnType("int");
 
@@ -3100,6 +3103,14 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
+
+                    b.Property<string>("FullNameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullNameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("JournalDate")
                         .HasColumnType("date");
@@ -3110,6 +3121,12 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<int>("TransId")
                         .HasColumnType("int");
+
+                    b.Property<double?>("VacationDayCount")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("VacationSum")
+                        .HasColumnType("float");
 
                     b.ToTable("SpCaclauateSalaryDetailedTransModel");
                 });
@@ -3131,11 +3148,22 @@ namespace Kader_System.DataAccess.Migrations
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCacluateSalary", b =>
                 {
+                    b.Property<double>("AccommodationAllowance")
+                        .HasColumnType("float");
+
                     b.Property<double>("CalculatedSalary")
                         .HasColumnType("float");
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
+
+                    b.Property<string>("FullNameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullNameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("TotalSalary")
                         .HasColumnType("float");
@@ -3166,7 +3194,10 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int?>("CacluateSalaryId")
+                    b.Property<int?>("CalculateSalaryDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CalculateSalaryId")
                         .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
@@ -3310,7 +3341,10 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int>("BenefitId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CacluateSalaryId")
+                    b.Property<int?>("CalculateSalaryDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CalculateSalaryId")
                         .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
@@ -3447,7 +3481,10 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("AttachmentExtension")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("CacluateSalaryId")
+                    b.Property<int?>("CalculateSalaryDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CalculateSalaryId")
                         .HasColumnType("int");
 
                     b.Property<int>("DeductionId")
@@ -3510,7 +3547,10 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<short>("AdvanceType")
                         .HasColumnType("smallint");
 
-                    b.Property<int?>("CacluateSalaryId")
+                    b.Property<int?>("CalculateSalaryDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CalculateSalaryId")
                         .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
@@ -3870,6 +3910,12 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("AttachmentExtension")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CalculateSalaryDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CalculateSalaryId")
+                        .HasColumnType("int");
 
                     b.Property<double>("DaysCount")
                         .HasColumnType("float");

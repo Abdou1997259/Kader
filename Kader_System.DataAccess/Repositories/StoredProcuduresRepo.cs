@@ -10,8 +10,12 @@ namespace Kader_System.DataAccess.Repositories
             // Calculate the end of the month based on startCalculationDate
             int year = startCalculationDate.Year;
             int month = startCalculationDate.Month;
-            var startOfMonth = new DateOnly(year, month, 1);
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+            days = Math.Min(daysInMonth, days);
+            var startOfMonth = new DateOnly(year, month, days);
             var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+
 
             // Adjust endCalculationDate to the last day of the month with the specified day
             var endCalculationDate = new DateOnly(year, month, days).AddMonths(1).AddDays(-1);
@@ -36,8 +40,10 @@ namespace Kader_System.DataAccess.Repositories
         {
             int year = startCalculationDate.Year;
             int month = startCalculationDate.Month;
-            var startOfMonth = new DateOnly(year, month, 1);
-            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+            days = Math.Min(daysInMonth, days);
+            var startOfMonth = new DateOnly(year, month, days);
+
 
             // Adjust endCalculationDate to the last day of the month with the specified day
             var endCalculationDate = new DateOnly(year, month, days).AddMonths(1).AddDays(-1);
@@ -60,7 +66,9 @@ namespace Kader_System.DataAccess.Repositories
         {
             int year = startCalculationDate.Year;
             int month = startCalculationDate.Month;
-            var startOfMonth = new DateOnly(year, month, 1);
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+            days = Math.Min(daysInMonth, days);
+            var startOfMonth = new DateOnly(year, month, days);
             var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
 
             // Adjust endCalculationDate to the last day of the month with the specified day
