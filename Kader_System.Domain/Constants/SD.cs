@@ -85,6 +85,7 @@ public static class SD
         public const string CorsPolicy = "CorsPolicy";
         public const string Development = "Development";
         public const string Production = "Production";
+        public const string Productions = "Productions";
         public const string Local = "Local";
         public const string Notify = "/notify";
         public static string[] Cultures = ["en-US", "ar-EG"];
