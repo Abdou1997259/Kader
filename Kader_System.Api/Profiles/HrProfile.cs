@@ -4,6 +4,10 @@ namespace Kader_System.Api.Profiles;
 
 public class HrProfile : Profile
 {
+
+    /// <summary>
+    /// mi comment 
+    /// </summary>
     public HrProfile()
     {
         #region Company
