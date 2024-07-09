@@ -210,6 +210,16 @@ public static class SD
             public const string RestoreAllowance = "allowance/restore/{id}";
             public const string GetAllowanceById = "allowance/getById/{id}";
             public const string DeleteAllowance = "allowance/delete/{id}";
+        }   
+        public class SalaryIncreaseType
+        {
+            public const string ListOfSalaryIncreaseTypes = "allowance/getListOfSalaryIncreaseTypes";
+            public const string GetAllSalaryIncreaseTypes = "salaryIncreaseTypes/getAll";
+            public const string CreateSalaryIncreaseTypes = "salaryIncreaseTypes/create";
+            public const string UpdateSalaryIncreaseTypes = "salaryIncreaseTypes/update/{id}";
+            public const string RestoreSalaryIncreaseTypes = "salaryIncreaseTypes/restore/{id}";
+            public const string GetSalaryIncreaseTypesById = "salaryIncreaseTypes/getById/{id}";
+            public const string DeleteSalaryIncreaseTypes = "salaryIncreaseTypes/delete/{id}";
         }
         public class TransAllowance
         {
