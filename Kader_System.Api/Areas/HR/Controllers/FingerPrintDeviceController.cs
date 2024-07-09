@@ -24,7 +24,7 @@
             var response = await fingerPrintDeviceService.GetFingerPrintDeviceByIdAsync(id);
             if (response.Check)
             {
-                var lookups = await fingerPrintDeviceService.GetFingerPrintsLookUpsData(GetCurrentRequestLanguage());
+                var lookups = await fingerPrintDeviceService.GetFingerPrintsLookUpsData(GetCurrentRequestLanguage()); // add comment 
                 response.LookUps = lookups.Data;
                 return Ok(response);
             }
