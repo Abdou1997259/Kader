@@ -6,7 +6,7 @@ public class HrProfile : Profile
 {
 
     /// <summary>
-    /// mi comment 
+    /// mi2 comment 
     /// </summary>
     public HrProfile()
     {
