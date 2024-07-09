@@ -205,7 +205,26 @@
 
         }
 
+        public async Task<Response<GetSalaryCalculatorResponse>> GetAllCalculators()
+        {
+            var transations = await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, includeProperties: "TransSalaryCalculatorsDetails");
 
+            if (transations is null)
+            {
+                var msg = _localizer[Localization.NotFoundData];
+                return new()
+                {
+                    Data = null,
+                    Msg = msg,
+                    Check = false
+                };
+            }
+            return new()
+            {
+                Check = true,
+
+            };
+        }
 
         public async Task<Response<IEnumerable<GetSalariesEmployeeResponse>>> GetDetailsOfCalculation(CalcluateEmpolyeeFilters model, string lang)
         {
