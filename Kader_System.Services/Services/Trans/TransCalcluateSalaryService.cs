@@ -1,6 +1,4 @@
-﻿
-
-namespace Kader_System.Services.Services.Trans
+﻿namespace Kader_System.Services.Services.Trans
 {
     public class TransCalcluateSalaryService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> localizer) : ITransCalcluateSalaryService
     {
@@ -94,6 +92,7 @@ namespace Kader_System.Services.Services.Trans
                 var deductions = new List<TransDeduction>();
                 var benefits = new List<TransBenefit>();
                 var loans = new List<TransLoan>();
+                var vacations = new List<TransVacation>();
                 foreach (var trans in spcaculatedSalarytransDetils)
                 {
 
@@ -110,7 +109,7 @@ namespace Kader_System.Services.Services.Trans
                             allownces.Add(allownce);
 
                         }
-                        if (trans.JournalType == JournalType.Deduction)
+                        else if (trans.JournalType == JournalType.Deduction)
                         {
                             var deduction = await _unitOfWork.TransDeductions.GetByIdAsync(trans.TransId);
 
@@ -121,7 +120,7 @@ namespace Kader_System.Services.Services.Trans
                             deductions.Add(deduction);
 
                         }
-                        if (trans.JournalType == JournalType.Benefit)
+                        else if (trans.JournalType == JournalType.Benefit)
                         {
                             var benefit = await _unitOfWork.TransBenefits.GetByIdAsync(trans.TransId);
 
@@ -132,7 +131,7 @@ namespace Kader_System.Services.Services.Trans
                             benefits.Add(benefit);
 
                         }
-                        if (trans.JournalType == JournalType.Loan)
+                        else if (trans.JournalType == JournalType.Loan)
                         {
                             var loan = await _unitOfWork.LoanRepository.GetByIdAsync(trans.TransId);
 
@@ -144,6 +143,24 @@ namespace Kader_System.Services.Services.Trans
 
 
                         }
+                        else if (trans.JournalType == JournalType.Vacation)
+                        {
+
+
+                            var vacation = await _unitOfWork.TransVacations.GetByIdAsync(trans.TransId);
+
+
+
+                            vacation.CalculateSalaryDetailsId = cacluateSalaryId?.Id;
+                            vacation.CalculateSalaryId = TransCalculatorMaster.Id;
+                            vacations.Add(vacation);
+
+
+
+
+                        }
+
+
 
 
 
@@ -194,10 +211,16 @@ namespace Kader_System.Services.Services.Trans
         {
             var empolyees = await _unitOfWork.Employees.GetSpecificSelectAsync(x =>
           (!model.EmployeeId.HasValue || x.Id == model.EmployeeId)
+          && (!model.CompanyId.HasValue || x.CompanyId == model.CompanyId)
+          && (!model.ManagerId.HasValue || x.ManagementId == model.ManagerId)
+          && (!model.DepartmentId.HasValue || x.DepartmentId == model.DepartmentId)
+
+
 
           , x => x);
             var empolyeeWithCaculatedSalary = await _unitOfWork.StoredProcuduresRepo.SpCalculateSalary(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()));
-            var spcaculatedSalarytransDetils = await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()));
+            var spcaculatedSalarytransDetils = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()))).Where(x => x.CalculateSalaryId == null);
+            var vacations = await _unitOfWork.TransVacations.GetAllAsync();
 
 
 
@@ -242,6 +265,13 @@ namespace Kader_System.Services.Services.Trans
 
 
                     },
+                    Absents = spcaculatedSalarytransDetils.Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Vacation).Select(v => new Absent
+                    {
+                        Days = vacations.Where(vv => vv.EmployeeId == x.EmployeeId && vv.StartDate == v.JournalDate && vv.Id == v.TransId)?.FirstOrDefault()?.DaysCount,
+                        Sum = vacations.Where(vv => vv.EmployeeId == x.EmployeeId && vv.StartDate == v.JournalDate && vv.Id == v.TransId)?.FirstOrDefault()?.DaysCount == null ? 0 : v.CalculatedSalary,
+
+                    }),
+
                     AddtionalValues = spcaculatedSalarytransDetils.Where(e => e.EmployeeId == x.EmployeeId && (e.JournalType == JournalType.Allowance || e.JournalType == JournalType.Benefit)).Select(t => new AddtionalValues
                     {
                         Id = t.TransId,
