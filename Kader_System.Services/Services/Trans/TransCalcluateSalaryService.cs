@@ -97,7 +97,7 @@ namespace Kader_System.Services.Services.Trans
                 foreach (var trans in spcaculatedSalarytransDetils)
                 {
 
-                    if (trans.CacluateSalaryId is null)
+                    if (trans.CalculateSalaryDetailsId is null)
                     {
                         var cacluateSalaryId = (await _unitOfWork.TransSalaryCalculatorDetailsRepo.GetSpecificSelectAsync(x => x.TransSalaryCalculatorsId == TransCalculatorMaster.Id && x.EmployeeId == trans.EmployeeId, x => x)).FirstOrDefault();
                         if (trans.JournalType == JournalType.Allowance)
@@ -226,12 +226,7 @@ namespace Kader_System.Services.Services.Trans
                     BasicSalary = x.TotalSalary,
                     WrokingDay = 30,
                     DisbursementType = DisbursementType.BankingType,
-                    Absents = spcaculatedSalarytransDetils.Where(e => e.EmployeeId == x.EmployeeId).Select(t => new Absent
-                    {
-                        Days = t.VacationDayCount,
-                        Sum = t.VacationSum
-                    })
-                  ,
+
                     MinuesValues = new MinuesValues
                     {
                         Deductions = spcaculatedSalarytransDetils.Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Deduction).Select(t => new Deduction

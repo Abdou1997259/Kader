@@ -14,16 +14,8 @@ namespace Kader_System.Domain.Models.Trans
         public JournalType JournalType { get; set; }
         public double? AccommodationAllowance { get; set; }
         public double CalculatedSalary { get; set; }
-        public int? CacluateSalaryId { get; set; }
-        public double? VacationSum { get; set; }
-
-
-
-
-
-        public double? VacationDayCount { get; set; }
-
-
+        public int? CalculateSalaryId { get; set; }
+        public int? CalculateSalaryDetailsId { get; set; }
 
 
 
