@@ -1,23 +1,26 @@
-﻿namespace Kader_System.Api.Areas.Setting.Controllers;
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.Setting)]
 [ApiExplorerSettings(GroupName = Modules.Setting)]
 [ApiController]
 [Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
-public class SubSubMainScreensController(ISubMainScreenService service) : ControllerBase
+public class SubSubMainScreensController(ISubMainScreenService service, IRequestService headerService) : ControllerBase
 {
-
+    private readonly IRequestService headerService = headerService;
+    private readonly ISubMainScreenService service = service;
     #region Retrieve
 
     [HttpGet(ApiRoutes.SubMainScreen.ListOfSubMainScreens)]
     public async Task<IActionResult> ListOfSubMainScreensAsync() =>
-        Ok(await service.ListOfSubMainScreensAsync(GetCurrentRequestLanguage()));
+        Ok(await service.ListOfSubMainScreensAsync(headerService.GetRequestHeaderLanguage));
 
 
     [HttpGet(ApiRoutes.SubMainScreen.GetAllSubMainScreens)]
     public async Task<IActionResult> GetAllSubMainScreensAsync([FromQuery] StGetAllFiltrationsForSubMainScreenRequest model) =>
-        Ok(await service.GetAllSubMainScreensAsync(GetCurrentRequestLanguage(), model));
+        Ok(await service.GetAllSubMainScreensAsync(headerService.GetRequestHeaderLanguage, model));
 
     [HttpGet(ApiRoutes.SubMainScreen.GetSubMainScreenById)]
     public async Task<IActionResult> GetSubMainScreenByIdAsync([FromRoute] int id)
@@ -75,11 +78,6 @@ public class SubSubMainScreensController(ISubMainScreenService service) : Contro
     }
     #endregion
 
-    #region Helpers
-    private string GetCurrentRequestLanguage() =>
-        Request.Headers.AcceptLanguage.ToString().Split(',').First();
-
-    #endregion
 
 
 }

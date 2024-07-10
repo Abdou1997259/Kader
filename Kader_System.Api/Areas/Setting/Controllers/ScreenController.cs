@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.DTOs.Request.Setting;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.Setting.Controllers
 {
@@ -7,18 +8,20 @@ namespace Kader_System.Api.Areas.Setting.Controllers
     [ApiController]
     [Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
-    public class ScreenController(IScreenService service) : ControllerBase
+    public class ScreenController(IScreenService service,IRequestService requestService) : ControllerBase
     {
+        private readonly IRequestService requestService = requestService;
+
         #region Retrieve
-        
+
         [HttpGet(ApiRoutes.Screen.GetAllScreens)]
         public async Task<IActionResult> GetAllScreens([FromQuery] GetAllFilterationForScreen model) =>
-            Ok(await service.GetAllScreensAsync(GetCurrentRequestLanguage(),GetCurrentHost() ,model));
+            Ok(await service.GetAllScreensAsync(requestService.GetRequestHeaderLanguage,requestService.GetCurrentHost ,model));
 
         [HttpGet(ApiRoutes.Screen.GetScreenById)]
         public async Task<IActionResult> GetScreenById(int id)
         {
-            var response = await service.GetScreenByIdAsync(id,GetCurrentRequestLanguage());
+            var response = await service.GetScreenByIdAsync(id,requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -110,13 +113,5 @@ namespace Kader_System.Api.Areas.Setting.Controllers
 
         #endregion
 
-        #region Helpers
-
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value +
-            HttpContext.Request.Path.Value;
-        #endregion
     }
 }
