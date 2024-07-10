@@ -1,27 +1,28 @@
-﻿namespace Kader_System.Api.Areas.Setting.Controllers;
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.HR)]
 [Authorize(Permissions.HR.View)]
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Route("api/v1/")]
-public class ShiftsController(IShiftService service) : ControllerBase
+public class ShiftsController(IShiftService service,IRequestService requestService) : ControllerBase
 {
+    private readonly IRequestService requestService = requestService;
+
     #region Retrieve
 
     [HttpGet(ApiRoutes.Shift.ListOfShifts)]
     public async Task<IActionResult> ListOfShiftsAsync() =>
-        Ok(await service.ListOfShiftsAsync(GetCurrentRequestLanguage()));
+        Ok(await service.ListOfShiftsAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.Shift.GetAllShifts)]
     public async Task<IActionResult> GetAllShiftsAsync([FromQuery] HrGetAllFiltrationsForShiftsRequest model) =>
-        Ok(await service.GetAllShiftsAsync(GetCurrentRequestLanguage(), model, GetCurrentHost()));
+        Ok(await service.GetAllShiftsAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
 
     #endregion
-
-
-
     [HttpPost(ApiRoutes.Shift.CreateShift)]
     public async Task<IActionResult> CreateShiftAsync(HrCreateShiftRequest model)
     {
@@ -86,9 +87,4 @@ public class ShiftsController(IShiftService service) : ControllerBase
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
 
-    private string GetCurrentRequestLanguage() =>
-        Request.Headers.AcceptLanguage.ToString().Split(',').First();
-    private string GetCurrentHost() =>
-        HttpContext.Request.Host.Value +
-        HttpContext.Request.Path.Value;
 }

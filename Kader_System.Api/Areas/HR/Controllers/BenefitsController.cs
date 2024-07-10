@@ -1,21 +1,25 @@
-﻿namespace Kader_System.Api.Areas.Setting.Controllers;
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.HR)]
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Route("api/v1/")]
 [Authorize(Permissions.HR.View)]
-public class BenefitsController(IBenefitService service) : ControllerBase
+public class BenefitsController(IBenefitService service,IRequestService requestService) : ControllerBase
 {
+    private readonly IRequestService requestService = requestService;
+
     #region Retrieve
 
     [HttpGet(ApiRoutes.Benefit.ListOfBenefits)]
     public async Task<IActionResult> ListOfBenefitsAsync() =>
-        Ok(await service.ListOfBenefitsAsync(GetCurrentRequestLanguage()));
+        Ok(await service.ListOfBenefitsAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.Benefit.GetAllBenefits)]
     public async Task<IActionResult> GetAllBenefitsAsync([FromQuery] HrGetAllFiltrationsForBenefitsRequest model) =>
-        Ok(await service.GetAllBenefitsAsync(GetCurrentRequestLanguage(), model, GetCurrentHost()));
+        Ok(await service.GetAllBenefitsAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
     [HttpGet(ApiRoutes.Benefit.GetBenefitById)]
     public async Task<IActionResult> GetBenefitByIdAsync(int id)
     {
@@ -85,12 +89,5 @@ public class BenefitsController(IBenefitService service) : ControllerBase
 
     #endregion
 
-    #region Helpers
-    private string GetCurrentRequestLanguage() =>
-        Request.Headers.AcceptLanguage.ToString().Split(',').First();
-    private string GetCurrentHost() =>
-        HttpContext.Request.Host.Value +
-        HttpContext.Request.Path.Value;
-    #endregion
 
 }

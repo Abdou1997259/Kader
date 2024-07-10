@@ -10,7 +10,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
     [Route("api/v1/")]
     public class ScreenController(IScreenService service,IRequestService requestService) : ControllerBase
     {
-        private readonly IRequestService requestService = requestService;
+        private readonly IRequestService requestService = requestService;               
 
         #region Retrieve
 
