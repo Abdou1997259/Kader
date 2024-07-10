@@ -7,7 +7,11 @@ namespace Kader_System.Services.IServices.Trans
 
         Task<Response<string>> CalculateSalaryDetailedTrans(CalcluateSalaryModelRequest model);
 
-        Task<Response<GetSalaryCalculatorResponse>> GetAllCalculators();
+        Task<Response<IEnumerable<GetSalaryCalculatorResponse>>> GetAllCalculators();
+
+        Task<Response<string>> DeleteCalculator(int Id);
+        Task<Response<GetLookupsCalculatedSalaries>> GetLookups(string lang);
+
 
     }
 }
