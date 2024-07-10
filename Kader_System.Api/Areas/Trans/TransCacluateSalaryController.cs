@@ -39,7 +39,7 @@ namespace Kader_System.Api.Areas.Trans
                 return BadRequest(result);
             return Ok(result);
         }
-        [HttpGet(ApiRoutes.TransSalaryCalculatorEndpoint.DeleteCalculator)]
+        [HttpDelete(ApiRoutes.TransSalaryCalculatorEndpoint.DeleteCalculator)]
         public async Task<IActionResult> DeleteCalcluator(int Id)
         {
             var result = await service.DeleteCalculator(Id);

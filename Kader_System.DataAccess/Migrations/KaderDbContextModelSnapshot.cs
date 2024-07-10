@@ -225,12 +225,10 @@ namespace Kader_System.DataAccess.Migrations
                             ConcurrencyStamp = "0befd46e-4d8e-4f8c-8960-e2ecbe2f7987",
 
 
-      PasswordHash = "AQAAAAIAAYagAAAAEJW9fZnBFgUbMfKhT6je67DfMrDKJOsmYbEkLFm+NUbHvR2l2ZZS3GRZI+PuYakEIQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJW9fZnBFgUbMfKhT6je67DfMrDKJOsmYbEkLFm+NUbHvR2l2ZZS3GRZI+PuYakEIQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "09487add-d943-4ff2-a662-6d958c4822bf",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMH6PmxTZAL+w7CQZlW6FJskq2PvFnmXoM8cFaP9De0iq9wc1gmTasazzgsexbQKxA==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "3c8b299c-3d6c-4233-8cd2-11ab25ebe9e7",
+                           
 
                         });
                 });
