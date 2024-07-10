@@ -76,6 +76,7 @@
                         {
                             EmployeeId = empolyee.EmployeeId,
                             Salary = empolyee.CalculatedSalary + empolyee.TotalSalary,
+                            Amount = empolyee.CalculatedSalary,
                             TransSalaryCalculatorsId = TransCalculatorMaster.Id,
 
                         };
@@ -205,7 +206,66 @@
 
         }
 
+        public async Task<Response<string>> DeleteCalculator(int Id)
+        {
+            var transaction = await _unitOfWork.TransSalaryCalculator.GetByIdAsync(Id);
+            if (transaction == null)
+            {
+                string msgs = _localizer[Localization.NotFoundData];
+                return new()
+                {
+                    Data = null,
+                    Msg = msgs,
+                    Check = false
+                };
 
+            }
+            _unitOfWork.TransSalaryCalculator.Remove(transaction);
+            var transactions = await _unitOfWork.TransSalaryCalculatorDetailsRepo.GetSpecificSelectAsync(x => x.TransSalaryCalculatorsId == transaction.Id, x => x);
+
+            _unitOfWork.TransSalaryCalculatorDetailsRepo.RemoveRange(transactions);
+            await _unitOfWork.CompleteAsync();
+
+            var msg = _localizer[Localization.Deleted];
+            return new()
+            {
+
+                Data = msg,
+
+                Msg = msg,
+                Check = true
+            };
+
+
+        }
+
+        public async Task<Response<IEnumerable<GetSalaryCalculatorResponse>>> GetAllCalculators()
+        {
+            var transations = await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, includeProperties: "TransSalaryCalculatorsDetails");
+
+            if (transations is null)
+            {
+                var msg = _localizer[Localization.NotFoundData];
+                return new()
+                {
+                    Data = null,
+                    Msg = msg,
+                    Check = false
+                };
+            }
+            return new()
+            {
+                Check = true,
+                Data = transations.Select(x => new GetSalaryCalculatorResponse
+                {
+                    CalculationDate = x.DocumentDate,
+                    Amount = x.TransSalaryCalculatorsDetails.Sum(x => x.Amount),
+                    DocDate = x.Add_date,
+                    Id = x.Id,
+                })
+
+            };
+        }
 
         public async Task<Response<IEnumerable<GetSalariesEmployeeResponse>>> GetDetailsOfCalculation(CalcluateEmpolyeeFilters model, string lang)
         {
@@ -289,6 +349,91 @@
 
         }
 
+        public async Task<Response<GetLookupsCalculatedSalaries>> GetLookups(string lang)
+        {
+            var emps = await _unitOfWork.Employees.GetAllAsync();
+            if (emps is null)
+            {
+                var msg = _localizer[Localization.NotFoundData];
+                return new Response<GetLookupsCalculatedSalaries>()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
 
+                };
+            }
+            var companies = await _unitOfWork.Companies.GetAllAsync();
+            if (companies is null)
+            {
+                var msg = _localizer[Localization.NotFoundData];
+                return new Response<GetLookupsCalculatedSalaries>()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+
+                };
+            }
+            var mangements = await _unitOfWork.Managements.GetAllAsync();
+            if (mangements is null)
+            {
+                var msg = _localizer[Localization.NotFoundData];
+                return new Response<GetLookupsCalculatedSalaries>()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+
+                };
+            }
+            var departments = await _unitOfWork.Departments.GetAllAsync();
+            if (departments is null)
+            {
+                var msg = _localizer[Localization.NotFoundData];
+                return new Response<GetLookupsCalculatedSalaries>()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+
+                };
+            }
+            var result = new GetLookupsCalculatedSalaries
+            {
+                CompanyLookups = companies.Select(x => new CompanyLookup
+                {
+                    Id = x.Id,
+                    CompnayName = Localization.Arabic == lang ? x.NameAr : x.NameEn
+                }).ToList(),
+                DepartmentLookups = departments.Select(x => new DepartmentLookup
+                {
+                    DepartmentName = Localization.Arabic == lang ? x.NameAr : x.NameEn,
+                    Id = x.Id,
+
+                }).ToList(),
+                ManagementLookups = mangements.Select(x => new ManagementLookup
+                {
+                    ManagementName = Localization.Arabic == lang ? x.NameAr : x.NameEn,
+                    Id = x.Id
+                }).ToList(),
+                EmployeeLookups = emps.Select(x => new Empolyeelookups
+                {
+                    Name = Localization.Arabic == lang ? x.FirstNameAr + " " + x.FatherNameAr + " " + x.FatherNameAr : x.FirstNameEn + " " + x.FatherNameEn + " " + x.FatherNameEn,
+                    Id = x.Id
+
+                }).ToList()
+
+            };
+
+            return new Response<GetLookupsCalculatedSalaries>
+            {
+                Check = true,
+                Data = result,
+                LookUps = result
+            };
+
+
+        }
     }
 }

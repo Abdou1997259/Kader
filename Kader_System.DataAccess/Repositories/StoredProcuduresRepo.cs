@@ -109,6 +109,9 @@ namespace Kader_System.DataAccess.Repositories
 
             // Adjust endCalculationDate to the last day of the month with the specified day
             var endCalculationDate = new DateOnly(year, month, days).AddMonths(1).AddDays(-1);
+
+
+
             var empsParameter = new SqlParameter
             {
                 ParameterName = "@listEmployeesString",
