@@ -14,7 +14,7 @@ public class MainScreensController(IMainScreenService service,IRequestService re
     #region Retrieve
     [HttpGet(ApiRoutes.MainScreen.ListOfMainScreens)]
     public async Task<IActionResult> ListOfMainScreensAsync() => 
-        Ok(await service.ListOfMainScreensAsync(GetCurrentRequestLanguage()));
+        Ok(await service.ListOfMainScreensAsync(requestService.GetRequestHeaderLanguage));
 
 
     [HttpGet(ApiRoutes.MainScreen.GetAllMainScreens)]
