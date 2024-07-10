@@ -102,7 +102,7 @@ public class AuthService : IAuthService
             UserName = user.UserName!,
             Email = user.Email!,
             RoleNames = currentUserRoles,
-            Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+            Token = "Bearer" + " " +  new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             ExpiresOn = jwtSecurityToken.ValidTo,
             
             

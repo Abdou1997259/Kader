@@ -134,6 +134,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasConversion(x => x.ToString(), x => (JournalType)Enum.Parse(typeof(JournalType), x));
 
 
+
         #region Fluent Api
         //modelBuilder.Entity<HrManagement>()
         //    .HasOne(m => m.Manager)
