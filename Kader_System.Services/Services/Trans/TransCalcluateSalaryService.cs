@@ -375,7 +375,8 @@
 
                 };
             }
-            var mangements = await _unitOfWork.Managements.GetAllAsync();
+            var mangements = await _unitOfWork.Managements.GetSpecificSelectAsync(x => true, x => x, includeProperties: "Company,Manager");
+
             if (mangements is null)
             {
                 var msg = _localizer[Localization.NotFoundData];
@@ -387,7 +388,7 @@
 
                 };
             }
-            var departments = await _unitOfWork.Departments.GetAllAsync();
+            var departments = await _unitOfWork.Departments.GetSpecificSelectAsync(x => true, x => x, includeProperties: "Management,Manager");
             if (departments is null)
             {
                 var msg = _localizer[Localization.NotFoundData];
@@ -409,12 +410,17 @@
                 DepartmentLookups = departments.Select(x => new DepartmentLookup
                 {
                     DepartmentName = Localization.Arabic == lang ? x.NameAr : x.NameEn,
+                    ManagementId = x.ManagementId,
+                    ManagerId = x.ManagerId,
                     Id = x.Id,
 
                 }).ToList(),
                 ManagementLookups = mangements.Select(x => new ManagementLookup
                 {
                     ManagementName = Localization.Arabic == lang ? x.NameAr : x.NameEn,
+                    ManagerId = x.ManagerId,
+                    CompanyId = x.CompanyId,
+
                     Id = x.Id
                 }).ToList(),
                 EmployeeLookups = emps.Select(x => new Empolyeelookups
@@ -430,7 +436,7 @@
             {
                 Check = true,
                 Data = result,
-                LookUps = result
+                LookUps = null
             };
 
 

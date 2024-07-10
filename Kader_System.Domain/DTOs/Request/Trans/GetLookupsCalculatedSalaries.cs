@@ -10,17 +10,24 @@
     public class CompanyLookup
     {
         public string CompnayName { get; set; }
+
         public int Id { get; set; }
 
     }
     public class DepartmentLookup
     {
         public string DepartmentName { get; set; }
+        public int ManagementId { get; set; }
+        public int? ManagerId { get; set; }
+
+
         public int Id { get; set; }
     }
     public class ManagementLookup
     {
         public string ManagementName { get; set; }
+        public int? ManagerId { get; set; }
+        public int CompanyId { get; set; }
         public int Id { get; set; }
     }
     public class Empolyeelookups
