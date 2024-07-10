@@ -1,12 +1,16 @@
 using Kader_System.DataAccess.Repositories;
+using Kader_System.DataAccess.Repositories.HR;
 using Kader_System.DataAccess.Repositories.Logging;
 using Kader_System.DataAccess.Repositories.StaticDataRepository;
+using Kader_System.DataAccess.Repositories.Trans;
 using Kader_System.DataAccesss.DbContext;
 using Kader_System.Domain;
 using Kader_System.Domain.Customization.Middleware;
 using Kader_System.Domain.Interfaces;
+using Kader_System.Domain.Interfaces.HR;
 using Kader_System.Domain.Interfaces.Logging;
 using Kader_System.Domain.Interfaces.StaticDataRepository;
+using Kader_System.Domain.Interfaces.Trans;
 using Kader_System.Domain.Options;
 using Kader_System.Domain.SwaggerFilter;
 using Kader_System.Services.IServices.Trans;
@@ -238,6 +242,8 @@ builder.Services.AddScoped<ITransVacationService, TransVacationService>();
 builder.Services.AddScoped<ITransCovenantService, TransCovenantService>();
 builder.Services.AddScoped<ITransLoanService, TransLoanService>();
 builder.Services.AddScoped<ITransCalcluateSalaryService, TransCalcluateSalaryService>();
+builder.Services.AddScoped<ISalaryIncreaseTypeRepository, SalaryIncreaseTypeRepository>();
+builder.Services.AddScoped<ITransSalaryIncreaseRepository, TransSalaryIncreaseRepository>();
 #endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");
 var httpsPort = builder.Configuration.GetValue<int>("KestrelServer:Https.Port");
