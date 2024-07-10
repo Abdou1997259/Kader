@@ -1,5 +1,4 @@
-﻿using Kader_System.Services.IServices.HTTP;
-
+using Kader_System.Services.IServices.HTTP;
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.Setting)]
@@ -15,7 +14,6 @@ public class MainScreensController(IMainScreenService service,IRequestService re
     [HttpGet(ApiRoutes.MainScreen.ListOfMainScreens)]
     public async Task<IActionResult> ListOfMainScreensAsync() => 
         Ok(await service.ListOfMainScreensAsync(requestService.GetRequestHeaderLanguage));
-
 
     [HttpGet(ApiRoutes.MainScreen.GetAllMainScreens)]
     public async Task<IActionResult> GetAllMainScreensAsync([FromQuery] StGetAllFiltrationsForMainScreenRequest model) =>

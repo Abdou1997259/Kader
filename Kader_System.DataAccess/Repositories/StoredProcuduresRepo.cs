@@ -57,6 +57,47 @@ namespace Kader_System.DataAccess.Repositories
             return null;
 
         }
+        public async Task<IEnumerable<SpCaclauateSalaryDetails>> SpCalculateSalaryDetails(DateOnly startCalculationDate, DateOnly endCalculationDate, string listEmployeesString)
+        {
+
+
+
+            // Adjust endCalculationDate to the last day of the month with the specified day
+
+            var empsParameter = new SqlParameter
+            {
+                ParameterName = "@listEmployeesString",
+                SqlDbType = SqlDbType.VarChar,
+                Value = listEmployeesString
+            };
+            var result = await _db.SpCaclauateSalaryDetailsModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_Details {startCalculationDate}, {endCalculationDate}, {empsParameter}").ToListAsync();
+
+
+
+
+
+            return result;
+
+        }
+        public async Task<IEnumerable<SpCaclauateSalaryDetailedTrans>> SpCalculatedSalaryDetailedTrans(DateOnly startCalculationDate, DateOnly endCalculationDate, string listEmployeesString)
+        {
+
+            var empsParameter = new SqlParameter
+            {
+                ParameterName = "@listEmployeesString",
+                SqlDbType = SqlDbType.VarChar,
+                Value = listEmployeesString
+            };
+            IEnumerable<SpCaclauateSalaryDetailedTrans> result = null;
+
+
+            result = await _db.SpCaclauateSalaryDetailedTransModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_DetailedTrans {startCalculationDate}, {endCalculationDate}, {empsParameter}").ToListAsync();
+
+
+
+            return result;
+
+        }
         public async Task<IEnumerable<SpCaclauateSalaryDetailedTrans>> SpCalculatedSalaryDetailedTrans(DateOnly startCalculationDate, int days, string listEmployeesString)
         {
             int year = startCalculationDate.Year;
@@ -68,6 +109,9 @@ namespace Kader_System.DataAccess.Repositories
 
             // Adjust endCalculationDate to the last day of the month with the specified day
             var endCalculationDate = new DateOnly(year, month, days).AddMonths(1).AddDays(-1);
+
+
+
             var empsParameter = new SqlParameter
             {
                 ParameterName = "@listEmployeesString",
