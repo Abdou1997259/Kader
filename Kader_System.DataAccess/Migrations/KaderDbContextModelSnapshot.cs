@@ -231,10 +231,11 @@ namespace Kader_System.DataAccess.Migrations
                             NormalizedUserName = "ADMIN",
                             PasswordHash = "AQAAAAIAAYagAAAAENh4C2TArejVqEzCavvXnJHYpfG9mpwmYnL9ALoQ7VeDOayj1pcLt+10aGlCSHyHrA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c6d8c69e-c8f3-4806-82b3-fbaf2357afb9",
-                            TwoFactorEnabled = false,
-                            UserName = "admin",
-                            VisiblePassword = "123456"
+                            SecurityStamp = "09487add-d943-4ff2-a662-6d958c4822bf",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMH6PmxTZAL+w7CQZlW6FJskq2PvFnmXoM8cFaP9De0iq9wc1gmTasazzgsexbQKxA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "3c8b299c-3d6c-4233-8cd2-11ab25ebe9e7",
+
                         });
                 });
 
