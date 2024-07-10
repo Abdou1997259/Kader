@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.Trans;
+﻿using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.IServices.Trans;
 using Kader_System.Services.Services.HR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,21 +11,22 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransDeductionController(ITransDeductionService service) : ControllerBase
+    public class TransDeductionController(ITransDeductionService service ,IRequestService requestService) : ControllerBase
     {
+        private readonly IRequestService requestService = requestService;
         [HttpGet(ApiRoutes.TransDeduction.ListOfTransDeductions)]
         public async Task<IActionResult> ListOfTransDeductions() =>
-            Ok(await service.ListOfTransDeductionsAsync(GetCurrentRequestLanguage()));
+            Ok(await service.ListOfTransDeductionsAsync(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransDeduction.GetTransDeductions)]
         public async Task<IActionResult> GetAllTransDeductions([FromQuery] GetAllFilterationForTransDeductionRequest request) =>
-            Ok(await service.GetAllTransDeductionsAsync(GetCurrentRequestLanguage(),request, GetCurrentHost()));
+            Ok(await service.GetAllTransDeductionsAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetRequestHeaderLanguage));
         [HttpGet(ApiRoutes.TransDeduction.GetTransDeductionById)]
         public async Task<IActionResult> GetTransDeductionById(int id)
         {
-            var response =await service.GetTransDeductionByIdAsync(id,GetCurrentRequestLanguage());
+            var response =await service.GetTransDeductionByIdAsync(id,requestService.GetRequestHeaderLanguage);
 
-            var lookUps = await service.GetDeductionsLookUpsData(GetCurrentRequestLanguage());
+            var lookUps = await service.GetDeductionsLookUpsData(requestService.GetRequestHeaderLanguage);
 
 
             if (response.Check)
@@ -43,7 +45,7 @@ namespace Kader_System.Api.Areas.Trans
         [HttpGet(ApiRoutes.TransDeduction.GetLookUps)]
         public async Task<IActionResult> GetLookUpsAsync()
         {
-            var response =await service.GetDeductionsLookUpsData(GetCurrentRequestLanguage());
+            var response =await service.GetDeductionsLookUpsData(requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
             else 
@@ -110,13 +112,6 @@ namespace Kader_System.Api.Areas.Trans
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
 
-        #region Helpers
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value +
-            HttpContext.Request.Path.Value;
-
-        #endregion
+        
     }
 }
