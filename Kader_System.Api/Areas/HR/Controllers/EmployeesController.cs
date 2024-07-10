@@ -1,32 +1,36 @@
-﻿namespace Kader_System.Api.Areas.HR.Controllers
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.HR.Controllers
 {
     [Area(Modules.HR)]
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [ApiController]
     [Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
-    public class EmployeesController(IEmployeeService employeeService) : ControllerBase
+    public class EmployeesController(IEmployeeService employeeService,IRequestService requestService) : ControllerBase
     {
+        private readonly IRequestService requestService = requestService;
+
         #region Get
 
         [HttpGet(ApiRoutes.Employee.ListOfEmployees)]
         public async Task<IActionResult> ListOfEmployeesAsync() =>
-            Ok(await employeeService.ListOfEmployeesAsync(GetCurrentRequestLanguage()));
+            Ok(await employeeService.ListOfEmployeesAsync(requestService.GetRequestHeaderLanguage));
 
 
 
         [HttpGet(ApiRoutes.Employee.GetAllEmployees)]
         public async Task<IActionResult> GetAllEmployeesAsync([FromQuery]GetAllEmployeesFilterRequest request) =>
-            Ok(await employeeService.GetAllEmployeesAsync(GetCurrentRequestLanguage(), request, GetCurrentHost()));
+            Ok(await employeeService.GetAllEmployeesAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetCurrentHost));
 
 
         [HttpGet(ApiRoutes.Employee.GetEmployeeById)]
 
         public async Task<IActionResult> GetEmployeeByIdAsync(int id)
         {
-            var response =  employeeService.GetEmployeeById(id,GetCurrentRequestLanguage());
+            var response =  employeeService.GetEmployeeById(id,requestService.GetRequestHeaderLanguage);
 
-            var lookUps =await employeeService.GetEmployeesLookUpsData(GetCurrentRequestLanguage());
+            var lookUps =await employeeService.GetEmployeesLookUpsData(requestService.GetRequestHeaderLanguage);
 
             response.LookUps=lookUps.Data;
 
@@ -39,12 +43,12 @@
         [HttpGet(ApiRoutes.Employee.GetLookUps)]
         public async Task<IActionResult> GetLookUps()
         {
-          return Ok(await employeeService.GetEmployeesLookUpsData(GetCurrentRequestLanguage()));
+          return Ok(await employeeService.GetEmployeesLookUpsData(requestService.GetRequestHeaderLanguage));
         }
         [HttpGet(ApiRoutes.Employee.GetAllEmpByCompanyId)]
         public async Task<IActionResult> GetAllEmpByCompanyId([FromRoute]int companyId, [FromQuery] GetAllEmployeesFilterRequest request)
         {
-            return Ok(await employeeService.GetAllEmployeesByCompanyIdAsync(lang:GetCurrentRequestLanguage(),companyId: companyId,model:request,host:GetCurrentHost()));
+            return Ok(await employeeService.GetAllEmployeesByCompanyIdAsync(lang:requestService.GetRequestHeaderLanguage,companyId: companyId,model:request,host:requestService.GetCurrentHost));
         }
         #endregion
 
@@ -110,14 +114,6 @@
 
         #endregion
 
-
-        #region Helper
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value +
-            HttpContext.Request.Path.Value;
-        #endregion
 
     }
 }

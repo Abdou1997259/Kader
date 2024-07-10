@@ -1,30 +1,34 @@
-﻿namespace Kader_System.Api.Areas.HR.Controllers
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.HR.Controllers
 {
     [Area(Modules.HR)]
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [ApiController]
     [Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
-    public class FingerPrintDeviceController(IFingerPrintDeviceService fingerPrintDeviceService,ICompanyService companyService) : ControllerBase
+    public class FingerPrintDeviceController(IFingerPrintDeviceService fingerPrintDeviceService,ICompanyService companyService,IRequestService requestService) : ControllerBase
     {
+        private readonly IRequestService requestService = requestService;
+
         #region Get Methods
 
         [HttpGet(ApiRoutes.FingerPrint.ListOfFingerPrintDevices)]
         public async Task<IActionResult> ListOfDevices()
-            => Ok(await fingerPrintDeviceService.GetFingerPrintDevicesAsync(GetCurrentRequestLanguage()));
+            => Ok(await fingerPrintDeviceService.GetFingerPrintDevicesAsync(requestService.GetRequestHeaderLanguage));
         [HttpGet(ApiRoutes.FingerPrint.GetAllFingerPrintDevices)]
         public async Task<IActionResult> ListOfDevices([FromQuery]GetAllFingerPrintDevicesFilterrationRequest request)
-            => Ok(await fingerPrintDeviceService.GetAllFingerPrintDevicesAsync(GetCurrentRequestLanguage(), request, GetCurrentHost()));
+            => Ok(await fingerPrintDeviceService.GetAllFingerPrintDevicesAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetCurrentHost));
         [HttpGet(ApiRoutes.FingerPrint.GetLookups)]
         public async Task<IActionResult> GetLookUps()
-            => Ok(await fingerPrintDeviceService.GetFingerPrintsLookUpsData(GetCurrentRequestLanguage()));
+            => Ok(await fingerPrintDeviceService.GetFingerPrintsLookUpsData(requestService.GetRequestHeaderLanguage));
         [HttpGet(ApiRoutes.FingerPrint.GetFingerPrintDeviceById)]
         public async Task<IActionResult> GetFingerPrintDeviceById(int id)
         {
             var response = await fingerPrintDeviceService.GetFingerPrintDeviceByIdAsync(id);
             if (response.Check)
             {
-                var lookups = await fingerPrintDeviceService.GetFingerPrintsLookUpsData(GetCurrentRequestLanguage()); // add comment 
+                var lookups = await fingerPrintDeviceService.GetFingerPrintsLookUpsData(requestService.GetRequestHeaderLanguage); // add comment 
                 response.LookUps = lookups.Data;
                 return Ok(response);
             }
@@ -103,12 +107,5 @@
         #endregion
 
 
-        #region Helper
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value +
-            HttpContext.Request.Path.Value;
-        #endregion
     }
 }

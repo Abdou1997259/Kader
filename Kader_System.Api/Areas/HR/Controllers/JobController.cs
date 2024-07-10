@@ -1,17 +1,21 @@
-﻿namespace Kader_System.Api.Areas.HR.Controllers
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.HR.Controllers
 {
     [Area(Modules.HR)]
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [Route("api/v1/")]
     [ApiController]
     [Authorize(Permissions.HR.View)]
-    public class JobController(IHrJobService jobService) : ControllerBase
+    public class JobController(IHrJobService jobService,IRequestService requestService) : ControllerBase
     {
+        private readonly IRequestService requestService = requestService;
+
         #region Retreive
 
         [HttpGet(ApiRoutes.Job.ListOfJobs)]
         public async Task<IActionResult> GetAllJobs()
-            => Ok(await jobService.ListOfJobsAsync(GetCurrentRequestLanguage()));
+            => Ok(await jobService.ListOfJobsAsync(requestService.GetRequestHeaderLanguage));
 
 
         [HttpGet(ApiRoutes.Job.GetJobById)]
@@ -29,7 +33,7 @@
         public async Task<IActionResult> GetAll([FromQuery] HrGetAllFilterationForJobRequest model)
         {
            
-            return Ok(await jobService.GetAllJobsAsync(GetCurrentRequestLanguage(), model,GetCurrentHost()));
+            return Ok(await jobService.GetAllJobsAsync(requestService.GetRequestHeaderLanguage, model,requestService.GetCurrentHost));
         }
         #endregion
 
@@ -86,17 +90,6 @@
                 return BadRequest(response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
-        #endregion
-
-        #region Helpers
-
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value+
-            HttpContext.Request.Path.Value;
-
         #endregion
 
     }
