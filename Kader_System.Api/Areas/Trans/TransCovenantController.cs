@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.Trans;
+﻿using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.IServices.Trans;
 
 namespace Kader_System.Api.Areas.Trans
 {
@@ -7,22 +8,23 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransCovenantController(ITransCovenantService service,IEmployeeService employeeService) : ControllerBase
+    public class TransCovenantController(ITransCovenantService service,IEmployeeService employeeService,IRequestService requestService) : ControllerBase
     {
+        private readonly IRequestService requestService = requestService;
         #region Get
 
         [HttpGet(ApiRoutes.TransCovenant.ListOfTransCovenants)]
         public async Task<IActionResult> ListOfTransCovenants() =>
-            Ok(await service.ListOfTransCovenantsAsync(GetCurrentRequestLanguage()));
+            Ok(await service.ListOfTransCovenantsAsync(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransCovenant.GetTransCovenants)]
         public async Task<IActionResult> GetAllTransCovenants([FromQuery] GetAllFilterationForTransCovenant request) =>
-            Ok(await service.GetAllTransCovenantsAsync(GetCurrentRequestLanguage(),request, GetCurrentHost()));
+            Ok(await service.GetAllTransCovenantsAsync(requestService.GetRequestHeaderLanguage,request, requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransCovenant.GetTransCovenantById)]
         public async Task<IActionResult> GetTransCovenantById([FromRoute] int id)
         {
-            var result =await service.GetTransCovenantByIdAsync(id, GetCurrentRequestLanguage());
+            var result =await service.GetTransCovenantByIdAsync(id, requestService.GetRequestHeaderLanguage);
             if (result.Check)
                 return Ok(result);
             else if (!result.Check)
@@ -33,7 +35,7 @@ namespace Kader_System.Api.Areas.Trans
         [HttpGet(ApiRoutes.TransCovenant.GetLookUps)]
         public async Task<IActionResult> GetLookUps()
         {
-            var result = await employeeService.GetEmployeesDataNameAndIdAsLookUp(GetCurrentRequestLanguage());
+            var result = await employeeService.GetEmployeesDataNameAndIdAsLookUp(requestService.GetRequestHeaderLanguage);
             if (result.Check)
                 return Ok(result);
             else if (!result.Check)
@@ -118,13 +120,6 @@ namespace Kader_System.Api.Areas.Trans
 
         #endregion
 
-        #region Helpers
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value +
-            HttpContext.Request.Path.Value;
-
-        #endregion
+        
     }
 }

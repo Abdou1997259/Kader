@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.DTOs.Request.HR.Loan;
+using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Trans;
 
 namespace Kader_System.Api.Areas.Trans
@@ -8,10 +9,10 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransLoanController(ITransLoanService service) : ControllerBase
+    public class TransLoanController(ITransLoanService service,IRequestService requestService) : ControllerBase
 
     {
-
+        private readonly IRequestService requestService = requestService;
 
 
         #region Retrieve
@@ -19,17 +20,17 @@ namespace Kader_System.Api.Areas.Trans
 
         [HttpGet(ApiRoutes.Loan.ListOfLoans)]
         public async Task<IActionResult> ListOfLoans()
-            => Ok(await service.ListLoansAsync(GetCurrentRequestLanguage()));
+            => Ok(await service.ListLoansAsync(requestService.GetRequestHeaderLanguage));
 
 
         [HttpGet(ApiRoutes.Loan.GetAllloans)]
         public async Task<IActionResult> GetAll([FromQuery] GetAllFilltrationForLoanRequest filter)
-            => Ok(await service.GetAllLoanAsync(GetCurrentRequestLanguage(), filter, GetCurrentHost()));
+            => Ok(await service.GetAllLoanAsync(requestService.GetRequestHeaderLanguage, filter, requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.Loan.GetloanById)]
         public async Task<IActionResult> GetById(int id)
         {
-            var response = await service.GetLoanByIdAsync(id, GetCurrentRequestLanguage());
+            var response = await service.GetLoanByIdAsync(id, requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -39,7 +40,7 @@ namespace Kader_System.Api.Areas.Trans
         [HttpGet(ApiRoutes.Loan.GetLookups)]
         public async Task<IActionResult> GetLookUpsAsync()
         {
-            var response = await service.GetLookUpsData(GetCurrentRequestLanguage());
+            var response = await service.GetLookUpsData(requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
             else
@@ -55,7 +56,7 @@ namespace Kader_System.Api.Areas.Trans
         {
             if (ModelState.IsValid)
             {
-                var result = await service.CreateLoanAsync(request, GetCurrentRequestLanguage());
+                var result = await service.CreateLoanAsync(request, requestService.GetRequestHeaderLanguage);
                 if (result.Check) return Ok(result);
                 else if (!result.Check) return BadRequest(result);
                 return BadRequest(result);
@@ -74,7 +75,7 @@ namespace Kader_System.Api.Areas.Trans
         {
             if (ModelState.IsValid)
             {
-                var result = await service.UpdateLoanAsync(id, request, GetCurrentRequestLanguage());
+                var result = await service.UpdateLoanAsync(id, request, requestService.GetRequestHeaderLanguage);
                 if (result.Check) return Ok(result);
                 else if (!result.Check) return BadRequest(result);
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, request);
@@ -84,7 +85,7 @@ namespace Kader_System.Api.Areas.Trans
         [HttpPut(ApiRoutes.Loan.RestoreLoan)]
         public async Task<IActionResult> RestoreTask(int id)
         {
-            var result = await service.RestoreLoanAsync(id, GetCurrentRequestLanguage());
+            var result = await service.RestoreLoanAsync(id, requestService.GetRequestHeaderLanguage);
             if (ModelState.IsValid)
             {
 
@@ -152,14 +153,7 @@ namespace Kader_System.Api.Areas.Trans
 
         #endregion
 
-        #region Helper
-
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value +
-            HttpContext.Request.Path.Value;
-        #endregion
+        
     }
 
 }
