@@ -9,7 +9,7 @@ public class MainScreensController(IMainScreenService service) : ControllerBase
 {
     #region Retrieve
     [HttpGet(ApiRoutes.MainScreen.ListOfMainScreens)]
-    public async Task<IActionResult> ListOfMainScreensAsync() =>
+    public async Task<IActionResult> ListOfMainScreensAsync() => 
         Ok(await service.ListOfMainScreensAsync(GetCurrentRequestLanguage()));
 
 
