@@ -33,6 +33,8 @@
     public class Empolyeelookups
     {
         public int Id { get; set; }
+        public int DepartmentId { get; set; }
+        public int MangmentId { get; set; }
         public string Name { get; set; }
     }
 }
