@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Services.IServices.Trans;
 
-public interface ITransSalaryIncrement
+public interface ITransSalaryIncrease
 {
     Task<Response<IEnumerable<SelectListOfTransVacationResponse>>> ListOfTransVacationsAsync(string lang);
     Task<Response<GetAllTransVacationResponse>> GetAllTransVacationsAsync(string lang, GetAllFilterationForTransVacationRequest model, string host);

@@ -12,5 +12,8 @@ namespace Kader_System.Domain.DTOs.Response.Trans
         public int salrayIncreaseTypeId {  get; set; }
         public string details { get; set; }
         public double increaseValue { get; set; }
+        public DateTime transationDate { get; set; }
+        public DateTime dueDate { get; set; }
+
     }
 }
