@@ -1,21 +1,25 @@
-﻿namespace Kader_System.Api.Areas.Setting.Controllers;
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.Setting)]
 [ApiExplorerSettings(GroupName = Modules.Setting)]
 [ApiController]
 [Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
-public class MainScreensController(IMainScreenService service) : ControllerBase
+public class MainScreensController(IMainScreenService service,IRequestService requestService) : ControllerBase
 {
+    private readonly IRequestService requestService = requestService;
+
     #region Retrieve
     [HttpGet(ApiRoutes.MainScreen.ListOfMainScreens)]
-    public async Task<IActionResult> ListOfMainScreensAsync() =>
+    public async Task<IActionResult> ListOfMainScreensAsync() => 
         Ok(await service.ListOfMainScreensAsync(GetCurrentRequestLanguage()));
 
 
     [HttpGet(ApiRoutes.MainScreen.GetAllMainScreens)]
     public async Task<IActionResult> GetAllMainScreensAsync([FromQuery] StGetAllFiltrationsForMainScreenRequest model) =>
-        Ok(await service.GetAllMainScreensAsync(GetCurrentRequestLanguage(), model));
+        Ok(await service.GetAllMainScreensAsync(requestService.GetRequestHeaderLanguage, model));
 
     [HttpGet(ApiRoutes.MainScreen.GetMainScreenById)]
     public async Task<IActionResult> GetMainScreenByIdAsync([FromRoute] int id)
@@ -77,11 +81,5 @@ public class MainScreensController(IMainScreenService service) : ControllerBase
 
     #endregion
 
-    #region Helpers
-
-    private string GetCurrentRequestLanguage() =>
-        Request.Headers.AcceptLanguage.ToString().Split(',').First();
-
-    #endregion
 
 }

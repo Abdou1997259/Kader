@@ -13,6 +13,7 @@ using Kader_System.Domain.Interfaces.StaticDataRepository;
 using Kader_System.Domain.Interfaces.Trans;
 using Kader_System.Domain.Options;
 using Kader_System.Domain.SwaggerFilter;
+using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Trans;
 using Kader_System.Services.Services.Auth;
 using Kader_System.Services.Services.HR;
@@ -244,6 +245,7 @@ builder.Services.AddScoped<ITransLoanService, TransLoanService>();
 builder.Services.AddScoped<ITransCalcluateSalaryService, TransCalcluateSalaryService>();
 builder.Services.AddScoped<ISalaryIncreaseTypeRepository, SalaryIncreaseTypeRepository>();
 builder.Services.AddScoped<ITransSalaryIncreaseRepository, TransSalaryIncreaseRepository>();
+builder.Services.AddScoped<IRequestService, RequestService>();
 #endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");
 var httpsPort = builder.Configuration.GetValue<int>("KestrelServer:Https.Port");

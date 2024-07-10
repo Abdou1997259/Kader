@@ -1,4 +1,6 @@
-﻿namespace Kader_System.Api.Areas.Setting.Controllers;
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.Setting)]
 [ApiExplorerSettings(GroupName = Modules.Setting)]
@@ -6,16 +8,18 @@
 [Authorize(Permissions.MainScreenCat.View)]
 [Route("api/v1/")]
 
-public class MainScreensCategoriesController(IMainScreenCategoryService service) : ControllerBase
+public class MainScreensCategoriesController(IMainScreenCategoryService service,IRequestService requestService) : ControllerBase
 {
+    private readonly IRequestService requestService = requestService;
+
     #region Retrieve
     [HttpGet(ApiRoutes.MainScreenCategory.ListOfMainScreensCategories)]
     public async Task<IActionResult> ListOfMainScreensCategoriesAsync() =>
-        Ok(await service.ListOfMainScreensCategoriesAsync(GetCurrentRequestLanguage()));
+        Ok(await service.ListOfMainScreensCategoriesAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.MainScreenCategory.GetAllMainScreenCategories)]
     public async Task<IActionResult> GetAllMainScreensCategoriesAsync([FromQuery] StGetAllFiltrationsForMainScreenCategoryRequest model) =>
-        Ok(await service.GetAllMainScreensCategoriesAsync(GetCurrentRequestLanguage(), model));
+        Ok(await service.GetAllMainScreensCategoriesAsync(requestService.GetRequestHeaderLanguage, model));
 
     [HttpGet(ApiRoutes.MainScreenCategory.GetMainScreenCategoryById)]
     public async Task<IActionResult> GetMainScreenCategoryByIdAsync(int id)
@@ -73,13 +77,5 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service)
     }
 
     #endregion
-
-    #region Helpers
-
-    private string GetCurrentRequestLanguage() =>
-        Request.Headers.AcceptLanguage.ToString().Split(',').First();
-
-    #endregion
-
 
 }
