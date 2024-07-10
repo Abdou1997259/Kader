@@ -294,8 +294,9 @@ public static class SD
         {
             public const string DetailedCalculations = "transSalary/getdetailedcalculation";
             public const string Calculate = "transSalary/calculate";
-
-
+            public const string GetLookUps = "transSalary/getLookUps";
+            public const string GetTransCalculator = "transSalary/getAll";
+            public const string DeleteCalculator = "transSalary/delete";
 
         }
         public class Management

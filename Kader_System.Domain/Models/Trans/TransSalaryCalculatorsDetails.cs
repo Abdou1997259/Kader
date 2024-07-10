@@ -8,10 +8,12 @@
 
         public int EmployeeId { get; set; }
         public double Salary { get; set; }
+        public double Amount { get; set; }
         public int TransSalaryCalculatorsId { get; set; }
 
         [ForeignKey(nameof(TransSalaryCalculatorsId))]
         public TransSalaryCalculator TransSalaryCalculators { get; set; } = default!;
+
 
     }
 }

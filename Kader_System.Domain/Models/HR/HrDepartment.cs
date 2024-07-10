@@ -12,4 +12,6 @@ public class HrDepartment : BaseEntity
     public int ManagementId { get; set; }
     [ForeignKey(nameof(ManagementId))]
     public HrManagement Management { get; set; }
+
+
 }
