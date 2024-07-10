@@ -53,13 +53,8 @@ namespace Kader_System.DataAccess.Repositories
                 SqlDbType = SqlDbType.VarChar,
                 Value = listEmployeesString
             };
-            var result = await _db.SpCaclauateSalaryDetailsModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_Details {startOfMonth}, {endCalculationDate}, {empsParameter}").ToListAsync();
-
-
-
-
-
-            return result;
+            //var result = await _db.SpCaclauateSalaryDetailsModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_Details {startOfMonth}, {endCalculationDate}, {empsParameter}").ToListAsync();
+            return null;
 
         }
         public async Task<IEnumerable<SpCaclauateSalaryDetails>> SpCalculateSalaryDetails(DateOnly startCalculationDate, DateOnly endCalculationDate, string listEmployeesString)
@@ -126,7 +121,7 @@ namespace Kader_System.DataAccess.Repositories
             IEnumerable<SpCaclauateSalaryDetailedTrans> result = null;
 
 
-            result = await _db.SpCaclauateSalaryDetailedTransModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_DetailedTrans {startOfMonth}, {endCalculationDate}, {empsParameter}").ToListAsync();
+            //result = await _db.SpCaclauateSalaryDetailedTransModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_DetailedTrans {startOfMonth}, {endCalculationDate}, {empsParameter}").ToListAsync();
 
 
 
