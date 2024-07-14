@@ -1,20 +1,25 @@
-﻿namespace Kader_System.Api.Areas.Setting.Controllers;
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.HR)]
 [Authorize(Permissions.HR.View)]
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Route("api/v1/")]
-public class AllowancesController(IAllowanceService service) : ControllerBase
+public class AllowancesController(IAllowanceService service,IRequestService requestService) : ControllerBase
 {
+
+    private readonly IRequestService requestService = requestService;
+
     #region Retreieve
     [HttpGet(ApiRoutes.Allowance.ListOfAllowances)]
     public async Task<IActionResult> ListOfAllowancesAsync() =>
-        Ok(await service.ListOfAllowancesAsync(GetCurrentRequestLanguage()));
+        Ok(await service.ListOfAllowancesAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.Allowance.GetAllAllowances)]
     public async Task<IActionResult> GetAllAllowancesAsync([FromQuery] HrGetAllFiltrationsForAllowancesRequest model) =>
-        Ok(await service.GetAllAllowancesAsync(GetCurrentRequestLanguage(), model, GetCurrentHost()));
+        Ok(await service.GetAllAllowancesAsync(requestService.GetRequestHeaderLanguage, model,requestService.GetCurrentHost));
 
     [HttpGet(ApiRoutes.Allowance.GetAllowanceById)]
     public async Task<IActionResult> GetAllowanceByIdAsync(int id)
@@ -84,14 +89,6 @@ public class AllowancesController(IAllowanceService service) : ControllerBase
 
     #endregion
 
-    #region Helpers
-    private string GetCurrentRequestLanguage() =>
-        Request.Headers.AcceptLanguage.ToString().Split(',').First();
-
-    private string GetCurrentHost() =>
-        HttpContext.Request.Host.Value +
-        HttpContext.Request.Path.Value;
-    #endregion
 
 
 }

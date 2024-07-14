@@ -1,20 +1,24 @@
-﻿namespace Kader_System.Api.Areas.Setting.Controllers;
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.HR)]
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Authorize(Permissions.HR.View)]
 [Route("api/v1/")]
-public class QualificationsController(IQualificationService service) : ControllerBase
+public class QualificationsController(IQualificationService service,IRequestService requestService) : ControllerBase
 {
+    private readonly IRequestService requestService = requestService;
+
     #region Retrieve
     [HttpGet(ApiRoutes.Qualification.ListOfQualifications)]
     public async Task<IActionResult> ListOfQualificationsAsync() =>
-        Ok(await service.ListOfQualificationsAsync(GetCurrentRequestLanguage()));
+        Ok(await service.ListOfQualificationsAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.Qualification.GetAllQualifications)]
     public async Task<IActionResult> GetAllDeductionsAsync([FromQuery] HrGetAllFiltrationsForQualificationsRequest model) =>
-        Ok(await service.GetAllQualificationsAsync(GetCurrentRequestLanguage(), model, GetCurrentHost()));
+        Ok(await service.GetAllQualificationsAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
 
     [HttpGet(ApiRoutes.Qualification.GetQualificationById)]
@@ -83,16 +87,5 @@ public class QualificationsController(IQualificationService service) : Controlle
     }
 
     #endregion
-
-
-    #region Helpers
-
-    private string GetCurrentRequestLanguage() =>
-        Request.Headers.AcceptLanguage.ToString().Split(',').First();
-    private string GetCurrentHost() =>
-        HttpContext.Request.Host.Value +
-        HttpContext.Request.Path.Value;
-    #endregion
-
 
 }

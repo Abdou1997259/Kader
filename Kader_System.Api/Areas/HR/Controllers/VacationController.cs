@@ -1,6 +1,7 @@
 ﻿
 
 using Kader_System.Domain.DTOs.Request.HR.Vacation;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.HR.Controllers
 {
@@ -9,20 +10,21 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiController]
     [Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
-    public class VacationController (IVacationService service): ControllerBase
+    public class VacationController (IVacationService service,IRequestService requestService): ControllerBase
     {
 
+        private readonly IRequestService requestService = requestService;
 
 
         #region Retrieve
         [HttpGet(ApiRoutes.Vacation.ListOfVacations)]
         public async Task<ActionResult> ListOfVacations()
             =>
-                Ok(await service.ListOfVacationsAsync(GetCurrentRequestLanguage()));
+                Ok(await service.ListOfVacationsAsync(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.Vacation.GetAllVacations)]
         public async Task<IActionResult> GetAllVacationsAsync([FromQuery] GetAllFilterationFoVacationRequest model) =>
-            Ok(await service.GetAllVacationsWithJoinAsync(GetCurrentRequestLanguage(), model, GetCurrentHost()));
+            Ok(await service.GetAllVacationsWithJoinAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
 
         [HttpGet(ApiRoutes.Vacation.GetVacationById)]
@@ -93,13 +95,5 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
         #endregion
 
-        #region Helpers
-
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value +
-            HttpContext.Request.Path.Value;
-        #endregion
     }
 }

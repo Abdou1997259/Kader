@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.Trans;
+﻿using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.IServices.Trans;
 
 namespace Kader_System.Api.Areas.Trans
 {
@@ -7,22 +8,23 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransAllowanceController(ITransAllowanceService service) : ControllerBase
+    public class TransAllowanceController(ITransAllowanceService service, IRequestService requestService) : ControllerBase
     {
+        private readonly IRequestService requestService = requestService;
         #region Get
         [HttpGet(ApiRoutes.TransAllowance.ListOfTransAllowances)]
         public async Task<IActionResult> ListOfTransAllowance() =>
-            Ok(await service.ListOfTransAllowancesAsync(GetCurrentRequestLanguage()));
+            Ok(await service.ListOfTransAllowancesAsync(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransAllowance.GetAllTransAllowances)]
         public async Task<IActionResult> GetAllTransAllowances([FromQuery] GetAllFilterationAllowanceRequest model) =>
-            Ok(await service.GetAllTransAllowancesAsync(GetCurrentRequestLanguage(),model, GetCurrentHost()));
+            Ok(await service.GetAllTransAllowancesAsync(requestService.GetRequestHeaderLanguage,model, requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransAllowance.GetTransAllowanceById)]
         public async Task<IActionResult> GetTransAllowanceById([FromRoute]int id)
         {
-            var response = await service.GetTransAllowanceByIdAsync(id,GetCurrentRequestLanguage());
-            var lookUps = await service.GetAllowancesLookUpsData(GetCurrentRequestLanguage());
+            var response = await service.GetTransAllowanceByIdAsync(id,requestService.GetRequestHeaderLanguage);
+            var lookUps = await service.GetAllowancesLookUpsData(requestService.GetRequestHeaderLanguage);
             if (response.Check)
             {
                 response.LookUps = lookUps.Data;
@@ -37,7 +39,7 @@ namespace Kader_System.Api.Areas.Trans
         [HttpGet(ApiRoutes.TransAllowance.GetLookupsTransAllowances)]
         public async Task<IActionResult> GetLookupsTransAllowances()
         {
-            var response = await service.GetAllowancesLookUpsData(GetCurrentRequestLanguage());
+            var response = await service.GetAllowancesLookUpsData(requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -117,13 +119,6 @@ namespace Kader_System.Api.Areas.Trans
         #endregion
 
 
-        #region Helpers
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value +
-            HttpContext.Request.Path.Value;
-        #endregion
+        
     }
 }
