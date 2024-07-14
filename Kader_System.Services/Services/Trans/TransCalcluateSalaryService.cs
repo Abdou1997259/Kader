@@ -369,6 +369,10 @@ namespace Kader_System.Services.Services.Trans
             var vacations = await _unitOfWork.TransVacations.GetAllAsync();
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> b9a65b4abfe6252050e037faf09b6d12d7971732
             var contracts = await _unitOfWork.Contracts.GetAllAsync();
 
             if (empolyees is null)
@@ -391,11 +395,17 @@ namespace Kader_System.Services.Services.Trans
                     EmployeeName = Localization.Arabic == lang ? x.FullNameAr : x.FullNameEn,
                     AccommodationAllowance = x.AccommodationAllowance,
                     BasicSalary = x.TotalSalary,
+<<<<<<< HEAD
 
                     WrokingDay = 30,
 
                     HousingAllownces = contracts.Where(c => c.EmployeeId == x.EmployeeId).Select(s => s.HousingAllowance).FirstOrDefault(),
 
+=======
+                    HousingAllownces = contracts.Where(c => c.EmployeeId == x.EmployeeId).Select(s => s.HousingAllowance).FirstOrDefault(),
+                    WrokingDay = 30,
+
+>>>>>>> b9a65b4abfe6252050e037faf09b6d12d7971732
                     DisbursementType = DisbursementType.BankingType,
                     Headers = new Header
                     {
