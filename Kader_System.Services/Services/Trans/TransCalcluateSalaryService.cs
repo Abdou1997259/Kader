@@ -367,7 +367,7 @@ namespace Kader_System.Services.Services.Trans
             var spcaculatedSalarytransDetils = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()))).Where(x => x.CalculateSalaryId != null);
 
             var vacations = await _unitOfWork.TransVacations.GetAllAsync();
-
+            var contracts = await _unitOfWork.Contracts.GetAllAsync();
 
 
 
@@ -393,6 +393,7 @@ namespace Kader_System.Services.Services.Trans
                     AccommodationAllowance = x.AccommodationAllowance,
                     BasicSalary = x.TotalSalary,
                     WrokingDay = 30,
+                    HousingAllownces = contracts.Where(c => c.EmployeeId == x.EmployeeId).Select(s => s.HousingAllowance).FirstOrDefault(),
                     DisbursementType = DisbursementType.BankingType,
                     Headers = new Header
                     {
