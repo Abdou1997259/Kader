@@ -370,7 +370,7 @@ namespace Kader_System.Services.Services.Trans
 
 
 
-
+            var contracts = await _unitOfWork.Contracts.GetAllAsync();
 
             if (empolyees is null)
             {
@@ -392,6 +392,7 @@ namespace Kader_System.Services.Services.Trans
                     EmployeeName = Localization.Arabic == lang ? x.FullNameAr : x.FullNameEn,
                     AccommodationAllowance = x.AccommodationAllowance,
                     BasicSalary = x.TotalSalary,
+                    HousingAllownces = contracts.Where(c => c.EmployeeId == x.EmployeeId).Select(s => s.HousingAllowance).FirstOrDefault(),
                     WrokingDay = 30,
                     DisbursementType = DisbursementType.BankingType,
                     Headers = new Header
