@@ -4,7 +4,7 @@
     {
         public int EmployeeId { get; set; }
         public string EmployeeName { get; set; }
-
+        public double HousingAllownces { get; set; }
         public int WrokingDay { get; set; }
         public double BasicSalary { get; set; }
         public double AccommodationAllowance { get; set; }
