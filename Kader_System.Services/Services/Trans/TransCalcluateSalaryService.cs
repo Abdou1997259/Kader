@@ -286,10 +286,33 @@ namespace Kader_System.Services.Services.Trans
                         Amount = x.TransSalaryCalculatorsDetails.Sum(s => s.Amount),
                         CalculationDate = x.DocumentDate,
                         AddedDate = x.Add_date,
-                        AddedBy = x.Added_by,
+                        AddedBy = x.DeleteBy
 
                     }, orderBy: x =>
-                x.OrderByDescending(x => x.Id), includeProperties: "TransSalaryCalculatorsDetails")).ToList(),
+                x.OrderByDescending(x => x.Id), includeProperties: "TransSalaryCalculatorsDetails")).AsEnumerable().Select(
+                    x => new GetSalaryCalculatorList
+                    {
+                        Id = x.Id,
+                        Description = x.Description,
+                        Status = x.Status,
+                        Amount = x.Amount,
+                        CalculationDate = x.CalculationDate,
+                        AddedDate = x.AddedDate,
+                        AddedBy = empolyeeWithJobs.Where(e => e.UserId == x.AddedBy)
+                                       .Select(e => lang == Localization.Arabic ? e.FirstNameAr + " " + e.FamilyNameAr : e.FirstNameEn + " " + e.FamilyNameEn)
+                                       .FirstOrDefault(),
+
+                        JobName = empolyeeWithJobs.Where(e => e.UserId == x.AddedBy)
+                                      .Select(e => lang == Localization.Arabic ? e.Job.NameAr : e.Job.NameEn)
+                                      .FirstOrDefault()
+                    }
+
+
+                    ).ToList()
+
+
+
+                ,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -342,8 +365,8 @@ namespace Kader_System.Services.Services.Trans
 
             var empolyeeWithCaculatedSalary = await _unitOfWork.StoredProcuduresRepo.SpCalculateSalary(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()));
             var spcaculatedSalarytransDetils = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()))).Where(x => x.CalculateSalaryId != null);
-            var vacations = await _unitOfWork.TransVacations.GetAllAsync();
 
+            var vacations = await _unitOfWork.TransVacations.GetAllAsync();
 
 
 
@@ -371,7 +394,24 @@ namespace Kader_System.Services.Services.Trans
                     BasicSalary = x.TotalSalary,
                     WrokingDay = 30,
                     DisbursementType = DisbursementType.BankingType,
+                    Headers = new Header
+                    {
+                        WorkedDays = Localization.Arabic == lang ? "ايام العمل" : "Wroking Days",
+                        TotalAll = lang == Localization.Arabic ? "الاجمالي" : "Total",
+                        TotalMinues = lang == Localization.Arabic ? "مجموع الحسميان" : "Total Minues",
+                        TotalAdditionalValues = lang == Localization.Arabic ? "مجموع الاضافات" : "Total Additional",
 
+                        Absent = lang == Localization.Arabic ? ["الايام", "مبلغ"] : ["Days", "Amount"],
+                        EmpolyeeId = Localization.Arabic == lang ? "الرقم الوظيفي" : "Employee Id",
+                        EmpolyeeName = Localization.Arabic == lang ? "الاسم الوظيفي" : "Employee Name",
+                        Fixed = Localization.Arabic == lang ? "الاساسي" : "Fixed",
+                        AddtionalValues = spcaculatedSalarytransDetils.Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Benefit || JournalType.Allowance == e.JournalType).AsEnumerable().Select(s => s.JournalType.ToString()).ToList(),
+
+                        MinuesValues = spcaculatedSalarytransDetils.Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Deduction || JournalType.Loan == e.JournalType).AsEnumerable().Select(s => s.JournalType.ToString()).ToList(),
+
+
+
+                    },
                     MinuesValues = new MinuesValues
                     {
                         Deductions = spcaculatedSalarytransDetils.Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Deduction).Select(t => new Deduction
@@ -398,6 +438,7 @@ namespace Kader_System.Services.Services.Trans
                     {
                         Id = t.TransId,
                         Name = t.JournalType.ToString(),
+
                         Value = t.CalculatedSalary
                     })
 
