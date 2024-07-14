@@ -394,6 +394,7 @@ namespace Kader_System.Services.Services.Trans
                     BasicSalary = x.TotalSalary,
                     HousingAllownces = contracts.Where(c => c.EmployeeId == x.EmployeeId).Select(s => s.HousingAllowance).FirstOrDefault(),
                     WrokingDay = 30,
+                
                     DisbursementType = DisbursementType.BankingType,
                     Headers = new Header
                     {
