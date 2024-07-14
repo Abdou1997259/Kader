@@ -367,13 +367,8 @@ namespace Kader_System.Services.Services.Trans
             var spcaculatedSalarytransDetils = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()))).Where(x => x.CalculateSalaryId != null);
 
             var vacations = await _unitOfWork.TransVacations.GetAllAsync();
-            var contracts = await _unitOfWork.Contracts.GetAllAsync();
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> b9a65b4abfe6252050e037faf09b6d12d7971732
             var contracts = await _unitOfWork.Contracts.GetAllAsync();
 
             if (empolyees is null)
