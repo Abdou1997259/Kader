@@ -1,4 +1,6 @@
-﻿namespace Kader_System.Services.Services.Trans
+﻿using Kader_System.Domain.DTOs;
+
+namespace Kader_System.Services.Services.Trans
 {
     public class TransCalcluateSalaryService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IStringLocalizer<SharedResource> localizer) : ITransCalcluateSalaryService
     {
@@ -242,100 +244,86 @@
 
         }
 
-        public async Task<Response<IEnumerable<GetSalaryCalculatorResponse>>> GetAllCalculators(GetSalaryCalculatorFilterRequest model, string host, string lang)
+        public async Task<Response<GetSalaryCalculatorResponse>> GetAllCalculators(GetSalaryCalculatorFilterRequest model, string host, string lang)
         {
-            Expression<Func<TransSalaryCalculator, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-                                               (string.IsNullOrEmpty(model.status.ToString()) || x.Status.ToString() == model.status.ToString());
+            Expression<Func<TransSalaryCalculator, bool>> filter = x => x.IsDeleted == model.IsDeleted;
 
-            //var totalRecords = await _unitOfWork.TransSalaryCalculator.CountAsync(filter: filter);
-            //int page = 1;
-            //int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
-            //if (model.PageNumber < 1)
-            //    page = 1;
-            //else
-            //    page = model.PageNumber;
-            //var pageLinks = Enumerable.Range(1, totalPages)
-            //    .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
-            //    .ToList();
-            //var transations = await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, includeProperties: "TransSalaryCalculatorsDetails");
-
-            //if (transations is null)
-            //{
-            //    var msg = _localizer[Localization.NotFoundData];
-            //    return new()
-            //    {
-            //        Data = null,
-            //        Msg = msg,
-            //        Check = false
-            //    };
-            //}
-            //var result = new GetSalaryCalculatorResponse
-            //{
-            //    TotalRecords = await _unitOfWork.TransSalaryCalculator.CountAsync(filter: filter),
-
-            //    Items = (await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(filter: filter,
-            //        take: model.PageSize,
-            //        skip: (model.PageNumber - 1) * model.PageSize,
-            //        select:  x => new GetSalaryCalculatorList
-            //        {
-            //             Description=x.Description,
-            //              Status=x.Status,
-            //              AddedBy=x.Added_by,
-            //                               }, orderBy: x =>
-            //          x.OrderByDescending(x => x.Id), includeProperties: "TransSalaryCalculatorsDetails")).ToList(),
-            //    CurrentPage = model.PageNumber,
-            //    FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
-            //    From = (page - 1) * model.PageSize + 1,
-            //    To = Math.Min(page * model.PageSize, totalRecords),
-            //    LastPage = totalPages,
-            //    LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
-            //    PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
-            //    NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
-            //    Path = host,
-            //    PerPage = model.PageSize,
-            //    Links = pageLinks,
-            //};
-
-            //if (result.TotalRecords is 0)
-            //{
-            //    string resultMsg = _sharLocalizer[Localization.NotFoundData];
-
-            //    return new()
-            //    {
-            //        Data = new()
-            //        {
-            //            Items = []
-            //        },
-            //        Error = resultMsg,
-            //        Msg = resultMsg
-            //    };
-            //}
-
-            //return new()
-            //{
-            //    Data = result,
-            //    Check = true
-            //};
-            //return new()
-            //{
-            //    Check = true,
-            //    Data = transations.Select(x => new GetSalaryCalculatorResponse
-            //    {
-            //        CalculationDate = x.DocumentDate,
-            //        Amount = x.TransSalaryCalculatorsDetails.Sum(x => x.Amount),
-            //        DocDate = x.Add_date,
-            //        Id = x.Id,
-            //    })
-
-            //};
-
+            var empolyeeWithJobs = await _unitOfWork.Employees.GetSpecificSelectAsync(x => true, x => x, includeProperties: "Job");
+            var totalRecords = await _unitOfWork.TransSalaryCalculator.CountAsync(filter: filter);
+            int page = 1;
+            int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+            if (model.PageNumber < 1)
+                page = 1;
+            else
+                page = model.PageNumber;
+            var pageLinks = Enumerable.Range(1, totalPages)
+                .Select(p => new Link { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+                .ToList();
+            var transations = await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, includeProperties: "TransSalaryCalculatorsDetails");
             var msg = _localizer[Localization.NotFoundData];
+            if (transations is null)
+            {
+
+                return new()
+                {
+                    Data = null,
+                    Msg = msg,
+                    Check = false
+                };
+            }
+            var result = new GetSalaryCalculatorResponse
+            {
+                TotalRecords = await _unitOfWork.TransSalaryCalculator.CountAsync(filter: filter),
+
+                Items = (await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(filter: filter,
+                    take: model.PageSize,
+                    skip: (model.PageNumber - 1) * model.PageSize,
+                    select: x => new GetSalaryCalculatorList
+                    {
+                        Id = x.Id,
+                        Description = x.Description,
+                        Status = x.Status,
+                        Amount = x.TransSalaryCalculatorsDetails.Sum(s => s.Amount),
+                        CalculationDate = x.DocumentDate,
+                        AddedDate = x.Add_date,
+                        AddedBy = x.Added_by,
+
+                    }, orderBy: x =>
+                x.OrderByDescending(x => x.Id), includeProperties: "TransSalaryCalculatorsDetails")).ToList(),
+                CurrentPage = model.PageNumber,
+                FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+                From = (page - 1) * model.PageSize + 1,
+                To = Math.Min(page * model.PageSize, totalRecords),
+                LastPage = totalPages,
+                LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+                PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+                NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+                Path = host,
+                PerPage = model.PageSize,
+                Links = pageLinks
+            };
+
+            if (result.TotalRecords is 0)
+            {
+                string resultMsg = _localizer[Localization.NotFoundData];
+
+                return new()
+                {
+                    Data = null,
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
             return new()
             {
-                Data = null,
-                Msg = msg,
-                Check = false
+
+                Data = result,
+                Check = true
             };
+
+
+
+
         }
 
         public async Task<Response<IEnumerable<GetSalariesEmployeeResponse>>> GetDetailsOfCalculation(CalcluateEmpolyeeFilters model, string lang)

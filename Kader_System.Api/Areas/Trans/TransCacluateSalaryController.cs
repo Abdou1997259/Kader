@@ -31,9 +31,9 @@ namespace Kader_System.Api.Areas.Trans
             return Ok(result);
         }
         [HttpGet(ApiRoutes.TransSalaryCalculatorEndpoint.GetTransCalculator)]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync([FromQuery] GetSalaryCalculatorFilterRequest model)
         {
-            var result = await service.GetAllCalculators();
+            var result = await service.GetAllCalculators(model, GetCurrentHost(), GetCurrentRequestLanguage());
 
             if (result == null)
                 return BadRequest(result);
