@@ -101,6 +101,7 @@ public class HrEmployee : BaseEntity
     //[ForeignKey(nameof(ManagementId))]
     public HrManagement Management { get; set; } = default!;
 
+
     public int DepartmentId { get; set; }
     //[ForeignKey(nameof(DepartmentId))]
     public HrDepartment Department { get; set; } = default!;

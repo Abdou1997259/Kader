@@ -115,6 +115,16 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasForeignKey(x => x.TransLoanId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TransSalaryCalculator>()
+      .Property(p => p.Status)
+      .HasConversion(
+          x => x.ToString(),
+          v => string.IsNullOrEmpty(v)
+               ? Status.None
+               : (Status)Enum.Parse(typeof(Status), v)
+      );
+
         modelBuilder.Entity<SpCacluateSalary>().HasNoKey();
         //modelBuilder.Entity<SpCacluateSalary>().Property(x => ).HasConversion(
 
