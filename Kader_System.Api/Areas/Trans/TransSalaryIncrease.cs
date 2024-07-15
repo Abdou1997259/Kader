@@ -9,7 +9,7 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransSalaryIncrease(ITransSalaryIncreaseRepository service) : ControllerBase
+    public class TransSalaryIncrease(ITransSalaryIncreaseService service,IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
         private readonly ITransSalaryIncreaseService _service = service;
