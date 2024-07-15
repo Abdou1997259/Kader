@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    [Migration("20240624075925_add-laon-table")]
-    partial class addlaontable
+    [Migration("20240715094034_main-migration")]
+    partial class mainmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -224,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "eba158f5-d1f5-4f23-84e9-170e65377e73",
+                            ConcurrencyStamp = "c76649a9-ddfa-445d-9f7f-848db3851372",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -232,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKKATrxnzHka18hmoTEJ2+u+u6XpigxoFI0iCvP9JbUXOtSXsrTGjE/EQp9CX9425g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJej//H+xGlSgfa+otcdJS9vT/0QVnG3VpsaSy/dcsObxlxiD4iOT7GwHaju5Tynfw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b8f7fae0-3db8-4c9e-a1d8-1cc230e1c3c7",
+                            SecurityStamp = "aa56a45c-c884-4435-bb18-5369b734a656",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -1006,6 +1006,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<double>("AccommodationAllowance")
+                        .HasColumnType("float");
+
                     b.Property<long?>("AccountNo")
                         .HasColumnType("bigint");
 
@@ -1494,82 +1497,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Hr_Jobs");
-                });
-
-            modelBuilder.Entity("Kader_System.Domain.Models.HR.HrLoan", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("Add_date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Added_by")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DeleteBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeleteDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DocumentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<short>("DocumentType")
-                        .HasColumnType("smallint");
-
-                    b.Property<int>("EmpolyeeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("EndDoDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("InstallmentCount")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeductedFromSalary")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("LoanAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("LoanDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("MakePaymentJournal")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("MonthlyDeducted")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("PrevDedcutedAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("StartLoanDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UpdateBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Hr_Loan");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrManagement", b =>
@@ -2557,6 +2484,64 @@ namespace Kader_System.DataAccess.Migrations
                     b.ToTable("Com_Logs");
                 });
 
+            modelBuilder.Entity("Kader_System.Domain.Models.Setting.MainScreenTree", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Add_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Added_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeleteBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ScreenTitleAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ScreenTitleEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdateBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("MainScreenTrees");
+                });
+
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.Screen", b =>
                 {
                     b.Property<int>("Id")
@@ -2958,6 +2943,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("MainScreenTreeId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ScreenSubId")
                         .HasColumnType("int");
 
@@ -2970,6 +2958,8 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ActionId");
+
+                    b.HasIndex("MainScreenTreeId");
 
                     b.HasIndex("ScreenSubId");
 
@@ -3049,6 +3039,138 @@ namespace Kader_System.DataAccess.Migrations
                     b.ToTable("TitlePermissions");
                 });
 
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.AdvancedType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AdvanceTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Advanced_Types");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            AdvanceTypeName = "سلفة"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            AdvanceTypeName = "مخالفة مرورية"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            AdvanceTypeName = "حوادث وأصلاحات"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            AdvanceTypeName = "نقل خدمات"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            AdvanceTypeName = "مخالفة مرورية"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            AdvanceTypeName = "تأمينات"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            AdvanceTypeName = "تسويات اخري"
+                        });
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCaclauateSalaryDetailedTrans", b =>
+                {
+                    b.Property<double?>("AccommodationAllowance")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("CalculateSalaryDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CalculateSalaryId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("CalculatedSalary")
+                        .HasColumnType("float");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FullNameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullNameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("JournalDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("JournalType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TransId")
+                        .HasColumnType("int");
+
+                    b.ToTable("SpCaclauateSalaryDetailedTransModel");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCaclauateSalaryDetails", b =>
+                {
+                    b.Property<double>("CalculatedSalary")
+                        .HasColumnType("float");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("JournalType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("SpCaclauateSalaryDetailsModel");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCacluateSalary", b =>
+                {
+                    b.Property<double>("AccommodationAllowance")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CalculatedSalary")
+                        .HasColumnType("float");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FullNameAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullNameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("TotalSalary")
+                        .HasColumnType("float");
+
+                    b.ToTable("SpCacluateSalariesModel");
+                });
+
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransAllowance", b =>
                 {
                     b.Property<int>("Id")
@@ -3071,6 +3193,12 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
+
+                    b.Property<int?>("CalculateSalaryDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CalculateSalaryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
@@ -3213,6 +3341,12 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int>("BenefitId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CalculateSalaryDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CalculateSalaryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -3347,6 +3481,12 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("AttachmentExtension")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("CalculateSalaryDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CalculateSalaryId")
+                        .HasColumnType("int");
+
                     b.Property<int>("DeductionId")
                         .HasColumnType("int");
 
@@ -3388,6 +3528,264 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("SalaryEffectId");
 
                     b.ToTable("Trans_Deductions");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransLoan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Add_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Added_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<short>("AdvanceType")
+                        .HasColumnType("smallint");
+
+                    b.Property<int?>("CalculateSalaryDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CalculateSalaryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DeleteBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateOnly>("DocumentDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("EndCalculationDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("EndDoDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("InstallmentCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("LoanAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateOnly>("LoanDate")
+                        .HasColumnType("date");
+
+                    b.Property<short>("LoanType")
+                        .HasColumnType("smallint");
+
+                    b.Property<decimal>("MonthlyDeducted")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("PrevDedcutedAmount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateOnly>("StartCalculationDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("StartLoanDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("UpdateBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Trans_Loan");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransLoanDetails", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Add_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Added_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateOnly>("DeductionDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("DelayCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DeleteBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateOnly?>("PaymentDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("TransLoanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdateBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransLoanId");
+
+                    b.ToTable("Trans_Loan_Details");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransSalaryCalculator", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Add_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Added_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("CalculationDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DeleteBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("DocumentDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsMigrated")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ManagementId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdateBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("trans_salary_calculators");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransSalaryCalculatorDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Add_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Added_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<string>("DeleteBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("Salary")
+                        .HasColumnType("float");
+
+                    b.Property<int>("TransSalaryCalculatorsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdateBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TransSalaryCalculatorsId");
+
+                    b.ToTable("trans_salary_calculators_details");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransSalaryEffect", b =>
@@ -3497,6 +3895,15 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("dueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("salaryAfterIncrease")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("transactionDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Employee_id");
@@ -3525,6 +3932,12 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("AttachmentExtension")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CalculateSalaryDetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CalculateSalaryId")
+                        .HasColumnType("int");
 
                     b.Property<double>("DaysCount")
                         .HasColumnType("float");
@@ -3927,6 +4340,16 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("Vacation");
                 });
 
+            modelBuilder.Entity("Kader_System.Domain.Models.Setting.MainScreenTree", b =>
+                {
+                    b.HasOne("Kader_System.Domain.Models.Setting.MainScreenTree", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.Screen", b =>
                 {
                     b.HasOne("Kader_System.Domain.Models.Setting.Screen", "ParentScreen")
@@ -3985,6 +4408,11 @@ namespace Kader_System.DataAccess.Migrations
                         .HasForeignKey("ActionId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("Kader_System.Domain.Models.Setting.MainScreenTree", null)
+                        .WithMany("ListOfActions")
+                        .HasForeignKey("MainScreenTreeId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Kader_System.Domain.Models.Setting.StScreenSub", "ScreenSub")
                         .WithMany("ListOfActions")
@@ -4124,6 +4552,38 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("SalaryEffect");
                 });
 
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransLoan", b =>
+                {
+                    b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "HrEmployee")
+                        .WithMany("TransLoans")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("HrEmployee");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransLoanDetails", b =>
+                {
+                    b.HasOne("Kader_System.Domain.Models.Trans.TransLoan", "TransLoan")
+                        .WithMany("TransLoanDetails")
+                        .HasForeignKey("TransLoanId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("TransLoan");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransSalaryCalculatorDetail", b =>
+                {
+                    b.HasOne("Kader_System.Domain.Models.Trans.TransSalaryCalculator", "TransSalaryCalculators")
+                        .WithMany("TransSalaryCalculatorsDetails")
+                        .HasForeignKey("TransSalaryCalculatorsId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("TransSalaryCalculators");
+                });
+
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransSalaryIncrease", b =>
                 {
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
@@ -4190,6 +4650,8 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Navigation("Management")
                         .IsRequired();
+
+                    b.Navigation("TransLoans");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrSection", b =>
@@ -4202,6 +4664,13 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("Employees");
 
                     b.Navigation("VacationDistributions");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Setting.MainScreenTree", b =>
+                {
+                    b.Navigation("Children");
+
+                    b.Navigation("ListOfActions");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.Screen", b =>
@@ -4217,6 +4686,16 @@ namespace Kader_System.DataAccess.Migrations
             modelBuilder.Entity("Kader_System.Domain.Models.Title", b =>
                 {
                     b.Navigation("TitlePermissions");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransLoan", b =>
+                {
+                    b.Navigation("TransLoanDetails");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransSalaryCalculator", b =>
+                {
+                    b.Navigation("TransSalaryCalculatorsDetails");
                 });
 #pragma warning restore 612, 618
         }

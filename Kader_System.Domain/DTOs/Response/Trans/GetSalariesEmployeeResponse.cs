@@ -4,12 +4,12 @@
     {
         public int EmployeeId { get; set; }
         public string EmployeeName { get; set; }
-        public double HousingAllownces { get; set; }
-        public int WrokingDay { get; set; }
+        public double HousingAllowances { get; set; }
+        public int WorkingDay { get; set; }
         public double BasicSalary { get; set; }
         public double AccommodationAllowance { get; set; }
-        public IEnumerable<AddtionalValues> AddtionalValues { get; set; }
-        public Header Headers { get; set; }
+        public IEnumerable<AdditionalValues> AdditionalValues { get; set; }
+        //public Header Headers { get; set; }
 
         public MinuesValues MinuesValues { get; set; }
 
@@ -48,7 +48,7 @@
         public double Value { get; set; }
 
     }
-    public class AddtionalValues
+    public class AdditionalValues
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -57,16 +57,16 @@
 
     public class Header
     {
-        public string EmpolyeeId { get; set; }
-        public string EmpolyeeName { get; set; }
+        public string EmployeeId { get; set; }
+        public string EmployeeName { get; set; }
         public string WorkedDays { get; set; }
         public string Fixed { get; set; }
         public string TotalAdditionalValues { get; set; }
         public string TotalMinues { get; set; }
         public string TotalAll { get; set; }
         public string PaymentMethod { get; set; }
-        public List<string> Absent { get; set; }
-        public List<string> AddtionalValues { get; set; }
+        public string[] Absent { get; set; }
+        public List<string> AdditionalValues { get; set; }
         public string ScreenName { get; set; }
         public List<string> MinuesValues { get; set; }
     }

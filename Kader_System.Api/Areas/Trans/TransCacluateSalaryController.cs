@@ -48,6 +48,15 @@ namespace Kader_System.Api.Areas.Trans
                 return BadRequest(result);
             return Ok(result);
         }
+        [HttpGet(ApiRoutes.TransSalaryCalculatorEndpoint.GetbyId)]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var result = await service.GetById(id, GetCurrentRequestLanguage());
+            if (!result.Check)
+                return BadRequest(result);
+            return Ok(result);
+
+        }
         private string GetCurrentRequestLanguage() =>
          Request.Headers.AcceptLanguage.ToString().Split(',').First();
         private string GetCurrentHost() =>
