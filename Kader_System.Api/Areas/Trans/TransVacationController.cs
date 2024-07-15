@@ -10,11 +10,11 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransVacationController(ITransVacationService service , Services.IServices.HTTP.ITitleService requestService) : ControllerBase
+    public class TransVacationController(ITransVacationService service , IRequestService requestService) : ControllerBase
     {
         #region Retrieve
 
-        private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
+        private readonly IRequestService requestService = requestService;
         [HttpGet(ApiRoutes.TransVacation.ListOfTransVacations)]
         public async Task<IActionResult> ListOfTransVacations() =>
             Ok(await service.ListOfTransVacationsAsync(requestService.GetRequestHeaderLanguage));

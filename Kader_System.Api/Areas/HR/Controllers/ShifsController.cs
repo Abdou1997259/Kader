@@ -7,9 +7,9 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Route("api/v1/")]
-public class ShiftsController(IShiftService service, Services.IServices.HTTP.ITitleService requestService) : ControllerBase
+public class ShiftsController(IShiftService service, IRequestService requestService) : ControllerBase
 {
-    private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
+    private readonly IRequestService requestService = requestService;
 
     #region Retrieve
 
