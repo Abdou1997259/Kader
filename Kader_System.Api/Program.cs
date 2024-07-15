@@ -249,6 +249,7 @@ builder.Services.AddScoped<ITransSalaryIncreaseService, TransSalaryIncreaseServi
 builder.Services.AddScoped<ITransCalcluateSalaryService, TransCalcluateSalaryService>();
 builder.Services.AddScoped<ISalaryIncreaseTypeRepository, SalaryIncreaseTypeRepository>();
 builder.Services.AddScoped<ITransSalaryIncreaseRepository, TransSalaryIncreaseRepository>();
+builder.Services.AddScoped<IRequestService, RequestService>();
   #endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");
 var httpsPort = builder.Configuration.GetValue<int>("KestrelServer:Https.Port");
