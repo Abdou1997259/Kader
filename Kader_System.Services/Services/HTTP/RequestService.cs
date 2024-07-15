@@ -1,6 +1,6 @@
 ﻿using Kader_System.Services.IServices.HTTP;
 
-public class RequestService : IRequestService
+public class RequestService : Kader_System.Services.IServices.HTTP.ITitleService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
 
