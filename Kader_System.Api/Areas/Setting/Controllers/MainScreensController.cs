@@ -6,10 +6,10 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 [Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
-public class MainScreensController(IMainScreenService service, Services.IServices.HTTP.ITitleService requestService) : ControllerBase
+public class MainScreensController(IMainScreenService service, IRequestService requestService) : ControllerBase
 {
-    private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
-
+    private readonly IRequestService requestService = requestService;
+ 
     #region Retrieve
     [HttpGet(ApiRoutes.MainScreen.ListOfMainScreens)]
     public async Task<IActionResult> ListOfMainScreensAsync() => 

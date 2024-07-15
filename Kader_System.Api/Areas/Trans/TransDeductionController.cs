@@ -11,9 +11,9 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransDeductionController(ITransDeductionService service , Services.IServices.HTTP.ITitleService requestService) : ControllerBase
+    public class TransDeductionController(ITransDeductionService service , IRequestService requestService) : ControllerBase
     {
-        private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
+        private readonly IRequestService requestService = requestService;
         [HttpGet(ApiRoutes.TransDeduction.ListOfTransDeductions)]
         public async Task<IActionResult> ListOfTransDeductions() =>
             Ok(await service.ListOfTransDeductionsAsync(requestService.GetRequestHeaderLanguage));

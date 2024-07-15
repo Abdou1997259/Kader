@@ -7,9 +7,9 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [ApiController]
     [Route("api/v1/")]
-    public class ManagementController(IManagementService service, Services.IServices.HTTP.ITitleService requestService) : ControllerBase
+    public class ManagementController(IManagementService service, IRequestService requestService) : ControllerBase
     {
-        private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
+        private readonly IRequestService requestService = requestService;
 
         #region Retrieve
         [HttpGet(ApiRoutes.Management.ListOfManagements)]

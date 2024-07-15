@@ -12,9 +12,10 @@ namespace Kader_System.Api.Areas.Setting.Controllers
     [ApiController]
     [Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
-    public class TitlesController(ITitleService titleService ,Irequest) : ControllerBase
+    public class TitlesController(ITitleService titleService ,IRequestService requestService) : ControllerBase
     {
-        private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
+        private readonly IRequestService requestService = requestService;
+        private readonly ITitleService _titleService = titleService;
 
         #region Retrieve
         [HttpGet(ApiRoutes.Title.GetAllTitles)]

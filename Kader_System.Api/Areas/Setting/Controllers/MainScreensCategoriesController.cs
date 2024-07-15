@@ -8,9 +8,9 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [Authorize(Permissions.MainScreenCat.View)]
 [Route("api/v1/")]
 
-public class MainScreensCategoriesController(IMainScreenCategoryService service, Services.IServices.HTTP.ITitleService requestService) : ControllerBase
+public class MainScreensCategoriesController(IMainScreenCategoryService service, IRequestService requestService) : ControllerBase
 {
-    private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
+    private readonly IRequestService requestService = requestService;
 
     #region Retrieve
     [HttpGet(ApiRoutes.MainScreenCategory.ListOfMainScreensCategories)]
