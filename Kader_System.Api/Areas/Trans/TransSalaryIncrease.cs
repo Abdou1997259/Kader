@@ -1,7 +1,6 @@
-﻿using Kader_System.Domain.Interfaces.Trans;
-using Kader_System.Services.IServices.Trans;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Kader_System.Services.IServices;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.Trans
 {
@@ -10,32 +9,53 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransSalaryIncrease(ITransSalaryIncreaseRepository service) : ControllerBase
+    public class TransSalaryIncrease(ITransSalaryIncreaseService service, IRequestService requestService) : ControllerBase
     {
+        private readonly IRequestService requestService = requestService;
+        private readonly ITransSalaryIncreaseService _service = service;
+
+
         #region Create
         [HttpPost(ApiRoutes.SalaryIncrease.CreateSalaryIncrease)]
         public async Task<IActionResult> CreateTransVacation([FromBody] CreateTransSalaryIncreaseRequest request)
         {
-            var result = await service.AddNewSalaryIncrease(request);
-            if (result > 0)
-                return Ok("data added sucessfully");
-            else
-                return BadRequest("cannot add ");
+            var result = await _service.CreateTransSalaryIncreaseAsync(request, requestService.GetRequestHeaderLanguage);
+            return Ok(result);
         }
         #endregion
+
         #region Read
         [HttpGet(ApiRoutes.SalaryIncrease.GetAllSalaryIncrease)]
-        public async Task<IActionResult> GetAllSalaryIncrease()
+        public async Task<IActionResult> GetAllSalaryIncrease(GetAlFilterationForSalaryIncreaseRequest model)
         {
-            var result = await service.GetAllSalaryIncrease();
+            var result = await _service.GetAllTransSalaryIncreaseAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost);
             return Ok(result);
-        } 
+        }
         [HttpGet(ApiRoutes.SalaryIncrease.GetSalaryIncreaseById)]
         public async Task<IActionResult> GetSalaryIncreaseById(int id)
         {
-            var result = await service.GetSalaryIncreaseById(id);
+            var result = await _service.GetTransSalaryIncreaseByIdAsync(id, requestService.GetRequestHeaderLanguage);
             return Ok(result);
         }
         #endregion
+
+        #region Update
+        [HttpPut(ApiRoutes.SalaryIncrease.UpdateSalaryIncrease)]
+        public async Task<IActionResult> UpdateSalaryIncrease(CreateTransSalaryIncreaseRequest model)
+        {
+            var result = await _service.UpdateTransSalaryIncreaseAsync(model);
+            return Ok(result);
+        }
+        #endregion
+
+        #region Delete
+        [HttpDelete(ApiRoutes.SalaryIncrease.DeleteSalaryIncrease)]
+        public async Task<IActionResult> DeleteSalaryIncrease(int id)
+        {
+            var result = await _service.DeleteTransSalaryIncreaseAsync(id);
+            return Ok(result);
+        }
+        #endregion
+
     }
 }

@@ -226,7 +226,7 @@ public static class SD
             public const string ListOfSalaryIncrease = "allowance/getListOfSalaryIncrease";
             public const string GetAllSalaryIncrease = "salaryIncrease/getAll";
             public const string CreateSalaryIncrease = "salaryIncrease/create";
-            public const string UpdateSalaryIncrease = "salaryIncrease/update/{id}";
+            public const string UpdateSalaryIncrease = "salaryIncrease/update";
             public const string RestoreSalaryIncrease = "salaryIncrease/restore/{id}";
             public const string GetSalaryIncreaseById = "salaryIncrease/getById/{id}";
             public const string DeleteSalaryIncrease = "salaryIncrease/delete/{id}";

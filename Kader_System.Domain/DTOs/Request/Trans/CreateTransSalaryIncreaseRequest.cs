@@ -2,9 +2,10 @@
 {
     public class CreateTransSalaryIncreaseRequest
     {
-        public int employeeId { get; set; }
-        public int salrayIncreaseTypeId { get; set; }
-        public string details { get; set; }
-        public double increaseValue { get; set; }
+        public int Id { get; set; }
+        public double Amount { get; set; }
+        public string? Notes { get; set; }
+        public int Increase_type { get; set; }
+        public int Employee_id { get; set; }
     }
 }
