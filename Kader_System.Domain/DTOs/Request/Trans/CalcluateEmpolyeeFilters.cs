@@ -22,5 +22,8 @@
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public DateOnly DocumentDate { get; set; }
 
+        [DefaultValue(null)]
+        public string? Description { get; set; }
+
     }
 }

@@ -417,6 +417,16 @@ public static class SD
             public const string GetShiftById = "shift/getById/{id}";
             public const string DeleteShift = "shift/delete/{id}";
         }
+
+        public class Title
+        {
+            public const string GetAllTitles = "title/getAllTitles";
+            public const string CreateTitle = "title/create";
+            public const string UpdateTitle = "title/update/{id}";
+            public const string GetTitleById = "title/getById/{id}";
+            public const string DeleteTitle = "title/delete/{id}";
+            public const string RestoreTitle = "title/restore/{id}";
+        }
     }
 
     public static class Localization
@@ -669,6 +679,10 @@ public static class SD
         public const string StartDate = "Start date";
         public const string EndDate = "End date";
         public const string RememberMe = "Remember me?";
+
+
+
+     
 
     }
 }

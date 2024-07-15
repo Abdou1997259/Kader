@@ -1,11 +1,13 @@
-﻿namespace Kader_System.Services.Services.Trans
+﻿using Kader_System.Domain.DTOs;
+
+namespace Kader_System.Services.Services.Trans
 {
-    public class TransCalcluateSalaryService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> localizer) : ITransCalcluateSalaryService
+    public class TransCalcluateSalaryService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IStringLocalizer<SharedResource> localizer) : ITransCalcluateSalaryService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _localizer = localizer;
 
-
+        private readonly UserManager<ApplicationUser> _userManager = userManager;
         public async Task<Response<string>> CalculateSalaryDetailedTrans(CalcluateSalaryModelRequest model)
         {
 
@@ -53,6 +55,8 @@
                         DocumentDate = model.DocumentDate,
                         CompanyId = model.CompanyId,
                         ManagementId = model.ManagementId,
+                        Status = Status.Waiting,
+
                         IsMigrated = true
                     };
 
@@ -78,6 +82,7 @@
                             Salary = empolyee.CalculatedSalary + empolyee.TotalSalary,
                             Amount = empolyee.CalculatedSalary,
                             TransSalaryCalculatorsId = TransCalculatorMaster.Id,
+
 
                         };
                         listoftransDetails.Add(transDetails);
@@ -239,13 +244,26 @@
 
         }
 
-        public async Task<Response<IEnumerable<GetSalaryCalculatorResponse>>> GetAllCalculators()
+        public async Task<Response<GetSalaryCalculatorResponse>> GetAllCalculators(GetSalaryCalculatorFilterRequest model, string host, string lang)
         {
-            var transations = await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, includeProperties: "TransSalaryCalculatorsDetails");
+            Expression<Func<TransSalaryCalculator, bool>> filter = x => x.IsDeleted == model.IsDeleted;
 
+            var empolyeeWithJobs = await _unitOfWork.Employees.GetSpecificSelectAsync(x => true, x => x, includeProperties: "Job");
+            var totalRecords = await _unitOfWork.TransSalaryCalculator.CountAsync(filter: filter);
+            int page = 1;
+            int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+            if (model.PageNumber < 1)
+                page = 1;
+            else
+                page = model.PageNumber;
+            var pageLinks = Enumerable.Range(1, totalPages)
+                .Select(p => new Link { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+                .ToList();
+            var transations = await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, includeProperties: "TransSalaryCalculatorsDetails");
+            var msg = _localizer[Localization.NotFoundData];
             if (transations is null)
             {
-                var msg = _localizer[Localization.NotFoundData];
+
                 return new()
                 {
                     Data = null,
@@ -253,18 +271,82 @@
                     Check = false
                 };
             }
+            var result = new GetSalaryCalculatorResponse
+            {
+                TotalRecords = await _unitOfWork.TransSalaryCalculator.CountAsync(filter: filter),
+
+                Items = (await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(filter: filter,
+                    take: model.PageSize,
+                    skip: (model.PageNumber - 1) * model.PageSize,
+                    select: x => new GetSalaryCalculatorList
+                    {
+                        Id = x.Id,
+                        Description = x.Description,
+                        Status = x.Status,
+                        Amount = x.TransSalaryCalculatorsDetails.Sum(s => s.Amount),
+                        CalculationDate = x.DocumentDate,
+                        AddedDate = x.Add_date,
+                        AddedBy = x.DeleteBy
+
+                    }, orderBy: x =>
+                x.OrderByDescending(x => x.Id), includeProperties: "TransSalaryCalculatorsDetails")).AsEnumerable().Select(
+                    x => new GetSalaryCalculatorList
+                    {
+                        Id = x.Id,
+                        Description = x.Description,
+                        Status = x.Status,
+                        Amount = x.Amount,
+                        CalculationDate = x.CalculationDate,
+                        AddedDate = x.AddedDate,
+                        AddedBy = empolyeeWithJobs.Where(e => e.UserId == x.AddedBy)
+                                       .Select(e => lang == Localization.Arabic ? e.FirstNameAr + " " + e.FamilyNameAr : e.FirstNameEn + " " + e.FamilyNameEn)
+                                       .FirstOrDefault(),
+
+                        JobName = empolyeeWithJobs.Where(e => e.UserId == x.AddedBy)
+                                      .Select(e => lang == Localization.Arabic ? e.Job.NameAr : e.Job.NameEn)
+                                      .FirstOrDefault()
+                    }
+
+
+                    ).ToList()
+
+
+
+                ,
+                CurrentPage = model.PageNumber,
+                FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+                From = (page - 1) * model.PageSize + 1,
+                To = Math.Min(page * model.PageSize, totalRecords),
+                LastPage = totalPages,
+                LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+                PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+                NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+                Path = host,
+                PerPage = model.PageSize,
+                Links = pageLinks
+            };
+
+            if (result.TotalRecords is 0)
+            {
+                string resultMsg = _localizer[Localization.NotFoundData];
+
+                return new()
+                {
+                    Data = null,
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
             return new()
             {
-                Check = true,
-                Data = transations.Select(x => new GetSalaryCalculatorResponse
-                {
-                    CalculationDate = x.DocumentDate,
-                    Amount = x.TransSalaryCalculatorsDetails.Sum(x => x.Amount),
-                    DocDate = x.Add_date,
-                    Id = x.Id,
-                })
 
+                Data = result,
+                Check = true
             };
+
+
+
+
         }
 
         public async Task<Response<IEnumerable<GetSalariesEmployeeResponse>>> GetDetailsOfCalculation(CalcluateEmpolyeeFilters model, string lang)
@@ -278,12 +360,16 @@
 
 
           , x => x);
+
+
+
             var empolyeeWithCaculatedSalary = await _unitOfWork.StoredProcuduresRepo.SpCalculateSalary(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()));
-            var spcaculatedSalarytransDetils = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()))).Where(x => x.CalculateSalaryId == null);
+            var spcaculatedSalarytransDetils = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()))).Where(x => x.CalculateSalaryId != null);
+
             var vacations = await _unitOfWork.TransVacations.GetAllAsync();
 
 
-
+            var contracts = await _unitOfWork.Contracts.GetAllAsync();
 
 
 
@@ -307,9 +393,27 @@
                     EmployeeName = Localization.Arabic == lang ? x.FullNameAr : x.FullNameEn,
                     AccommodationAllowance = x.AccommodationAllowance,
                     BasicSalary = x.TotalSalary,
+                    HousingAllownces = contracts.Where(c => c.EmployeeId == x.EmployeeId).Select(s => s.HousingAllowance).FirstOrDefault(),
                     WrokingDay = 30,
                     DisbursementType = DisbursementType.BankingType,
+                    Headers = new Header
+                    {
+                        WorkedDays = Localization.Arabic == lang ? "ايام العمل" : "Wroking Days",
+                        TotalAll = lang == Localization.Arabic ? "الاجمالي" : "Total",
+                        TotalMinues = lang == Localization.Arabic ? "مجموع الحسميان" : "Total Minues",
+                        TotalAdditionalValues = lang == Localization.Arabic ? "مجموع الاضافات" : "Total Additional",
 
+                        Absent = lang == Localization.Arabic ? ["الايام", "مبلغ"] : ["Days", "Amount"],
+                        EmpolyeeId = Localization.Arabic == lang ? "الرقم الوظيفي" : "Employee Id",
+                        EmpolyeeName = Localization.Arabic == lang ? "الاسم الوظيفي" : "Employee Name",
+                        Fixed = Localization.Arabic == lang ? "الاساسي" : "Fixed",
+                        AddtionalValues = spcaculatedSalarytransDetils.Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Benefit || JournalType.Allowance == e.JournalType).AsEnumerable().Select(s => s.JournalType.ToString()).ToList(),
+
+                        MinuesValues = spcaculatedSalarytransDetils.Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Deduction || JournalType.Loan == e.JournalType).AsEnumerable().Select(s => s.JournalType.ToString()).ToList(),
+
+
+
+                    },
                     MinuesValues = new MinuesValues
                     {
                         Deductions = spcaculatedSalarytransDetils.Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Deduction).Select(t => new Deduction
@@ -336,6 +440,7 @@
                     {
                         Id = t.TransId,
                         Name = t.JournalType.ToString(),
+
                         Value = t.CalculatedSalary
                     })
 
@@ -351,7 +456,8 @@
 
         public async Task<Response<GetLookupsCalculatedSalaries>> GetLookups(string lang)
         {
-            var emps = await _unitOfWork.Employees.GetAllAsync();
+            var emps = await _unitOfWork.Employees.GetSpecificSelectAsync(x => true, x => x, includeProperties: "Management,Department");
+
             if (emps is null)
             {
                 var msg = _localizer[Localization.NotFoundData];
@@ -426,7 +532,9 @@
                 EmployeeLookups = emps.Select(x => new Empolyeelookups
                 {
                     Name = Localization.Arabic == lang ? x.FirstNameAr + " " + x.FatherNameAr + " " + x.FatherNameAr : x.FirstNameEn + " " + x.FatherNameEn + " " + x.FatherNameEn,
-                    Id = x.Id
+                    Id = x.Id,
+                    MangmentId = x.ManagementId,
+                    DepartmentId = x.DepartmentId
 
                 }).ToList()
 

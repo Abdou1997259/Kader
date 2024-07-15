@@ -7,9 +7,9 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 [Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
-public class SubSubMainScreensController(ISubMainScreenService service, IRequestService headerService) : ControllerBase
+public class SubSubMainScreensController(ISubMainScreenService service, Services.IServices.HTTP.ITitleService headerService) : ControllerBase
 {
-    private readonly IRequestService headerService = headerService;
+    private readonly Services.IServices.HTTP.ITitleService headerService = headerService;
     private readonly ISubMainScreenService service = service;
     #region Retrieve
 
