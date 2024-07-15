@@ -7,7 +7,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiController]
     [Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
-    public class ContractsController(IContractService contractService, Services.IServices.HTTP.ITitleService requestService) : ControllerBase
+    public class ContractsController(IContractService contractService, IRequestService requestService) : ControllerBase
     {
         private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
 
