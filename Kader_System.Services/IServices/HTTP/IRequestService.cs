@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Kader_System.Services.IServices.HTTP
 {
-    public interface IRequestService
+    public interface ITitleService
     {
         /// <summary>
         /// Get Accept Language from Request Header

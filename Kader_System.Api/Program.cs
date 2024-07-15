@@ -245,8 +245,7 @@ builder.Services.AddScoped<ITransLoanService, TransLoanService>();
 builder.Services.AddScoped<ITransCalcluateSalaryService, TransCalcluateSalaryService>();
 builder.Services.AddScoped<ISalaryIncreaseTypeRepository, SalaryIncreaseTypeRepository>();
 builder.Services.AddScoped<ITransSalaryIncreaseRepository, TransSalaryIncreaseRepository>();
-builder.Services.AddScoped<IRequestService, RequestService>();
-#endregion
+  #endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");
 var httpsPort = builder.Configuration.GetValue<int>("KestrelServer:Https.Port");
 var httpsCertificateFilePath = builder.Configuration.GetValue<string>("KestrelServer:Https.CertificationFilePath");
@@ -336,6 +335,7 @@ app.ConfigureExceptionHandler(loggingRepository);    // custom as a global excep
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseStaticFiles();
+//app.UseExceptionHandler();
 //app.ConfigureStaticFilesHandler();                   // custom as Static files
 app.UseRequestLocalization(localizationOptions);
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());

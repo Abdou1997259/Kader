@@ -7,10 +7,10 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Route("api/v1/")]
-public class AllowancesController(IAllowanceService service,IRequestService requestService) : ControllerBase
+public class AllowancesController(IAllowanceService service, Services.IServices.HTTP.ITitleService requestService) : ControllerBase
 {
 
-    private readonly IRequestService requestService = requestService;
+    private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
 
     #region Retreieve
     [HttpGet(ApiRoutes.Allowance.ListOfAllowances)]

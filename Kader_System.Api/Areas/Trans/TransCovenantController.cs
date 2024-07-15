@@ -8,9 +8,9 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransCovenantController(ITransCovenantService service,IEmployeeService employeeService,IRequestService requestService) : ControllerBase
+    public class TransCovenantController(ITransCovenantService service,IEmployeeService employeeService, Services.IServices.HTTP.ITitleService requestService) : ControllerBase
     {
-        private readonly IRequestService requestService = requestService;
+        private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
         #region Get
 
         [HttpGet(ApiRoutes.TransCovenant.ListOfTransCovenants)]
