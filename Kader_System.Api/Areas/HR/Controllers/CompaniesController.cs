@@ -9,9 +9,9 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 [Route("api/v1/")]
 [Authorize(Permissions.HR.View)]
-public class CompaniesController(ICompanyService service, Services.IServices.HTTP.ITitleService requestService) : ControllerBase
+public class CompaniesController(ICompanyService service, IRequestService requestService) : ControllerBase
 {
-    private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
+    private readonly IRequestService requestService = requestService;
 
     #region Retreive
 

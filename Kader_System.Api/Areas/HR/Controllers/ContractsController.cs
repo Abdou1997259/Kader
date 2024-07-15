@@ -9,7 +9,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [Route("api/v1/")]
     public class ContractsController(IContractService contractService, IRequestService requestService) : ControllerBase
     {
-        private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
+        private readonly IRequestService requestService = requestService;
 
         [HttpGet(ApiRoutes.Contract.ListOfContracts)]
         public async Task<IActionResult> GetListOfContracts() =>

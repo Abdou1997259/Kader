@@ -7,9 +7,9 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 [Route("api/v1/")]
 [Authorize(Permissions.HR.View)]
-public class BenefitsController(IBenefitService service, Services.IServices.HTTP.ITitleService requestService) : ControllerBase
+public class BenefitsController(IBenefitService service, IRequestService requestService) : ControllerBase
 {
-    private readonly Services.IServices.HTTP.ITitleService requestService = requestService;
+    private readonly IRequestService requestService = requestService;
 
     #region Retrieve
 
