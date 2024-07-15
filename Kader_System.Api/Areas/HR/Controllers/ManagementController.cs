@@ -1,26 +1,29 @@
-﻿namespace Kader_System.Api.Areas.HR.Controllers
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.HR.Controllers
 {
     [Area(Modules.HR)]
     [Authorize(Permissions.HR.View)]
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [ApiController]
     [Route("api/v1/")]
-    public class ManagementController(IManagementService service) : ControllerBase
+    public class ManagementController(IManagementService service,IRequestService requestService) : ControllerBase
     {
+        private readonly IRequestService requestService = requestService;
 
         #region Retrieve
         [HttpGet(ApiRoutes.Management.ListOfManagements)]
         public async Task<IActionResult> List()
-            => Ok(await service.ListOfManagementsAsync(GetCurrentRequestLanguage()));
+            => Ok(await service.ListOfManagementsAsync(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.Management.GetAllManagements)]
         public async Task<IActionResult> GetAll([FromQuery] HrGetAllFiltrationsFoManagementsRequest model)
-            => Ok(await service.GetAllManagementsAsync(GetCurrentRequestLanguage(), model, GetCurrentHost()));
+            => Ok(await service.GetAllManagementsAsync(requestService.GetRequestHeaderLanguage, model,requestService.GetCurrentHost));
 
         [HttpGet(ApiRoutes.Management.GetManagementById)]
         public async Task<IActionResult> GetById (int id)
         {
-            var response = await service.GetManagementByIdAsync(id,GetCurrentRequestLanguage());
+            var response = await service.GetManagementByIdAsync(id,requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -84,16 +87,6 @@
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
 
-        #endregion
-
-
-        #region Helper
-
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value +
-            HttpContext.Request.Path.Value;
         #endregion
     }
 }

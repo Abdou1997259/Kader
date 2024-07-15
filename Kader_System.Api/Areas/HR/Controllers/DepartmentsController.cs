@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.HR.Controllers
 {
@@ -7,25 +8,26 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [ApiController]
     [Route("api/v1/")]
-    public class DepartmentsController(IDepartmentService service) : ControllerBase
+    public class DepartmentsController(IDepartmentService service,IRequestService requestService) : ControllerBase
     {
+        private readonly IRequestService requestService = requestService;
 
         #region Retrieve
 
-        
+
         [HttpGet(ApiRoutes.Department.ListOfDepartments)]
         public async Task<IActionResult> ListOfDepartments()
-            => Ok(await service.ListOfDepartmentsAsync(GetCurrentRequestLanguage()));
+            => Ok(await service.ListOfDepartmentsAsync(requestService.GetRequestHeaderLanguage));
 
 
         [HttpGet(ApiRoutes.Department.GetAllDepartments)]
         public async Task<IActionResult> GetAll([FromQuery]GetAllFiltrationsForDepartmentsRequest filter)
-            => Ok(await service.GetAllDepartmentsAsync(GetCurrentRequestLanguage(), filter, GetCurrentHost()));
+            => Ok(await service.GetAllDepartmentsAsync(requestService.GetRequestHeaderLanguage, filter, requestService.GetCurrentHost));
 
         [HttpGet(ApiRoutes.Department.GetDepartmentById)]
         public async Task<IActionResult> GetById(int id)
         {
-            var response = await service.GetDepartmentByIdAsync(id, GetCurrentRequestLanguage());
+            var response = await service.GetDepartmentByIdAsync(id, requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -87,13 +89,6 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
         #endregion
 
-        #region Helper
-
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value +
-            HttpContext.Request.Path.Value;
-        #endregion
+        
     }
 }

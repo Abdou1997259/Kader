@@ -1,21 +1,25 @@
-﻿namespace Kader_System.Api.Areas.Setting.Controllers;
+﻿using Kader_System.Services.IServices.HTTP;
+
+namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.HR)]
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Authorize(Permissions.HR.View)]
 [Route("api/v1/")]
-public class DeductionsController(IDeductionService service) : ControllerBase
+public class DeductionsController(IDeductionService service,IRequestService requestService) : ControllerBase
 {
     private readonly IDeductionService _service = service;
+    private readonly IRequestService requestService = requestService;
+
 
     [HttpGet(ApiRoutes.Deduction.ListOfDeductions)]
     public async Task<IActionResult> ListOfDeductionsAsync() =>
-        Ok(await _service.ListOfDeductionsAsync(GetCurrentRequestLanguage()));
+        Ok(await _service.ListOfDeductionsAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.Deduction.GetAllDeductions)]
     public async Task<IActionResult> GetAllDeductionsAsync([FromQuery] HrGetAllFiltrationsForDeductionsRequest model) =>
-        Ok(await _service.GetAllDeductionsAsync(GetCurrentRequestLanguage(), model, GetCurrentHost()));
+        Ok(await _service.GetAllDeductionsAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
     [HttpPost(ApiRoutes.Deduction.CreateDeduction)]
     public async Task<IActionResult> CreateDeductionAsync(HrCreateDeductionRequest model)
@@ -72,9 +76,4 @@ public class DeductionsController(IDeductionService service) : ControllerBase
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
 
-    private string GetCurrentRequestLanguage() =>
-        Request.Headers.AcceptLanguage.ToString().Split(',').First();
-    private string GetCurrentHost() =>
-        HttpContext.Request.Host.Value +
-        HttpContext.Request.Path.Value;
 }

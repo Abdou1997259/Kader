@@ -369,7 +369,17 @@ namespace Kader_System.Services.Services.Trans
 
 
 
-            if (employees == null || !employees.Any())
+
+            var empolyeeWithCaculatedSalary = await _unitOfWork.StoredProcuduresRepo.SpCalculateSalary(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()));
+            var spcaculatedSalarytransDetils = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()))).Where(x => x.CalculateSalaryId != null);
+
+            var vacations = await _unitOfWork.TransVacations.GetAllAsync();
+
+
+
+            var contracts = await _unitOfWork.Contracts.GetAllAsync();
+
+            if (empolyees is null)
             {
                 var msg = _localizer[Localization.NotFoundData];
                 return new Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>
@@ -408,15 +418,22 @@ namespace Kader_System.Services.Services.Trans
                     .ToList()
             };
 
-            var details = employeeWithCalculatedSalary.Select(x => new GetSalariesEmployeeResponse
-            {
-                EmployeeId = x.EmployeeId,
-                EmployeeName = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn,
-                AccommodationAllowance = x.AccommodationAllowance,
-                BasicSalary = x.TotalSalary,
-                HousingAllowances = contracts.Where(c => c.EmployeeId == x.EmployeeId).Select(s => s.HousingAllowance).FirstOrDefault(),
-                WorkingDay = 30,
-                DisbursementType = DisbursementType.BankingType,
+                Data = empolyeeWithCaculatedSalary.Select(x => new GetSalariesEmployeeResponse
+                {
+                    EmployeeId = x.EmployeeId,
+                    EmployeeName = Localization.Arabic == lang ? x.FullNameAr : x.FullNameEn,
+                    AccommodationAllowance = x.AccommodationAllowance,
+                    BasicSalary = x.TotalSalary,
+                    HousingAllownces = contracts.Where(c => c.EmployeeId == x.EmployeeId).Select(s => s.HousingAllowance).FirstOrDefault(),
+                    WrokingDay = 30,
+
+                    DisbursementType = DisbursementType.BankingType,
+                    Headers = new Header
+                    {
+                        WorkedDays = Localization.Arabic == lang ? "ايام العمل" : "Wroking Days",
+                        TotalAll = lang == Localization.Arabic ? "الاجمالي" : "Total",
+                        TotalMinues = lang == Localization.Arabic ? "مجموع الحسميان" : "Total Minues",
+                        TotalAdditionalValues = lang == Localization.Arabic ? "مجموع الاضافات" : "Total Additional",
 
                 AdditionalValues = spCalculatedSalaryTransDetails
                     .Where(e => e.EmployeeId == x.EmployeeId && (e.JournalType == JournalType.Allowance || e.JournalType == JournalType.Benefit))

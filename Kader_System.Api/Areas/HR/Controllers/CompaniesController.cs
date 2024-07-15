@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Kader_System.Services.IServices.HTTP;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace Kader_System.Api.Areas.Setting.Controllers;
@@ -8,22 +9,24 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 [Route("api/v1/")]
 [Authorize(Permissions.HR.View)]
-public class CompaniesController(ICompanyService service) : ControllerBase
+public class CompaniesController(ICompanyService service,IRequestService requestService) : ControllerBase
 {
+    private readonly IRequestService requestService = requestService;
+
     #region Retreive
 
     [HttpGet(ApiRoutes.Company.ListOfCompanies)]
     public async Task<IActionResult> ListOfCompaniesAsync() =>
-        Ok(await service.ListOfCompaniesAsync(GetCurrentRequestLanguage()));
+        Ok(await service.ListOfCompaniesAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.Company.GetAllCompanies)]
     public async Task<IActionResult> GetAllCompaniesAsync([FromQuery] HrGetAllFiltrationsForCompaniesRequest model) =>
-        Ok(await service.GetAllCompaniesAsync(GetCurrentRequestLanguage(), model, GetCurrentHost()));
+        Ok(await service.GetAllCompaniesAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
     [HttpGet(ApiRoutes.Company.GetCompanyById)]
     public async Task<IActionResult> GetCompanyByIdAsync(int id)
     {
-        var response = await service.GetCompanyByIdAsync(id,GetCurrentRequestLanguage());
+        var response = await service.GetCompanyByIdAsync(id,requestService.GetRequestHeaderLanguage);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -96,13 +99,6 @@ public class CompaniesController(ICompanyService service) : ControllerBase
 
     #endregion
 
-    #region Helpers
 
-    private string GetCurrentRequestLanguage() =>
-        Request.Headers.AcceptLanguage.ToString().Split(',').First();
-    private string GetCurrentHost() =>
-        HttpContext.Request.Host.Value +
-        HttpContext.Request.Path.Value;
-    #endregion
 
 }

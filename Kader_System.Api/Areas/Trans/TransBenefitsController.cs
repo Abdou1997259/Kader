@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.Trans;
+﻿using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.IServices.Trans;
 
 namespace Kader_System.Api.Areas.Trans
 {
@@ -7,8 +8,9 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransBenefitsController(ITransBenefitService service) : ControllerBase
+    public class TransBenefitsController(ITransBenefitService service, IRequestService requestService) : ControllerBase
     {
+        private readonly IRequestService requestService = requestService;
         #region Get
 
         [HttpGet(ApiRoutes.TransBenefit.ListOfTransBenefits)]

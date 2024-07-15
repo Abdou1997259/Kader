@@ -6,7 +6,7 @@ public interface IEmployeeService
     Task<Response<GetAllEmployeesResponse>> GetAllEmployeesAsync(string lang, GetAllEmployeesFilterRequest model, string host);
 
     Task<Response<GetAllEmployeesResponse>> GetAllEmployeesByCompanyIdAsync(string lang,
-        GetAllEmployeesFilterRequest model, string host, int companyId);
+        GetAllEmployeesFilterRequest model, string host, int companyId);     
     Task<Response<CreateEmployeeRequest>> CreateEmployeeAsync(CreateEmployeeRequest model);
     Task<Response<GetEmployeeByIdResponse>> GetEmployeeByIdAsync(int id,string lang);
     Response<GetEmployeeByIdResponse> GetEmployeeById(int id, string lang);

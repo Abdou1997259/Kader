@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.Trans;
+﻿using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.IServices.Trans;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,27 +10,28 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransVacationController(ITransVacationService service) : ControllerBase
+    public class TransVacationController(ITransVacationService service ,IRequestService requestService) : ControllerBase
     {
         #region Retrieve
 
+        private readonly IRequestService requestService = requestService;
         [HttpGet(ApiRoutes.TransVacation.ListOfTransVacations)]
         public async Task<IActionResult> ListOfTransVacations() =>
-            Ok(await service.ListOfTransVacationsAsync(GetCurrentRequestLanguage()));
+            Ok(await service.ListOfTransVacationsAsync(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransVacation.GetTransVacations)]
         public async Task<IActionResult> GetAllTransVacations([FromQuery] GetAllFilterationForTransVacationRequest request) =>
-            Ok(await service.GetAllTransVacationsAsync(GetCurrentRequestLanguage(), request, GetCurrentHost()));
+            Ok(await service.GetAllTransVacationsAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransVacation.GetTransVacationsLookUps)]
         public async Task<IActionResult> GetTransVacationLookUpsData() =>
-            Ok(await service.GetTransVacationLookUpsData(GetCurrentRequestLanguage()));
+            Ok(await service.GetTransVacationLookUpsData(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransVacation.GetTransVacationById)]
         public async Task<IActionResult> GetTransVacationById([FromRoute] int id)
         {
-            var response = await service.GetTransVacationByIdAsync(id, GetCurrentRequestLanguage());
-            var lookUps =await service.GetTransVacationLookUpsData(GetCurrentRequestLanguage());
+            var response = await service.GetTransVacationByIdAsync(id, requestService.GetRequestHeaderLanguage);
+            var lookUps =await service.GetTransVacationLookUpsData(requestService.GetRequestHeaderLanguage);
             if (response.Check)
             {
                 response.LookUps = lookUps.Data;
@@ -111,13 +113,6 @@ namespace Kader_System.Api.Areas.Trans
 
         #endregion
 
-        #region Helpers
-        private string GetCurrentRequestLanguage() =>
-            Request.Headers.AcceptLanguage.ToString().Split(',').First();
-
-        private string GetCurrentHost() =>
-            HttpContext.Request.Host.Value +
-            HttpContext.Request.Path.Value;
-        #endregion
+        
     }
 }
