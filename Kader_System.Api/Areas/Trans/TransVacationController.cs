@@ -10,7 +10,7 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransVacationController(ITransVacationService service ,IRequestService requestService) : ControllerBase
+    public class TransVacationController(ITransVacationService service , IRequestService requestService) : ControllerBase
     {
         #region Retrieve
 

@@ -7,7 +7,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [ApiController]
     [Route("api/v1/")]
-    public class ManagementController(IManagementService service,IRequestService requestService) : ControllerBase
+    public class ManagementController(IManagementService service, IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
 

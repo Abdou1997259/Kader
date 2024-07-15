@@ -376,8 +376,9 @@ namespace Kader_System.Services.Services.Trans
             var vacations = await _unitOfWork.TransVacations.GetAllAsync();
 
 
-
             var contracts = await _unitOfWork.Contracts.GetAllAsync();
+
+
 
             if (empolyees is null)
             {

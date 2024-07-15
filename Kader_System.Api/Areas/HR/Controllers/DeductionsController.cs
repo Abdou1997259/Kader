@@ -7,7 +7,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 [Authorize(Permissions.HR.View)]
 [Route("api/v1/")]
-public class DeductionsController(IDeductionService service,IRequestService requestService) : ControllerBase
+public class DeductionsController(IDeductionService service, IRequestService requestService) : ControllerBase
 {
     private readonly IDeductionService _service = service;
     private readonly IRequestService requestService = requestService;

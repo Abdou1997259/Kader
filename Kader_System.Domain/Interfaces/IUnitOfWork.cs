@@ -52,6 +52,9 @@ public interface IUnitOfWork : IDisposable
 
     ITransAllowanceRepository TransAllowances { get; }
     ITransSalaryEffectRepository TransSalaryEffects { get; }
+    ITransSalaryIncreaseRepository TransSalaryIncrease { get; }
+    ISalaryIncreaseTypeRepository SalaryIncreaseTypeRepository { get; }
+    
     ITransAmountTypeRepository TransAmountTypes { get; }
     ITransBenefitRepository TransBenefits { get; }
     ITransCovenantRepository TransCovenants { get; }

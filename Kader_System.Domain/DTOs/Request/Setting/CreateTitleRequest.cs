@@ -4,7 +4,7 @@
     {
         public  string TitleNameAr { get; set; }
         public  string TitleNameEn { get; set; }
-        public List<CreateTitlePermissionRequest> Permissions { get; set; }
+        //public List<CreateTitlePermissionRequest> Permissions { get; set; }
     }
 
     public class CreateTitlePermissionRequest

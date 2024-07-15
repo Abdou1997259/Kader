@@ -11,7 +11,7 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransDeductionController(ITransDeductionService service ,IRequestService requestService) : ControllerBase
+    public class TransDeductionController(ITransDeductionService service , IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
         [HttpGet(ApiRoutes.TransDeduction.ListOfTransDeductions)]

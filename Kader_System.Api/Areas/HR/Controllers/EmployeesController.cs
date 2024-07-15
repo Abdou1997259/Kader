@@ -7,7 +7,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiController]
     [Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
-    public class EmployeesController(IEmployeeService employeeService,IRequestService requestService) : ControllerBase
+    public class EmployeesController(IEmployeeService employeeService, IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
 

@@ -7,7 +7,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 [Authorize(Permissions.HR.View)]
 [Route("api/v1/")]
-public class QualificationsController(IQualificationService service,IRequestService requestService) : ControllerBase
+public class QualificationsController(IQualificationService service, IRequestService requestService) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;
 

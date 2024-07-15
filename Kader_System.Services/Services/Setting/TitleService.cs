@@ -118,15 +118,15 @@ namespace Kader_System.Services.Services.Setting
                TitleNameEn = model.TitleNameEn,
                
             };
-            foreach (var titlePermission in model.Permissions)
-            {
-                newTitle.TitlePermissions.Add(new TitlePermission()
-                {
-                 SubScreenId = titlePermission.SubScreenId,
-                 Permissions = titlePermission.Permissions
+            //foreach (var titlePermission in model.Permissions)
+            //{
+            //    newTitle.TitlePermissions.Add(new TitlePermission()
+            //    {
+            //     SubScreenId = titlePermission.SubScreenId,
+            //     Permissions = titlePermission.Permissions
 
-                });
-            }
+            //    });
+            //}
 
 
 

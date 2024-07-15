@@ -7,7 +7,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Route("api/v1/")]
-public class AllowancesController(IAllowanceService service,IRequestService requestService) : ControllerBase
+public class AllowancesController(IAllowanceService service, IRequestService requestService) : ControllerBase
 {
 
     private readonly IRequestService requestService = requestService;

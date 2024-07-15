@@ -10,7 +10,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiController]
     [Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
-    public class VacationController (IVacationService service,IRequestService requestService): ControllerBase
+    public class VacationController (IVacationService service, IRequestService requestService): ControllerBase
     {
 
         private readonly IRequestService requestService = requestService;

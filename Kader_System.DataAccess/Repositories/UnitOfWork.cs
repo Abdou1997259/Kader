@@ -65,6 +65,11 @@ public class UnitOfWork : IUnitOfWork
     public ITransSalaryCalculatorRepo TransSalaryCalculator { get; private set; }
 
     public ITransSalaryCalculatorDetailsRepo TransSalaryCalculatorDetailsRepo { get; private set; }
+
+    public ITransSalaryIncreaseRepository TransSalaryIncrease { get; private set; }
+    public ISalaryIncreaseTypeRepository SalaryIncreaseTypeRepository { get; private set; } 
+
+
     public UnitOfWork(KaderDbContext context, IConfiguration config)
     {
         _context = context;
@@ -125,6 +130,8 @@ public class UnitOfWork : IUnitOfWork
         TransCovenants = new TransCovenantRepository(_context);
         TransVacations = new TransVacationRepository(_context);
         LoanRepository = new TransLoanRepository(_context);
+        TransSalaryIncrease = new TransSalaryIncreaseRepository(_context);
+        SalaryIncreaseTypeRepository = new SalaryIncreaseTypeRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>

@@ -8,7 +8,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [ApiController]
     [Route("api/v1/")]
-    public class DepartmentsController(IDepartmentService service,IRequestService requestService) : ControllerBase
+    public class DepartmentsController(IDepartmentService service, IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
 

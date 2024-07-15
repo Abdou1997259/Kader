@@ -7,7 +7,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 [Route("api/v1/")]
 [Authorize(Permissions.HR.View)]
-public class BenefitsController(IBenefitService service,IRequestService requestService) : ControllerBase
+public class BenefitsController(IBenefitService service, IRequestService requestService) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;
 
