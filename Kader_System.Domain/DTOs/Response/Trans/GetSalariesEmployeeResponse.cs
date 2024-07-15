@@ -4,8 +4,8 @@
     {
         public int EmployeeId { get; set; }
         public string EmployeeName { get; set; }
-        public double HousingAllowances { get; set; }
-        public int WorkingDay { get; set; }
+        public double HousingAllownces { get; set; }
+        public int WrokingDay { get; set; }
         public double BasicSalary { get; set; }
         public double AccommodationAllowance { get; set; }
         public IEnumerable<AdditionalValues> AdditionalValues { get; set; }
@@ -15,11 +15,8 @@
 
         public IEnumerable<Absent> Absents { get; set; }
         public DisbursementType DisbursementType { get; set; }
-
-
-
-
-
+        public double HousingAllowances { get; set; }
+        public int WorkingDay { get; set; }
     }
     public enum DisbursementType
     {

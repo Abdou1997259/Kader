@@ -1,6 +1,5 @@
 ﻿using Kader_System.Domain.DTOs;
 
-
 namespace Kader_System.Services.Services.Trans
 {
     public class TransCalcluateSalaryService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IStringLocalizer<SharedResource> localizer) : ITransCalcluateSalaryService
@@ -370,17 +369,7 @@ namespace Kader_System.Services.Services.Trans
 
 
 
-            var empolyeeWithCaculatedSalary = await _unitOfWork.StoredProcuduresRepo.SpCalculateSalary(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()));
-            var spcaculatedSalarytransDetils = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(model.StartCalculationDate, model.StartActionDay, string.Join('-', empolyees.Select(x => x.Id).ToList()))).Where(x => x.CalculateSalaryId != null);
-
-            var vacations = await _unitOfWork.TransVacations.GetAllAsync();
-
-
-            var contracts = await _unitOfWork.Contracts.GetAllAsync();
-
-
-
-            if (empolyees is null)
+            if (employees is null)
             {
                 var msg = _localizer[Localization.NotFoundData];
                 return new Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>
@@ -419,7 +408,7 @@ namespace Kader_System.Services.Services.Trans
                     .ToList()
             };
 
-                Data = empolyeeWithCaculatedSalary.Select(x => new GetSalariesEmployeeResponse
+                var Data = employeeWithCalculatedSalary.Select(x => new GetSalariesEmployeeResponse
                 {
                     EmployeeId = x.EmployeeId,
                     EmployeeName = Localization.Arabic == lang ? x.FullNameAr : x.FullNameEn,
@@ -429,13 +418,7 @@ namespace Kader_System.Services.Services.Trans
                     WrokingDay = 30,
 
                     DisbursementType = DisbursementType.BankingType,
-                    Headers = new Header
-                    {
-                        WorkedDays = Localization.Arabic == lang ? "ايام العمل" : "Wroking Days",
-                        TotalAll = lang == Localization.Arabic ? "الاجمالي" : "Total",
-                        TotalMinues = lang == Localization.Arabic ? "مجموع الحسميان" : "Total Minues",
-                        TotalAdditionalValues = lang == Localization.Arabic ? "مجموع الاضافات" : "Total Additional",
-
+               
                 AdditionalValues = spCalculatedSalaryTransDetails
                     .Where(e => e.EmployeeId == x.EmployeeId && (e.JournalType == JournalType.Allowance || e.JournalType == JournalType.Benefit))
                     .Select(t => new AdditionalValues
@@ -472,7 +455,7 @@ namespace Kader_System.Services.Services.Trans
 
             return new Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>
             {
-                Data = Tuple.Create(headers, details),
+                Data = Tuple.Create(headers, Data),
                 Msg = string.Empty,
                 Check = true
             };
