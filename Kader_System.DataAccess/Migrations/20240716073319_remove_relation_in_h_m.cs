@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Kader_System.DataAccess.Migrations
 {
     /// <inheritdoc />
-    public partial class mainmigration : Migration
+    public partial class remove_relation_in_h_m : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -1258,6 +1258,150 @@ namespace Kader_System.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "St_SubMainScreenActions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ScreenSubId = table.Column<int>(type: "int", nullable: false),
+                    ActionId = table.Column<int>(type: "int", nullable: false),
+                    MainScreenTreeId = table.Column<int>(type: "int", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Add_date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Added_by = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_St_SubMainScreenActions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_St_SubMainScreenActions_MainScreenTrees_MainScreenTreeId",
+                        column: x => x.MainScreenTreeId,
+                        principalTable: "MainScreenTrees",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_St_SubMainScreenActions_St_Actions_ActionId",
+                        column: x => x.ActionId,
+                        principalTable: "St_Actions",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_St_SubMainScreenActions_St_ScreensSubs_ScreenSubId",
+                        column: x => x.ScreenSubId,
+                        principalTable: "St_ScreensSubs",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TitlePermissions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TitleId = table.Column<int>(type: "int", nullable: false),
+                    SubScreenId = table.Column<int>(type: "int", nullable: false),
+                    Permissions = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TitlePermissions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TitlePermissions_St_ScreensSubs_SubScreenId",
+                        column: x => x.SubScreenId,
+                        principalTable: "St_ScreensSubs",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_TitlePermissions_Titles_TitleId",
+                        column: x => x.TitleId,
+                        principalTable: "Titles",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Hr_ContractAllowancesDetails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AllowanceId = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<double>(type: "float", nullable: false),
+                    IsPercent = table.Column<bool>(type: "bit", nullable: false),
+                    ContractId = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Add_date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Added_by = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hr_ContractAllowancesDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Hr_ContractAllowancesDetails_Hr_Allowances_AllowanceId",
+                        column: x => x.AllowanceId,
+                        principalTable: "Hr_Allowances",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Hr_Contracts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TotalSalary = table.Column<double>(type: "float", nullable: false),
+                    FixedSalary = table.Column<double>(type: "float", nullable: false),
+                    HousingAllowance = table.Column<double>(type: "float", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileExtension = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EmployeeId = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Add_date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Added_by = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hr_Contracts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Hr_Departments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NameAr = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NameEn = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ManagerId = table.Column<int>(type: "int", nullable: true),
+                    ManagementId = table.Column<int>(type: "int", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    Add_date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Added_by = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Hr_Departments", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Hr_Employees",
                 columns: table => new
                 {
@@ -1334,6 +1478,12 @@ namespace Kader_System.DataAccess.Migrations
                         principalTable: "Hr_Companies",
                         principalColumn: "Id");
                     table.ForeignKey(
+                        name: "FK_Hr_Employees_Hr_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Hr_Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Hr_Employees_Hr_EmployeeTypes_EmployeeTypeId",
                         column: x => x.EmployeeTypeId,
                         principalTable: "Hr_EmployeeTypes",
@@ -1386,14 +1536,13 @@ namespace Kader_System.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "St_SubMainScreenActions",
+                name: "Hr_SectionDepartments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ScreenSubId = table.Column<int>(type: "int", nullable: false),
-                    ActionId = table.Column<int>(type: "int", nullable: false),
-                    MainScreenTreeId = table.Column<int>(type: "int", nullable: true),
+                    Section_id = table.Column<int>(type: "int", nullable: false),
+                    Department_id = table.Column<int>(type: "int", nullable: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false),
                     Add_date = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -1405,79 +1554,16 @@ namespace Kader_System.DataAccess.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_St_SubMainScreenActions", x => x.Id);
+                    table.PrimaryKey("PK_Hr_SectionDepartments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_St_SubMainScreenActions_MainScreenTrees_MainScreenTreeId",
-                        column: x => x.MainScreenTreeId,
-                        principalTable: "MainScreenTrees",
+                        name: "FK_Hr_SectionDepartments_Hr_Departments_Department_id",
+                        column: x => x.Department_id,
+                        principalTable: "Hr_Departments",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_St_SubMainScreenActions_St_Actions_ActionId",
-                        column: x => x.ActionId,
-                        principalTable: "St_Actions",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_St_SubMainScreenActions_St_ScreensSubs_ScreenSubId",
-                        column: x => x.ScreenSubId,
-                        principalTable: "St_ScreensSubs",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TitlePermissions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TitleId = table.Column<int>(type: "int", nullable: false),
-                    SubScreenId = table.Column<int>(type: "int", nullable: false),
-                    Permissions = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TitlePermissions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TitlePermissions_St_ScreensSubs_SubScreenId",
-                        column: x => x.SubScreenId,
-                        principalTable: "St_ScreensSubs",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_TitlePermissions_Titles_TitleId",
-                        column: x => x.TitleId,
-                        principalTable: "Titles",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Hr_Contracts",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TotalSalary = table.Column<double>(type: "float", nullable: false),
-                    FixedSalary = table.Column<double>(type: "float", nullable: false),
-                    HousingAllowance = table.Column<double>(type: "float", nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    EndDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FileExtension = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EmployeeId = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    Add_date = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Added_by = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Hr_Contracts", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Hr_Contracts_Hr_Employees_EmployeeId",
-                        column: x => x.EmployeeId,
-                        principalTable: "Hr_Employees",
+                        name: "FK_Hr_SectionDepartments_Hr_Sections_Section_id",
+                        column: x => x.Section_id,
+                        principalTable: "Hr_Sections",
                         principalColumn: "Id");
                 });
 
@@ -1839,75 +1925,6 @@ namespace Kader_System.DataAccess.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Hr_ContractAllowancesDetails",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AllowanceId = table.Column<int>(type: "int", nullable: false),
-                    Value = table.Column<double>(type: "float", nullable: false),
-                    IsPercent = table.Column<bool>(type: "bit", nullable: false),
-                    ContractId = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    Add_date = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Added_by = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Hr_ContractAllowancesDetails", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Hr_ContractAllowancesDetails_Hr_Allowances_AllowanceId",
-                        column: x => x.AllowanceId,
-                        principalTable: "Hr_Allowances",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Hr_ContractAllowancesDetails_Hr_Contracts_ContractId",
-                        column: x => x.ContractId,
-                        principalTable: "Hr_Contracts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Hr_Departments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NameAr = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NameEn = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ManagerId = table.Column<int>(type: "int", nullable: true),
-                    ManagementId = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    Add_date = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Added_by = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Hr_Departments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Hr_Departments_Hr_Employees_ManagerId",
-                        column: x => x.ManagerId,
-                        principalTable: "Hr_Employees",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Hr_Departments_Hr_Managements_ManagementId",
-                        column: x => x.ManagementId,
-                        principalTable: "Hr_Managements",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Trans_Loan_Details",
                 columns: table => new
                 {
@@ -1938,38 +1955,6 @@ namespace Kader_System.DataAccess.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Hr_SectionDepartments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Section_id = table.Column<int>(type: "int", nullable: false),
-                    Department_id = table.Column<int>(type: "int", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    Add_date = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeleteDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Added_by = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdateBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeleteBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Hr_SectionDepartments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Hr_SectionDepartments_Hr_Departments_Department_id",
-                        column: x => x.Department_id,
-                        principalTable: "Hr_Departments",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Hr_SectionDepartments_Hr_Sections_Section_id",
-                        column: x => x.Section_id,
-                        principalTable: "Hr_Sections",
-                        principalColumn: "Id");
-                });
-
             migrationBuilder.InsertData(
                 table: "Advanced_Types",
                 columns: new[] { "Id", "AdvanceTypeName" },
@@ -1998,7 +1983,7 @@ namespace Kader_System.DataAccess.Migrations
                 schema: "dbo",
                 table: "Auth_Users",
                 columns: new[] { "Id", "AccessFailedCount", "Add_date", "Added_by", "ConcurrencyStamp", "DeleteBy", "DeleteDate", "Email", "EmailConfirmed", "IsActive", "IsDeleted", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UpdateBy", "UpdateDate", "UserName", "VisiblePassword" },
-                values: new object[] { "b74ddd14-6340-4840-95c2-db12554843e5basb1", 0, null, null, "c76649a9-ddfa-445d-9f7f-848db3851372", null, null, "mohammed88@gmail.com", true, true, false, false, null, "MOHAMMED88@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEJej//H+xGlSgfa+otcdJS9vT/0QVnG3VpsaSy/dcsObxlxiD4iOT7GwHaju5Tynfw==", null, false, "aa56a45c-c884-4435-bb18-5369b734a656", false, null, null, "admin", "123456" });
+                values: new object[] { "b74ddd14-6340-4840-95c2-db12554843e5basb1", 0, null, null, "8d483b46-2131-4fb9-9850-93387ee41788", null, null, "mohammed88@gmail.com", true, true, false, false, null, "MOHAMMED88@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEG9vlaiW4naa6F31tTgwfZ9FbiwHeqHPN+G0Ytlb1kcbb3CTQjeNEHWRbtHK4o+Qrg==", null, false, "6601bd34-a8f9-4043-b8a6-b18bbc7db8a4", false, null, null, "admin", "123456" });
 
             migrationBuilder.InsertData(
                 table: "HrRelegion",
@@ -2238,9 +2223,7 @@ namespace Kader_System.DataAccess.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Hr_Departments_ManagerId",
                 table: "Hr_Departments",
-                column: "ManagerId",
-                unique: true,
-                filter: "[ManagerId] IS NOT NULL");
+                column: "ManagerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Hr_EmployeeAttachments_EmployeeId",
@@ -2251,6 +2234,11 @@ namespace Kader_System.DataAccess.Migrations
                 name: "IX_Hr_Employees_CompanyId",
                 table: "Hr_Employees",
                 column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Hr_Employees_DepartmentId",
+                table: "Hr_Employees",
+                column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Hr_Employees_EmployeeTypeId",
@@ -2508,11 +2496,68 @@ namespace Kader_System.DataAccess.Migrations
                 name: "IX_Trans_Vacations_VacationId",
                 table: "Trans_Vacations",
                 column: "VacationId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Hr_ContractAllowancesDetails_Hr_Contracts_ContractId",
+                table: "Hr_ContractAllowancesDetails",
+                column: "ContractId",
+                principalTable: "Hr_Contracts",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Hr_Contracts_Hr_Employees_EmployeeId",
+                table: "Hr_Contracts",
+                column: "EmployeeId",
+                principalTable: "Hr_Employees",
+                principalColumn: "Id");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Hr_Departments_Hr_Employees_ManagerId",
+                table: "Hr_Departments",
+                column: "ManagerId",
+                principalTable: "Hr_Employees",
+                principalColumn: "Id");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Hr_Departments_Hr_Managements_ManagementId",
+                table: "Hr_Departments",
+                column: "ManagementId",
+                principalTable: "Hr_Managements",
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Hr_Employees_Auth_Users_UserId",
+                table: "Hr_Employees");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Hr_Companies_Hr_CompanyTypes_CompanyTypeId",
+                table: "Hr_Companies");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Hr_Employees_Hr_Companies_CompanyId",
+                table: "Hr_Employees");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Hr_FingerPrints_Hr_Companies_CompanyId",
+                table: "Hr_FingerPrints");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Hr_Managements_Hr_Companies_CompanyId",
+                table: "Hr_Managements");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Hr_Departments_Hr_Employees_ManagerId",
+                table: "Hr_Departments");
+
+            migrationBuilder.DropForeignKey(
+                name: "FK_Hr_Managements_Hr_Employees_ManagerId",
+                table: "Hr_Managements");
+
             migrationBuilder.DropTable(
                 name: "Advanced_Types");
 
@@ -2613,9 +2658,6 @@ namespace Kader_System.DataAccess.Migrations
                 name: "Hr_Contracts");
 
             migrationBuilder.DropTable(
-                name: "Hr_Departments");
-
-            migrationBuilder.DropTable(
                 name: "Hr_Sections");
 
             migrationBuilder.DropTable(
@@ -2661,16 +2703,10 @@ namespace Kader_System.DataAccess.Migrations
                 name: "Hr_VacationDistributions");
 
             migrationBuilder.DropTable(
-                name: "Hr_Managements");
-
-            migrationBuilder.DropTable(
                 name: "St_MainScreenCats");
 
             migrationBuilder.DropTable(
                 name: "Hr_SalaryCalculators");
-
-            migrationBuilder.DropTable(
-                name: "Hr_Employees");
 
             migrationBuilder.DropTable(
                 name: "St_MainScreens");
@@ -2680,7 +2716,19 @@ namespace Kader_System.DataAccess.Migrations
                 schema: "dbo");
 
             migrationBuilder.DropTable(
+                name: "Hr_CompanyTypes");
+
+            migrationBuilder.DropTable(
+                name: "Hr_Companies");
+
+            migrationBuilder.DropTable(
+                name: "Hr_Employees");
+
+            migrationBuilder.DropTable(
                 name: "HrRelegion");
+
+            migrationBuilder.DropTable(
+                name: "Hr_Departments");
 
             migrationBuilder.DropTable(
                 name: "Hr_EmployeeTypes");
@@ -2713,13 +2761,10 @@ namespace Kader_System.DataAccess.Migrations
                 name: "Hr_Vacations");
 
             migrationBuilder.DropTable(
-                name: "Hr_Companies");
+                name: "Hr_Managements");
 
             migrationBuilder.DropTable(
                 name: "Hr_VacationTypes");
-
-            migrationBuilder.DropTable(
-                name: "Hr_CompanyTypes");
         }
     }
 }

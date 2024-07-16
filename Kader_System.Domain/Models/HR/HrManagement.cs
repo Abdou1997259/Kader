@@ -13,5 +13,7 @@
         [ForeignKey(nameof(CompanyId))]
         public HrCompany Company { get; set; }
 
+        public ICollection<HrDepartment> HrDepartments { get; set; }
+
     }
 }

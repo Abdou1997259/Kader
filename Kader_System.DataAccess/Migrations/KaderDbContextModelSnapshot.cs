@@ -221,7 +221,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "df1761d5-623f-4882-bf00-91d85f86080a",
+                            ConcurrencyStamp = "8d483b46-2131-4fb9-9850-93387ee41788",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +229,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEN63Q6Arg4KpUUf/dg9IS4WuMh95w94OhpcC+LUSJ4B4FezyeAGpc7Ye1Ql0BTmqsQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG9vlaiW4naa6F31tTgwfZ9FbiwHeqHPN+G0Ytlb1kcbb3CTQjeNEHWRbtHK4o+Qrg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "fa54c01d-7b3f-4d5a-9c7f-395bde06ada7",
+                            SecurityStamp = "6601bd34-a8f9-4043-b8a6-b18bbc7db8a4",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -988,9 +988,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("ManagementId");
 
-                    b.HasIndex("ManagerId")
-                        .IsUnique()
-                        .HasFilter("[ManagerId] IS NOT NULL");
+                    b.HasIndex("ManagerId");
 
                     b.ToTable("Hr_Departments");
                 });
@@ -1175,6 +1173,8 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("DepartmentId");
 
                     b.HasIndex("EmployeeTypeId");
 
@@ -4117,15 +4117,14 @@ namespace Kader_System.DataAccess.Migrations
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrDepartment", b =>
                 {
                     b.HasOne("Kader_System.Domain.Models.HR.HrManagement", "Management")
-                        .WithMany()
+                        .WithMany("HrDepartments")
                         .HasForeignKey("ManagementId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Manager")
-                        .WithOne("Department")
-                        .HasForeignKey("Kader_System.Domain.Models.HR.HrDepartment", "ManagerId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .WithMany()
+                        .HasForeignKey("ManagerId");
 
                     b.Navigation("Management");
 
@@ -4138,6 +4137,12 @@ namespace Kader_System.DataAccess.Migrations
                         .WithMany()
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Kader_System.Domain.Models.HR.HrDepartment", "Department")
+                        .WithMany("Employees")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployeeType", "EmployeeType")
@@ -4212,6 +4217,8 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Navigation("Company");
 
+                    b.Navigation("Department");
+
                     b.Navigation("EmployeeType");
 
                     b.Navigation("FingerPrint");
@@ -4262,7 +4269,7 @@ namespace Kader_System.DataAccess.Migrations
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrManagement", b =>
                 {
                     b.HasOne("Kader_System.Domain.Models.HR.HrCompany", "Company")
-                        .WithMany()
+                        .WithMany("HrManagements")
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -4628,6 +4635,8 @@ namespace Kader_System.DataAccess.Migrations
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrCompany", b =>
                 {
+                    b.Navigation("HrManagements");
+
                     b.Navigation("Licenses");
 
                     b.Navigation("ListOfsContract");
@@ -4638,17 +4647,24 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("ListOfAllowancesDetails");
                 });
 
+            modelBuilder.Entity("Kader_System.Domain.Models.HR.HrDepartment", b =>
+                {
+                    b.Navigation("Employees");
+                });
+
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrEmployee", b =>
                 {
-                    b.Navigation("Department")
-                        .IsRequired();
-
                     b.Navigation("ListOfAttachments");
 
                     b.Navigation("Management")
                         .IsRequired();
 
                     b.Navigation("TransLoans");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.HR.HrManagement", b =>
+                {
+                    b.Navigation("HrDepartments");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrSection", b =>

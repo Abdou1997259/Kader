@@ -13,5 +13,5 @@ public class HrDepartment : BaseEntity
     [ForeignKey(nameof(ManagementId))]
     public HrManagement Management { get; set; }
 
-
+    public ICollection<HrEmployee> Employees { get; set; }
 }

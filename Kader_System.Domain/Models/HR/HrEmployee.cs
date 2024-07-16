@@ -103,7 +103,7 @@ public class HrEmployee : BaseEntity
 
 
     public int DepartmentId { get; set; }
-    //[ForeignKey(nameof(DepartmentId))]
+    [ForeignKey(nameof(DepartmentId))]
     public HrDepartment Department { get; set; } = default!;
 
     public int NationalityId { get; set; }
