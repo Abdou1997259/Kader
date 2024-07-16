@@ -16,4 +16,9 @@
     <ProjectReference Include="..\Kader_System.Domain\Kader_System.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="IServices\EmployeeRequests\Requests\" />
+    <Folder Include="Services\EmployeeRequests\Requests\" />
+  </ItemGroup>
+
 </Project>
