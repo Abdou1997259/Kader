@@ -4,6 +4,7 @@ using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    partial class KaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240716095911_addLeavePermessionTableRelation")]
+    partial class addLeavePermessionTableRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "13e684d1-20d1-434a-824e-83d3208c827f",
+                            ConcurrencyStamp = "9e04b919-ac65-417f-8e38-e6e32148848a",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEG3nXyqBXXuutWlCw+QKdDgW2nk5Q7VJ4wC2K8Fr1N5MktisEqH6lO8t8090FDvbMg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFl3N/cdtaYaLiDQV8btvrkc6W/Vf9hrb+q2zqDlFfq8wATcq89zBifjm4jWg4Rfhg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a6150849-8f90-4ac3-9247-5eb86e14173b",
+                            SecurityStamp = "d382ed47-ad63-41e8-9a3a-5c4afde9693b",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -470,9 +473,10 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AttachmentPath")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeOnly?>("BackTime")
+                    b.Property<TimeOnly>("BackTime")
                         .HasColumnType("time");
 
                     b.Property<string>("DeleteBy")
@@ -494,6 +498,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("time");
 
                     b.Property<string>("Notes")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")

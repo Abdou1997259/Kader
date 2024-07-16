@@ -28,4 +28,8 @@
     <ProjectReference Include="..\Kader_System.Domain\Kader_System.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repositories\EmployeeRequests\Requests\" />
+  </ItemGroup>
+
 </Project>
