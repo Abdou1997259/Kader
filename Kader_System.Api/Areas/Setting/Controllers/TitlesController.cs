@@ -1,6 +1,7 @@
 ﻿using Kader_System.Domain.Dtos.Response;
 using Kader_System.Domain.DTOs.Request.Setting;
 using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.IServices.Setting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing;
@@ -19,7 +20,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
 
         #region Retrieve
         [HttpGet(ApiRoutes.Title.GetAllTitles)]
-        public async Task<IActionResult> GetAllTitles([FromQuery] GetAllFilterrationForTitleRequest model) =>
+        public async Task<IActionResult> GetAllTitles([FromQuery] GetAllFilterrationForTitleRequest model, ITitleService titleService) =>
             Ok(await titleService.GetAllTitlesAsync(requestService.GetRequestHeaderLanguage, model));
 
 
