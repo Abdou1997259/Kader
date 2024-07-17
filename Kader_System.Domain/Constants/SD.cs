@@ -38,6 +38,11 @@ public static class SD
         public const int Length = 50;
         public const string AllowedExtension = ".jpg,.png,.jpeg";
     }
+    public static class SysFileServer
+    {
+        public const string UploadFolderNamder = "upload";
+
+    }
     public static class Modules
     {
         public const string Auth = "Auth";

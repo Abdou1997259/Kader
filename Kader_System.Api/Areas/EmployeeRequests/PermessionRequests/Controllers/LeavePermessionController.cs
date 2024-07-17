@@ -1,4 +1,5 @@
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
+using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.HTTP;
 namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
@@ -8,9 +9,12 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
     [ApiController]
     [Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
-    public class EmployeeRequestsController(ILeavePermissionRequestService service, IRequestService requestService) : ControllerBase
+    public class EmployeeRequestsController(ILeavePermissionRequestService service,
+        IRequestService requestService,IWebHostEnvironment hostEnvironment,IFileServer fileServer) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
+        private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment; 
+        private readonly IFileServer _fileServer = fileServer;  
 
         #region Insert
         [HttpPost(ApiRoutes.LeavePermessionasRequests.CreateLeavePermessionasRequests)]
@@ -19,10 +23,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
             if (string.IsNullOrEmpty(requestService.GetClientId))
                 return Unauthorized("ClientId is empty");
 
-
-
-
-            var response = await service.AddNewLeavePermissionRequest(model);
+            var response = await service.AddNewLeavePermissionRequest(model, _hostEnvironment.WebRootPath, requestService.GetClientId, Modules.EmployeeRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

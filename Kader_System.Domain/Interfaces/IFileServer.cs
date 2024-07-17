@@ -8,6 +8,13 @@ namespace Kader_System.Domain.Interfaces
 {
     public interface IFileServer
     {
-        public string UploadFile(string clinetName, IFormFile file);
+        /// <summary>
+        /// Upload File on Server on wwwroot ,then return new saved fileName
+        /// </summary>
+        /// <param name="rootPath"></param>
+        /// <param name="clinetName"></param>
+        /// <param name="file"></param>
+        /// <returns>new file name with GUID</returns>
+        public Task<string> UploadFile(string rootPath, string clinetName,string moduleName, IFormFile file);
     }
 }
