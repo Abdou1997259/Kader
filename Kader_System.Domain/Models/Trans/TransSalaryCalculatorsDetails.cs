@@ -7,8 +7,16 @@
         public int Id { get; set; }
 
         public int EmployeeId { get; set; }
-        public double Salary { get; set; }
-        public double Amount { get; set; }
+      
+        public double NetSalary { get; set; }
+
+        public double BasicSalary { get; set; }
+        public double TotalDeductions {  get; set; } 
+        public double TotalBenefits { get; set; }
+        public double TotalLoans { get; set; }  
+        public double TotalAllownces { get; set; }
+        public double Total { get; set; }
+        public int TransferId { get; set; } 
         public int TransSalaryCalculatorsId { get; set; }
 
         [ForeignKey(nameof(TransSalaryCalculatorsId))]

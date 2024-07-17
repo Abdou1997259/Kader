@@ -4,6 +4,7 @@ using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    partial class KaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240717100334_change-trans-calculation-master")]
+    partial class changetranscalculationmaster
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c8c6c504-5244-4a9c-9fd7-126d77c69e84",
+                            ConcurrencyStamp = "e19f1155-2db5-4f73-a984-23ffe6a11137",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAU3TSt/2EoV/daCCkalKmtR8oZcDLd/IGVyePu1DUClQmPIeymgBLW6cFac8+Cgjg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIB+onz3//hUUtGDXo6BM4fp8qpQSHyff+VmJYZHUmUe9M7tDz5bjfdPqOsgz67g9g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c7410776-4a09-4b4a-be65-dd8ff13dc2b7",
+                            SecurityStamp = "106dea95-8987-4796-9d16-656e9fea2c0b",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -3801,7 +3804,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("BasicSalary")
+                    b.Property<double>("Amount")
                         .HasColumnType("float");
 
                     b.Property<string>("DeleteBy")
@@ -3819,28 +3822,10 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<double>("NetSalary")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Total")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalAllownces")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalBenefits")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalDeductions")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalLoans")
+                    b.Property<double>("Salary")
                         .HasColumnType("float");
 
                     b.Property<int>("TransSalaryCalculatorsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TransferId")
                         .HasColumnType("int");
 
                     b.Property<string>("UpdateBy")
