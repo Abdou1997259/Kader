@@ -17,7 +17,6 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
 
         public string? AtachmentPath { get; set; }
         public string? Notes { get; set; }
-        public HrEmployee employee { get; set; }
 
     }
 }

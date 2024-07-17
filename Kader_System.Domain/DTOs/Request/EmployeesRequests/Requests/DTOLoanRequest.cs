@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kader_System.Domain.Models.EmployeeRequests.PermessionRequests
+namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests
 {
-    [Table("Hr_DelayPermission")]
-    public class DelayPermission : BaseEntity
+    public class DTOLoanRequest
     {
-        [Key]
-        public int Id { get; set; }
         public int EmployeeId { get; set; }
+        public int InstallmentsCount { get; set; }
+        public double Amount { get; set; }
         public string? AtachmentPath { get; set; }
         public string? Notes { get; set; }
+
+
+
+
     }
 }

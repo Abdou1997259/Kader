@@ -13,13 +13,10 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         [Key]
         public int Id { get; set; }
         public int InstallmentsCount { get; set; }
-        public int EmployeeId { get; set; }
-        [ForeignKey(nameof(EmployeeId))]
         public DateTime  StartDate { get; set; }
         public double  Amount { get; set; }
         public string? AtachmentPath { get; set; }
         public string? Notes { get; set; }
-        public HrEmployee employee { get; set; }
 
     }
 }

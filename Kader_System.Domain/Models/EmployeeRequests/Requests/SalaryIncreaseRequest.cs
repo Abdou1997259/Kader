@@ -17,6 +17,8 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         public double  Amount { get; set; }
         public string? AtachmentPath { get; set; }
         public string? Notes { get; set; }
+        public int EmployeeId { get; set; }
+        [ForeignKey(nameof(EmployeeId))]
         public HrEmployee employee { get; set; }
 
     }
