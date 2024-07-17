@@ -48,7 +48,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Create
 
         [HttpPost(ApiRoutes.Contract.CreateContract)]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateContractRequest request)
+        public async Task<IActionResult> CreateAsync([FromForm] CreateContractRequest request)
         {
             if (ModelState.IsValid)
             {

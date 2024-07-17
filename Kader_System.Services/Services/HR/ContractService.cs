@@ -272,10 +272,10 @@ namespace Kader_System.Services.Services.HR
             }
 
             GetFileNameAndExtension contractFile = new();
-            if (!string.IsNullOrEmpty(model.ContractFile))
+            if (model.ContractFile is not null)
             {
 
-                contractFile = ManageFilesHelper.SaveBase64StringToFile(model.ContractFile, GoRootPath.HRFilesPath, model.FileName);
+                contractFile = ManageFilesHelper.UploadFile(model.ContractFile, GoRootPath.HRFilesPath);
             }
 
             newContract.FileName = contractFile?.FileName;
@@ -404,7 +404,7 @@ namespace Kader_System.Services.Services.HR
 
                     if (model.ContractFile != null)
                     {
-                        contractFile = ManageFilesHelper.SaveBase64StringToFile(model.ContractFile, GoRootPath.HRFilesPath, model.FileName);
+                        contractFile = ManageFilesHelper.UploadFile(model.ContractFile, GoRootPath.HRFilesPath);
                     }
                     obj.FileName = contractFile?.FileName;
                     obj.FileExtension = contractFile?.FileExtension;

@@ -4,6 +4,7 @@ using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    partial class KaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240716095357_addLeavePermessionTable")]
+    partial class addLeavePermessionTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "13e684d1-20d1-434a-824e-83d3208c827f",
+                            ConcurrencyStamp = "f25faff9-b1b5-45db-88b1-77c75432d40e",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEG3nXyqBXXuutWlCw+QKdDgW2nk5Q7VJ4wC2K8Fr1N5MktisEqH6lO8t8090FDvbMg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIQwOqrW9lAYNlZxVmnK7VpDn+OLE05jX/+7x5JH04hzz/Acnt0h/jPAWapkTwJEPQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a6150849-8f90-4ac3-9247-5eb86e14173b",
+                            SecurityStamp = "740debde-1aa4-4b52-8e5d-2ae2f23bcb0d",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -463,48 +466,24 @@ namespace Kader_System.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("Add_date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Added_by")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("AttachmentPath")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeOnly?>("BackTime")
+                    b.Property<TimeOnly>("BackTime")
                         .HasColumnType("time");
-
-                    b.Property<string>("DeleteBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeleteDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<TimeOnly>("LeaveTime")
                         .HasColumnType("time");
 
                     b.Property<string>("Notes")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UpdateBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
 
                     b.ToTable("Hr_LeavePermissionRequest");
                 });
@@ -4103,17 +4082,6 @@ namespace Kader_System.DataAccess.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.PermessionRequests.LeavePermissionRequest", b =>
-                {
-                    b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.CompanyLicense", b =>

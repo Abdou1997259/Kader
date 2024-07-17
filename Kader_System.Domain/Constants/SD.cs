@@ -226,7 +226,7 @@ public static class SD
             public const string ListOfSalaryIncrease = "allowance/getListOfSalaryIncrease";
             public const string GetAllSalaryIncrease = "salaryIncrease/getAll";
             public const string CreateSalaryIncrease = "salaryIncrease/create";
-            public const string UpdateSalaryIncrease = "salaryIncrease/update/{id}";
+            public const string UpdateSalaryIncrease = "salaryIncrease/update";
             public const string RestoreSalaryIncrease = "salaryIncrease/restore/{id}";
             public const string GetSalaryIncreaseById = "salaryIncrease/getById/{id}";
             public const string DeleteSalaryIncrease = "salaryIncrease/delete/{id}";
@@ -296,7 +296,10 @@ public static class SD
             public const string Calculate = "transSalary/calculate";
             public const string GetLookUps = "transSalary/getLookUps";
             public const string GetTransCalculator = "transSalary/getAll";
-            public const string DeleteCalculator = "transSalary/delete";
+
+            public const string DeleteCalculator = "transSalary/delete/{id}";
+            public const string GetbyId = "transSalary/getById/{id}";
+
 
         }
         public class Management

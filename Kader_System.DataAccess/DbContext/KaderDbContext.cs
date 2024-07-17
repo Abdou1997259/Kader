@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.Constants.Enums;
+using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 
 namespace Kader_System.DataAccesss.DbContext;
 
@@ -69,7 +70,11 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrRelegion> Relegions { get; set; }
     public DbSet<HrMaritalStatus> MaritalStatus { get; set; }
     public DbSet<MainScreenTree> MainScreenTrees { get; set; }
+    #region EmployeeRequest_Dbset
+    public DbSet<LeavePermissionRequest> LeavePermissionsRequests { get; set; }
 
+
+    #endregion
 
     #endregion
     //
@@ -115,6 +120,16 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasForeignKey(x => x.TransLoanId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<TransSalaryCalculator>()
+      .Property(p => p.Status)
+      .HasConversion(
+          x => x.ToString(),
+          v => string.IsNullOrEmpty(v)
+               ? Status.None
+               : (Status)Enum.Parse(typeof(Status), v)
+      );
+
         modelBuilder.Entity<SpCacluateSalary>().HasNoKey();
         //modelBuilder.Entity<SpCacluateSalary>().Property(x => ).HasConversion(
 
@@ -132,8 +147,26 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
         modelBuilder.Entity<SpCaclauateSalaryDetailedTrans>()
             .Property(x => x.JournalType)
             .HasConversion(x => x.ToString(), x => (JournalType)Enum.Parse(typeof(JournalType), x));
+        #region Fluent_API_for_HM
 
+        // Configure HrCompany to HrManagement (one-to-many)
+        modelBuilder.Entity<HrCompany>()
+            .HasMany(c => c.HrManagements)
+            .WithOne(m => m.Company)
+            .HasForeignKey(m => m.CompanyId);
 
+        // Configure HrManagement to HrDepartment (one-to-many)
+        modelBuilder.Entity<HrManagement>()
+            .HasMany(m => m.HrDepartments)
+            .WithOne(d => d.Management)
+            .HasForeignKey(d => d.ManagementId);
+
+        // Configure HrDepartment to HrEmployee (one-to-many)
+        modelBuilder.Entity<HrDepartment>()
+            .HasMany(d => d.Employees)
+            .WithOne(e => e.Department)
+            .HasForeignKey(e => e.DepartmentId);
+        #endregion
 
         #region Fluent Api
         //modelBuilder.Entity<HrManagement>()

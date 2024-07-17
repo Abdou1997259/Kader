@@ -1,5 +1,6 @@
-﻿//using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
+
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
+
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using System;
 using System.Collections.Generic;
@@ -19,4 +20,5 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         //public Task<int> UpdateLeavePermissionRequest(DTOLeavePermissionRequest model) { }
         //public Task<int> DeleteLeavePermissionRequest(int id) { }
     //}
+
 }

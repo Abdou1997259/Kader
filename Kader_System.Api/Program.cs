@@ -13,8 +13,10 @@ using Kader_System.Domain.Interfaces.StaticDataRepository;
 using Kader_System.Domain.Interfaces.Trans;
 using Kader_System.Domain.Options;
 using Kader_System.Domain.SwaggerFilter;
+using Kader_System.Services.IServices;
 using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Trans;
+using Kader_System.Services.Services;
 using Kader_System.Services.Services.Auth;
 using Kader_System.Services.Services.HR;
 using Kader_System.Services.Services.Setting;
@@ -55,25 +57,26 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
- {
-     options.SignIn.RequireConfirmedAccount = true;
-     options.User.RequireUniqueEmail = false;
-     options.Password.RequireDigit = false;
-     options.Password.RequireLowercase = false;
-     options.Password.RequireNonAlphanumeric = false;
-     options.Password.RequireUppercase = false;
-     options.Password.RequiredLength = 6;
- }).AddEntityFrameworkStores<KaderDbContext>();
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    options.User.RequireUniqueEmail = false;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 6;
+}).AddEntityFrameworkStores<KaderDbContext>();
 
 builder.Services.AddControllersWithViews().AddJsonOptions(x =>
-    {
-        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        x.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-        //x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        //x.JsonSerializerOptions.Converters.Add(new DateTimeConverter("yyyy-MM-dd"));
-    }
+{
+    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    x.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+    //x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    //x.JsonSerializerOptions.Converters.Add(new DateTimeConverter("yyyy-MM-dd"));
+}
     );
 
 builder.Services.AddDbContext<KaderDbContext>(options =>
@@ -242,6 +245,7 @@ builder.Services.AddScoped<ITransDeductionService, TransDeductionService>();
 builder.Services.AddScoped<ITransVacationService, TransVacationService>();
 builder.Services.AddScoped<ITransCovenantService, TransCovenantService>();
 builder.Services.AddScoped<ITransLoanService, TransLoanService>();
+builder.Services.AddScoped<ITransSalaryIncreaseService, TransSalaryIncreaseService>();
 builder.Services.AddScoped<ITransCalcluateSalaryService, TransCalcluateSalaryService>();
 builder.Services.AddScoped<ISalaryIncreaseTypeRepository, SalaryIncreaseTypeRepository>();
 builder.Services.AddScoped<ITransSalaryIncreaseRepository, TransSalaryIncreaseRepository>();

@@ -18,7 +18,7 @@ namespace Kader_System.Api.Areas.Trans
 
         [HttpGet(ApiRoutes.TransAllowance.GetAllTransAllowances)]
         public async Task<IActionResult> GetAllTransAllowances([FromQuery] GetAllFilterationAllowanceRequest model) =>
-            Ok(await service.GetAllTransAllowancesAsync(requestService.GetRequestHeaderLanguage,model, requestService.GetRequestHeaderLanguage));
+            Ok(await service.GetAllTransAllowancesAsync(requestService.GetRequestHeaderLanguage,model, requestService.GetCurrentHost));
 
         [HttpGet(ApiRoutes.TransAllowance.GetTransAllowanceById)]
         public async Task<IActionResult> GetTransAllowanceById([FromRoute]int id)
