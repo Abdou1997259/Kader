@@ -503,11 +503,11 @@ namespace Kader_System.Services.Services.Trans
                 Fixed = lang == Localization.Arabic ? "الاساسي" : "Fixed",
                 AdditionalValues = spCalculatedSalaryTransDetails
                     .Where(e => e.JournalType == JournalType.Benefit || e.JournalType == JournalType.Allowance)
-                    .Select(s => s.JournalType.ToString())
+                    .Select(s => Localization.Arabic==lang? s.TransNameAr:s.TransNameEn)
                     .ToList(),
                 MinuesValues = spCalculatedSalaryTransDetails
                     .Where(e => e.JournalType == JournalType.Deduction || e.JournalType == JournalType.Loan)
-                    .Select(s => s.JournalType.ToString())
+                    .Select(s => Localization.Arabic==lang?s.TransNameAr:s.TransNameEn)
                     .ToList()
             };
 

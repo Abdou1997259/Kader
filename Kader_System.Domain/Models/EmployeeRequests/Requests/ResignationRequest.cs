@@ -11,11 +11,12 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
     {
         [Key]
         public int Id { get; set; }
-        public string? AtachmentPath { get; set; }
-        public string? Notes { get; set; }
+
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
-        public HrEmployee employee { get; set; } = default!;
+
+        public string? AtachmentPath { get; set; }
+        public string? Notes { get; set; }
 
     }
 }

@@ -12,6 +12,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
     {
         [Key]
         public int Id { get; set; }
+    
         public double  Amount { get; set; }
         public string? AtachmentPath { get; set; }
         public string? Notes { get; set; }

@@ -12,14 +12,10 @@ namespace Kader_System.Domain.Models.Trans
         public string TransNameAr { get; set; }
         public string TransNameEn { get; set; }
         public DateOnly JournalDate { get; set; }
-
         public JournalType JournalType { get; set; }
         public double? AccommodationAllowance { get; set; }
         public double CalculatedSalary { get; set; }
         public int? CalculateSalaryId { get; set; }
         public int? CalculateSalaryDetailsId { get; set; }
-
-
-
     }
 }
