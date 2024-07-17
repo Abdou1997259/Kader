@@ -14,6 +14,7 @@ public static class SD
         public const string HRAudiosPath = "/wwwroot/Audios/HR/";
         public const string HRVideosPath = "/wwwroot/Videos/HR/";
         public const string TransFilesPath = "/wwwroot/Files/Trans/";
+        public const string EmployeeRequestPath = "/wwwroot/Files/EmployeeRequest/";
 
     }
     public static class ReadRootPath
@@ -41,6 +42,7 @@ public static class SD
     {
         public const string Auth = "Auth";
         public const string Setting = "Setting";
+        public const string EmployeeRequest = "Employee_Request";
         public const string HR = "HR";
         public const string Trans = "Trans";
         public const string V1 = "v1";
@@ -388,6 +390,10 @@ public static class SD
             public const string RestoreQualification = "qualification/restore/{id}";
             public const string GetQualificationById = "qualification/getById/{id}";
             public const string DeleteQualification = "qualification/delete/{id}";
+        }  public class LeavePermessionasRequests
+        {
+            public const string GetAllQualifications = "qualification/getAll";
+            public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
         }
         public class Job
         {

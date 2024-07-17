@@ -176,6 +176,11 @@ builder.Services.AddSwaggerGen(x =>
         Title = $"{Shared.KaderSystem} {Modules.Trans}",
         Version = Modules.V1
     });
+    x.SwaggerDoc(Modules.EmployeeRequest, new OpenApiInfo
+    {
+        Title = $"{Shared.KaderSystem} {Modules.EmployeeRequest}",
+        Version = Modules.V1
+    });
 
     x.AddSecurityDefinition(Modules.Bearer, new OpenApiSecurityScheme
     {
@@ -326,6 +331,7 @@ app.UseSwaggerUI(x =>
     x.SwaggerEndpoint($"/swagger/{Modules.Setting}/swagger.json", "Setting_Management v1");
     x.SwaggerEndpoint($"/swagger/{Modules.HR}/swagger.json", "HR_Management v1");
     x.SwaggerEndpoint($"/swagger/{Modules.Trans}/swagger.json", "Transaction_Management v1");
+    x.SwaggerEndpoint($"/swagger/{Modules.EmployeeRequest}/swagger.json", "Employee_Request v1");
 });
 //// Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment() || app.Environment.IsProduction() || app.Environment.IsEnvironment(Shared.Local))

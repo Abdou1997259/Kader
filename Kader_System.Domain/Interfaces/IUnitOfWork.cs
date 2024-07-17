@@ -1,4 +1,6 @@
-﻿namespace Kader_System.Domain.Interfaces;
+﻿using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
+
+namespace Kader_System.Domain.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
@@ -54,7 +56,7 @@ public interface IUnitOfWork : IDisposable
     ITransSalaryEffectRepository TransSalaryEffects { get; }
     ITransSalaryIncreaseRepository TransSalaryIncrease { get; }
     ISalaryIncreaseTypeRepository SalaryIncreaseTypeRepository { get; }
-    
+
     ITransAmountTypeRepository TransAmountTypes { get; }
     ITransBenefitRepository TransBenefits { get; }
     ITransCovenantRepository TransCovenants { get; }
@@ -64,5 +66,8 @@ public interface IUnitOfWork : IDisposable
     IMaritalStatusRepository MaritalStatus { get; }
     IGenderRepository Genders { get; }
     IReligionRepository Religions { get; }
+    #region Employee_Requests_UOW
+    ILeavePermissionRequestRepository LeavePermissionRequest { get; }
+    #endregion
     Task<int> CompleteAsync();
 }

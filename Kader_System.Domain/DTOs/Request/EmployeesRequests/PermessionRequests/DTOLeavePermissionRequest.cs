@@ -13,5 +13,6 @@ namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests
         public TimeOnly? BackTime { get; set; }
         public string? Notes { get; set; }
         public string? AttachmentPath { get; set; }
+        public string? FileName { get; set; }
     }
 }

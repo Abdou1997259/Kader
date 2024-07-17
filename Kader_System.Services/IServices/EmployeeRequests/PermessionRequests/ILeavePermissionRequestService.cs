@@ -9,9 +9,7 @@ namespace Kader_System.Services.IServices.EmployeeRequests.PermessionRequests
 {
     public interface ILeavePermissionRequestService
     {
-        public Task<List<DTOLeavePermissionRequest>> GetAllLeavePermissionRequests();
-        public Task<int> AddNewLeavePermissionRequest(DTOLeavePermissionRequest model);
-        public Task<int>UpdateLeavePermissionRequest(DTOLeavePermissionRequest model);
-        public Task<int> DeleteLeavePermissionRequest(int id);
+
+        public Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOLeavePermissionRequest model);
     }
 }
