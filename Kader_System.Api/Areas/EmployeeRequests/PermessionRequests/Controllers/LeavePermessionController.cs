@@ -8,11 +8,27 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
     [ApiController]
     [Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
-    public class LeavePermessionController(ILeavePermissionRequestService service, IRequestService requestService) : ControllerBase
+    public class EmployeeRequestsController(ILeavePermissionRequestService service, IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
 
         #region Insert
+        [HttpPost(ApiRoutes.LeavePermessionasRequests.CreateLeavePermessionasRequests)]
+        public async Task<IActionResult> CreateLeavePermessionasRequests([FromForm] DTOCreateLeavePermissionRequest model)
+        {
+            if (string.IsNullOrEmpty(requestService.GetClientId))
+                return Unauthorized("ClientId is empty");
+
+
+
+
+            var response = await service.AddNewLeavePermissionRequest(model);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
         //[HttpPost(ApiRoutes.LeavePermessionasRequests.CreateLeavePermessionasRequests)]
         //public async Task<IActionResult> CreateLeavePermessionasRequests([FromForm] DTOLeavePermissionRequest model)
         //{
@@ -23,7 +39,6 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         //        return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         //    return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         //}
-
         #endregion
 
 

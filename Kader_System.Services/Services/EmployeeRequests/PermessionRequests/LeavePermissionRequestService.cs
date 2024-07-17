@@ -7,6 +7,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 {
     public class LeavePermissionRequestService : ILeavePermissionRequestService
     {
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
+        private readonly IMapper _mapper = mapper;
+        public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model)
         public Task<List<DTOLeavePermissionRequest>> GetAllLeavePermissionRequests()
         {
 
