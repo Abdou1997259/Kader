@@ -133,11 +133,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
       );
 
         modelBuilder.Entity<SpCacluateSalary>().HasNoKey();
-        //modelBuilder.Entity<SpCacluateSalary>().Property(x => ).HasConversion(
-
-        //    v => v.ToString(),
-        //    v => (JournalType)Enum.Parse(typeof(JournalType), v)
-        //    );
+   
 
         modelBuilder.ApplyConfiguration(new SpCaclauateSalaryDetailsConfiguration());
 
