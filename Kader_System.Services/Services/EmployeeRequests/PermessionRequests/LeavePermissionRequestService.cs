@@ -10,19 +10,19 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
-        public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model)
+        private readonly IFileServer _fileServer = fileServer;
+        public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName)
         {
-            var newTrans = _mapper.Map<LeavePermissionRequest>(model);
-            await _unitOfWork.LeavePermissionRequest.AddAsync(newTrans);
-            await _unitOfWork.CompleteAsync();
+            var newRequest = _mapper.Map<LeavePermissionRequest>(model);
+            newRequest.AttachmentPath = (model.Attachement == null || model.Attachement.Length == 0) ? null :
+                await _fileServer.UploadFile(root, clientName, moduleName, model.Attachement);
+            await _unitOfWork.LeavePermissionRequest.AddAsync(newRequest);
+            var result = await _unitOfWork.CompleteAsync();
             return new()
             {
                 Msg = sharLocalizer[Localization.Done],
                 Check = true,
             };
         }
-        public Task<int> AddNewLeavePermissionRequest(DTOLeavePermissionRequest model) { }
-        public Task<int> UpdateLeavePermissionRequest(DTOLeavePermissionRequest model) { }
-        public Task<int> DeleteLeavePermissionRequest(int id) { }
     }
 }
