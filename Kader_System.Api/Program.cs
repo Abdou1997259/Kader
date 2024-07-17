@@ -263,7 +263,6 @@ builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
 builder.Services.AddScoped<ILeavePermissionRequestService, LeavePermissionRequestService>();
 #endregion
-
   #endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");
 var httpsPort = builder.Configuration.GetValue<int>("KestrelServer:Https.Port");
