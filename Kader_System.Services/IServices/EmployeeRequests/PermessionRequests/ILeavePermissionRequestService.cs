@@ -4,6 +4,6 @@ namespace Kader_System.Services.IServices.EmployeeRequests.PermessionRequests
 {
     public interface ILeavePermissionRequestService
     {
-        public Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model);
+        public Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model,string host, string clientName, string moduleName);
     }
 }
