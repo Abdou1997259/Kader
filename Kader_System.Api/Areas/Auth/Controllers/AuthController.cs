@@ -14,7 +14,7 @@ public class AuthController(IAuthService service) : ControllerBase
     [HttpPost(ApiRoutes.User.LoginUser)]
 
     public async Task<IActionResult> LoginUserAsync(AuthLoginUserRequest model)
-    {
+     {
         var response = await _service.LoginUserAsync(model);
         if (response.Check)
         {

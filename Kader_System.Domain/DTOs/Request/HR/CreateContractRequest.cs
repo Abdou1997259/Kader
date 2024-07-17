@@ -16,7 +16,10 @@ namespace Kader_System.Domain.DTOs.Request.HR
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public DateOnly EndDate { get; set; }
         //[Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public string? ContractFile { get; set; }
+        //public string? ContractFile { get; set; }
+
+        public IFormFile? ContractFile { get;set; }
+
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public string FileName { get; set; }
