@@ -1,15 +1,16 @@
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.HTTP;
-namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
+namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 {
     [Area(Modules.EmployeeRequest)]
     [ApiExplorerSettings(GroupName = Modules.EmployeeRequest)]
     [ApiController]
     [Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
-    public class LeavePermessionController(ILeavePermissionRequestService service,
+    public class VacationRequestsController(IVacationRequestService service,
         IRequestService requestService,IWebHostEnvironment hostEnvironment,IFileServer fileServer) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
@@ -17,13 +18,14 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         private readonly IFileServer _fileServer = fileServer;  
 
         #region Insert
-        [HttpPost(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.CreateLeavePermessionasRequests)]
-        public async Task<IActionResult> CreateLeavePermessionasRequests([FromForm] DTOCreateLeavePermissionRequest model)
+        [HttpPost(ApiRoutes.EmployeeRequests.VacationRequests.CreateVacationRequests)]
+        public async Task<IActionResult> CreateVacationRequests([FromForm] DTOVacationRequest model)
         {
             if (string.IsNullOrEmpty(requestService.GetClientId))
                 return Unauthorized("ClientId is empty");
 
-            var response = await service.AddNewLeavePermissionRequest(model, _hostEnvironment.WebRootPath, requestService.GetClientId, Modules.EmployeeRequest,Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
+            var response = await service.AddNewVacationRequest(model, _hostEnvironment.WebRootPath, requestService.GetClientId,
+                Modules.EmployeeRequest,Domain.Constants.Enums.HrEmployeeRequestTypesEnums.VacationRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
