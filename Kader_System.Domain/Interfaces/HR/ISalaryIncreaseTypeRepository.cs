@@ -10,4 +10,6 @@ public interface ISalaryIncreaseTypeRepository : IBaseRepository<HrValueType>
     public Task<int> AddSalaryIncreaseType(HrCreateSalaryIncreaseTypesRequest selectList);
     public Task<int> UpdateSalaryIncreaseType(SelectListLookupResponse selectList);
     public Task<int> DeleteSalaryIncreaseType(int id);
+    public Task<object> GetSalaryIncreaseType(string lang);
+
 }

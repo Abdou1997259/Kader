@@ -271,6 +271,7 @@ namespace Kader_System.Services.Services.Trans
             }
 
             var lookups = await _unitOfWork.Employees.GetEmployeesNameIdSalaryAsLookUp(lang);
+            var typeLookup = await _unitOfWork.SalaryIncreaseTypeRepository.GetSalaryIncreaseType(lang);
             return new()
             {
                 Data = new TransSalaryIncreaseResponse()
@@ -288,7 +289,8 @@ namespace Kader_System.Services.Services.Trans
                 Check = true,
                 LookUps = new
                 {
-                    employees = lookups
+                    employees = lookups,
+                    salaryIncreaseType = typeLookup,
                 },
             };
         }

@@ -61,4 +61,14 @@ public class SalaryIncreaseTypeRepository(KaderDbContext context) : BaseReposito
         );
         return result;
     }
+    public async Task<object> GetSalaryIncreaseType(string lang)
+    {
+        return await context.ValueTypes.
+            Where(e => !e.IsDeleted && e.IsActive)
+            .Select(e => new
+            {
+                id = e.Id,
+                salary_increase_type = lang == Localization.Arabic ? e.Name : e.NameInEnglish,
+            }).ToArrayAsync();
+    }
 }

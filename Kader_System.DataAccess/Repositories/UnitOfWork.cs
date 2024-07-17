@@ -1,4 +1,7 @@
-﻿namespace Kader_System.DataAccess.Repositories;
+﻿using Kader_System.DataAccess.Repositories.EmployeeRequests.PermessionRequests;
+using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
+
+namespace Kader_System.DataAccess.Repositories;
 
 public class UnitOfWork : IUnitOfWork
 {
@@ -67,8 +70,10 @@ public class UnitOfWork : IUnitOfWork
     public ITransSalaryCalculatorDetailsRepo TransSalaryCalculatorDetailsRepo { get; private set; }
 
     public ITransSalaryIncreaseRepository TransSalaryIncrease { get; private set; }
-    public ISalaryIncreaseTypeRepository SalaryIncreaseTypeRepository { get; private set; } 
-
+    public ISalaryIncreaseTypeRepository SalaryIncreaseTypeRepository { get; private set; }
+    #region Employee_Requests_UOW
+    public ILeavePermissionRequestRepository LeavePermissionRequest { get; private set; }
+    #endregion
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
     {
@@ -132,6 +137,7 @@ public class UnitOfWork : IUnitOfWork
         LoanRepository = new TransLoanRepository(_context);
         TransSalaryIncrease = new TransSalaryIncreaseRepository(_context);
         SalaryIncreaseTypeRepository = new SalaryIncreaseTypeRepository(_context);
+        LeavePermissionRequest = new LeavePermissionRequestRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>

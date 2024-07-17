@@ -65,6 +65,10 @@ public static class ManageFilesHelper
                     FileExtension = extension
                 };
             }
+            else
+            {
+                Directory.CreateDirectory(Directory.GetCurrentDirectory() + filePath);
+            }
 
             return null;
 
