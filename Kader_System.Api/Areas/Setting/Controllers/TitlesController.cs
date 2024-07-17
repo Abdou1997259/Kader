@@ -48,7 +48,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
             {
                 var reponse = await titleService.CreateTitleAsync(model);
 
-                if (reponse == null)
+                if (reponse != null)
                     return Ok(reponse);
                 else return BadRequest(reponse);
             }
