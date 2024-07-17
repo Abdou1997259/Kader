@@ -385,3 +385,4 @@ finally
 {
     Log.CloseAndFlush();
 }
+#endregion
