@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Interfaces\EmployeeRequest\EmployeeRequests\**" />
+    <EmbeddedResource Remove="Interfaces\EmployeeRequest\EmployeeRequests\**" />
+    <None Remove="Interfaces\EmployeeRequest\EmployeeRequests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
@@ -14,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="DTOs\Request\EmployeesRequests\Requests\" />
-    <Folder Include="Interfaces\EmployeeRequest\EmployeeRequests\" />
     <Folder Include="Models\EmployeeRequests\Requests\" />
   </ItemGroup>
 

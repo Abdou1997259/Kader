@@ -390,10 +390,16 @@ public static class SD
             public const string RestoreQualification = "qualification/restore/{id}";
             public const string GetQualificationById = "qualification/getById/{id}";
             public const string DeleteQualification = "qualification/delete/{id}";
-        }  public class LeavePermessionasRequests
+        } 
+        public class LeavePermessionasRequests
         {
             public const string GetAllQualifications = "qualification/getAll";
             public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
+        } 
+        public class DelayPermessionasRequests
+        {
+            //public const string GetAllQualifications = "qualification/getAll";
+            public const string CreateDelayPermissionRequests = "CreateDelayPermissionRequests/create";
         }
         public class Job
         {

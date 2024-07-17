@@ -257,8 +257,16 @@ builder.Services.AddScoped<ITransCalcluateSalaryService, TransCalcluateSalarySer
 builder.Services.AddScoped<ISalaryIncreaseTypeRepository, SalaryIncreaseTypeRepository>();
 builder.Services.AddScoped<ITransSalaryIncreaseRepository, TransSalaryIncreaseRepository>();
 builder.Services.AddScoped<IRequestService, RequestService>();
-builder.Services.AddScoped<IRequestService, RequestService>();
-  #endregion
+builder.Services.AddScoped<ITitleService, TitleService>();
+
+ 
+#region Employee_Requests
+builder.Services.AddScoped<ILeavePermissionRequestService, LeavePermissionRequestService>();
+builder.Services.AddScoped<IDelayPermissionService, DelayPermissionService>();
+
+  
+
+#endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");
 var httpsPort = builder.Configuration.GetValue<int>("KestrelServer:Https.Port");
 var httpsCertificateFilePath = builder.Configuration.GetValue<string>("KestrelServer:Https.CertificationFilePath");

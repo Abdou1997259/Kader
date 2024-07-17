@@ -72,6 +72,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<MainScreenTree> MainScreenTrees { get; set; }
     #region EmployeeRequest_Dbset
     public DbSet<LeavePermissionRequest> LeavePermissionsRequests { get; set; }
+    public DbSet<DelayPermission> DelayPermissions { get; set; }
 
 
     #endregion
