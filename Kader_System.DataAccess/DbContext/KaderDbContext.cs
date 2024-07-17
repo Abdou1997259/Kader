@@ -1,4 +1,6 @@
-﻿using Kader_System.Domain.Constants.Enums;
+﻿using Kader_System.DataAccess.Configrurations.SalaryCalculatorDetailsStoredConfig;
+using Kader_System.DataAccess.Configrurations.SpCaclauateSalaryDetailsConfiguration;
+using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 
 namespace Kader_System.DataAccesss.DbContext;
@@ -137,16 +139,10 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
         //    v => (JournalType)Enum.Parse(typeof(JournalType), v)
         //    );
 
+        modelBuilder.ApplyConfiguration(new SpCaclauateSalaryDetailsConfiguration());
 
-        modelBuilder.Entity<SpCaclauateSalaryDetails>().HasNoKey();
 
-        modelBuilder.Entity<SpCaclauateSalaryDetails>().Property(x => x.JournalType)
-            .HasConversion(x => x.ToString(), x => (JournalType)Enum.Parse(typeof(JournalType), x));
-
-        modelBuilder.Entity<SpCaclauateSalaryDetailedTrans>().HasNoKey();
-        modelBuilder.Entity<SpCaclauateSalaryDetailedTrans>()
-            .Property(x => x.JournalType)
-            .HasConversion(x => x.ToString(), x => (JournalType)Enum.Parse(typeof(JournalType), x));
+        modelBuilder.ApplyConfiguration(new SpCaclauateSalaryDetailedTransConfiguration());
         #region Fluent_API_for_HM
 
         // Configure HrCompany to HrManagement (one-to-many)
