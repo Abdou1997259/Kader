@@ -9,6 +9,8 @@ namespace Kader_System.Domain.Models.Trans
         public int EmployeeId { get; set; }
         public string FullNameAr { get; set; }
         public string FullNameEn { get; set; }
+        public string TransNameAr { get; set; }
+        public string TransNameEn { get; set; }
         public DateOnly JournalDate { get; set; }
 
         public JournalType JournalType { get; set; }
