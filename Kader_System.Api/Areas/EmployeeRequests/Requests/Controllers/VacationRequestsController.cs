@@ -21,10 +21,10 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [HttpPost(ApiRoutes.EmployeeRequests.VacationRequests.CreateVacationRequests)]
         public async Task<IActionResult> CreateVacationRequests([FromForm] DTOVacationRequest model)
         {
-            if (string.IsNullOrEmpty(requestService.GetClientId))
-                return Unauthorized("ClientId is empty");
+            if (string.IsNullOrEmpty(requestService.client_id))
+                return Unauthorized("client_id is empty");
 
-            var response = await service.AddNewVacationRequest(model, _hostEnvironment.WebRootPath, requestService.GetClientId,
+            var response = await service.AddNewVacationRequest(model, _hostEnvironment.WebRootPath, requestService.client_id,
                 Modules.EmployeeRequest,Domain.Constants.Enums.HrEmployeeRequestTypesEnums.VacationRequest);
             if (response.Check)
                 return Ok(response);

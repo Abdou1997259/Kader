@@ -13,21 +13,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<DTOVacationRequest>> AddNewVacationRequest(DTOVacationRequest model, string root, string clientName, string moduleName,HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
             var newRequest = _mapper.Map<VacationRequests>(model);
-            #region HrEmployeeRequestTypesEnums
-            var moduleNameWithType = hrEmployeeRequest switch
-            {
-                HrEmployeeRequestTypesEnums.LoanRequest => @$"{moduleName}\{HrEmployeeRequestTypesEnums.LoanRequest}",
-                HrEmployeeRequestTypesEnums.VacationRequest => @$"{moduleName}\{HrEmployeeRequestTypesEnums.VacationRequest}",
-                HrEmployeeRequestTypesEnums.AllowanceRequest => @$"{moduleName}\{HrEmployeeRequestTypesEnums.AllowanceRequest}",
-                HrEmployeeRequestTypesEnums.SalaryIncreaseRequest => @$"{moduleName}\{HrEmployeeRequestTypesEnums.SalaryIncreaseRequest}",
-                HrEmployeeRequestTypesEnums.TerminateContract => @$"{moduleName}\{HrEmployeeRequestTypesEnums.TerminateContract}",
-                HrEmployeeRequestTypesEnums.DelayPermission => @$"{moduleName}\{HrEmployeeRequestTypesEnums.DelayPermission}",
-                HrEmployeeRequestTypesEnums.ResignationRequest => @$"{moduleName}\{HrEmployeeRequestTypesEnums.ResignationRequest}",
-                HrEmployeeRequestTypesEnums.LeavePermission => @$"{moduleName}\{HrEmployeeRequestTypesEnums.LeavePermission}",
-                HrEmployeeRequestTypesEnums.None => moduleName,
-                _ => moduleName,
-            }; 
-            #endregion
+            var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
             await _unitOfWork.VacationRequests.AddAsync(newRequest);

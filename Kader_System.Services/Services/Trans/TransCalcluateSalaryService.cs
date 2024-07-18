@@ -15,15 +15,6 @@ namespace Kader_System.Services.Services.Trans
             model.EmployeeIds.Any(e => e == x.Id)
             , x => x);
 
-
-
-
-
-
-
-
-
-
             if (empolyees is null)
             {
                 var msg = _localizer[Localization.NotFoundData];
@@ -34,6 +25,33 @@ namespace Kader_System.Services.Services.Trans
                     Check = false
                 };
             }
+
+            foreach (var e in empolyees)
+            {
+               if( !await _unitOfWork.Contracts.ExistAsync(x=>x.EmployeeId==e.Id))
+                {
+                    var msg = $"{_localizer[Localization.Contract]}  {_localizer[Localization.NotFound]}";
+                    return new()
+                    {
+                        Data = null,
+                        Msg = msg,
+                        Check = false
+                    };
+
+                }
+                
+            }
+
+
+
+
+
+           
+
+
+
+
+          
 
 
 

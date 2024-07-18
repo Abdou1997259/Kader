@@ -10,8 +10,7 @@ namespace Kader_System.Services.Services
         public MappingProfile()
         {
             CreateMap<CreateTransSalaryIncreaseRequest, TransSalaryIncrease>();
-            CreateMap<DTOCreateLeavePermissionRequest, LeavePermissionRequest>();
-            CreateMap<DTOVacationRequest, VacationRequests>();
+            CreateMap<DTOLeavePermissionRequest, LeavePermissionRequest>();
         }
     }
 }

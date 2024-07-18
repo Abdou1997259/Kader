@@ -317,6 +317,7 @@ public static class SD
             public const string UpdateManagement = "management/update/{id}";
             public const string GetManagementById = "management/getById/{id}";
             public const string DeleteManagement = "management/delete/{id}";
+            public const string GetStructure = "management/getstructre/{companyid}";
         }
         public class Department
         {
@@ -403,6 +404,10 @@ public static class SD
             {
                 public const string GetAllQualifications = "leavePermessionasRequests/getAll";
                 public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
+            }
+            public class DelayPermessionasRequests
+            {
+                public const string CreateDelayPermissionRequests = "leavePermessionasRequests/create";
             }
             public class VacationRequests
             {

@@ -1,3 +1,4 @@
+using Kader_System.Api.Helpers.SwaggerHelper;
 using Kader_System.DataAccess.Repositories;
 using Kader_System.DataAccess.Repositories.EmployeeRequests;
 using Kader_System.DataAccess.Repositories.HR;
@@ -185,7 +186,6 @@ builder.Services.AddSwaggerGen(x =>
         Title = $"{Shared.KaderSystem} {Modules.EmployeeRequest}",
         Version = Modules.V1
     });
-
     x.AddSecurityDefinition(Modules.Bearer, new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -212,8 +212,8 @@ builder.Services.AddSwaggerGen(x =>
             Array.Empty<string>()
         }
   });
-
     x.SchemaFilter<SwaggerTest>();
+    x.OperationFilter<AddHeadersOperationFilter>();
 });
 
 
@@ -224,7 +224,7 @@ builder.Services.AddSwaggerGen(x =>
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandlerService>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProviderService>();
 builder.Services.AddSingleton<IStaticDataRepository, StaticDataRepository>();
-
+//builder.Services.AddScoped<IStructureMangement,>();
 builder.Services.AddScoped<IScreenService, ScreenService>();
 builder.Services.AddScoped<IFileServer, FileServer>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -260,12 +260,14 @@ builder.Services.AddScoped<ITransCalcluateSalaryService, TransCalcluateSalarySer
 builder.Services.AddScoped<ISalaryIncreaseTypeRepository, SalaryIncreaseTypeRepository>();
 builder.Services.AddScoped<ITransSalaryIncreaseRepository, TransSalaryIncreaseRepository>();
 builder.Services.AddScoped<IRequestService, RequestService>();
+builder.Services.AddScoped<ITitleService, TitleService>();
 #region Employee_Requests
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
 builder.Services.AddScoped<IVacationRequestService, VacationRequestService>();
-builder.Services.AddScoped<ILeavePermissionRequestService, LeavePermissionRequestService>();   
+builder.Services.AddScoped<ILeavePermissionRequestService, LeavePermissionRequestService>();
+builder.Services.AddScoped<IDelayPermissionService, DelayPermissionService>();
 #endregion
-  #endregion
+#endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");
 var httpsPort = builder.Configuration.GetValue<int>("KestrelServer:Https.Port");
 var httpsCertificateFilePath = builder.Configuration.GetValue<string>("KestrelServer:Https.CertificationFilePath");
@@ -350,7 +352,6 @@ app.UseSwaggerUI(x =>
 
 //     Log.Information("end of swagger");
 //}
-
 app.UseMiddleware<ExceptionMiddleware>();
 app.ConfigureExceptionHandler(loggingRepository);    // custom as a global exception
 app.UseHttpsRedirection();
@@ -360,6 +361,8 @@ app.UseStaticFiles();
 //app.ConfigureStaticFilesHandler();                   // custom as Static files
 app.UseRequestLocalization(localizationOptions);
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseMiddleware<HeadersValidationMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
