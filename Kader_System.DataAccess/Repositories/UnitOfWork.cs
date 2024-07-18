@@ -79,8 +79,7 @@ public class UnitOfWork : IUnitOfWork
     public IDelayPermissionServiceRepository DelayPermission { get; private set; }
     public IVacationRequestRepository VacationRequests { get; private set; }
 
-    public ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; private set; }
-
+    public IAllowanceRequestRepository AllowanceRequests { get; private set; }
 
     #endregion
 
@@ -147,6 +146,7 @@ public class UnitOfWork : IUnitOfWork
         TransSalaryIncrease = new TransSalaryIncreaseRepository(_context);
         SalaryIncreaseTypeRepository = new SalaryIncreaseTypeRepository(_context);
         LeavePermissionRequest = new LeavePermissionRequestRepository(_context);
+        VacationRequests = new VacationRequestRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>
