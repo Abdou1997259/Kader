@@ -8,7 +8,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly KaderDbContext _context;
     protected readonly IConfiguration _config;
 
-    public IAdvancedTypesRepository AdvancedTypesRepository { get; private set; }
+    public IAdvancedTypesRepository  AdvancedTypesRepository { get; private set; }
     public ITransLoanRepository LoanRepository { get; private set; }
     public IUserRepository Users { get; private set; }
     public IRoleClaimRepository RoleClaims { get; private set; }
