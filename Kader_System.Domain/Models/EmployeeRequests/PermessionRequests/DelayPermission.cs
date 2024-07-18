@@ -10,7 +10,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.PermessionRequests
     [Table("Hr_DelayPermission")]
     public class DelayPermission : BaseEntity
     {
-        [Key]
+         [Key]
         public int Id { get; set; }
         public int EmployeeId { get; set; }
         public string? AtachmentPath { get; set; }
