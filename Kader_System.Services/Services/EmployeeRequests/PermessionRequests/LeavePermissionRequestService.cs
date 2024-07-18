@@ -13,25 +13,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         private readonly IFileServer _fileServer = fileServer;
         public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName,HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
-            var newRequest = _mapper.Map<LeavePermissionRequest>(model);
-            #region HrEmployeeRequestTypesEnums
-            var moduleNameWithType = hrEmployeeRequest switch
-            {
-                HrEmployeeRequestTypesEnums.LoanRequest => @$"{moduleName}\{HrEmployeeRequestTypesEnums.LoanRequest}",
-                HrEmployeeRequestTypesEnums.VacationRequest => @$"{moduleName}\{HrEmployeeRequestTypesEnums.VacationRequest}",
-                HrEmployeeRequestTypesEnums.AllowanceRequest => @$"{moduleName}\{HrEmployeeRequestTypesEnums.AllowanceRequest}",
-                HrEmployeeRequestTypesEnums.SalaryIncreaseRequest => @$"{moduleName}\{HrEmployeeRequestTypesEnums.SalaryIncreaseRequest}",
-                HrEmployeeRequestTypesEnums.TerminateContract => @$"{moduleName}\{HrEmployeeRequestTypesEnums.TerminateContract}",
-                HrEmployeeRequestTypesEnums.DelayPermission => @$"{moduleName}\{HrEmployeeRequestTypesEnums.DelayPermission}",
-                HrEmployeeRequestTypesEnums.ResignationRequest => @$"{moduleName}\{HrEmployeeRequestTypesEnums.ResignationRequest}",
-                HrEmployeeRequestTypesEnums.LeavePermission => @$"{moduleName}\{HrEmployeeRequestTypesEnums.LeavePermission}",
-                HrEmployeeRequestTypesEnums.None => moduleName,
-                _ => moduleName,
-            };
-            #endregion
-
-            newRequest.AttachmentPath = (model.Attachement == null || model.Attachement.Length == 0) ? null :
-                await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachement);
+            var newRequest = _mapper.Map<LeavePermissionRequest>(model);            
+            var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
+            newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
+                await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
             await _unitOfWork.LeavePermissionRequest.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
             return new()

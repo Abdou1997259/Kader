@@ -17,6 +17,8 @@ namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests
         [Required(ErrorMessage = "please Insert Start Date")]
         public DateTime StartDate { get; set; }
         public string? Notes { get; set; }
-        public IFormFile Attachment { get; set; }
+        [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
+
+        public IFormFile? Attachment { get; set; }
     }
 }

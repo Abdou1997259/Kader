@@ -12,6 +12,7 @@ namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests
         public TimeOnly LeaveTime { get; set; }
         public TimeOnly? BackTime { get; set; }
         public string? Notes { get; set; }
-        public IFormFile Attachement { get; set; }
+        [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
+        public IFormFile? Attachment { get; set; }
     }
 }

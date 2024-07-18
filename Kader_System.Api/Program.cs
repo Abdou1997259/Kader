@@ -1,3 +1,4 @@
+using Kader_System.Api.Helpers.SwaggerHelper;
 using Kader_System.DataAccess.Repositories;
 using Kader_System.DataAccess.Repositories.EmployeeRequests;
 using Kader_System.DataAccess.Repositories.HR;
@@ -185,7 +186,6 @@ builder.Services.AddSwaggerGen(x =>
         Title = $"{Shared.KaderSystem} {Modules.EmployeeRequest}",
         Version = Modules.V1
     });
-
     x.AddSecurityDefinition(Modules.Bearer, new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -212,8 +212,8 @@ builder.Services.AddSwaggerGen(x =>
             Array.Empty<string>()
         }
   });
-
     x.SchemaFilter<SwaggerTest>();
+    x.OperationFilter<AddHeadersOperationFilter>();
 });
 
 
@@ -350,7 +350,6 @@ app.UseSwaggerUI(x =>
 
 //     Log.Information("end of swagger");
 //}
-
 app.UseMiddleware<ExceptionMiddleware>();
 app.ConfigureExceptionHandler(loggingRepository);    // custom as a global exception
 app.UseHttpsRedirection();
@@ -360,6 +359,8 @@ app.UseStaticFiles();
 //app.ConfigureStaticFilesHandler();                   // custom as Static files
 app.UseRequestLocalization(localizationOptions);
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseMiddleware<HeadersValidationMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

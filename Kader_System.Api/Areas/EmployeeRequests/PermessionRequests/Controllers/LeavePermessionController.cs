@@ -20,10 +20,10 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [HttpPost(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.CreateLeavePermessionasRequests)]
         public async Task<IActionResult> CreateLeavePermessionasRequests([FromForm] DTOCreateLeavePermissionRequest model)
         {
-            if (string.IsNullOrEmpty(requestService.GetClientId))
-                return Unauthorized("ClientId is empty");
+            if (string.IsNullOrEmpty(requestService.client_id))
+                return Unauthorized("client_id is empty");
 
-            var response = await service.AddNewLeavePermissionRequest(model, _hostEnvironment.WebRootPath, requestService.GetClientId, Modules.EmployeeRequest,Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
+            var response = await service.AddNewLeavePermissionRequest(model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest,Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
