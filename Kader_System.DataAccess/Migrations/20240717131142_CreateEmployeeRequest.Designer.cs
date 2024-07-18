@@ -4,6 +4,7 @@ using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    partial class KaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240717131142_CreateEmployeeRequest")]
+    partial class CreateEmployeeRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c8c6c504-5244-4a9c-9fd7-126d77c69e84",
+                            ConcurrencyStamp = "74042c78-cd42-4e4a-9c26-5d86c0e60a4d",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -3936,8 +3939,14 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("BranchId")
+                        .HasColumnType("int");
+
                     b.Property<DateOnly>("CalculationDate")
                         .HasColumnType("date");
+
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
@@ -3959,6 +3968,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<bool>("IsMigrated")
                         .HasColumnType("bit");
+
+                    b.Property<int?>("ManagementId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -3989,7 +4001,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("BasicSalary")
+                    b.Property<double>("Amount")
                         .HasColumnType("float");
 
                     b.Property<string>("DeleteBy")
@@ -4007,28 +4019,10 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<double>("NetSalary")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Total")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalAllownces")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalBenefits")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalDeductions")
-                        .HasColumnType("float");
-
-                    b.Property<double>("TotalLoans")
+                    b.Property<double>("Salary")
                         .HasColumnType("float");
 
                     b.Property<int>("TransSalaryCalculatorsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TransferId")
                         .HasColumnType("int");
 
                     b.Property<string>("UpdateBy")
