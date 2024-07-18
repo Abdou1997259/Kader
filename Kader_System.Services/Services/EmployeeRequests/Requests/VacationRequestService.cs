@@ -1,10 +1,8 @@
-
-using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 
-namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
+namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
     public class VacationRequestService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IVacationRequestService
     {
