@@ -26,6 +26,33 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
+            foreach (var e in empolyees)
+            {
+               if( !await _unitOfWork.Contracts.ExistAsync(x=>x.EmployeeId==e.Id))
+                {
+                    var msg = $"{_localizer[Localization.Contract]}  {_localizer[Localization.NotFound]}";
+                    return new()
+                    {
+                        Data = null,
+                        Msg = msg,
+                        Check = false
+                    };
+
+                }
+                
+            }
+
+
+
+
+
+           
+
+
+
+
+          
+
 
 
 

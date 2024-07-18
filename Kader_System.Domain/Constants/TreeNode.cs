@@ -12,8 +12,8 @@ namespace Kader_System.Domain.Constant
         public TreeNode<T> ParentNode { get; private set; }
         public T Value { get; set; }
         private readonly List<TreeNode<T>> _children = new List<TreeNode<T>>();
-        
-        
+        public List<TreeNode<T>>Childern=> _children;
+
 
         #region Constructors    
 
@@ -122,6 +122,7 @@ namespace Kader_System.Domain.Constant
             var childTreeNode = new TreeNode<T>(value);
             Add(childTreeNode, index);
             return childTreeNode;
+
         }
 
 
