@@ -73,6 +73,11 @@ public class UnitOfWork : IUnitOfWork
     public ISalaryIncreaseTypeRepository SalaryIncreaseTypeRepository { get; private set; }
     #region Employee_Requests_UOW
     public ILeavePermissionRequestRepository LeavePermissionRequest { get; private set; }
+
+    public IDelayPermissionServiceRepository DelayPermission { get; private set; }
+    public IVacationRequestRepository VacationRequests { get; private set; }
+
+
     #endregion
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
