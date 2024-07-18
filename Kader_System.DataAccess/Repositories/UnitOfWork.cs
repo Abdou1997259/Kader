@@ -74,7 +74,7 @@ public class UnitOfWork : IUnitOfWork
     #region Employee_Requests_UOW
     public ILeavePermissionRequestRepository LeavePermissionRequest { get; private set; }
 
-    public IDelayPermissionServiceRepository DelayPermission {  get; private set; }
+    public IDelayPermissionServiceRepository  DelayPermission {  get; private set; }
     #endregion
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
