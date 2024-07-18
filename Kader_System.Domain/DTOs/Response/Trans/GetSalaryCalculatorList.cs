@@ -6,7 +6,7 @@
 
         public DateTime? AddedDate { get; set; }
         public DateOnly CalculationDate { get; set; }
-        public double Amount { get; set; }
+        public double Total { get; set; }
         public string Description { get; set; }
         public Status Status { get; set; }
         public string JobName { get; set; }

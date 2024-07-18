@@ -11,15 +11,8 @@ namespace Kader_System.Domain.DTOs.Request.Trans
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public DateOnly DocumentDate { get; set; }
 
-        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+     
 
-        public int CompanyId { get; set; }
-
-        [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public int ManagementId { get; set; }
-
-        [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public bool IsMigrated { get; set; }
 
     }
 }
