@@ -70,6 +70,18 @@ namespace Kader_System.Api.Areas.HR.Controllers
             }
             return BadRequest(request);
         }
+        [HttpPut(ApiRoutes.Department.AddEmp)]
+        public async Task<IActionResult> AddEmployee(AddEmpolyeeToDepartmentRequest model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await service.AddEmployee(model);
+                if (result.Check) return Ok(result);
+                else if (!result.Check) return BadRequest(result);
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, model);
+            }
+            return BadRequest(model);
+        }
 
 
         #endregion

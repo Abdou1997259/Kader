@@ -247,6 +247,71 @@ namespace Kader_System.Services.Services.HR
             };
         }
 
+        public async Task<Response<string>> AddEmployee(AddEmpolyeeToDepartmentRequest model)
+        {
+            var empolyee = await unitOfWork.Employees.GetByIdAsync( model.EmpolyeeId);
+            if (empolyee is  null) {
+                var msg=$"{shareLocalizer[Localization.Employee]} {shareLocalizer[Localization.NotFound]}" ;
+                return new()
+                {
+                    Check=false,
+                    Data=null,
+                    Msg= msg    
+
+                };
+            }
+            var management = await unitOfWork.Managements.GetByIdAsync(model.MangamentId);
+            if (management == null)
+            {
+                var msg = $"{shareLocalizer[Localization.Management]} {shareLocalizer[Localization.NotFound]}";
+                return new()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+
+                };
+
+            }
+            var department = await unitOfWork.Departments.GetByIdAsync(model.DepartmentId);
+            if (department == null)
+            {
+                var msg = $"{shareLocalizer[Localization.Departments]} {shareLocalizer[Localization.NotFound]}";
+                return new()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+
+                };
+
+            }
+            if(department.ManagementId== management.Id)
+            {
+                var msg = $"{shareLocalizer[Localization.IsDepartmentInMang]}";
+                return new()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+
+                };
+            }
+            //return $"{FirstNameEn} {FatherNameEn} {GrandFatherNameEn} {FamilyNameEn}";
+             empolyee.DepartmentId = model.DepartmentId;
+            empolyee.ManagementId = model.MangamentId;
+            unitOfWork.Employees.Update(empolyee);
+           await unitOfWork.CompleteAsync();
+
+            return new()
+            {
+                Check = true,
+                Data = shareLocalizer[Localization.Updated],
+                Msg=null
+            };
+
+        }
+
         #endregion
 
     }
