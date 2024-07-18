@@ -395,10 +395,25 @@ public static class SD
             public const string RestoreQualification = "qualification/restore/{id}";
             public const string GetQualificationById = "qualification/getById/{id}";
             public const string DeleteQualification = "qualification/delete/{id}";
-        }  public class LeavePermessionasRequests
+        }
+
+        public class EmployeeRequests
         {
-            public const string GetAllQualifications = "qualification/getAll";
-            public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
+            public class LeavePermessionasRequests
+            {
+                public const string GetAllQualifications = "leavePermessionasRequests/getAll";
+                public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
+            }
+            public class DelayPermessionasRequests
+            {
+                public const string CreateDelayPermissionRequests = "leavePermessionasRequests/create";
+            }
+            public class VacationRequests
+            {
+                public const string GetAlVacationRequests = "vacationRequests/getAll";
+                public const string CreateVacationRequests = "vacationRequests/create";
+            }
+            public const string GetEmployeeRequestsLookups = "employeeRequests/getLookups";
         }
         public class Job
         {

@@ -68,6 +68,9 @@ public interface IUnitOfWork : IDisposable
     IReligionRepository Religions { get; }
     #region Employee_Requests_UOW
     ILeavePermissionRequestRepository LeavePermissionRequest { get; }
+    IDelayPermissionServiceRepository DelayPermission { get; }
+    IVacationRequestRepository VacationRequests { get; }
+
     #endregion
     Task<int> CompleteAsync();
 }
