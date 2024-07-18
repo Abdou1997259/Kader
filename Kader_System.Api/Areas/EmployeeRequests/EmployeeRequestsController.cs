@@ -14,7 +14,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests
         private readonly IRequestService requestService = requestService;
 
         #region Insert
-        [HttpPost(ApiRoutes.EmployeeRequests.GetEmployeeRequestsLookups)]
+        [HttpGet(ApiRoutes.EmployeeRequests.GetEmployeeRequestsLookups)]
         public async Task<IActionResult> GetEmployeeRequestsLookups()
         {
             var response = await service.GetEmployeeRequestsLookUpsData(requestService.GetRequestHeaderLanguage);

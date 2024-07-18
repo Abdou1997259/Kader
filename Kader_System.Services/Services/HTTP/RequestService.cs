@@ -27,12 +27,12 @@ public class RequestService :IRequestService
         }
     }
 
-    public string GetClientId
+    public string client_id
     {
 
         get
         {
-            var acceptLanguageHeader = _httpContextAccessor.HttpContext.Request.Headers["ClientID"].ToString();
+            var acceptLanguageHeader = _httpContextAccessor.HttpContext.Request.Headers["client_id"].ToString();
             return acceptLanguageHeader.Split(',').FirstOrDefault() ?? "";
         }
     }
