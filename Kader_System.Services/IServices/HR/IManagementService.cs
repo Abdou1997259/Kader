@@ -8,6 +8,7 @@
         Task<Response<HrGetManagementByIdResponse>> GetManagementByIdAsync(int id, string lang);
         Task<Response<CreateManagementRequest>> UpdateManagementAsync(int id, CreateManagementRequest model);
         Task<Response<string>> UpdateActiveOrNotManagementAsync(int id);
+        
         Task<Response<string>> DeleteManagementAsync(int id);
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Kader_System.Domain.DTOs.Response.HR;
 using Kader_System.Domain.Extensions;
 
 namespace Kader_System.Domain.Constant
@@ -275,7 +276,40 @@ namespace Kader_System.Domain.Constant
             return result;
         }
 
-        
+
+        public CompanyResponse ToCompanyResponse(string lang)
+        {
+            var companyNode = this;
+          
+            var companyResponse = new CompanyResponse
+            {
+                CompanyId = (int)typeof(HrCompany).GetProperty("Id")?.GetValue(companyNode.Value),
+                CompanyName = Localization.Arabic == lang ?
+                (string)typeof(HrCompany).GetProperty("NameAr")?.GetValue(companyNode.Value) :
+                (string)typeof(HrCompany).GetProperty("NameEn")?.GetValue(companyNode.Value),
+                Children = companyNode.Children.Select(managementNode => new ManagementResponse
+                {
+                    ManagementId = (int)typeof(HrManagement).GetProperty("Id")?.GetValue(managementNode.Value),
+                    ManagementName = Localization.Arabic == lang ?
+                    (string)typeof(HrCompany).GetProperty("NameAr")?.GetValue(companyNode.Value) :
+                    (string)typeof(HrCompany).GetProperty("NameEn")?.GetValue(companyNode.Value),
+                    Children = managementNode.Children.Select(departmentNode => new DepartmentResponse
+                    {
+                        DepartmentId = (int)typeof(HrDepartment).GetProperty("Id")?.GetValue(departmentNode.Value),
+                        DepartmentName = (string)typeof(HrDepartment).GetProperty("NameAr")?.GetValue(departmentNode.Value),
+                        Children = departmentNode.Children.Select(employeeNode => new EmployeeResponse
+                        {
+                            EmployeeId = (int)typeof(HrEmployee).GetProperty("Id")?.GetValue(employeeNode.Value),
+                            EmployeeName = Localization.Arabic == lang ?
+                            (string)typeof(HrCompany).GetProperty("FullNameAr")?.GetValue(companyNode.Value) :
+                            (string)typeof(HrCompany).GetProperty("FullNameEn")?.GetValue(companyNode.Value),
+                        }).ToList()
+                    }).ToList()
+                }).ToList()
+            };
+
+            return companyResponse;
+        }
 
         #region Equals en ==
 
