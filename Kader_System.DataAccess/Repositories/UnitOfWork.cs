@@ -147,6 +147,7 @@ public class UnitOfWork : IUnitOfWork
         SalaryIncreaseTypeRepository = new SalaryIncreaseTypeRepository(_context);
         LeavePermissionRequest = new LeavePermissionRequestRepository(_context);
         VacationRequests = new VacationRequestRepository(_context);
+        AllowanceRequests = new AllowanceRequestRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>
