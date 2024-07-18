@@ -21,7 +21,6 @@
   <ItemGroup>
     <Folder Include="DTOs\Request\EmployeesRequests\Requests\" />
     <Folder Include="Interfaces\EmployeeRequest\EmployeeRequests\" />
-    <Folder Include="Models\EmployeeRequests\Requests\" />
   </ItemGroup>
 
 </Project>

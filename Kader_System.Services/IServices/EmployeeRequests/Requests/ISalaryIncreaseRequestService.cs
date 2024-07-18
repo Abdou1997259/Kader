@@ -11,7 +11,7 @@ namespace Kader_System.Services.IServices.EmployeeRequests.Requests
     public interface ISalaryIncreaseRequestService
     {
         public Task<List<DTOSalaryIncreaseRequest>> GetAllSalaryIncreaseRequest();
-        public Task<int> AddNewSalaryIncreaseRequest(DTOSalaryIncreaseRequest model);
+        public Task<int> AddNewSalaryIncreaseRequest(DTOSalaryIncreaseRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
         public Task<int> UpdateSalaryIncreaseRequest(DTOSalaryIncreaseRequest model);
         public Task<int> DeleteSalaryIncreaseRequest(int id);
     }

@@ -7,7 +7,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Route("api/v1/")]
-public class SalaryIncreaseTypeController(ISalaryIncreaseTypeRepository service) : ControllerBase
+public class IncreaseSalaryRequestController(ISalaryIncreaseTypeRepository service) : ControllerBase
 {
     #region Retreieve
     [HttpGet(ApiRoutes.SalaryIncreaseType.GetAllSalaryIncreaseTypes)]

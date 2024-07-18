@@ -415,6 +415,11 @@ public static class SD
                 public const string CreateVacationRequests = "vacationRequests/create";
             }
             public const string GetEmployeeRequestsLookups = "employeeRequests/getLookups";
+
+            public class SalaryIncreaseRequest
+            {
+                public const string CreateSalaryIncreaseRequests = "salaryIncreaseRequests/create";
+            }
         }
         public class Job
         {

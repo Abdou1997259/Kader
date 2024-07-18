@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
+using Kader_System.Domain.Interfaces.EmployeeRequest.Request;
 
 namespace Kader_System.Domain.Interfaces;
 
@@ -70,6 +71,7 @@ public interface IUnitOfWork : IDisposable
     ILeavePermissionRequestRepository LeavePermissionRequest { get; }
     IDelayPermissionServiceRepository DelayPermission { get; }
     IVacationRequestRepository VacationRequests { get; }
+    ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; }
 
     #endregion
     Task<int> CompleteAsync();
