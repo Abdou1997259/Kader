@@ -10,9 +10,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
         private readonly IFileServer _fileServer = fileServer;
-        public async Task<Response<DTOVacationRequest>> AddNewAllowanceRequest(DTOVacationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<DTOVacationRequest>> AddNewAllowanceRequest(DTOAllowanceRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
-            var newRequest = _mapper.Map<AllowanceRequet>(model);
+            var newRequest = _mapper.Map<AllowanceRequest>(model);
+            newRequest.allowance_request_date = DateTime.Now;   
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.attachment_file_name = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);

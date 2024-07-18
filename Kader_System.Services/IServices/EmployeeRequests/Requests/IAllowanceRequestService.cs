@@ -5,6 +5,6 @@ namespace Kader_System.Services.IServices.EmployeeRequests.Requests
 {
     public interface IAllowanceRequestService
     {
-        public Task<Response<DTOVacationRequest>> AddNewAllowanceRequest(DTOVacationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
+        public Task<Response<DTOVacationRequest>> AddNewAllowanceRequest(DTOAllowanceRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
     }
 }

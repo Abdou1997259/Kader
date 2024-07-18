@@ -3,7 +3,7 @@ using Kader_System.Domain.Models.EmployeeRequests.Requests;
 
 namespace Kader_System.DataAccess.Repositories.EmployeeRequests.PermessionRequests
 {
-    public class AllowanceRequestRepository(KaderDbContext context) : BaseRepository<AllowanceRequet>(context),IAllowanceRequestRepository
+    public class AllowanceRequestRepository(KaderDbContext context) : BaseRepository<AllowanceRequest>(context),IAllowanceRequestRepository
     {
     }
 }

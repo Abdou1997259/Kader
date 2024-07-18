@@ -1,6 +1,6 @@
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
-using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
+using Kader_System.Services.IServices.EmployeeRequests.Requests;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
