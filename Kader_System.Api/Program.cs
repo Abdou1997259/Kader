@@ -1,4 +1,5 @@
 using Kader_System.DataAccess.Repositories;
+using Kader_System.DataAccess.Repositories.EmployeeRequests;
 using Kader_System.DataAccess.Repositories.HR;
 using Kader_System.DataAccess.Repositories.Logging;
 using Kader_System.DataAccess.Repositories.StaticDataRepository;
@@ -7,6 +8,7 @@ using Kader_System.DataAccesss.DbContext;
 using Kader_System.Domain;
 using Kader_System.Domain.Customization.Middleware;
 using Kader_System.Domain.Interfaces;
+using Kader_System.Domain.Interfaces.EmployeeRequest;
 using Kader_System.Domain.Interfaces.HR;
 using Kader_System.Domain.Interfaces.Logging;
 using Kader_System.Domain.Interfaces.StaticDataRepository;
@@ -224,6 +226,7 @@ builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProv
 builder.Services.AddSingleton<IStaticDataRepository, StaticDataRepository>();
 
 builder.Services.AddScoped<IScreenService, ScreenService>();
+builder.Services.AddScoped<IFileServer, FileServer>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbInitSeedsService, DbInitSeedsService>();
 builder.Services.AddScoped<IPermService, PermService>();
@@ -257,16 +260,7 @@ builder.Services.AddScoped<ITransCalcluateSalaryService, TransCalcluateSalarySer
 builder.Services.AddScoped<ISalaryIncreaseTypeRepository, SalaryIncreaseTypeRepository>();
 builder.Services.AddScoped<ITransSalaryIncreaseRepository, TransSalaryIncreaseRepository>();
 builder.Services.AddScoped<IRequestService, RequestService>();
-builder.Services.AddScoped<ITitleService, TitleService>();
-
- 
-#region Employee_Requests
-builder.Services.AddScoped<ILeavePermissionRequestService, LeavePermissionRequestService>();
-builder.Services.AddScoped<IDelayPermissionService, DelayPermissionService>();
-
-  
-
-#endregion
+  #endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");
 var httpsPort = builder.Configuration.GetValue<int>("KestrelServer:Https.Port");
 var httpsCertificateFilePath = builder.Configuration.GetValue<string>("KestrelServer:Https.CertificationFilePath");

@@ -26,4 +26,14 @@ public class RequestService :IRequestService
             return host;
         }
     }
+
+    public string GetClientId
+    {
+
+        get
+        {
+            var acceptLanguageHeader = _httpContextAccessor.HttpContext.Request.Headers["ClientID"].ToString();
+            return acceptLanguageHeader.Split(',').FirstOrDefault() ?? "";
+        }
+    }
 }

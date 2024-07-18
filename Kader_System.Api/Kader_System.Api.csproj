@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\EmployeeRequests\Requests\Controllers\" />
     <Folder Include="wwwroot\Audios\" />
     <Folder Include="wwwroot\Files\HR\" />
     <Folder Include="wwwroot\Files\Trans\" />

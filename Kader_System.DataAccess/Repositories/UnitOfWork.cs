@@ -73,8 +73,6 @@ public class UnitOfWork : IUnitOfWork
     public ISalaryIncreaseTypeRepository SalaryIncreaseTypeRepository { get; private set; }
     #region Employee_Requests_UOW
     public ILeavePermissionRequestRepository LeavePermissionRequest { get; private set; }
-
-    public IDelayPermissionServiceRepository DelayPermission {  get; private set; }
     #endregion
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
@@ -140,7 +138,6 @@ public class UnitOfWork : IUnitOfWork
         TransSalaryIncrease = new TransSalaryIncreaseRepository(_context);
         SalaryIncreaseTypeRepository = new SalaryIncreaseTypeRepository(_context);
         LeavePermissionRequest = new LeavePermissionRequestRepository(_context);
-        DelayPermission = new DelayPermissionRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>
