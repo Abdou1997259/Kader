@@ -76,6 +76,12 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
 
     #region EmployeeRequest_Dbset
     public DbSet<LeavePermissionRequest> LeavePermissionsRequests { get; set; }
+    public DbSet<DelayPermission> HrDelayPermissions { get; set; } 
+    public DbSet<LoanRequest> HrLoanRequests { get; set; }
+    public DbSet<ResignationRequest> HrResignationRequests { get; set; }
+    public DbSet<VacationRequests> HrVacationRequests { get; set; }
+    public DbSet<AllowanceRequest> AllowanceRequests { get; set; }    
+
 
 
     #endregion

@@ -4,6 +4,7 @@ using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    partial class KaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240718112739_add_hr_allowance_requet_table")]
+    partial class add_hr_allowance_requet_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "588cb136-f4f3-42c9-94c1-36c7a23df9ce",
+                            ConcurrencyStamp = "6e4c45fb-35ca-4f13-9c41-61d7c7af5c6b",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENDMGGJrG3XzUNjIcG2PYlH4nwde6AMz6JnzktsxJvz5Bd/dOzQ60Q09GpGpLbTeBw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHk46A1FyxoU21hdtrcZqkEoeQWUqw7tvGvxVa332Cx+1Nn5oo7qrS/x0LePoCEHkQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0a3ac72a-8ae5-46b3-81fd-1924c9234a7e",
+                            SecurityStamp = "911eee52-d667-43a0-9093-cd3c8bef2bff",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -565,14 +568,8 @@ namespace Kader_System.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
                     b.Property<int>("allowance_id")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("allowance_request_date")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("allowance_type_id")
                         .HasColumnType("int");
@@ -584,19 +581,22 @@ namespace Kader_System.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("employe_id")
+                        .HasColumnType("int");
+
                     b.Property<string>("notes")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmployeeId");
-
                     b.HasIndex("allowance_id");
 
                     b.HasIndex("allowance_type_id");
 
-                    b.ToTable("hr_allowance_request");
+                    b.HasIndex("employe_id");
+
+                    b.ToTable("hr_allowance_requet");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.LoanRequest", b =>
@@ -3392,9 +3392,11 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("FullNameAr")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullNameEn")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("JournalDate")
@@ -3408,9 +3410,11 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("TransNameAr")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TransNameEn")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.ToTable("SpCaclauateSalaryDetailedTransModel");
@@ -4372,12 +4376,6 @@ namespace Kader_System.DataAccess.Migrations
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.AllowanceRequest", b =>
                 {
-                    b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
-                        .WithMany()
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Kader_System.Domain.Models.HR.HrAllowance", "HrAllowance")
                         .WithMany()
                         .HasForeignKey("allowance_id")
@@ -4387,6 +4385,12 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasOne("Kader_System.Domain.Models.Trans.TransSalaryEffect", "SalaryEffect")
                         .WithMany()
                         .HasForeignKey("allowance_type_id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("employe_id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 

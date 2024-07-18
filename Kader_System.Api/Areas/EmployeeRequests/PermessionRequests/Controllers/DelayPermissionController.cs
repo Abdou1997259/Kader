@@ -17,7 +17,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Insert 
         [HttpPost(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.CreateDelayPermissionRequests)]
-        public async Task<IActionResult> CreateDelayPermission([FromForm]DTODelayPermissionRequest model)
+        public async Task<IActionResult> CreateDelayPermissionRequests([FromForm]DTODelayPermissionRequest model)
         {
             var response = await delayPermission.AddNewDelayPermissionRequest(model);
 

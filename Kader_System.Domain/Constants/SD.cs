@@ -407,12 +407,16 @@ public static class SD
             }
             public class DelayPermessionasRequests
             {
-                public const string CreateDelayPermissionRequests = "leavePermessionasRequests/create";
+                public const string CreateDelayPermissionRequests = "delayPermissionRequests/create";
             }
             public class VacationRequests
             {
                 public const string GetAlVacationRequests = "vacationRequests/getAll";
                 public const string CreateVacationRequests = "vacationRequests/create";
+            } public class AllowanceRequests
+            {
+                public const string GetAlAllowanceRequests = "allowanceRequests/getAll";
+                public const string CreateAllowanceRequests = "allowanceRequests/create";
             }
             public const string GetEmployeeRequestsLookups = "employeeRequests/getLookups";
 
