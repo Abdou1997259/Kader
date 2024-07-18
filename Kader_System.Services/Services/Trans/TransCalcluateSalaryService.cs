@@ -15,15 +15,6 @@ namespace Kader_System.Services.Services.Trans
             model.EmployeeIds.Any(e => e == x.Id)
             , x => x);
 
-
-
-
-
-
-
-
-
-
             if (empolyees is null)
             {
                 var msg = _localizer[Localization.NotFoundData];
