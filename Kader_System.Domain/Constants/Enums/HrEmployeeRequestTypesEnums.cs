@@ -19,7 +19,8 @@ namespace Kader_System.Domain.Constants.Enums
         AllowanceRequest = 5,
         ResignationRequest = 6,
         TerminateContract = 7,
-        LoanRequest = 8 
+        LoanRequest = 8,
         #endregion
+        None = 0
     }
 }

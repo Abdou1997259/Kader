@@ -1,10 +1,7 @@
 ﻿using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Kader_System.Domain.Models.EmployeeRequests.Requests;
 
 namespace Kader_System.Services.Services
 {
@@ -14,7 +11,6 @@ namespace Kader_System.Services.Services
         {
             CreateMap<CreateTransSalaryIncreaseRequest, TransSalaryIncrease>();
             CreateMap<DTOLeavePermissionRequest, LeavePermissionRequest>();
-            CreateMap<DTODelayPermissionRequest, DelayPermission>();
         }
     }
 }

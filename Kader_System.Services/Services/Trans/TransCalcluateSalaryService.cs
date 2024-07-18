@@ -53,9 +53,8 @@ namespace Kader_System.Services.Services.Trans
                     TransCalculatorMaster = new TransSalaryCalculator
                     {
                         DocumentDate = model.DocumentDate,
-                        CompanyId = model.CompanyId,
-                        ManagementId = model.ManagementId,
-                        Status = Status.Waiting,
+                    
+                           Status =Status.Waiting,
                         CalculationDate = model.StartCalculationDate,
                         IsMigrated = true
                     };
@@ -79,10 +78,15 @@ namespace Kader_System.Services.Services.Trans
                         var transDetails = new TransSalaryCalculatorDetail
                         {
                             EmployeeId = empolyee.EmployeeId,
-                            Salary = empolyee.CalculatedSalary + empolyee.TotalSalary,
-                            Amount = empolyee.CalculatedSalary,
+                            NetSalary = empolyee.CalculatedSalary + empolyee.TotalSalary,
+                            BasicSalary = empolyee.TotalSalary,
+                            TotalAllownces= spcaculatedSalarytransDetils.Where(x=>x.EmployeeId==empolyee.EmployeeId && x.JournalType==JournalType.Allowance).Sum(x=>x.CalculatedSalary),
+                            TotalBenefits = spcaculatedSalarytransDetils.Where(x => x.EmployeeId == empolyee.EmployeeId && x.JournalType == JournalType.Benefit).Sum(x => x.CalculatedSalary),
+                            TotalLoans  = spcaculatedSalarytransDetils.Where(x => x.EmployeeId == empolyee.EmployeeId && x.JournalType == JournalType.Loan).Sum(x => x.CalculatedSalary),
+                            TotalDeductions = spcaculatedSalarytransDetils.Where(x => x.EmployeeId == empolyee.EmployeeId && x.JournalType == JournalType.Deduction).Sum(x => x.CalculatedSalary),
                             TransSalaryCalculatorsId = TransCalculatorMaster.Id,
-
+                            Total=empolyee.CalculatedSalary,
+                         
 
                         };
                         listoftransDetails.Add(transDetails);
@@ -283,11 +287,12 @@ namespace Kader_System.Services.Services.Trans
                         Id = x.Id,
                         Description = x.Description,
                         Status = x.Status,
-                        Amount = x.TransSalaryCalculatorsDetails.Sum(s => s.Amount),
+                        Total = x.TransSalaryCalculatorsDetails.Sum(s => s.Total),
                         CalculationDate = x.DocumentDate,
                         AddedDate = x.Add_date,
-                        AddedBy = x.DeleteBy
-
+                        AddedBy = x.DeleteBy,
+                       
+                        
                     }, orderBy: x =>
                 x.OrderByDescending(x => x.Id), includeProperties: "TransSalaryCalculatorsDetails")).AsEnumerable().Select(
                     x => new GetSalaryCalculatorList
@@ -295,7 +300,7 @@ namespace Kader_System.Services.Services.Trans
                         Id = x.Id,
                         Description = x.Description,
                         Status = x.Status,
-                        Amount = x.Amount,
+                        Total = x.Total,
                         CalculationDate = x.CalculationDate,
                         AddedDate = x.AddedDate,
                         AddedBy = empolyeeWithJobs.Where(e => e.UserId == x.AddedBy)
@@ -503,11 +508,11 @@ namespace Kader_System.Services.Services.Trans
                 Fixed = lang == Localization.Arabic ? "الاساسي" : "Fixed",
                 AdditionalValues = spCalculatedSalaryTransDetails
                     .Where(e => e.JournalType == JournalType.Benefit || e.JournalType == JournalType.Allowance)
-                    .Select(s => s.JournalType.ToString())
+                    .Select(s => Localization.Arabic==lang? s.TransNameAr:s.TransNameEn)
                     .ToList(),
                 MinuesValues = spCalculatedSalaryTransDetails
                     .Where(e => e.JournalType == JournalType.Deduction || e.JournalType == JournalType.Loan)
-                    .Select(s => s.JournalType.ToString())
+                    .Select(s => Localization.Arabic==lang?s.TransNameAr:s.TransNameEn)
                     .ToList()
             };
 

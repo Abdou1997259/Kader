@@ -38,6 +38,11 @@ public static class SD
         public const int Length = 50;
         public const string AllowedExtension = ".jpg,.png,.jpeg";
     }
+    public static class SysFileServer
+    {
+        public const string UploadFolderNamder = "upload";
+
+    }
     public static class Modules
     {
         public const string Auth = "Auth";
@@ -390,16 +395,10 @@ public static class SD
             public const string RestoreQualification = "qualification/restore/{id}";
             public const string GetQualificationById = "qualification/getById/{id}";
             public const string DeleteQualification = "qualification/delete/{id}";
-        } 
-        public class LeavePermessionasRequests
+        }  public class LeavePermessionasRequests
         {
             public const string GetAllQualifications = "qualification/getAll";
             public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
-        } 
-        public class DelayPermessionasRequests
-        {
-            //public const string GetAllQualifications = "qualification/getAll";
-            public const string CreateDelayPermissionRequests = "CreateDelayPermissionRequests/create";
         }
         public class Job
         {
@@ -697,7 +696,7 @@ public static class SD
 
 
 
-     
+
 
     }
 }

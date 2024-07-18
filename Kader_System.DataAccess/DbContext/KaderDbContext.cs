@@ -1,5 +1,8 @@
-﻿using Kader_System.Domain.Constants.Enums;
+﻿using Kader_System.DataAccess.Configrurations.SalaryCalculatorDetailsStoredConfig;
+using Kader_System.DataAccess.Configrurations.SpCaclauateSalaryDetailsConfiguration;
+using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
+using Kader_System.Domain.Models.EmployeeRequests.Requests;
 
 namespace Kader_System.DataAccesss.DbContext;
 
@@ -70,9 +73,9 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrRelegion> Relegions { get; set; }
     public DbSet<HrMaritalStatus> MaritalStatus { get; set; }
     public DbSet<MainScreenTree> MainScreenTrees { get; set; }
+
     #region EmployeeRequest_Dbset
     public DbSet<LeavePermissionRequest> LeavePermissionsRequests { get; set; }
-    public DbSet<DelayPermission> DelayPermissions { get; set; }
 
 
     #endregion
@@ -132,22 +135,12 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
       );
 
         modelBuilder.Entity<SpCacluateSalary>().HasNoKey();
-        //modelBuilder.Entity<SpCacluateSalary>().Property(x => ).HasConversion(
-
-        //    v => v.ToString(),
-        //    v => (JournalType)Enum.Parse(typeof(JournalType), v)
-        //    );
 
 
-        modelBuilder.Entity<SpCaclauateSalaryDetails>().HasNoKey();
+        modelBuilder.ApplyConfiguration(new SpCaclauateSalaryDetailsConfiguration());
 
-        modelBuilder.Entity<SpCaclauateSalaryDetails>().Property(x => x.JournalType)
-            .HasConversion(x => x.ToString(), x => (JournalType)Enum.Parse(typeof(JournalType), x));
 
-        modelBuilder.Entity<SpCaclauateSalaryDetailedTrans>().HasNoKey();
-        modelBuilder.Entity<SpCaclauateSalaryDetailedTrans>()
-            .Property(x => x.JournalType)
-            .HasConversion(x => x.ToString(), x => (JournalType)Enum.Parse(typeof(JournalType), x));
+        modelBuilder.ApplyConfiguration(new SpCaclauateSalaryDetailedTransConfiguration());
         #region Fluent_API_for_HM
 
         // Configure HrCompany to HrManagement (one-to-many)
