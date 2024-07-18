@@ -156,6 +156,9 @@
   <data name="Employee" xml:space="preserve">
     <value>الموظف</value>
   </data>
+  <data name="IsDepartmentInMang" xml:space="preserve">
+    <value>لايوجد قسم بذلك الاسم في هذا الاداره</value>
+  </data>
   <data name="IsExist" xml:space="preserve">
     <value>{0} موجود بالفعل</value>
   </data>

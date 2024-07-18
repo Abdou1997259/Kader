@@ -327,6 +327,7 @@ public static class SD
             public const string UpdateDepartment = "department/update/{id}";
             public const string GetDepartmentById = "department/getById/{id}";
             public const string DeleteDepartment = "department/delete/{id}";
+            public const string AddEmp = "department/addemployee";
         }
         public class Loan
         {
@@ -522,6 +523,7 @@ public static class SD
         public const string CurrentAndNewPasswordIsTheSame = "CurrentAndNewPasswordIsTheSame";
         public const string CurrentPasswordIsIncorrect = "CurrentPasswordIsIncorrect";
         public const string UserName = "UserName";
+        public const string IsDepartmentInMang = "IsDepartmentInMang";
         public const string UserNameOrEmail = "UserNameOrEmail";
         public const string User = "User";
         public const string ThisEmployeeWasDeleted = "ThisEmployeeWasDeleted";
