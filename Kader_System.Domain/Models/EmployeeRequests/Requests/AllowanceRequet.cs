@@ -13,7 +13,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         public double amount { get; set; }
         public string? notes { get; set; }
         public string? attachment_file_name { get; set; }
-        public DateTime allowance_request_date { get; set; }
+        public DateTime allowance_request_date { get; set; }    
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public virtual HrEmployee Employee { get; set; }
