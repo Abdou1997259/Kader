@@ -80,7 +80,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<LoanRequest> HrLoanRequests { get; set; }
     public DbSet<ResignationRequest> HrResignationRequests { get; set; }
     public DbSet<VacationRequests> HrVacationRequests { get; set; }
-    public DbSet<AllowanceRequet> AllowanceRequets { get; set; }    
+    public DbSet<AllowanceRequest> AllowanceRequests { get; set; }    
 
 
 

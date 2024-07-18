@@ -560,7 +560,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.ToTable("Hr_LeavePermissionRequest");
                 });
 
-            modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.AllowanceRequet", b =>
+            modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.AllowanceRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -4374,7 +4374,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("Employee");
                 });
 
-            modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.AllowanceRequet", b =>
+            modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.AllowanceRequest", b =>
                 {
                     b.HasOne("Kader_System.Domain.Models.HR.HrAllowance", "HrAllowance")
                         .WithMany()

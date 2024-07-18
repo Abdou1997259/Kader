@@ -2,7 +2,7 @@
 
 namespace Kader_System.Domain.Interfaces.EmployeeRequest.Request
 {
-    public interface IAllowanceRequestRepository : IBaseRepository<AllowanceRequet>
+    public interface IAllowanceRequestRepository : IBaseRepository<AllowanceRequest>
     {
     }
 }

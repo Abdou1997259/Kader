@@ -1,7 +1,6 @@
-using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.Interfaces;
-using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
+using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
 namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 {
@@ -21,9 +20,6 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [HttpPost(ApiRoutes.EmployeeRequests.VacationRequests.CreateVacationRequests)]
         public async Task<IActionResult> CreateVacationRequests([FromForm] DTOVacationRequest model)
         {
-            if (string.IsNullOrEmpty(requestService.client_id))
-                return Unauthorized("client_id is empty");
-
             var response = await service.AddNewVacationRequest(model, _hostEnvironment.WebRootPath, requestService.client_id,
                 Modules.EmployeeRequest,Domain.Constants.Enums.HrEmployeeRequestTypesEnums.VacationRequest);
             if (response.Check)
