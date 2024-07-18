@@ -14,6 +14,7 @@ namespace Kader_System.Services.Services
             CreateMap<DTOAllowanceRequest, AllowanceRequest>();
             CreateMap<DTODelayPermissionRequest, DelayPermission>();
             CreateMap<DTOVacationRequest, VacationRequests>();
+            CreateMap<DTOSalaryIncreaseRequest, SalaryIncreaseRequest>();
         }
     }
 }

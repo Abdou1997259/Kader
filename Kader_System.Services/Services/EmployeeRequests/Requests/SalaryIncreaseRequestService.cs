@@ -21,12 +21,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
     
 
-        public  async Task<Response<DTOSalaryIncreaseRequest>> AddNewSalaryIncreaseRequest(DTOSalaryIncreaseRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<DTOSalaryIncreaseRequest>> AddNewSalaryIncreaseRequest(DTOSalaryIncreaseRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
             var newRequest = _mapper.Map<SalaryIncreaseRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-            newRequest.AtachmentPath = (model.AttachmentPath == null || model.AttachmentPath.Length == 0) ? null :
-                await _fileServer.UploadFile(root, clientName, moduleNameWithType,model.AttachmentPath);
+            newRequest.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
+                await _fileServer.UploadFile(root, clientName, moduleNameWithType,model.Attachment);
             await _unitOfWork.SalaryIncreaseRequest.AddAsync(newRequest);   
             var result = await _unitOfWork.CompleteAsync();
 
@@ -50,11 +50,6 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
 
         public Task<int> UpdateSalaryIncreaseRequest(DTOSalaryIncreaseRequest model)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<int> ISalaryIncreaseRequestService.AddNewSalaryIncreaseRequest(DTOSalaryIncreaseRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
             throw new NotImplementedException();
         }

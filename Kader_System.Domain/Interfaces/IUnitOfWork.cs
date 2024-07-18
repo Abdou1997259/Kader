@@ -72,6 +72,7 @@ public interface IUnitOfWork : IDisposable
     IDelayPermissionServiceRepository DelayPermission { get; }
     IVacationRequestRepository VacationRequests { get; }
     IAllowanceRequestRepository AllowanceRequests { get; }
+    ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; }
     #endregion
     Task<int> CompleteAsync();
 }

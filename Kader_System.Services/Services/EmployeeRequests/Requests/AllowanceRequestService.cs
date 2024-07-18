@@ -17,7 +17,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.attachment_file_name = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
-            await _unitOfWork.All
+            await _unitOfWork.AllowanceRequests.AddAsync(newRequest);
             await _unitOfWork.CompleteAsync();
             return new()
             {

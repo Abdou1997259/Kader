@@ -19,6 +19,6 @@ namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests
         public string? Notes { get; set; }
         [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
 
-        public IFormFile? AttachmentPath { get; set; }
+        public IFormFile? Attachment { get; set; }
      }
 }
