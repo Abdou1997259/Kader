@@ -224,7 +224,7 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
     }
 
     #endregion
-
+      
     #region Update
     public async Task<Response<TransactionAllowanceGetByIdResponse>> UpdateTransAllowanceAsync(int id, CreateTransAllowanceRequest model)
     {
