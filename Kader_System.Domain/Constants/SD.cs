@@ -406,6 +406,16 @@ public static class SD
                 public const string GetAllQualifications = "leavePermessionasRequests/getAll";
                 public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
             }
+            public class LoanRequests
+            {
+                public const string ListOfLoanRequests = "LoanRequests/getListOfLoanRequests";
+                public const string GetAllLoanRequests = "LoanRequests/getAll";
+                public const string CreateLoanRequests = "LoanRequests/create";
+                public const string UpdateLoanRequests = "LoanRequests/update/{id}";
+                public const string RestoreLoanRequests = "LoanRequests/restore/{id}";
+                public const string GetLoanRequestsById = "LoanRequests/getById/{id}";
+                public const string DeleteLoanRequests = "LoanRequests/delete/{id}";
+            }
             public class DelayPermessionasRequests
             {
                 public const string CreateDelayPermissionRequests = "delayPermissionRequests/create";
