@@ -83,6 +83,8 @@ public class UnitOfWork : IUnitOfWork
 
     public ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; private set; }
 
+    public IContractTerminationRequestRepository ContractTerminationRequests { get; private set; }
+
     #endregion
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
@@ -151,7 +153,8 @@ public class UnitOfWork : IUnitOfWork
         VacationRequests = new VacationRequestRepository(_context);
         AllowanceRequests = new AllowanceRequestRepository(_context);
         SalaryIncreaseRequest = new SalaryIncreaseRequestRepository(_context);
-        DelayPermission = new DelayPermissionRepository(_context);  
+        DelayPermission = new DelayPermissionRepository(_context);
+        ContractTerminationRequests = new ContractTerminationRequestRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>

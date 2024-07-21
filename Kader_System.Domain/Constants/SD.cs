@@ -424,6 +424,10 @@ public static class SD
             public class SalaryIncreaseRequest
             {
                 public const string CreateSalaryIncreaseRequests = "salaryIncreaseRequests/create";
+            } 
+            public class ContractTerminationRequest
+            {
+                public const string CreateContractTerminationRequest = "contractTerminationRequest/create";
             }
         }
         public class Job
