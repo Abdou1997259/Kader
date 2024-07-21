@@ -23,7 +23,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region ListOfLoanRequest
         public async Task<Response<IEnumerable<DTOListOfLoanRequestResponse>>> ListOfLoanRequest()
         {
-            var result = unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var result = await unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = localizer[Localization.NotFound];
             if (result == null)
             {
@@ -50,7 +50,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         {
             Expression<Func<LoanRequest, bool>> filter = x => x.IsDeleted == model.IsDeleted;
             var totalRecords = await unitOfWork.LoanRequestRepository.CountAsync(filter: filter);
-            var data = unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var data =  await unitOfWork.LoanRequestRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id), take: model.PageSize,
+                     skip: (model.PageNumber - 1) * model.PageSize);
             var msg = localizer[Localization.NotFound];
             if (data == null)
             {
@@ -120,7 +121,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region GetLoanRequetById
         public async Task<Response<DTOListOfLoanRequestResponse>> GetById(int id)
         {
-            var result = unitOfWork.LoanRequestRepository.GetByIdAsync(id);
+            var result =await unitOfWork.LoanRequestRepository.GetByIdAsync(id);
             if (result == null) {
                 var msg = localizer[Localization.NotFoundData];
                 return new()

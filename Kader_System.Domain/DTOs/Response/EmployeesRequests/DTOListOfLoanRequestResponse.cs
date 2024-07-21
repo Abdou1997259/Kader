@@ -16,7 +16,8 @@ namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
 
         public double Amount { get; set; }
 
-
+    
+        public DateOnly StartDate { get; set; }
         public string? Notes { get; set; }
 
 
