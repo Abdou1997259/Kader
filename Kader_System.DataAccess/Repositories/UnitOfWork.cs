@@ -11,6 +11,7 @@ public class UnitOfWork : IUnitOfWork
     protected readonly IConfiguration _config;
 
     public IAdvancedTypesRepository AdvancedTypesRepository { get; private set; }
+    
     public ITransLoanRepository LoanRepository { get; private set; }
     public IUserRepository Users { get; private set; }
     public IRoleClaimRepository RoleClaims { get; private set; }
@@ -93,6 +94,7 @@ public class UnitOfWork : IUnitOfWork
         _config = config;
         TransSalaryCalculator = new TransSalaryCalculatorRepo(_context);
         TransSalaryCalculatorDetailsRepo = new TransSalaryCalculatorDetailsRepo(_context);
+        LoanRequestRepository=new LoanRequestRepository(_context);
         TransLoanDetails = new TransLoanDetailsRepository(_context);
         StoredProcuduresRepo = new StoredProcuduresRepo(_context);
         Nationalities = new NationalityRepository(_context);

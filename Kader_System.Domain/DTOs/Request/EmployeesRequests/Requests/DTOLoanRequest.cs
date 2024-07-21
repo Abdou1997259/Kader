@@ -8,11 +8,18 @@ namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests
 {
     public class DTOLoanRequest
     {
+        [Required(ErrorMessage = "please Insert Employee Id")]
         public int EmployeeId { get; set; }
+        [Required(ErrorMessage = "please Insert Installment Count")]
         public int InstallmentsCount { get; set; }
+        [Required(ErrorMessage = "please Insert Amount")]
         public double Amount { get; set; }
-        public string? AtachmentPath { get; set; }
+        [Required(ErrorMessage = "please Insert Notes ")]
+     
         public string? Notes { get; set; }
+        [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
+
+        public IFormFile? Attachment { get; set; }
 
 
 
