@@ -1,6 +1,7 @@
 ﻿using Kader_System.DataAccess.Configrurations.SalaryCalculatorDetailsStoredConfig;
 using Kader_System.DataAccess.Configrurations.SpCaclauateSalaryDetailsConfiguration;
 using Kader_System.Domain.Constants.Enums;
+using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 
@@ -75,6 +76,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<MainScreenTree> MainScreenTrees { get; set; }
 
     #region EmployeeRequest_Dbset
+    public DbSet<HrEmployeeRequests> HrEmployeeRequests { get; set; }
     public DbSet<LeavePermissionRequest> LeavePermissionsRequests { get; set; }
     public DbSet<DelayPermission> HrDelayPermissions { get; set; } 
     public DbSet<LoanRequest> HrLoanRequests { get; set; }
