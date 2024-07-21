@@ -270,6 +270,7 @@ builder.Services.AddScoped<ILeavePermissionRequestService, LeavePermissionReques
 builder.Services.AddScoped<IDelayPermissionService, DelayPermissionService>();
 builder.Services.AddScoped<IAllowanceRequestService, AllowanceRequestService>();
 builder.Services.AddScoped<ISalaryIncreaseRequestService, SalaryIncreaseRequestService>();
+builder.Services.AddScoped<IContractTerminationRequestService, ContractTerminationRequestService>();
 #endregion
 #endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");
