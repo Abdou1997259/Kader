@@ -88,7 +88,9 @@ public class UnitOfWork : IUnitOfWork
 
     public ILoanRequestRepository LoanRequestRepository { get; private set; }
 
-    public IResignationRequestRepository ResignationRepository { get; private set; }
+  
+
+    public IResignationRequesteRepository ResignationRepository { get; private set; }
 
     #endregion
 

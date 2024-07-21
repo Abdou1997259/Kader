@@ -408,23 +408,23 @@ public static class SD
             }
             public class LoanRequests
             {
-                public const string ListOfLoanRequests = "loanRequests/getListOfLoanRequests";
-                public const string GetAllLoanRequests = "loanRequests/getAll";
-                public const string CreateLoanRequests = "loanRequests/create";
-                public const string UpdateLoanRequests = "loanRequests/update/{id}";
-                public const string RestoreLoanRequests = "loanRequests/restore/{id}";
-                public const string GetLoanRequestsById = "oanRequests/getById/{id}";
-                public const string DeleteLoanRequests = "l/delete/{id}";
+                public const string ListOfLoanRequests = "loanrequests/getListOfLoanRequests";
+                public const string GetAllLoanRequests = "loanrequests/getAll";
+                public const string CreateLoanRequests = "loanrequests/create";
+                public const string UpdateLoanRequests = "loanrequests/update/{id}";
+                public const string RestoreLoanRequests = "loanrequests/restore/{id}";
+                public const string GetLoanRequestsById = "loanrequests/getById/{id}";
+                public const string DeleteLoanRequests = "loanrequests/delete/{id}";
             }
             public class ResignationRequests
             {
-                public const string ListOfResignationRequests = "resignationRequests/getListOfResignationRequests";
-                public const string GetAllResignationRequests = "resignationRequests/getAll";
+                public const string ListOfResignationRequests = "resignation/getListOfResignationRequests";
+                public const string GetAllResignationRequests = "resignation/getAll";
                 public const string CreateResignationRequests = "resignationRequests/create";
-                public const string UpdateResignationRequests = "resignationRequests/update/{id}";
-                public const string RestoreResignationRequests = "resignationRequests/restore/{id}";
-                public const string GetResignationRequestsById = "resignationRequests/getById/{id}";
-                public const string DeleteResignationRequests = "qualification/delete/{id}";
+                public const string UpdateResignationRequests = "resignation/update/{id}";
+                public const string RestoreResignationRequests = "resignation/restore/{id}";
+                public const string GetResignationRequestsById = "resignation/getById/{id}";
+                public const string DeleteResignationRequests = "resignation/delete/{id}";
             }
             public class DelayPermessionasRequests
             {

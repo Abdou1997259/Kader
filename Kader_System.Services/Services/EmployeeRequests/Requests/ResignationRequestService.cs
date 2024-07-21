@@ -3,11 +3,7 @@ using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
@@ -25,7 +21,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region ListOfLoanRequest
         public async Task<Response<IEnumerable<DtoListOfResignationResposne>>> ListOfLoanRequest()
         {
-            var result = unitOfWork.ResignationRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var result = await unitOfWork.ResignationRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = localizer[Localization.NotFound];
             if (result == null)
             {
@@ -52,7 +48,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         {
             Expression<Func<LoanRequest, bool>> filter = x => x.IsDeleted == model.IsDeleted;
             var totalRecords = await unitOfWork.LoanRequestRepository.CountAsync(filter: filter);
-            var data = unitOfWork.ResignationRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var data =await  unitOfWork.ResignationRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = localizer[Localization.NotFound];
             if (data == null)
             {
@@ -122,7 +118,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region GetLoanRequetById
         public async Task<Response<DtoListOfResignationResposne>> GetById(int id)
         {
-            var result = unitOfWork.LoanRequestRepository.GetByIdAsync(id);
+            var result = await unitOfWork.ResignationRepository.GetByIdAsync(id);
             if (result == null)
             {
                 var msg = localizer[Localization.NotFoundData];

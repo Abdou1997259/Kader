@@ -221,7 +221,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "78e29e89-8d0a-4d63-8a87-8aa242817640",
+                            ConcurrencyStamp = "b94fe5d3-945b-4e81-96e5-d88937e02bfd",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +229,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFKqlsuV7/JB58wUmcGRDwloDA1AxH0bIQlTt3apnGSx+0G7HNmrWFtaPDV6jwul9g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEE3XKnCse2qnh6vo9NBguqdO6fk9Geakgb7m5YscStuJotYsWG2Z28d4+9mQTl0wUA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8e51b241-e428-4c15-9dd9-a3be3641634f",
+                            SecurityStamp = "b85a189b-e02a-444c-9150-50e8baffec7f",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -717,6 +717,9 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AtachmentPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AttachmentFileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")
