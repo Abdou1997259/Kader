@@ -225,6 +225,7 @@ builder.Services.AddSwaggerGen(x =>
 
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandlerService>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProviderService>();
+builder.Services.AddScoped<ILoanRequestService, LoanRequesService>();
 builder.Services.AddSingleton<IStaticDataRepository, StaticDataRepository>();
 builder.Services.AddScoped<IStructureMangement,StructureMangement>();
 builder.Services.AddScoped<IScreenService, ScreenService>();
