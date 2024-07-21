@@ -225,6 +225,7 @@ builder.Services.AddSwaggerGen(x =>
 
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandlerService>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProviderService>();
+builder.Services.AddScoped<ILoanRequestService, LoanRequesService>();
 builder.Services.AddSingleton<IStaticDataRepository, StaticDataRepository>();
 builder.Services.AddScoped<IStructureMangement,StructureMangement>();
 builder.Services.AddScoped<IScreenService, ScreenService>();
@@ -270,6 +271,7 @@ builder.Services.AddScoped<ILeavePermissionRequestService, LeavePermissionReques
 builder.Services.AddScoped<IDelayPermissionService, DelayPermissionService>();
 builder.Services.AddScoped<IAllowanceRequestService, AllowanceRequestService>();
 builder.Services.AddScoped<ISalaryIncreaseRequestService, SalaryIncreaseRequestService>();
+builder.Services.AddScoped<IContractTerminationRequestService, ContractTerminationRequestService>();
 #endregion
 #endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");

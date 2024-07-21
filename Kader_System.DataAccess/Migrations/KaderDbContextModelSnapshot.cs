@@ -221,7 +221,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "414b7f69-661e-4f13-b5f0-23214e55f0fe",
+                            ConcurrencyStamp = "3737970d-82e7-4550-852a-a29b5ba44052",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +229,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKa4NwMpEERmAuemyTCriBxlOCFfhfY2PDY/PEWrcKVV4rwR4XDUjtLjGxasDNqwvg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMANtnwHxyqSVZbd53H1b9ooLsYrFzZ3TSkDpi/X+dSCNdGiC4OOBGw3ZFqToHxMEw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "910ab86d-b7a6-4583-b5c1-f4697a7069be",
+                            SecurityStamp = "1be6581c-ced3-4b1b-9f3d-8b8e197ac0af",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -597,6 +597,54 @@ namespace Kader_System.DataAccess.Migrations
                     b.ToTable("hr_allowance_request");
                 });
 
+            modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.HrContractTermination", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Add_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Added_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Attachment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeleteBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdateBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("hr_contract_termination");
+                });
+
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.LoanRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -614,7 +662,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<string>("AtachmentPath")
+                    b.Property<string>("AttachmentFileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")
@@ -638,8 +686,8 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
@@ -651,7 +699,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Hr_LoanRequest");
+                    b.ToTable("hr_loan_request");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.ResignationRequest", b =>
@@ -4444,6 +4492,17 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("HrAllowance");
 
                     b.Navigation("SalaryEffect");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.HrContractTermination", b =>
+                {
+                    b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.LoanRequest", b =>

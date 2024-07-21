@@ -11,6 +11,7 @@ public class UnitOfWork : IUnitOfWork
     protected readonly IConfiguration _config;
 
     public IAdvancedTypesRepository AdvancedTypesRepository { get; private set; }
+    
     public ITransLoanRepository LoanRepository { get; private set; }
     public IUserRepository Users { get; private set; }
     public IRoleClaimRepository RoleClaims { get; private set; }
@@ -83,6 +84,10 @@ public class UnitOfWork : IUnitOfWork
 
     public ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; private set; }
 
+    public IContractTerminationRequestRepository ContractTerminationRequests { get; private set; }
+
+    public ILoanRequestRepository LoanRequestRepository { get; private set; }
+
     #endregion
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
@@ -91,6 +96,7 @@ public class UnitOfWork : IUnitOfWork
         _config = config;
         TransSalaryCalculator = new TransSalaryCalculatorRepo(_context);
         TransSalaryCalculatorDetailsRepo = new TransSalaryCalculatorDetailsRepo(_context);
+        LoanRequestRepository=new LoanRequestRepository(_context);
         TransLoanDetails = new TransLoanDetailsRepository(_context);
         StoredProcuduresRepo = new StoredProcuduresRepo(_context);
         Nationalities = new NationalityRepository(_context);
@@ -151,7 +157,8 @@ public class UnitOfWork : IUnitOfWork
         VacationRequests = new VacationRequestRepository(_context);
         AllowanceRequests = new AllowanceRequestRepository(_context);
         SalaryIncreaseRequest = new SalaryIncreaseRequestRepository(_context);
-        DelayPermission = new DelayPermissionRepository(_context);  
+        DelayPermission = new DelayPermissionRepository(_context);
+        ContractTerminationRequests = new ContractTerminationRequestRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>

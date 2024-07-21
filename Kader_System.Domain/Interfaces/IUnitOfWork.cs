@@ -7,6 +7,7 @@ public interface IUnitOfWork : IDisposable
 {
 
     IDatabaseTransaction BeginTransaction();
+    ILoanRequestRepository LoanRequestRepository { get; }
     ITransLoanDetailsRepository TransLoanDetails { get; }
     IAdvancedTypesRepository AdvancedTypesRepository { get; }
     IStoredProcuduresRepo StoredProcuduresRepo { get; }
@@ -73,6 +74,7 @@ public interface IUnitOfWork : IDisposable
     IVacationRequestRepository VacationRequests { get; }
     IAllowanceRequestRepository AllowanceRequests { get; }
     ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; }
+    IContractTerminationRequestRepository ContractTerminationRequests { get; }  
     #endregion
     Task<int> CompleteAsync();
 }
