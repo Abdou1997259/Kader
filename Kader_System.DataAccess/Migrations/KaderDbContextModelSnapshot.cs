@@ -221,7 +221,9 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1fa79587-0b8c-4dfa-b6e6-2e57fbfabed6",
+
+                            ConcurrencyStamp = "b94fe5d3-945b-4e81-96e5-d88937e02bfd",
+
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +231,11 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAECwGRqGZVT7xvJbzOlTkQSx0WNlBThLx4gd5t7bKlDH+/6w3pqz2DkPSTNlFuZAYcg==",
+
+                            PasswordHash = "AQAAAAIAAYagAAAAEE3XKnCse2qnh6vo9NBguqdO6fk9Geakgb7m5YscStuJotYsWG2Z28d4+9mQTl0wUA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "bcdaa41c-1070-482c-bfe7-234d469f0b52",
+                            SecurityStamp = "b85a189b-e02a-444c-9150-50e8baffec7f",
+
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -875,6 +879,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("AtachmentPath")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("AttachmentFileName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -909,7 +916,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Hr_ResignationRequest");
+                    b.ToTable("hr_resignation_request");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.SalaryIncreaseRequest", b =>
