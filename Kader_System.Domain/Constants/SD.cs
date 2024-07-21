@@ -408,13 +408,23 @@ public static class SD
             }
             public class LoanRequests
             {
-                public const string ListOfLoanRequests = "LoanRequests/getListOfLoanRequests";
-                public const string GetAllLoanRequests = "LoanRequests/getAll";
-                public const string CreateLoanRequests = "LoanRequests/create";
-                public const string UpdateLoanRequests = "LoanRequests/update/{id}";
-                public const string RestoreLoanRequests = "LoanRequests/restore/{id}";
-                public const string GetLoanRequestsById = "LoanRequests/getById/{id}";
-                public const string DeleteLoanRequests = "LoanRequests/delete/{id}";
+                public const string ListOfLoanRequests = "loanRequests/getListOfLoanRequests";
+                public const string GetAllLoanRequests = "loanRequests/getAll";
+                public const string CreateLoanRequests = "loanRequests/create";
+                public const string UpdateLoanRequests = "loanRequests/update/{id}";
+                public const string RestoreLoanRequests = "loanRequests/restore/{id}";
+                public const string GetLoanRequestsById = "oanRequests/getById/{id}";
+                public const string DeleteLoanRequests = "l/delete/{id}";
+            }
+            public class ResignationRequests
+            {
+                public const string ListOfResignationRequests = "resignationRequests/getListOfResignationRequests";
+                public const string GetAllResignationRequests = "resignationRequests/getAll";
+                public const string CreateResignationRequests = "resignationRequests/create";
+                public const string UpdateResignationRequests = "resignationRequests/update/{id}";
+                public const string RestoreResignationRequests = "resignationRequests/restore/{id}";
+                public const string GetResignationRequestsById = "resignationRequests/getById/{id}";
+                public const string DeleteResignationRequests = "qualification/delete/{id}";
             }
             public class DelayPermessionasRequests
             {

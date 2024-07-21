@@ -88,6 +88,8 @@ public class UnitOfWork : IUnitOfWork
 
     public ILoanRequestRepository LoanRequestRepository { get; private set; }
 
+    public IResignationRequestRepository ResignationRepository { get; private set; }
+
     #endregion
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
@@ -95,6 +97,7 @@ public class UnitOfWork : IUnitOfWork
         _context = context;
         _config = config;
         TransSalaryCalculator = new TransSalaryCalculatorRepo(_context);
+        ResignationRepository = new ResignationRequestRepository(_context);
         TransSalaryCalculatorDetailsRepo = new TransSalaryCalculatorDetailsRepo(_context);
         LoanRequestRepository=new LoanRequestRepository(_context);
         TransLoanDetails = new TransLoanDetailsRepository(_context);

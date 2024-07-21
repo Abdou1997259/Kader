@@ -221,7 +221,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3737970d-82e7-4550-852a-a29b5ba44052",
+                            ConcurrencyStamp = "78e29e89-8d0a-4d63-8a87-8aa242817640",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +229,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMANtnwHxyqSVZbd53H1b9ooLsYrFzZ3TSkDpi/X+dSCNdGiC4OOBGw3ZFqToHxMEw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFKqlsuV7/JB58wUmcGRDwloDA1AxH0bIQlTt3apnGSx+0G7HNmrWFtaPDV6jwul9g==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1be6581c-ced3-4b1b-9f3d-8b8e197ac0af",
+                            SecurityStamp = "8e51b241-e428-4c15-9dd9-a3be3641634f",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -747,7 +747,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Hr_ResignationRequest");
+                    b.ToTable("hr_resignation_request");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.SalaryIncreaseRequest", b =>

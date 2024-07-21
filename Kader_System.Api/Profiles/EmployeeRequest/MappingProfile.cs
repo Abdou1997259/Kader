@@ -18,8 +18,9 @@ namespace Kader_System.Services.Services
             CreateMap<DTOSalaryIncreaseRequest, SalaryIncreaseRequest>();
             CreateMap<DTOContractTerminationRequest, HrContractTermination>();
             CreateMap<LoanRequest, DTOLoanRequest>().ReverseMap();
-            CreateMap<DTOListOfLoanRequestResponse,LoanRequest >().ReverseMap();
-       
+            CreateMap<LoanRequest, DTOListOfLoanRequestResponse>().ReverseMap();
+            CreateMap<ResignationRequest, DTOResignationRequest>().ReverseMap();
+            CreateMap<ResignationRequest, DtoListOfResignationResposne>().ReverseMap();
         }
     }
 }
