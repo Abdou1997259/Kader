@@ -86,6 +86,8 @@ public class UnitOfWork : IUnitOfWork
 
     public IContractTerminationRequestRepository ContractTerminationRequests { get; private set; }
 
+    public ILoanRequestRepository LoanRequestRepository { get; private set; }
+
     #endregion
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
