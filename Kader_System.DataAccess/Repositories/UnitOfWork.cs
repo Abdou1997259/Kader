@@ -1,5 +1,7 @@
-﻿using Kader_System.DataAccess.Repositories.EmployeeRequests.PermessionRequests;
+﻿using Kader_System.DataAccess.Repositories.EmployeeRequests;
+using Kader_System.DataAccess.Repositories.EmployeeRequests.PermessionRequests;
 using Kader_System.DataAccess.Repositories.EmployeeRequests.Requests;
+using Kader_System.Domain.Interfaces.EmployeeRequest;
 using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
 using Kader_System.Domain.Interfaces.EmployeeRequest.Request;
 
@@ -74,6 +76,7 @@ public class UnitOfWork : IUnitOfWork
     public ITransSalaryIncreaseRepository TransSalaryIncrease { get; private set; }
     public ISalaryIncreaseTypeRepository SalaryIncreaseTypeRepository { get; private set; }
     #region Employee_Requests_UOW
+    public IEmployeeRequestsRepository EmployeeRequests { get; private set; }
     public ILeavePermissionRequestRepository LeavePermissionRequest { get; private set; }
 
     public IDelayPermissionServiceRepository DelayPermission { get; private set; }
@@ -155,6 +158,7 @@ public class UnitOfWork : IUnitOfWork
         SalaryIncreaseRequest = new SalaryIncreaseRequestRepository(_context);
         DelayPermission = new DelayPermissionRepository(_context);
         ContractTerminationRequests = new ContractTerminationRequestRepository(_context);
+        EmployeeRequests = new EmployeeRequestsRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>

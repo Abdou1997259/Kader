@@ -4,6 +4,7 @@ using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    partial class KaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240721124514_add_StatusRequests_cols_in_all_requests")]
+    partial class add_StatusRequests_cols_in_all_requests
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,7 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1fa79587-0b8c-4dfa-b6e6-2e57fbfabed6",
+                            ConcurrencyStamp = "d5fefec6-f5d8-4c39-89ec-e0f1327ce754",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAECwGRqGZVT7xvJbzOlTkQSx0WNlBThLx4gd5t7bKlDH+/6w3pqz2DkPSTNlFuZAYcg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEF43j+29TDM9N557it0MmEvlmvEUtM/lrAyRFS6wMqJt1zo86LiygImUfQ9lTi/KFw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "bcdaa41c-1070-482c-bfe7-234d469f0b52",
+                            SecurityStamp = "89e348b1-7d98-486f-8993-24dfb3f6fbe8",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -521,7 +524,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
+                    b.Property<int>("ApporvalStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("ApprovedBy")
@@ -555,6 +558,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -584,7 +588,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
+                    b.Property<int>("ApporvalStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("ApprovedBy")
@@ -624,6 +628,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -653,7 +658,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
+                    b.Property<int>("ApporvalStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("ApprovedBy")
@@ -681,6 +686,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -732,7 +738,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
+                    b.Property<int>("ApporvalStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("ApprovedBy")
@@ -766,6 +772,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -798,7 +805,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int?>("ApporvalStatus")
+                    b.Property<int>("ApporvalStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("ApprovedBy")
@@ -838,6 +845,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -867,7 +875,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
+                    b.Property<int>("ApporvalStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("ApprovedBy")
@@ -901,6 +909,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -933,7 +942,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int?>("ApporvalStatus")
+                    b.Property<int>("ApporvalStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("ApprovedBy")
@@ -967,6 +976,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -990,7 +1000,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ApporvalStatus")
+                    b.Property<int>("ApporvalStatus")
                         .HasColumnType("int");
 
                     b.Property<int>("ApprovedBy")
@@ -1018,6 +1028,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("VacationTypeId")
