@@ -20,6 +20,9 @@ namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests
         [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
 
         public IFormFile? Attachment { get; set; }
+        [Required(ErrorMessage = "please Insert Notes ")]
+        [DefaultValue("2024/01/01")]
+         public DateOnly  StartDate { get; set; }
 
 
 

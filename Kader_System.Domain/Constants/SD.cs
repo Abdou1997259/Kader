@@ -414,7 +414,7 @@ public static class SD
                 public const string UpdateLoanRequests = "LoanRequests/update/{id}";
                 public const string RestoreLoanRequests = "LoanRequests/restore/{id}";
                 public const string GetLoanRequestsById = "LoanRequests/getById/{id}";
-                public const string DeleteLoanRequests = "qualification/delete/{id}";
+                public const string DeleteLoanRequests = "LoanRequests/delete/{id}";
             }
             public class DelayPermessionasRequests
             {
