@@ -4,6 +4,7 @@ using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Kader_System.DataAccess.Migrations
 {
     [DbContext(typeof(KaderDbContext))]
-    partial class KaderDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240721083126_add_hr_employee_request_table")]
+    partial class add_hr_employee_request_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -221,9 +224,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-
-                            ConcurrencyStamp = "b94fe5d3-945b-4e81-96e5-d88937e02bfd",
-
+                            ConcurrencyStamp = "78d64132-d694-419c-b42a-5b653457dafb",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -231,11 +232,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-
-                            PasswordHash = "AQAAAAIAAYagAAAAEE3XKnCse2qnh6vo9NBguqdO6fk9Geakgb7m5YscStuJotYsWG2Z28d4+9mQTl0wUA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMTgQSeJ476BFh0iOCwbQEGXCOBtyo4YSy3yd3NhlCV2DkOWMmP1MCDcIllt15jb6w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b85a189b-e02a-444c-9150-50e8baffec7f",
-
+                            SecurityStamp = "d606ba70-92c3-4dc7-b873-3fd6145bcc7f",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -525,15 +524,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("AtachmentPath")
                         .HasColumnType("nvarchar(max)");
 
@@ -553,12 +543,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -588,15 +572,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
 
@@ -622,12 +597,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("time");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -657,15 +626,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -680,12 +640,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusMessage")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
@@ -735,14 +689,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
 
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
                     b.Property<string>("Attachment")
                         .HasColumnType("nvarchar(max)");
 
@@ -763,11 +710,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
-                    b.Property<string>("StatusMessage")
-                        .HasColumnType("nvarchar(max)");
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -797,17 +740,8 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("AtachmentPath")
-                    b.Property<string>("AttachmentFileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")
@@ -831,14 +765,8 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("StartDate")
-                        .HasColumnType("date");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusMessage")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
@@ -850,7 +778,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("hr_loan_request");
+                    b.ToTable("Hr_LoanRequest");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.ResignationRequest", b =>
@@ -867,19 +795,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("AtachmentPath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AttachmentFileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")
@@ -900,12 +816,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusMessage")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -916,7 +826,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("hr_resignation_request");
+                    b.ToTable("Hr_ResignationRequest");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.SalaryIncreaseRequest", b =>
@@ -936,15 +846,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("AtachmentPath")
                         .HasColumnType("nvarchar(max)");
 
@@ -964,12 +865,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -993,15 +888,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("AttachmentFileName")
                         .HasColumnType("nvarchar(max)");
 
@@ -1016,12 +902,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusMessage")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("VacationTypeId")
                         .HasColumnType("int");

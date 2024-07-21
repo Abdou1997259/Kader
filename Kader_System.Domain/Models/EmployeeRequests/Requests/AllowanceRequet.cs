@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Kader_System.Domain.Models.EmployeeRequests.Requests
 {
     [Table("hr_allowance_request")]
-    public class AllowanceRequest
+    public class AllowanceRequest:BaseEntity
     {
         public int Id { get; set; }
         public double amount { get; set; }
@@ -23,5 +23,11 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         public int allowance_type_id { get; set; }
         [ForeignKey(nameof(allowance_type_id))]
         public virtual TransSalaryEffect SalaryEffect { get; set; }
+
+        public int Status { get; set; }
+        public string? StatusMessage { get; set; }
+        public int? ApporvalStatus { get; set; }
+        public DateTime ApprovedDate { get; set; }
+        public int ApprovedBy { get; set; }
     }
 }
