@@ -392,13 +392,37 @@ public static class SD
             public const string GetQualificationById = "qualification/getById/{id}";
             public const string DeleteQualification = "qualification/delete/{id}";
         }
-        public class LeavePermessionasRequests
-        {
-            public const string GetAllQualifications = "qualification/getAll";
-            public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
-        }
+
         public class EmployeeRequests
         {
+            public class LeavePermessionasRequests
+            {
+                public const string GetAllQualifications = "leavePermessionasRequests/getAll";
+                public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
+            }
+            public class DelayPermessionasRequests
+            {
+                public const string CreateDelayPermissionRequests = "delayPermissionRequests/create";
+            }
+            public class LoanRequest
+            {
+                public const string ListOfLoanRequest= "loanrequest/getListOfloanrequests";
+                public const string GetAllLoanRequest = "loanrequest/getAll";
+                public const string CreateLoanRequest = "loanrequest/create";
+                public const string UpdateLoanRequest = "loanrequest/update/{id}";
+                public const string RestoreLoanRequest = "loanrequest/restore/{id}";
+                public const string GetLoanRequest = "loanrequest/getById/{id}";
+                public const string DeleteLoanRequest = "loanrequest/delete/{id}";
+            }
+            public class VacationRequests
+            {
+                public const string GetAlVacationRequests = "vacationRequests/getAll";
+                public const string CreateVacationRequests = "vacationRequests/create";
+            } public class AllowanceRequests
+            {
+                public const string GetAlAllowanceRequests = "allowanceRequests/getAll";
+                public const string CreateAllowanceRequests = "allowanceRequests/create";
+            }
             public const string GetEmployeeRequestsLookups = "employeeRequests/getLookups";
 
         }
