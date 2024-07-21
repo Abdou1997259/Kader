@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
+using Kader_System.Domain.Interfaces.EmployeeRequest.Request;
 
 namespace Kader_System.Domain.Interfaces;
 
@@ -69,6 +70,11 @@ public interface IUnitOfWork : IDisposable
     IReligionRepository Religions { get; }
     #region Employee_Requests_UOW
     ILeavePermissionRequestRepository LeavePermissionRequest { get; }
+    IDelayPermissionServiceRepository DelayPermission { get; }
+    IVacationRequestRepository VacationRequests { get; }
+    IAllowanceRequestRepository AllowanceRequests { get; }
+    ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; }
+    IContractTerminationRequestRepository ContractTerminationRequests { get; }  
     #endregion
     Task<int> CompleteAsync();
 }

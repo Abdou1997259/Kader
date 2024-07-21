@@ -38,6 +38,11 @@ public static class SD
         public const int Length = 50;
         public const string AllowedExtension = ".jpg,.png,.jpeg";
     }
+    public static class SysFileServer
+    {
+        public const string UploadFolderNamder = "upload";
+
+    }
     public static class Modules
     {
         public const string Auth = "Auth";
@@ -312,6 +317,7 @@ public static class SD
             public const string UpdateManagement = "management/update/{id}";
             public const string GetManagementById = "management/getById/{id}";
             public const string DeleteManagement = "management/delete/{id}";
+            public const string GetStructure = "management/getstructre/{companyid}";
         }
         public class Department
         {
@@ -404,16 +410,6 @@ public static class SD
             {
                 public const string CreateDelayPermissionRequests = "delayPermissionRequests/create";
             }
-            public class LoanRequest
-            {
-                public const string ListOfLoanRequest= "loanrequest/getListOfloanrequests";
-                public const string GetAllLoanRequest = "loanrequest/getAll";
-                public const string CreateLoanRequest = "loanrequest/create";
-                public const string UpdateLoanRequest = "loanrequest/update/{id}";
-                public const string RestoreLoanRequest = "loanrequest/restore/{id}";
-                public const string GetLoanRequest = "loanrequest/getById/{id}";
-                public const string DeleteLoanRequest = "loanrequest/delete/{id}";
-            }
             public class VacationRequests
             {
                 public const string GetAlVacationRequests = "vacationRequests/getAll";
@@ -425,6 +421,14 @@ public static class SD
             }
             public const string GetEmployeeRequestsLookups = "employeeRequests/getLookups";
 
+            public class SalaryIncreaseRequest
+            {
+                public const string CreateSalaryIncreaseRequests = "salaryIncreaseRequests/create";
+            } 
+            public class ContractTerminationRequest
+            {
+                public const string CreateContractTerminationRequest = "contractTerminationRequest/create";
+            }
         }
         public class Job
         {

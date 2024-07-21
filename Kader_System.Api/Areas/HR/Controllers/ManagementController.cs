@@ -7,10 +7,10 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [ApiController]
     [Route("api/v1/")]
-    public class ManagementController(IManagementService service, IRequestService requestService) : ControllerBase
+    public class ManagementController(IManagementService service, IStructureMangement structure, IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
-
+        private readonly IStructureMangement _structure = structure;
         #region Retrieve
         [HttpGet(ApiRoutes.Management.ListOfManagements)]
         public async Task<IActionResult> List()
@@ -18,12 +18,23 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
         [HttpGet(ApiRoutes.Management.GetAllManagements)]
         public async Task<IActionResult> GetAll([FromQuery] HrGetAllFiltrationsFoManagementsRequest model)
-            => Ok(await service.GetAllManagementsAsync(requestService.GetRequestHeaderLanguage, model,requestService.GetCurrentHost));
+            => Ok(await service.GetAllManagementsAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
         [HttpGet(ApiRoutes.Management.GetManagementById)]
-        public async Task<IActionResult> GetById (int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var response = await service.GetManagementByIdAsync(id,requestService.GetRequestHeaderLanguage);
+            var response = await service.GetManagementByIdAsync(id, requestService.GetRequestHeaderLanguage);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+
+        [HttpGet(ApiRoutes.Management.GetStructure)]
+        public async Task<IActionResult> GetStructure(int companyid)
+        {
+            var response = await _structure.GetStructureMangementAsync(companyid, requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -43,7 +54,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
             if (ModelState.IsValid)
             {
                 var result = await service.CreateManagementAsync(request);
-                if(result.Check)
+                if (result.Check)
                     return Ok(result);
                 else if (!result.Check)
                     return StatusCode(statusCode: StatusCodes.Status400BadRequest, result);
@@ -61,7 +72,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await service.UpdateManagementAsync(id,request);
+                var result = await service.UpdateManagementAsync(id, request);
                 if (result.Check)
                     return Ok(result);
                 else if (!result.Check)

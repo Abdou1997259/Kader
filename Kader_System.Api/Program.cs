@@ -1,3 +1,4 @@
+using Kader_System.Api.Helpers.SwaggerHelper;
 using Kader_System.DataAccess.Repositories;
 using Kader_System.DataAccess.Repositories.EmployeeRequests;
 using Kader_System.DataAccess.Repositories.HR;
@@ -17,11 +18,13 @@ using Kader_System.Domain.Options;
 using Kader_System.Domain.SwaggerFilter;
 using Kader_System.Services.IServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
+using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Trans;
 using Kader_System.Services.Services;
 using Kader_System.Services.Services.Auth;
 using Kader_System.Services.Services.EmployeeRequests.PermessionRequests;
+using Kader_System.Services.Services.EmployeeRequests.Requests;
 using Kader_System.Services.Services.HR;
 using Kader_System.Services.Services.Setting;
 using Kader_System.Services.Services.Trans;
@@ -185,7 +188,6 @@ builder.Services.AddSwaggerGen(x =>
         Title = $"{Shared.KaderSystem} {Modules.EmployeeRequest}",
         Version = Modules.V1
     });
-
     x.AddSecurityDefinition(Modules.Bearer, new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -212,8 +214,8 @@ builder.Services.AddSwaggerGen(x =>
             Array.Empty<string>()
         }
   });
-
     x.SchemaFilter<SwaggerTest>();
+    x.OperationFilter<AddHeadersOperationFilter>();
 });
 
 
@@ -224,8 +226,9 @@ builder.Services.AddSwaggerGen(x =>
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandlerService>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProviderService>();
 builder.Services.AddSingleton<IStaticDataRepository, StaticDataRepository>();
-
+builder.Services.AddScoped<IStructureMangement,StructureMangement>();
 builder.Services.AddScoped<IScreenService, ScreenService>();
+builder.Services.AddScoped<IFileServer, FileServer>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbInitSeedsService, DbInitSeedsService>();
 builder.Services.AddScoped<IPermService, PermService>();
@@ -259,11 +262,17 @@ builder.Services.AddScoped<ITransCalcluateSalaryService, TransCalcluateSalarySer
 builder.Services.AddScoped<ISalaryIncreaseTypeRepository, SalaryIncreaseTypeRepository>();
 builder.Services.AddScoped<ITransSalaryIncreaseRepository, TransSalaryIncreaseRepository>();
 builder.Services.AddScoped<IRequestService, RequestService>();
+builder.Services.AddScoped<ITitleService, TitleService>();
 #region Employee_Requests
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
+builder.Services.AddScoped<IVacationRequestService, VacationRequestService>();
 builder.Services.AddScoped<ILeavePermissionRequestService, LeavePermissionRequestService>();
+builder.Services.AddScoped<IDelayPermissionService, DelayPermissionService>();
+builder.Services.AddScoped<IAllowanceRequestService, AllowanceRequestService>();
+builder.Services.AddScoped<ISalaryIncreaseRequestService, SalaryIncreaseRequestService>();
+builder.Services.AddScoped<IContractTerminationRequestService, ContractTerminationRequestService>();
 #endregion
-  #endregion
+#endregion
 var httpPort = builder.Configuration.GetValue<int>("KestrelServer:Http.Port");
 var httpsPort = builder.Configuration.GetValue<int>("KestrelServer:Https.Port");
 var httpsCertificateFilePath = builder.Configuration.GetValue<string>("KestrelServer:Https.CertificationFilePath");
@@ -348,7 +357,6 @@ app.UseSwaggerUI(x =>
 
 //     Log.Information("end of swagger");
 //}
-
 app.UseMiddleware<ExceptionMiddleware>();
 app.ConfigureExceptionHandler(loggingRepository);    // custom as a global exception
 app.UseHttpsRedirection();
@@ -358,6 +366,8 @@ app.UseStaticFiles();
 //app.ConfigureStaticFilesHandler();                   // custom as Static files
 app.UseRequestLocalization(localizationOptions);
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseMiddleware<HeadersValidationMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
