@@ -10,7 +10,7 @@ namespace Kader_System.Services.IServices.EmployeeRequests.PermessionRequests
     public interface IDelayPermissionService
     {
         //public Task<List<DTODelayPermissionRequest>> GetAllDelayPermissionRequests();
-        public Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model);
+        public Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
 
         //public Task<int> UpdateDelayPermissionRequest(DTODelayPermissionRequest model);
         //public Task<int> DeleteDelayPermissionRequest(int id);

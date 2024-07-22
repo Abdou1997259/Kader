@@ -722,7 +722,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("ApporvalStatus")
                         .HasColumnType("int");
 
@@ -731,7 +730,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<DateTime>("ApprovedDate")
                         .HasColumnType("datetime2");
-
                     b.Property<string>("Attachment")
                         .HasColumnType("nvarchar(max)");
 
@@ -755,7 +753,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -785,7 +782,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<double>("Amount")
                         .HasColumnType("float");
-
                     b.Property<int?>("ApporvalStatus")
                         .HasColumnType("int");
 
@@ -795,8 +791,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime>("ApprovedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("AtachmentPath");
-                    b.Property<string>("AttachmentFileName")
+                    b.Property<string>("AtachmentPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")
@@ -820,8 +815,8 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
 
                     b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
@@ -836,7 +831,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Hr_LoanRequest");
+                    b.ToTable("hr_loan_request");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.ResignationRequest", b =>

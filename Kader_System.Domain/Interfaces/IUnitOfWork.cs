@@ -7,6 +7,7 @@ namespace Kader_System.Domain.Interfaces;
 public interface IUnitOfWork : IDisposable
 {
     IDatabaseTransaction BeginTransaction();
+    ILoanRequestRepository LoanRequestRepository { get; }
     ITransLoanDetailsRepository TransLoanDetails { get; }
     IAdvancedTypesRepository AdvancedTypesRepository { get; }
     IStoredProcuduresRepo StoredProcuduresRepo { get; }
