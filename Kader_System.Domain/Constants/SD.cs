@@ -403,8 +403,10 @@ public static class SD
         {
             public class LeavePermessionasRequests
             {
-                public const string GetAllQualifications = "leavePermessionasRequests/getAll";
+                public const string GetAllLeavePermessionasRequests = "leavePermessionasRequests/getAll";
                 public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
+                public const string UpdateLeavePermessionasRequests = "leavePermessionasRequests/update";
+                public const string DeleteLeavePermessionasRequests = "leavePermessionasRequests/delete/{id}";
             }
             public class LoanRequests
             {

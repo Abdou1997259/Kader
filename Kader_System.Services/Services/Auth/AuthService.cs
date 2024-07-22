@@ -435,7 +435,7 @@ public class AuthService : IAuthService
         return new JwtSecurityToken(
             issuer: _jwt.Issuer,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(2).Add(_jwt.TokenLifetime),
+            expires: DateTime.UtcNow.AddDays(2).Add(_jwt.TokenLifetime),
             signingCredentials: signingCredentials);
     }
 

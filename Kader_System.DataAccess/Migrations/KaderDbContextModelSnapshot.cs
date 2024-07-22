@@ -551,9 +551,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
 
@@ -620,9 +617,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
 
@@ -676,9 +670,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
@@ -761,7 +752,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
@@ -807,7 +797,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime>("ApprovedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("AtachmentPath")
                     b.Property<string>("AttachmentFileName")
+
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")
@@ -833,9 +825,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
@@ -900,9 +889,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
                     b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
 
@@ -965,9 +951,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
@@ -1034,9 +1017,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
