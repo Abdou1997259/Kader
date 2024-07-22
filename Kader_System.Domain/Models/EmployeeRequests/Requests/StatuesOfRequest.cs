@@ -7,7 +7,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
     public class StatuesOfRequest
     {
         [Column("Status")]
-        public Status Status { get; set; }
+        public RequestStatusTypes StatusTypes { get; set; }
         [Column("StatusMessage")]
         public string? StatusMessage { get; set; }
         [Column("ApporvalStatus")]

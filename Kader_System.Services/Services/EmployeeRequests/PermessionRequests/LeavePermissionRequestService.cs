@@ -41,7 +41,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         {
       var list = await _unitOfWork.LeavePermissionRequest.GetWithJoinAsync(
           x => x.IsDeleted == model.IsDeleted &&
-          x.ApporvalStatus == null, "Employee");
+          x.StatuesOfRequest.ApporvalStatus == null, "Employee");
       var query = from q in list
                   select new
                   {
@@ -50,7 +50,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                       EmployeeName = Localization.Arabic == lang ? q.Employee.FirstNameAr : q.Employee.FirstNameEn,
                       q.LeaveTime,
                       q.BackTime,
-                      q.ApporvalStatus,
+                      q.StatuesOfRequest.ApporvalStatus,
                       Attachment = q.AttachmentPath,
 
                   };
