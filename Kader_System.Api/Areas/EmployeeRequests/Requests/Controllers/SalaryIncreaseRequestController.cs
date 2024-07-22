@@ -68,5 +68,20 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
         #endregion
+
+        #region Delete
+
+        [HttpDelete(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.DeleteSalaryIncreaseRequest)]
+        public async Task<IActionResult> DeleteSalaryIncreaseRequest(int id)
+        {
+            var response = await increaseRequestService.DeleteSalaryIncreaseRequest(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+
+        #endregion
     }
 }
