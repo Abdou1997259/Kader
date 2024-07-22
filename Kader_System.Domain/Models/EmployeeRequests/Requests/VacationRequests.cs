@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.EmployeeRequests.Requests
 {
-    [Table("Hr_VacationRequests")]
+    [Table("hr_vacation_requests")]
     public class VacationRequests:BaseEntity
     {
         [Key]

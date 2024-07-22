@@ -433,13 +433,13 @@ public static class SD
             public class VacationRequests
             {
              
-                public const string ListOfVacationRequests = "vacation/getListOfvacationRequests";
-                public const string GetAllVacationRequests = "vacation/getAll";
-                public const string CreateVacationRequests = "vacation/create";
-                public const string UpdateVacationRequests = "vacation/update/{id}";
-                public const string RestoreVacationRequests = "vacation/restore/{id}";
-                public const string GetVacationRequestsById = "vacation/getById/{id}";
-                public const string DeleteVacationRequests = "vacation/delete/{id}";
+                public const string ListOfVacationRequests = "vacationrequest/getListOfvacationRequests";
+                public const string GetAllVacationRequests = "vacationrequest/getAll";
+                public const string CreateVacationRequests = "vacationrequest/create";
+                public const string UpdateVacationRequests = "vacationrequest/update/{id}";
+                public const string RestoreVacationRequests = "vacationrequest/restore/{id}";
+                public const string GetVacationRequestsById = "vacationrequest/getById/{id}";
+                public const string DeleteVacationRequests = "vacationrequest/delete/{id}";
             } public class AllowanceRequests
             {
                 public const string GetAlAllowanceRequests = "allowanceRequests/getAll";
