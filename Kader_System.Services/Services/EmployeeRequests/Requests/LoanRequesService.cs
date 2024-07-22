@@ -5,20 +5,21 @@ using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 
 
+
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
     public class LoanRequesService(
-        IUnitOfWork unitOfWork,
-        IStringLocalizer<SharedResource> 
-        localizer,IFileServer fileserver,
-        IMapper mapper
-        ) : ILoanRequestService
+    IUnitOfWork unitOfWork,
+    IStringLocalizer<SharedResource>
+    localizer, IFileServer fileserver,
+    IMapper mapper
+    ) : ILoanRequestService
     {
 
         #region ListOfLoanRequest
         public async Task<Response<IEnumerable<DTOListOfLoanRequestResponse>>> ListOfLoanRequest()
         {
-            var result = await unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var result = unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = localizer[Localization.NotFound];
             if (result == null)
             {
@@ -45,8 +46,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         {
             Expression<Func<LoanRequest, bool>> filter = x => x.IsDeleted == model.IsDeleted;
             var totalRecords = await unitOfWork.LoanRequestRepository.CountAsync(filter: filter);
-            var data =  await unitOfWork.LoanRequestRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id), take: model.PageSize,
-                     skip: (model.PageNumber - 1) * model.PageSize);
+            var data = unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = localizer[Localization.NotFound];
             if (data == null)
             {
@@ -116,8 +116,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region GetLoanRequetById
         public async Task<Response<DTOListOfLoanRequestResponse>> GetById(int id)
         {
-            var result =await unitOfWork.LoanRequestRepository.GetByIdAsync(id);
-            if (result == null) {
+            var result = unitOfWork.LoanRequestRepository.GetByIdAsync(id);
+            if (result == null)
+            {
                 var msg = localizer[Localization.NotFoundData];
                 return new()
                 {
@@ -125,17 +126,17 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     Msg = msg,
                     Check = false
                 };
-            
+
             }
 
-            var mappingResult=mapper.Map<DTOListOfLoanRequestResponse>(result);
+            var mappingResult = mapper.Map<DTOListOfLoanRequestResponse>(result);
             return new()
             {
                 Data = mappingResult,
                 Check = true,
 
             };
-          
+
         }
         #endregion
 
@@ -171,7 +172,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region DeleteLoanRequets
-        public async Task<Response<LoanRequest>> DeleteLoanRequest(int id)
+        public async Task<Response<LoanRequest>> DeleteLoanRequest(int id, string fullPath)
         {
             var loanRequest = await unitOfWork.LoanRequestRepository.GetByIdAsync(id);
             var msg = $"{localizer[Localization.Employee]} {localizer[Localization.NotFound]}";
@@ -184,6 +185,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     Data = null,
                     Msg = msg
                 };
+            }
+            if(!string.IsNullOrWhiteSpace(loanRequest.AttachmentFileName))
+            {
+                fileserver.RemoveFile( fullPath,loanRequest.AttachmentFileName);
             }
             unitOfWork.LoanRequestRepository.Remove(loanRequest);
             await unitOfWork.CompleteAsync();
@@ -216,9 +221,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var updatingModel = mapper.Map(model, result);
             if (model.Attachment is not null)
             {
+              
                 var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
                 updatingModel.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                     await fileserver.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+
+
             }
             unitOfWork.LoanRequestRepository.Update(result);
             await unitOfWork.CompleteAsync();
@@ -232,7 +240,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
         }
 
-     
+      
+
+
 
         #endregion
 
