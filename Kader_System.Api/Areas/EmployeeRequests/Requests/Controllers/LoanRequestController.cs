@@ -25,7 +25,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetFilterationLoanRequest model) =>
             Ok(await service.GetAllLoanRequest( model, requestService.GetCurrentHost));
         [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetLoanRequestsById)]
-        public async Task<IActionResult> GetLoanRequestByIdAsync(int id)
+        public async Task<IActionResult> GetLoanRequestById(int id)
         {
             var response = await service.GetById(id);
             if (response.Check)

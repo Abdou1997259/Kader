@@ -29,10 +29,34 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 Check = true,
             };
         }
+        #endregion
 
-        public Task<Response<string>> DeleteLeavePermissionRequest(int id, string fullPath)
+        #region Delete
+        public async Task<Response<string>> DeleteLeavePermissionRequest(int id, string fullPath)
         {
-            throw new NotImplementedException();
+            var obj = await unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
+            if (obj is null)
+            {
+                string resultMsg = sharLocalizer[Localization.NotFoundData];
+
+                return new()
+                {
+                    Data = string.Empty,
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
+
+            unitOfWork.LeavePermissionRequest.Remove(obj);
+            if(await unitOfWork.CompleteAsync() > 0)
+                _fileServer.RemoveFile(fullPath,obj.AttachmentPath);
+
+            return new()
+            {
+                Check = true,
+                Data = string.Empty,
+                Msg = sharLocalizer[Localization.Deleted]
+            };
         }
         #endregion
 

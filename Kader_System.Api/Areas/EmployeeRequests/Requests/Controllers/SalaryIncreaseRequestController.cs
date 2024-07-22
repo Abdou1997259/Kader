@@ -20,15 +20,11 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
 
         #region Retrieve
-        [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.CreateSalaryIncreaseRequests)]
-        public async Task<IActionResult> ListOfSalaryIncreaseRequest([FromQuery] GetAlFilterationForSalaryIncreaseRequest model) =>
-           Ok(await increaseRequestService.GetAllSalaryIncreaseRequest(model, requestService.GetCurrentHost));
-
-        [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.CreateSalaryIncreaseRequests)]
-        public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetAlFilterationForSalaryIncreaseRequest model) =>
+        [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.GetAllSalaryIncreaseRequests)]
+        public async Task<IActionResult> GetAllSalaryIncreaseRequests([FromQuery] GetAlFilterationForSalaryIncreaseRequest model) =>
             Ok(await increaseRequestService.GetAllSalaryIncreaseRequest(model, requestService.GetCurrentHost));
-        [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetLoanRequestsById)]
-        public async Task<IActionResult> GetSalaryIncreaseIdAsync(int id)
+        [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.GetSalaryIncreaseId)]
+        public async Task<IActionResult> GetSalaryIncreaseId(int id)
         {
             var response = await increaseRequestService.GetById(id);
             if (response.Check)
@@ -57,7 +53,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.UpdateIncreaseSalary)]
-        public async Task<IActionResult> UpdateIncreaseSalary ([FromQuery]int id ,[FromForm] DTOSalaryIncreaseRequest model)
+        public async Task<IActionResult> UpdateIncreaseSalary([FromQuery]int id ,[FromForm] DTOSalaryIncreaseRequest model)
         {
             var response = await increaseRequestService.UpdateSalaryIncreaseRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
                  Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
