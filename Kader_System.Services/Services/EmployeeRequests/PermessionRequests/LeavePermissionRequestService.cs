@@ -34,10 +34,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Read
         public async Task<Response<GetAllLeavePermissionRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
         {
-            var list = await _unitOfWork.LeavePermissionRequest.GetAllWithIncludeAsync("Employee");
+            var list = await _unitOfWork.LeavePermissionRequest.GetWithJoinAsync(
+                x => x.IsDeleted == model.IsDeleted &&
+                x.ApporvalStatus == null, "Employee");
             var query = from q in list
-                        where q.IsDeleted == model.IsDeleted &&
-                        q.ApporvalStatus == null
                         select new
                         {
                             q.Id,
@@ -107,8 +107,16 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         {
             var newRequest = _mapper.Map<LeavePermissionRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
+
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+
+            var Oldrequest = await _unitOfWork.LeavePermissionRequest.GetByIdWithNoTrackingAsync(model.Id);
+            var full_path = Path.Combine(root, clientName, moduleName);
+            if (Oldrequest.AttachmentPath != null)
+                _fileServer.RemoveFile(full_path, Oldrequest.AttachmentPath);
+
+
             _unitOfWork.LeavePermissionRequest.Update(newRequest);
             var result = await _unitOfWork.CompleteAsync();
             return new()
