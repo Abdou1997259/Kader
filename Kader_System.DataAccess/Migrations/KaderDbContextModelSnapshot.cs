@@ -806,7 +806,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime>("ApprovedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("AtachmentPath")
+                    b.Property<string>("AtachmentPath");
                     b.Property<string>("AttachmentFileName")
                         .HasColumnType("nvarchar(max)");
 
