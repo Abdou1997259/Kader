@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
+﻿using Kader_System.Domain.Interfaces.EmployeeRequest;
+using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
 using Kader_System.Domain.Interfaces.EmployeeRequest.Request;
 
 namespace Kader_System.Domain.Interfaces;
@@ -70,6 +71,7 @@ public interface IUnitOfWork : IDisposable
     IGenderRepository Genders { get; }
     IReligionRepository Religions { get; }
     #region Employee_Requests_UOW
+    IEmployeeRequestsRepository EmployeeRequests { get; } 
     ILeavePermissionRequestRepository LeavePermissionRequest { get; }
     IDelayPermissionServiceRepository DelayPermission { get; }
     IVacationRequestRepository VacationRequests { get; }
