@@ -15,7 +15,7 @@ namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests
         [Required(ErrorMessage = "please Insert Day Counts")]
         public int DayCounts { get; set; }
         [Required(ErrorMessage = "please Insert Start Date")]
-        public DateTime StartDate { get; set; }
+        public DateOnly StartDate { get; set; }
         public string? Notes { get; set; }
         [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
 
