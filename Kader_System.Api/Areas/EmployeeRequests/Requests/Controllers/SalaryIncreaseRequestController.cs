@@ -10,8 +10,8 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
     [Area(Modules.EmployeeRequest)]
     [ApiExplorerSettings(GroupName = Modules.EmployeeRequest)]
     [ApiController]
-    [Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
+    [Authorize(Permissions.Setting.View)]
     public class SalaryIncreaseRequestController(ISalaryIncreaseRequestService increaseRequestService, IRequestService requestService, IWebHostEnvironment hostEnvironment, IFileServer fileServer) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
@@ -19,9 +19,29 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         private readonly IFileServer _fileServer = fileServer;
 
 
+        #region Retrieve
+        [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.CreateSalaryIncreaseRequests)]
+        public async Task<IActionResult> ListOfSalaryIncreaseRequest([FromQuery] GetAlFilterationForSalaryIncreaseRequest model) =>
+           Ok(await increaseRequestService.GetAllSalaryIncreaseRequest(model, requestService.GetCurrentHost));
+
+        [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.CreateSalaryIncreaseRequests)]
+        public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetAlFilterationForSalaryIncreaseRequest model) =>
+            Ok(await increaseRequestService.GetAllSalaryIncreaseRequest(model, requestService.GetCurrentHost));
+        [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetLoanRequestsById)]
+        public async Task<IActionResult> GetSalaryIncreaseIdAsync(int id)
+        {
+            var response = await increaseRequestService.GetById(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        #endregion
+
         #region Insert
         [HttpPost(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.CreateSalaryIncreaseRequests)]
-public async Task<IActionResult> SalaryIncreaseRequest([FromForm] DTOSalaryIncreaseRequest model)
+       public async Task<IActionResult> SalaryIncreaseRequest([FromForm] DTOSalaryIncreaseRequest model)
         {
             if (string.IsNullOrEmpty(requestService.client_id))
                 return Unauthorized("client_id is empty");
@@ -32,6 +52,20 @@ public async Task<IActionResult> SalaryIncreaseRequest([FromForm] DTOSalaryIncre
             if (response != null)
                 return Ok(response);
             else return BadRequest(response);   
+        }
+        #endregion
+
+        #region Update
+        [HttpPut(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.UpdateIncreaseSalary)]
+        public async Task<IActionResult> UpdateIncreaseSalary ([FromQuery]int id ,[FromForm] DTOSalaryIncreaseRequest model)
+        {
+            var response = await increaseRequestService.UpdateSalaryIncreaseRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
+                 Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
         #endregion
     }
