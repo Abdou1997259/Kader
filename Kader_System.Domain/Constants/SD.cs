@@ -410,13 +410,23 @@ public static class SD
             }
             public class LoanRequests
             {
-                public const string ListOfLoanRequests = "LoanRequests/getListOfLoanRequests";
-                public const string GetAllLoanRequests = "LoanRequests/getAll";
-                public const string CreateLoanRequests = "LoanRequests/create";
-                public const string UpdateLoanRequests = "LoanRequests/update/{id}";
-                public const string RestoreLoanRequests = "LoanRequests/restore/{id}";
-                public const string GetLoanRequestsById = "LoanRequests/getById/{id}";
-                public const string DeleteLoanRequests = "LoanRequests/delete/{id}";
+                public const string ListOfLoanRequests = "loanrequests/getListOfLoanRequests";
+                public const string GetAllLoanRequests = "loanrequests/getAll";
+                public const string CreateLoanRequests = "loanrequests/create";
+                public const string UpdateLoanRequests = "loanrequests/update/{id}";
+                public const string RestoreLoanRequests = "loanrequests/restore/{id}";
+                public const string GetLoanRequestsById = "loanrequests/getById/{id}";
+                public const string DeleteLoanRequests = "loanrequests/delete/{id}";
+            }
+            public class ResignationRequests
+            {
+                public const string ListOfResignationRequests = "resignation/getListOfResignationRequests";
+                public const string GetAllResignationRequests = "resignation/getAll";
+                public const string CreateResignationRequests = "resignationRequests/create";
+                public const string UpdateResignationRequests = "resignation/update/{id}";
+                public const string RestoreResignationRequests = "resignation/restore/{id}";
+                public const string GetResignationRequestsById = "resignation/getById/{id}";
+                public const string DeleteResignationRequests = "resignation/delete/{id}";
             }
             public class DelayPermessionasRequests
             {
@@ -424,8 +434,14 @@ public static class SD
             }
             public class VacationRequests
             {
-                public const string GetAlVacationRequests = "vacationRequests/getAll";
-                public const string CreateVacationRequests = "vacationRequests/create";
+             
+                public const string ListOfVacationRequests = "vacationrequest/getListOfvacationRequests";
+                public const string GetAllVacationRequests = "vacationrequest/getAll";
+                public const string CreateVacationRequests = "vacationrequest/create";
+                public const string UpdateVacationRequests = "vacationrequest/update/{id}";
+                public const string RestoreVacationRequests = "vacationrequest/restore/{id}";
+                public const string GetVacationRequestsById = "vacationrequest/getById/{id}";
+                public const string DeleteVacationRequests = "vacationrequest/delete/{id}";
             } public class AllowanceRequests
             {
                 public const string GetAlAllowanceRequests = "allowanceRequests/getAll";
