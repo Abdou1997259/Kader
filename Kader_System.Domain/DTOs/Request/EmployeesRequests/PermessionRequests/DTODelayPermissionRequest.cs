@@ -8,6 +8,8 @@ namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests
 {
     public class DTODelayPermissionRequest
     {
+        [Required(ErrorMessage = "please Insert Id")]
+        public int Id { get; set; }
         public int EmployeeId { get; set; }
         [Required(ErrorMessage = "please Insert EmployeeId")]
 

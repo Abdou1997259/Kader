@@ -1,4 +1,6 @@
-﻿using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
+﻿using Kader_System.Domain.DTOs;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
+using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
@@ -35,5 +37,127 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
 
         }
+        #region Delete
+        public async Task<Response<string>> DeleteDelayPermissionRequest(int id, string fullPath)
+        {
+            var obj = await unitOfWork.DelayPermission.GetByIdAsync(id);
+            if (obj is null)
+            {
+                string resultMsg = sharLocalizer[Localization.NotFoundData];
+
+                return new()
+                {
+                    Data = string.Empty,
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
+
+            unitOfWork.DelayPermission.Remove(obj);
+            if (await unitOfWork.CompleteAsync() > 0)
+                _fileServer.RemoveFile(fullPath, obj.AtachmentPath);
+
+            return new()
+            {
+                Check = true,
+                Data = string.Empty,
+                Msg = sharLocalizer[Localization.Deleted]
+            };
+        }
+        #endregion
+
+        #region Read
+        public async Task<Response<GetAllLeavePermissionRequestResponse>> GetAllDelayPermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
+        {
+            var list = await _unitOfWork.DelayPermission.GetWithJoinAsync(
+                x => x.IsDeleted == model.IsDeleted &&
+                x.StatuesOfRequest.ApporvalStatus == null, "Employee");
+            var query = from q in list
+                        select new
+                        {
+                            q.Id,
+                            RequestDate = q.Add_date,
+                            EmployeeName = Localization.Arabic == lang ? q.Employee.FirstNameAr : q.Employee.FirstNameEn,
+                            q.DelayHours,
+                            q.StatuesOfRequest.ApporvalStatus,
+                            Attachment = q.AtachmentPath,
+                        };
+            #region Pagination
+            var totalRecords = query.Count();
+            int page = 1;
+            int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+            if (model.PageNumber < 1)
+                page = 1;
+            else
+                page = model.PageNumber;
+            var pageLinks = Enumerable.Range(1, totalPages)
+                .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+                .ToList();
+            #endregion
+
+            var result = new GetAllLeavePermissionRequestResponse
+            {
+                TotalRecords = totalRecords,
+                Items = query.OrderByDescending(x => x.Id).Cast<object>().ToList(),
+                CurrentPage = model.PageNumber,
+                FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+                From = (page - 1) * model.PageSize + 1,
+                To = Math.Min(page * model.PageSize, totalRecords),
+                LastPage = totalPages,
+                LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+                PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+                NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+                Path = host,
+                PerPage = model.PageSize,
+                Links = pageLinks,
+            };
+
+            if (result.TotalRecords is 0)
+            {
+                string resultMsg = _sharLocalizer[Localization.NotFoundData];
+
+                return new()
+                {
+                    Data = new()
+                    {
+                        Items = []
+                    },
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
+
+            return new()
+            {
+                Data = result,
+                Check = true
+            };
+        }
+        #endregion
+
+        #region Update
+        public async Task<Response<DTOLeavePermissionRequest>> UpdateDelayPermissionRequest(DTODelayPermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        {
+            var newRequest = _mapper.Map<DelayPermission>(model);
+            var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
+
+            newRequest.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
+                await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+
+            var Oldrequest = await _unitOfWork.DelayPermission.GetByIdWithNoTrackingAsync(model.Id);
+            var full_path = Path.Combine(root, clientName, moduleName);
+            if (Oldrequest.AtachmentPath != null)
+                _fileServer.RemoveFile(full_path, Oldrequest.AtachmentPath);
+
+
+            _unitOfWork.DelayPermission.Update(newRequest);
+            var result = await _unitOfWork.CompleteAsync();
+            return new()
+            {
+                Msg = sharLocalizer[Localization.Done],
+                Check = true,
+            };
+        }
+        #endregion
     }
 }
