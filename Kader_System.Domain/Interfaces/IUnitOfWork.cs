@@ -74,7 +74,7 @@ public interface IUnitOfWork : IDisposable
     IVacationRequestRepository VacationRequests { get; }
     IAllowanceRequestRepository AllowanceRequests { get; }
     ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; }
-    IContractTerminationRequestRepository ContractTerminationRequests { get; }  
+    IContractTerminationRequestRepository ContractTerminationRequests { get; }
     #endregion
     Task<int> CompleteAsync();
 }
