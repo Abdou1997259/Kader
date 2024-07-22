@@ -26,6 +26,8 @@ namespace Kader_System.Services.Services
             CreateMap<ResignationRequest, DTOResignationRequest>().ReverseMap();
             CreateMap<ResignationRequest, DtoListOfResignationResposne>().ReverseMap();
             CreateMap<VacationRequests, DtoListOfVacationRequestResponse>().ReverseMap();
+            CreateMap<SalaryIncreaseRequest, DTOSalaryIncreaseRequest>().ReverseMap();
+            CreateMap<AllowanceRequest, DTOAllowanceRequest>().ReverseMap();
             
         }
     }

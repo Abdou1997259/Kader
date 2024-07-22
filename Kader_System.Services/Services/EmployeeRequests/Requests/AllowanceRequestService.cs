@@ -23,7 +23,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
         public async Task<Response<IEnumerable<DTOAllowanceRequest>>> ListOfAllowanceRequest()
         {
-            var result = unitOfWork.AllowanceRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var result = await unitOfWork.AllowanceRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = sharLocalizer[Localization.NotFound];
             if (result == null)
             {
@@ -51,7 +51,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         {
             Expression<Func<AllowanceRequest, bool>> filter = x => x.IsDeleted == model.IsDeleted;
             var totalRecords = await unitOfWork.AllowanceRequests.CountAsync(filter: filter);
-            var data = unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var data = await unitOfWork.AllowanceRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = sharLocalizer[Localization.NotFound];
             if (data == null)
             {
@@ -123,7 +123,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<DTOAllowanceRequestResponse>> GetById(int id)
 
         {
-            var result = unitOfWork.AllowanceRequests.GetByIdAsync(id);
+            var result = await unitOfWork.AllowanceRequests.GetByIdAsync(id);
             if (result == null)
             {
                 var msg = sharLocalizer[Localization.NotFoundData];

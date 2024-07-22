@@ -21,11 +21,12 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #region Retrieve
 
-        [HttpGet(ApiRoutes.EmployeeRequests.AllowanceRequests.GetAlAllowanceRequests)]
-        public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetAllFilterationAllowanceRequest  model) =>
+        [HttpGet(ApiRoutes.EmployeeRequests.AllowanceRequests.GetAllowanceRequests)]
+        public async Task<IActionResult> Get([FromQuery] GetAllFilterationAllowanceRequest  model) =>
             Ok(await service.GetAllowanceRequest(model, requestService.GetCurrentHost));
-        [HttpGet(ApiRoutes.EmployeeRequests.AllowanceRequests.GetAlAllowanceRequests)]
-        public async Task<IActionResult> GetSalaryIncreaseIdAsync(int id)
+
+        [HttpGet(ApiRoutes.EmployeeRequests.AllowanceRequests.GetAllowanceRequestById)]
+        public async Task<IActionResult> GetById(int id)
         {
             var response = await service.GetById(id);
             if (response.Check)
@@ -52,7 +53,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.AllowanceRequests.UpdateAllowanceRequests)]
-        public async Task<IActionResult> UpdateIncreaseSalary([FromQuery] int id, [FromForm] DTOAllowanceRequest model)
+        public async Task<IActionResult> UpdateAllowanceRequests([FromQuery] int id, [FromForm] DTOAllowanceRequest model)
         {
             var response = await service.UpdateAllowanceRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
                  Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);

@@ -448,10 +448,11 @@ public static class SD
                 public const string DeleteVacationRequests = "vacationrequest/delete/{id}";
             } public class AllowanceRequests
             {
-                public const string GetAlAllowanceRequests = "allowanceRequests/getAll";
+                public const string GetAllowanceRequests = "allowanceRequests/getAll";
                 public const string CreateAllowanceRequests = "allowanceRequests/create";
                 public const string UpdateAllowanceRequests = "allowanceRequests/update/{id}";
-                public const string DeleteAllowanceRequests = "vallowanceRequests/delete/{id}";
+                public const string DeleteAllowanceRequests = "allowanceRequests/delete/{id}";
+                public const string GetAllowanceRequestById = "allowanceRequests/getById/{id}";
 
             }
             public const string GetEmployeeRequestsLookups = "employeeRequests/getLookups";
