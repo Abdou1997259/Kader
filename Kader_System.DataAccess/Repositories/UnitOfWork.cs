@@ -104,7 +104,7 @@ public class UnitOfWork : IUnitOfWork
         TransSalaryCalculator = new TransSalaryCalculatorRepo(_context);
         ResignationRepository = new ResignationRequestRepository(_context);
         TransSalaryCalculatorDetailsRepo = new TransSalaryCalculatorDetailsRepo(_context);
-        LoanRequestRepository=new LoanRequestRepository(_context);
+        LoanRequestRepository = new LoanRequestRepository(_context);
         TransLoanDetails = new TransLoanDetailsRepository(_context);
         StoredProcuduresRepo = new StoredProcuduresRepo(_context);
         Nationalities = new NationalityRepository(_context);
