@@ -12,6 +12,14 @@ namespace Kader_System.DataAccess.Repositories
         public FileServer()
         {
         }
+
+        public void RemoveFile(string FolderPath, string filename)
+        {
+            var fullPath = Path.Combine(FolderPath, filename);
+            if (File.Exists(fullPath))
+                File.Delete(fullPath);
+        }
+
         public async Task<string> UploadFile(string rootPath, string clinetName, string moduleName, IFormFile file)
         {
             #region Directory_Validation
@@ -25,17 +33,10 @@ namespace Kader_System.DataAccess.Repositories
             var fileEXE = Path.GetExtension(file.FileName);
             var newFileName = Guid.NewGuid().ToString() + fileEXE;
             var filefullPath = Path.Combine(clientPath, newFileName);
-            using (FileStream fileStream = new FileStream(filefullPath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-                return newFileName;
-            } 
+            using FileStream fileStream = new(filefullPath, FileMode.Create);
+            await file.CopyToAsync(fileStream);
+            return newFileName;
             #endregion
-
-
-
-
         }
-
     }
 }

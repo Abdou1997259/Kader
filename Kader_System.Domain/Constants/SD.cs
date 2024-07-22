@@ -405,6 +405,8 @@ public static class SD
             {
                 public const string GetAllLeavePermessionasRequests = "leavePermessionasRequests/getAll";
                 public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
+                public const string UpdateLeavePermessionasRequests = "leavePermessionasRequests/update";
+                public const string DeleteLeavePermessionasRequests = "leavePermessionasRequests/delete/{id}";
             }
             public class DelayPermessionasRequests
             {

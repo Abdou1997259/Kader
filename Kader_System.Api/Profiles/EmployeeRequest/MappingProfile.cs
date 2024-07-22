@@ -14,6 +14,7 @@ namespace Kader_System.Services.Services
                        .ForMember(dest => dest.ApporvalStatus, opt => opt.Ignore())
                        .ForMember(dest => dest.ApprovedDate, opt => opt.Ignore())
                        .ForMember(dest => dest.ApprovedBy, opt => opt.Ignore());
+            CreateMap<DTOCreateLeavePermissionRequest, LeavePermissionRequest>();
             CreateMap<DTOAllowanceRequest, AllowanceRequest>()
                        .ForMember(dest => dest.StatusMessage, opt => opt.Ignore())
                        .ForMember(dest => dest.ApporvalStatus, opt => opt.Ignore())
@@ -41,7 +42,7 @@ namespace Kader_System.Services.Services
                        .ForMember(dest => dest.ApprovedBy, opt => opt.Ignore());
 
             CreateMap<LoanRequest, DTOLoanRequest>().ReverseMap();
-            CreateMap<DTOListOfLoanRequestResponse, LoanRequest>().ReverseMap();
+            //CreateMap<DTOListOfLoanRequestResponse, LoanRequest>().ReverseMap();
 
 
         }
