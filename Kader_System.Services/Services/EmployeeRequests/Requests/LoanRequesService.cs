@@ -116,7 +116,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region GetLoanRequetById
         public async Task<Response<DTOListOfLoanRequestResponse>> GetById(int id)
         {
-            var result = unitOfWork.LoanRequestRepository.GetByIdAsync(id);
+            var result = await unitOfWork.LoanRequestRepository.GetByIdAsync(id);
             if (result == null)
             {
                 var msg = localizer[Localization.NotFoundData];
