@@ -76,6 +76,10 @@ namespace Kader_System.Api.Profiles
             CreateMap<TransLoan, UpdateLoanRequest>()
              .ReverseMap();
             #endregion
+
+            #region SalaryIncrease
+            CreateMap<CreateTransSalaryIncreaseRequest, TransSalaryIncrease>();
+            #endregion
         }
     }
 }

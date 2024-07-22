@@ -242,5 +242,13 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
         return isSucceded;
     }
 
-
+    public Task<List<T>> GetAllWithIncludeAsync(string includeProperties)
+    {
+        IQueryable<T> query = dbSet.AsNoTracking();
+        if (includeProperties != null)
+            foreach (var includeProperty in includeProperties.Split(new char[] { ',' },
+                StringSplitOptions.RemoveEmptyEntries))
+                query = query.Include(includeProperty);
+        return query.ToListAsync();
+    }
 }
