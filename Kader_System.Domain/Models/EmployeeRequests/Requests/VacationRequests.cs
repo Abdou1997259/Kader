@@ -1,12 +1,12 @@
 ﻿namespace Kader_System.Domain.Models.EmployeeRequests.Requests
 {
     [Table("Hr_VacationRequests")]
-    public class VacationRequests
+    public class VacationRequests:BaseEntity
     {
         [Key]
         public int Id { get; set; }
         public int DayCounts { get; set; }
-        public DateTime StartDate { get; set; }
+        public DateOnly StartDate { get; set; }
 
         public string? Notes { get; set; }
         public string? AttachmentFileName { get; set; }

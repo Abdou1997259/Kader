@@ -432,8 +432,14 @@ public static class SD
             }
             public class VacationRequests
             {
-                public const string GetAlVacationRequests = "vacationRequests/getAll";
-                public const string CreateVacationRequests = "vacationRequests/create";
+             
+                public const string ListOfVacationRequests = "vacation/getListOfvacationRequests";
+                public const string GetAllVacationRequests = "vacation/getAll";
+                public const string CreateVacationRequests = "vacation/create";
+                public const string UpdateVacationRequests = "vacation/update/{id}";
+                public const string RestoreVacationRequests = "vacation/restore/{id}";
+                public const string GetVacationRequestsById = "vacation/getById/{id}";
+                public const string DeleteVacationRequests = "vacation/delete/{id}";
             } public class AllowanceRequests
             {
                 public const string GetAlAllowanceRequests = "allowanceRequests/getAll";

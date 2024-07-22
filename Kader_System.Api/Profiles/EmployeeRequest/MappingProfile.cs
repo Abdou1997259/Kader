@@ -14,13 +14,14 @@ namespace Kader_System.Services.Services
             CreateMap<DTOLeavePermissionRequest, LeavePermissionRequest>();
             CreateMap<DTOAllowanceRequest, AllowanceRequest>();
             CreateMap<DTODelayPermissionRequest, DelayPermission>();
-            CreateMap<DTOVacationRequest, VacationRequests>();
+            CreateMap<DTOVacationRequest, VacationRequests>().ReverseMap();
             CreateMap<DTOSalaryIncreaseRequest, SalaryIncreaseRequest>();
             CreateMap<DTOContractTerminationRequest, HrContractTermination>();
             CreateMap<LoanRequest, DTOLoanRequest>().ReverseMap();
             CreateMap<LoanRequest, DTOListOfLoanRequestResponse>().ReverseMap();
             CreateMap<ResignationRequest, DTOResignationRequest>().ReverseMap();
             CreateMap<ResignationRequest, DtoListOfResignationResposne>().ReverseMap();
+            CreateMap<VacationRequests, DtoListOfVacationRequestResponse>().ReverseMap();
         }
     }
 }

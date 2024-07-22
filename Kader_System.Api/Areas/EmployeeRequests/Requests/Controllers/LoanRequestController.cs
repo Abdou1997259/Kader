@@ -22,7 +22,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetAllLoanRequests)]
         public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetFilterationLoanRequest model) =>
-            Ok(await service.GetAllLoanReques( model, requestService.GetCurrentHost));
+            Ok(await service.GetAllLoanRequest( model, requestService.GetCurrentHost));
         [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetLoanRequestsById)]
         public async Task<IActionResult> GetLoanRequestByIdAsync(int id)
         {
@@ -41,7 +41,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [HttpPost(ApiRoutes.EmployeeRequests.LoanRequests.CreateLoanRequests)]
         public async Task<IActionResult> CreateLoanRequestAsync([FromForm] DTOLoanRequest model)
         {
-            var response = await service.AddNewLoanReques(model,hostEnvironment.WebRootPath,requestService.client_id,
+            var response = await service.AddNewLoanRequest(model,hostEnvironment.WebRootPath,requestService.client_id,
 
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
