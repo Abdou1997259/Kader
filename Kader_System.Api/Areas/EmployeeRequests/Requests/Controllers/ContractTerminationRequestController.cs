@@ -25,7 +25,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [HttpGet(ApiRoutes.EmployeeRequests.ContractTerminationRequest.GetAllContractTerminationRequest)]
         public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetFilterationContractTerminationRequest model) =>
             Ok(await service.GetAllContractTerminationRequest(model, requestService.GetCurrentHost));
-        [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetLoanRequestsById)]
+        [HttpGet(ApiRoutes.EmployeeRequests.ContractTerminationRequest.GetContractTerminationRequestsById)]
         public async Task<IActionResult> GetLoanRequestByIdAsync(int id)
         {
             var response = await service.GetById(id);
