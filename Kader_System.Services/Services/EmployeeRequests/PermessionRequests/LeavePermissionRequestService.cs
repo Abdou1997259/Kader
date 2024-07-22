@@ -29,6 +29,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 Check = true,
             };
         }
+
+        public Task<Response<string>> DeleteLeavePermissionRequest(int id, string fullPath)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region Read
