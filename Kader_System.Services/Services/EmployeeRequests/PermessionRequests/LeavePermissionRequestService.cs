@@ -31,24 +31,53 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         }
         #endregion
 
+        #region Delete
+        public async Task<Response<string>> DeleteLeavePermissionRequest(int id, string fullPath)
+        {
+            var obj = await unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
+            if (obj is null)
+            {
+                string resultMsg = sharLocalizer[Localization.NotFoundData];
+
+                return new()
+                {
+                    Data = string.Empty,
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
+
+            unitOfWork.LeavePermissionRequest.Remove(obj);
+            if(await unitOfWork.CompleteAsync() > 0)
+                _fileServer.RemoveFile(fullPath,obj.AttachmentPath);
+
+            return new()
+            {
+                Check = true,
+                Data = string.Empty,
+                Msg = sharLocalizer[Localization.Deleted]
+            };
+        }
+        #endregion
+
         #region Read
         public async Task<Response<GetAllLeavePermissionRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
         {
-            var list = await _unitOfWork.LeavePermissionRequest.GetAllWithIncludeAsync("Employee");
-            var query = from q in list
-                        where q.IsDeleted == model.IsDeleted &&
-                        q.ApporvalStatus == null
-                        select new
-                        {
-                            q.Id,
-                            RequestDate = q.Add_date,
-                            EmployeeName = Localization.Arabic == lang ? q.Employee.FirstNameAr : q.Employee.FirstNameEn,
-                            q.LeaveTime,
-                            q.BackTime,
-                            q.ApporvalStatus,
-                            Attachment = q.AttachmentPath,
+      var list = await _unitOfWork.LeavePermissionRequest.GetWithJoinAsync(
+          x => x.IsDeleted == model.IsDeleted &&
+          x.StatuesOfRequest.ApporvalStatus == null, "Employee");
+      var query = from q in list
+                  select new
+                  {
+                      q.Id,
+                      RequestDate = q.Add_date,
+                      EmployeeName = Localization.Arabic == lang ? q.Employee.FirstNameAr : q.Employee.FirstNameEn,
+                      q.LeaveTime,
+                      q.BackTime,
+                      q.StatuesOfRequest.ApporvalStatus,
+                      Attachment = q.AttachmentPath,
 
-                        };
+                  };
             #region Pagination
             var totalRecords = query.Count();
             int page = 1;
@@ -107,8 +136,16 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         {
             var newRequest = _mapper.Map<LeavePermissionRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
+
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+
+            var Oldrequest = await _unitOfWork.LeavePermissionRequest.GetByIdWithNoTrackingAsync(model.Id);
+            var full_path = Path.Combine(root, clientName, moduleName);
+            if (Oldrequest.AttachmentPath != null)
+                _fileServer.RemoveFile(full_path, Oldrequest.AttachmentPath);
+
+
             _unitOfWork.LeavePermissionRequest.Update(newRequest);
             var result = await _unitOfWork.CompleteAsync();
             return new()
@@ -117,39 +154,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 Check = true,
             };
         }
-
         #endregion
 
-        #region Delete
-        public async Task<Response<string>> DeleteLeavePermissionRequest(int id, string fullPath)
-        {
-            var obj = await unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
-            if (obj is null)
-            {
-                string resultMsg = sharLocalizer[Localization.NotFoundData];
-
-                return new()
-                {
-                    Data = string.Empty,
-                    Error = resultMsg,
-                    Msg = resultMsg
-                };
-            }
-
-            if (!string.IsNullOrEmpty(obj.AttachmentPath))
-            {
-                _fileServer.RemoveFile(fullPath, obj.AttachmentPath);
-            }
-
-            unitOfWork.LeavePermissionRequest.Remove(obj);
-            await unitOfWork.CompleteAsync();
-            return new()
-            {
-                Check = true,
-                Data = string.Empty,
-                Msg = sharLocalizer[Localization.Deleted]
-            };
-        }
-        #endregion
     }
 }

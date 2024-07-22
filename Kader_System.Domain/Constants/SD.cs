@@ -431,6 +431,10 @@ public static class SD
             public class DelayPermessionasRequests
             {
                 public const string CreateDelayPermissionRequests = "delayPermissionRequests/create";
+                public const string GetAllDelayPermissionRequests = "delayPermissionRequests/getAll";
+                public const string GetDelayPermissionRequestsById = "delayPermissionRequests/getById/{id}";
+                public const string UpdateDelayPermissionRequests = "delayPermissionRequests/update";
+                public const string DeleteDelayPermissionRequests = "delayPermissionRequests/delete/{id}";
             }
             public class VacationRequests
             {
@@ -455,13 +459,22 @@ public static class SD
             public class SalaryIncreaseRequest
             {
                 public const string CreateSalaryIncreaseRequests = "salaryIncreaseRequests/create";
-                public const string UpdateIncreaseSalary = "IncreaseSalary/update/{id}";
-                public const string DeleteSalaryIncreaseRequest = "IncreaseSalary/delete/{id}";
+                public const string GetAllSalaryIncreaseRequests = "salaryIncreaseRequests/getAll";
+                public const string GetSalaryIncreaseId = "salaryIncreaseRequests/getById/{id}";
+                public const string UpdateIncreaseSalary = "salaryIncreaseRequests/update/{id}";
+                public const string DeleteSalaryIncreaseRequest = "salaryIncreaseRequests/delete/{id}";
 
             }
             public class ContractTerminationRequest
             {
+                
+                public const string ListOContractTerminationRequest = "contractTerminationRequest/getListOfcontractTerminationRequests";
+                public const string GetAllContractTerminationRequest = "contractTerminationRequest/getAll";
                 public const string CreateContractTerminationRequest = "contractTerminationRequest/create";
+                public const string UpdateContractTerminationRequest = "contractTerminationRequest/update/{id}";
+                public const string RestoreContractTerminationRequest = "contractTerminationRequest/restore/{id}";
+                public const string GetContractTerminationRequestsById = "contractTerminationRequest/getById/{id}";
+                public const string DeleteContractTerminationRequest = "contractTerminationRequest/delete/{id}";
             }
         }
         public class Job

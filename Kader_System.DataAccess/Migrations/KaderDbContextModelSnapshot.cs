@@ -221,7 +221,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4bc8c1a6-dc02-48ea-a2c9-19118287c9cd",
+                            ConcurrencyStamp = "efccbe0a-961c-41cc-978e-252dda05308f",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +229,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEH+Eik2DCJH4lfKCTFZvLdCyNY/ht2FNBuRinU9830QL2N8N/4eVLyIot6j3ufrLQQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOG0e6t9aELNZIvFKOvjP70BXdr0trz6GerrzPNjqImhoRUCmZ9KxHYhCrOAbwuYuA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e38782a1-0b4d-4b45-a75f-68cddbe695ab",
+                            SecurityStamp = "59549db7-019e-4b0f-bce5-52f69b91b0de",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -521,17 +521,11 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("AtachmentPath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("DelayHours")
+                        .HasColumnType("float");
 
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
@@ -549,9 +543,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -581,15 +572,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
 
@@ -615,9 +597,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("time");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -647,15 +626,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -670,9 +640,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<string>("StatusMessage")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
@@ -723,16 +690,10 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Attachment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AttachmentFileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")
@@ -751,11 +712,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -788,18 +744,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("AtachmentPath");
                     b.Property<string>("AttachmentFileName")
-
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")
@@ -825,9 +770,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
-
-                    b.Property<string>("StatusMessage")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
@@ -856,15 +798,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("AtachmentPath")
                         .HasColumnType("nvarchar(max)");
 
@@ -887,9 +820,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -922,16 +852,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("AtachmentPath")
+                    b.Property<string>("AttachmentFileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")
@@ -950,9 +871,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Notes")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StatusMessage")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -982,15 +900,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ApporvalStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ApprovedBy")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ApprovedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("AttachmentFileName")
                         .HasColumnType("nvarchar(max)");
 
@@ -1017,9 +926,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
-
-                    b.Property<string>("StatusMessage")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
@@ -4656,7 +4562,43 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                        {
+                            b1.Property<int>("DelayPermissionId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("ApporvalStatus")
+                                .HasColumnType("int")
+                                .HasColumnName("ApporvalStatus");
+
+                            b1.Property<int>("ApprovedBy")
+                                .HasColumnType("int")
+                                .HasColumnName("ApprovedBy");
+
+                            b1.Property<DateTime>("ApprovedDate")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ApprovedDate");
+
+                            b1.Property<string>("StatusMessage")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("StatusMessage");
+
+                            b1.Property<int>("StatusTypes")
+                                .HasColumnType("int")
+                                .HasColumnName("Status");
+
+                            b1.HasKey("DelayPermissionId");
+
+                            b1.ToTable("Hr_DelayPermission");
+
+                            b1.WithOwner()
+                                .HasForeignKey("DelayPermissionId");
+                        });
+
                     b.Navigation("Employee");
+
+                    b.Navigation("StatuesOfRequest")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.PermessionRequests.LeavePermissionRequest", b =>
@@ -4667,7 +4609,43 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                        {
+                            b1.Property<int>("LeavePermissionRequestId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("ApporvalStatus")
+                                .HasColumnType("int")
+                                .HasColumnName("ApporvalStatus");
+
+                            b1.Property<int>("ApprovedBy")
+                                .HasColumnType("int")
+                                .HasColumnName("ApprovedBy");
+
+                            b1.Property<DateTime>("ApprovedDate")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ApprovedDate");
+
+                            b1.Property<string>("StatusMessage")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("StatusMessage");
+
+                            b1.Property<int>("StatusTypes")
+                                .HasColumnType("int")
+                                .HasColumnName("Status");
+
+                            b1.HasKey("LeavePermissionRequestId");
+
+                            b1.ToTable("Hr_LeavePermissionRequest");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LeavePermissionRequestId");
+                        });
+
                     b.Navigation("Employee");
+
+                    b.Navigation("StatuesOfRequest")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.AllowanceRequest", b =>
@@ -4690,11 +4668,47 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                        {
+                            b1.Property<int>("AllowanceRequestId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("ApporvalStatus")
+                                .HasColumnType("int")
+                                .HasColumnName("ApporvalStatus");
+
+                            b1.Property<int>("ApprovedBy")
+                                .HasColumnType("int")
+                                .HasColumnName("ApprovedBy");
+
+                            b1.Property<DateTime>("ApprovedDate")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ApprovedDate");
+
+                            b1.Property<string>("StatusMessage")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("StatusMessage");
+
+                            b1.Property<int>("StatusTypes")
+                                .HasColumnType("int")
+                                .HasColumnName("Status");
+
+                            b1.HasKey("AllowanceRequestId");
+
+                            b1.ToTable("hr_allowance_request");
+
+                            b1.WithOwner()
+                                .HasForeignKey("AllowanceRequestId");
+                        });
+
                     b.Navigation("Employee");
 
                     b.Navigation("HrAllowance");
 
                     b.Navigation("SalaryEffect");
+
+                    b.Navigation("StatuesOfRequest")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.HrContractTermination", b =>
@@ -4705,7 +4719,43 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                        {
+                            b1.Property<int>("HrContractTerminationId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("ApporvalStatus")
+                                .HasColumnType("int")
+                                .HasColumnName("ApporvalStatus");
+
+                            b1.Property<int>("ApprovedBy")
+                                .HasColumnType("int")
+                                .HasColumnName("ApprovedBy");
+
+                            b1.Property<DateTime>("ApprovedDate")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ApprovedDate");
+
+                            b1.Property<string>("StatusMessage")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("StatusMessage");
+
+                            b1.Property<int>("StatusTypes")
+                                .HasColumnType("int")
+                                .HasColumnName("Status");
+
+                            b1.HasKey("HrContractTerminationId");
+
+                            b1.ToTable("hr_contract_termination");
+
+                            b1.WithOwner()
+                                .HasForeignKey("HrContractTerminationId");
+                        });
+
                     b.Navigation("Employee");
+
+                    b.Navigation("StatuesOfRequest")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.LoanRequest", b =>
@@ -4716,7 +4766,43 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                        {
+                            b1.Property<int>("LoanRequestId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("ApporvalStatus")
+                                .HasColumnType("int")
+                                .HasColumnName("ApporvalStatus");
+
+                            b1.Property<int>("ApprovedBy")
+                                .HasColumnType("int")
+                                .HasColumnName("ApprovedBy");
+
+                            b1.Property<DateTime>("ApprovedDate")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ApprovedDate");
+
+                            b1.Property<string>("StatusMessage")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("StatusMessage");
+
+                            b1.Property<int>("StatusTypes")
+                                .HasColumnType("int")
+                                .HasColumnName("Status");
+
+                            b1.HasKey("LoanRequestId");
+
+                            b1.ToTable("hr_loan_request");
+
+                            b1.WithOwner()
+                                .HasForeignKey("LoanRequestId");
+                        });
+
                     b.Navigation("Employee");
+
+                    b.Navigation("StatuesOfRequest")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.ResignationRequest", b =>
@@ -4727,7 +4813,43 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                        {
+                            b1.Property<int>("ResignationRequestId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("ApporvalStatus")
+                                .HasColumnType("int")
+                                .HasColumnName("ApporvalStatus");
+
+                            b1.Property<int>("ApprovedBy")
+                                .HasColumnType("int")
+                                .HasColumnName("ApprovedBy");
+
+                            b1.Property<DateTime>("ApprovedDate")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ApprovedDate");
+
+                            b1.Property<string>("StatusMessage")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("StatusMessage");
+
+                            b1.Property<int>("StatusTypes")
+                                .HasColumnType("int")
+                                .HasColumnName("Status");
+
+                            b1.HasKey("ResignationRequestId");
+
+                            b1.ToTable("hr_resignation_request");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ResignationRequestId");
+                        });
+
                     b.Navigation("Employee");
+
+                    b.Navigation("StatuesOfRequest")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.SalaryIncreaseRequest", b =>
@@ -4736,6 +4858,42 @@ namespace Kader_System.DataAccess.Migrations
                         .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                        {
+                            b1.Property<int>("SalaryIncreaseRequestId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("ApporvalStatus")
+                                .HasColumnType("int")
+                                .HasColumnName("ApporvalStatus");
+
+                            b1.Property<int>("ApprovedBy")
+                                .HasColumnType("int")
+                                .HasColumnName("ApprovedBy");
+
+                            b1.Property<DateTime>("ApprovedDate")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ApprovedDate");
+
+                            b1.Property<string>("StatusMessage")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("StatusMessage");
+
+                            b1.Property<int>("StatusTypes")
+                                .HasColumnType("int")
+                                .HasColumnName("Status");
+
+                            b1.HasKey("SalaryIncreaseRequestId");
+
+                            b1.ToTable("Hr_SalaryIncreaseRequest");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SalaryIncreaseRequestId");
+                        });
+
+                    b.Navigation("StatuesOfRequest")
                         .IsRequired();
 
                     b.Navigation("employee");
@@ -4755,7 +4913,43 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                        {
+                            b1.Property<int>("VacationRequestsId")
+                                .HasColumnType("int");
+
+                            b1.Property<int?>("ApporvalStatus")
+                                .HasColumnType("int")
+                                .HasColumnName("ApporvalStatus");
+
+                            b1.Property<int>("ApprovedBy")
+                                .HasColumnType("int")
+                                .HasColumnName("ApprovedBy");
+
+                            b1.Property<DateTime>("ApprovedDate")
+                                .HasColumnType("datetime2")
+                                .HasColumnName("ApprovedDate");
+
+                            b1.Property<string>("StatusMessage")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("StatusMessage");
+
+                            b1.Property<int>("StatusTypes")
+                                .HasColumnType("int")
+                                .HasColumnName("Status");
+
+                            b1.HasKey("VacationRequestsId");
+
+                            b1.ToTable("hr_vacation_requests");
+
+                            b1.WithOwner()
+                                .HasForeignKey("VacationRequestsId");
+                        });
+
                     b.Navigation("Employee");
+
+                    b.Navigation("StatuesOfRequest")
+                        .IsRequired();
 
                     b.Navigation("VacationType");
                 });

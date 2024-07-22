@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests
 {
-    public interface ILeavePermissionRequestRepository:IBaseRepository<LeavePermissionRequest>
+    public interface ILeavePermissionRequestRepository : IBaseRepository<LeavePermissionRequest>
     {
     }
 }

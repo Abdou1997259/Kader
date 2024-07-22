@@ -43,6 +43,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
         #endregion
+
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.UpdateLeavePermessionasRequests)]
         public async Task<IActionResult> UpdateLeavePermessionasRequests([FromForm] DTOCreateLeavePermissionRequest model)

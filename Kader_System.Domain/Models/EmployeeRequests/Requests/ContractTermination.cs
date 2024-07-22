@@ -7,12 +7,12 @@
         public int Id { get; set; } 
         public string? Notes { get; set; }      
         public string? Attachment { get; set; }
+        public string? AttachmentFileName { get; set; }
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public HrEmployee Employee { get; set; }
-        public string? StatusMessage { get; set; }
-        public int? ApporvalStatus { get; set; }
-        public DateTime ApprovedDate { get; set; }
-        public int ApprovedBy { get; set; }
+
+        public StatuesOfRequest StatuesOfRequest { get; set; }
+
     }
 }
