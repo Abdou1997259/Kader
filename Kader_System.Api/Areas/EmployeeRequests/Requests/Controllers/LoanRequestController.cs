@@ -22,7 +22,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
             Ok(await service.ListOfLoanRequest());
 
         [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetAllLoanRequests)]
-        public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetFilterationLoanRequest model) =>
+        public async Task<IActionResult> GetAllLoanRequests([FromQuery] GetFilterationLoanRequest model) =>
             Ok(await service.GetAllLoanRequest( model, requestService.GetCurrentHost));
         [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetLoanRequestsById)]
         public async Task<IActionResult> GetLoanRequestById(int id)
@@ -75,7 +75,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.EmployeeRequests.LoanRequests.DeleteLoanRequests)]
-        public async Task<IActionResult> DeleteAllowanceAsync(int id)
+        public async Task<IActionResult> DeleteLoanRequests(int id)
         {
             var full_path = Path.Combine(hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest);
             var response = await service.DeleteLoanRequest(id,full_path);
