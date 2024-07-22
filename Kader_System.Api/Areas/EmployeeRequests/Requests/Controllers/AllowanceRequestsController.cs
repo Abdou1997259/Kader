@@ -1,7 +1,9 @@
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
+using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.Services.EmployeeRequests.Requests;
 namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 {
     [Area(Modules.EmployeeRequest)]
@@ -14,7 +16,25 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
     {
         private readonly IRequestService requestService = requestService;
         private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment; 
-        private readonly IFileServer _fileServer = fileServer;  
+        private readonly IFileServer _fileServer = fileServer;
+
+
+        #region Retrieve
+
+        [HttpGet(ApiRoutes.EmployeeRequests.AllowanceRequests.GetAlAllowanceRequests)]
+        public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetAllFilterationAllowanceRequest  model) =>
+            Ok(await service.GetAllowanceRequest(model, requestService.GetCurrentHost));
+        [HttpGet(ApiRoutes.EmployeeRequests.AllowanceRequests.GetAlAllowanceRequests)]
+        public async Task<IActionResult> GetSalaryIncreaseIdAsync(int id)
+        {
+            var response = await service.GetById(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        #endregion
 
         #region Insert
         [HttpPost(ApiRoutes.EmployeeRequests.AllowanceRequests.CreateAllowanceRequests)]
@@ -28,6 +48,35 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
+        #endregion
+
+        #region Update
+        [HttpPut(ApiRoutes.EmployeeRequests.AllowanceRequests.UpdateAllowanceRequests)]
+        public async Task<IActionResult> UpdateIncreaseSalary([FromQuery] int id, [FromForm] DTOAllowanceRequest model)
+        {
+            var response = await service.UpdateAllowanceRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
+                 Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        #endregion
+
+        #region Delete
+
+        [HttpDelete(ApiRoutes.EmployeeRequests.AllowanceRequests.DeleteAllowanceRequests)]
+        public async Task<IActionResult> DeleteSalaryIncreaseRequest(int id)
+        {
+            var response = await service.DeleteAllowanceRequest(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+
         #endregion
 
 

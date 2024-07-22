@@ -446,6 +446,9 @@ public static class SD
             {
                 public const string GetAlAllowanceRequests = "allowanceRequests/getAll";
                 public const string CreateAllowanceRequests = "allowanceRequests/create";
+                public const string UpdateAllowanceRequests = "allowanceRequests/update/{id}";
+                public const string DeleteAllowanceRequests = "vallowanceRequests/delete/{id}";
+
             }
             public const string GetEmployeeRequestsLookups = "employeeRequests/getLookups";
 

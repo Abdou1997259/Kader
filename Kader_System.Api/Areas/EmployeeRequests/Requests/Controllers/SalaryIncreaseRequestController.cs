@@ -20,14 +20,11 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
 
         #region Retrieve
-        [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.CreateSalaryIncreaseRequests)]
-        public async Task<IActionResult> ListOfSalaryIncreaseRequest([FromQuery] GetAlFilterationForSalaryIncreaseRequest model) =>
-           Ok(await increaseRequestService.GetAllSalaryIncreaseRequest(model, requestService.GetCurrentHost));
-
+       
         [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.CreateSalaryIncreaseRequests)]
         public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetAlFilterationForSalaryIncreaseRequest model) =>
             Ok(await increaseRequestService.GetAllSalaryIncreaseRequest(model, requestService.GetCurrentHost));
-        [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetLoanRequestsById)]
+        [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.CreateSalaryIncreaseRequests)]
         public async Task<IActionResult> GetSalaryIncreaseIdAsync(int id)
         {
             var response = await increaseRequestService.GetById(id);
