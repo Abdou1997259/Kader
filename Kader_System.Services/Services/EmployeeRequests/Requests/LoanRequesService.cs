@@ -171,7 +171,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region DeleteLoanRequets
-        public async Task<Response<LoanRequest>> DeleteLoanRequest(int id)
+        public async Task<Response<LoanRequest>> DeleteLoanRequest(int id, string fullPath)
         {
             var loanRequest = await unitOfWork.LoanRequestRepository.GetByIdAsync(id);
             var msg = $"{localizer[Localization.Employee]} {localizer[Localization.NotFound]}";
@@ -184,6 +184,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     Data = null,
                     Msg = msg
                 };
+            }
+            if(!string.IsNullOrWhiteSpace(loanRequest.AttachmentFileName))
+            {
+                fileserver.RemoveFile( fullPath,loanRequest.AttachmentFileName);
             }
             unitOfWork.LoanRequestRepository.Remove(loanRequest);
             await unitOfWork.CompleteAsync();
@@ -216,9 +220,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var updatingModel = mapper.Map(model, result);
             if (model.Attachment is not null)
             {
+              
                 var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
                 updatingModel.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                     await fileserver.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+
+
             }
             unitOfWork.LoanRequestRepository.Update(result);
             await unitOfWork.CompleteAsync();

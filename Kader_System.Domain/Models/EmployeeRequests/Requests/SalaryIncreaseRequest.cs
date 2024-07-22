@@ -19,11 +19,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public HrEmployee employee { get; set; }
-        public int Status { get; set; }
-        public string? StatusMessage { get; set; }
-        public int? ApporvalStatus { get; set; }
-        public DateTime ApprovedDate { get; set; }
-        public int ApprovedBy { get; set; }
+        public StatuesOfRequest StatuesOfRequest { get; set; }
 
     }
 }

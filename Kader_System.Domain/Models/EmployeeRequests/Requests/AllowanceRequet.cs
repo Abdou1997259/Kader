@@ -24,10 +24,6 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         [ForeignKey(nameof(allowance_type_id))]
         public virtual TransSalaryEffect SalaryEffect { get; set; }
 
-        public int Status { get; set; }
-        public string? StatusMessage { get; set; }
-        public int? ApporvalStatus { get; set; }
-        public DateTime ApprovedDate { get; set; }
-        public int ApprovedBy { get; set; }
+        public StatuesOfRequest StatuesOfRequest { get; set; }
     }
 }
