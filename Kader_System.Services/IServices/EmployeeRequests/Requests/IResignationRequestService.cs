@@ -11,11 +11,11 @@ namespace Kader_System.Services.IServices.EmployeeRequests.Requests
 {
     public interface IResignationRequestService
     {
-        public Task<Response<GetAllResignations>> GetAllLoanReques(GetFillterationResignationRequest model, string host);
-        public Task<Response<ResignationRequest>> AddNewLoanReques(DTOResignationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
-        public Task<Response<ResignationRequest>> UpdateLoanRequest(int id, DTOResignationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
-        public Task<Response<ResignationRequest>> DeleteLoanRequest(int id);
+        public Task<Response<GetAllResignations>> GetAllResignationRequest(GetFillterationResignationRequest model, string host);
+        public Task<Response<ResignationRequest>> AddNewResignationRequest(DTOResignationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
+        public Task<Response<ResignationRequest>> UpdateResignationRequest(int id, DTOResignationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
+        public Task<Response<ResignationRequest>> DeleteResignationRequest(int id);
         public Task<Response<DtoListOfResignationResposne>> GetById(int id);
-        public Task<Response<IEnumerable<DtoListOfResignationResposne>>> ListOfLoanRequest();
+        public Task<Response<IEnumerable<DtoListOfResignationResposne>>> ListOfResignationRequest();
     }
 }

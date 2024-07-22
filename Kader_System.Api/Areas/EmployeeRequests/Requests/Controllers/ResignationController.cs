@@ -17,14 +17,14 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Retrieve
 
         [HttpGet(ApiRoutes.EmployeeRequests.ResignationRequests.ListOfResignationRequests)]
-        public async Task<IActionResult> ListOfLoanRequestsAsync() =>
-            Ok(await service.ListOfLoanRequest());
+        public async Task<IActionResult> ListOfResignationRequestsAsync() =>
+            Ok(await service.ListOfResignationRequest());
 
         [HttpGet(ApiRoutes.EmployeeRequests.ResignationRequests.GetAllResignationRequests)]
-        public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetFillterationResignationRequest model) =>
-            Ok(await service.GetAllLoanReques(model, requestService.GetCurrentHost));
+        public async Task<IActionResult> GetAllResignationRequestsAsync([FromQuery] GetFillterationResignationRequest model) =>
+            Ok(await service.GetAllResignationRequest(model, requestService.GetCurrentHost));
         [HttpGet(ApiRoutes.EmployeeRequests.ResignationRequests.GetResignationRequestsById)]
-        public async Task<IActionResult> GetLoanRequestByIdAsync(int id)
+        public async Task<IActionResult> GetResignationRequestByIdAsync(int id)
         {
             var response = await service.GetById(id);
             if (response.Check)
@@ -39,9 +39,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Insert
 
         [HttpPost(ApiRoutes.EmployeeRequests.ResignationRequests.CreateResignationRequests)]
-        public async Task<IActionResult> CreateLoanRequestAsync([FromForm] DTOResignationRequest model)
+        public async Task<IActionResult> CreateResignationRequestAsync([FromForm] DTOResignationRequest model)
         {
-            var response = await service.AddNewLoanReques(model, hostEnvironment.WebRootPath, requestService.client_id,
+            var response = await service.AddNewResignationRequest(model, hostEnvironment.WebRootPath, requestService.client_id,
 
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
@@ -56,9 +56,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.EmployeeRequests.ResignationRequests.UpdateResignationRequests)]
-        public async Task<IActionResult> UpdateLoanRequestAsync([FromRoute] int id, [FromForm] DTOResignationRequest model)
+        public async Task<IActionResult> UpdateResignationRequestAsync([FromRoute] int id, [FromForm] DTOResignationRequest model)
         {
-            var response = await service.UpdateLoanRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
+            var response = await service.UpdateResignationRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
                 return Ok(response);
@@ -74,9 +74,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.EmployeeRequests.ResignationRequests.DeleteResignationRequests)]
-        public async Task<IActionResult> DeleteAllowanceAsync(int id)
+        public async Task<IActionResult> DeleteResignationAsync(int id)
         {
-            var response = await service.DeleteLoanRequest(id);
+            var response = await service.DeleteResignationRequest(id);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

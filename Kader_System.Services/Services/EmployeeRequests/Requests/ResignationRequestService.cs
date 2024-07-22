@@ -19,7 +19,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
     {
 
         #region ListOfLoanRequest
-        public async Task<Response<IEnumerable<DtoListOfResignationResposne>>> ListOfLoanRequest()
+        public async Task<Response<IEnumerable<DtoListOfResignationResposne>>> ListOfResignationRequest()
         {
             var result = await unitOfWork.ResignationRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = localizer[Localization.NotFound];
@@ -44,7 +44,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region PaginatedLoanRequest
-        public async Task<Response<GetAllResignations>> GetAllLoanReques(GetFillterationResignationRequest model, string host)
+        public async Task<Response<GetAllResignations>> GetAllResignationRequest(GetFillterationResignationRequest model, string host)
         {
             Expression<Func<LoanRequest, bool>> filter = x => x.IsDeleted == model.IsDeleted;
             var totalRecords = await unitOfWork.LoanRequestRepository.CountAsync(filter: filter);
@@ -143,7 +143,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddLoanRequest
-        public async Task<Response<ResignationRequest>> AddNewLoanReques(DTOResignationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<ResignationRequest>> AddNewResignationRequest(DTOResignationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
             var IsEmpolyeeExisted = await unitOfWork.Employees.ExistAsync(model.EmployeeId);
             if (!IsEmpolyeeExisted)
@@ -174,7 +174,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region DeleteLoanRequets
-        public async Task<Response<ResignationRequest>> DeleteLoanRequest(int id)
+        public async Task<Response<ResignationRequest>> DeleteResignationRequest(int id)
         {
             var loanRequest = await unitOfWork.ResignationRepository.GetByIdAsync(id);
             var msg = $" {localizer[Localization.NotFound]}";
@@ -203,7 +203,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region UpdateLoanRequest
-        public async Task<Response<ResignationRequest>> UpdateLoanRequest(int id, DTOResignationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<ResignationRequest>> UpdateResignationRequest(int id, DTOResignationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
             var result = await unitOfWork.ResignationRepository.GetByIdAsync(id);
 
@@ -235,6 +235,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
         }
 
+       
 
 
         #endregion
