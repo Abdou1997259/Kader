@@ -87,7 +87,7 @@ public class UnitOfWork : IUnitOfWork
 
     public ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; private set; }
 
-    public IContractTerminationRequestRepository ContractTerminationRequests { get; private set; }
+    public IContractTerminationRequestRepositroy  ContractTerminationRequest { get; private set; }
 
     public ILoanRequestRepository LoanRequestRepository { get; private set; }
 
@@ -101,6 +101,7 @@ public class UnitOfWork : IUnitOfWork
     {
         _context = context;
         _config = config;
+        ContractTerminationRequest = new ContractTerminationRequestRepository(_context);
         TransSalaryCalculator = new TransSalaryCalculatorRepo(_context);
         ResignationRepository = new ResignationRequestRepository(_context);
         TransSalaryCalculatorDetailsRepo = new TransSalaryCalculatorDetailsRepo(_context);
@@ -166,7 +167,8 @@ public class UnitOfWork : IUnitOfWork
         AllowanceRequests = new AllowanceRequestRepository(_context);
         SalaryIncreaseRequest = new SalaryIncreaseRequestRepository(_context);
         DelayPermission = new DelayPermissionRepository(_context);
-        ContractTerminationRequests = new ContractTerminationRequestRepository(_context);
+
+     
         EmployeeRequests = new EmployeeRequestsRepository(_context);
     }
 
