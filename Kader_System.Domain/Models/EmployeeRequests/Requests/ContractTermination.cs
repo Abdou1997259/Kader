@@ -7,6 +7,7 @@
         public int Id { get; set; } 
         public string? Notes { get; set; }      
         public string? Attachment { get; set; }
+        public string? AttachmentFileName { get; set; }
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public HrEmployee Employee { get; set; }

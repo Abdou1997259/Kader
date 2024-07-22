@@ -458,7 +458,14 @@ public static class SD
             }
             public class ContractTerminationRequest
             {
+                
+                public const string ListOContractTerminationRequest = "contractTerminationRequest/getListOfcontractTerminationRequests";
+                public const string GetAllContractTerminationRequest = "contractTerminationRequest/getAll";
                 public const string CreateContractTerminationRequest = "contractTerminationRequest/create";
+                public const string UpdateContractTerminationRequest = "contractTerminationRequest/update/{id}";
+                public const string RestoreContractTerminationRequest = "contractTerminationRequest/restore/{id}";
+                public const string GetContractTerminationRequestsById = "contractTerminationRequest/getById/{id}";
+                public const string DeleteContractTerminationRequest = "contractTerminationRequest/delete/{id}";
             }
         }
         public class Job
