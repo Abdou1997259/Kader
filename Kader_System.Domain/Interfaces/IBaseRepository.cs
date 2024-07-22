@@ -1,6 +1,7 @@
 ﻿public interface IBaseRepository<T> where T : class
 {
     Task<T> GetByIdAsync(int id);
+    Task<T> GetByIdWithNoTrackingAsync(int id);
 
     Task<IEnumerable<TType>> GetSpecificSelectAsync<TType>(
         Expression<Func<T, bool>> filter,
