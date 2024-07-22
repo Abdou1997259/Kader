@@ -17,6 +17,8 @@
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public virtual HrEmployee Employee { get; set; }
+
         public StatuesOfRequest StatuesOfRequest { get; set; }
+
     }
 }

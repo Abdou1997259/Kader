@@ -6,7 +6,6 @@ namespace Kader_System.Domain.Interfaces;
 
 public interface IUnitOfWork : IDisposable
 {
-
     IDatabaseTransaction BeginTransaction();
     ILoanRequestRepository LoanRequestRepository { get; }
     ITransLoanDetailsRepository TransLoanDetails { get; }
@@ -77,7 +76,7 @@ public interface IUnitOfWork : IDisposable
     IVacationRequestRepository VacationRequests { get; }
     IAllowanceRequestRepository AllowanceRequests { get; }
     ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; }
-    IContractTerminationRequestRepository ContractTerminationRequests { get; }  
+    IContractTerminationRequestRepository ContractTerminationRequests { get; }
     #endregion
     Task<int> CompleteAsync();
 }

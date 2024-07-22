@@ -6,11 +6,12 @@ using Kader_System.Domain.Models.EmployeeRequests.Requests;
 
 namespace Kader_System.Services.Services
 {
-    public class MappingProfile:Profile
+    public class MappingProfile : Profile
     {
         public MappingProfile()
         {
             CreateMap<DTOLeavePermissionRequest, LeavePermissionRequest>()
+
                        .ForMember(dest => dest.StatuesOfRequest.StatusMessage, opt => opt.Ignore())
                        .ForMember(dest => dest.StatuesOfRequest.ApporvalStatus, opt => opt.Ignore())
                        .ForMember(dest => dest.StatuesOfRequest.ApprovedDate, opt => opt.Ignore())

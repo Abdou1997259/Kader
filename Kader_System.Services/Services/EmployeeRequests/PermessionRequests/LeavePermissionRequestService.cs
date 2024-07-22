@@ -1,7 +1,10 @@
 
+using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
+using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 {
@@ -11,9 +14,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
         private readonly IFileServer _fileServer = fileServer;
-        public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName,HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        #region Create
+        public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
-            var newRequest = _mapper.Map<LeavePermissionRequest>(model);            
+            var newRequest = _mapper.Map<LeavePermissionRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
@@ -35,11 +39,13 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Read
         public async Task<Response<GetAllLeavePermissionRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
         {
+
             var list = await _unitOfWork.LeavePermissionRequest.GetWithJoinAsync(
                 x=>x.IsDeleted == model.IsDeleted &&
                 x.StatuesOfRequest.ApporvalStatus==null,"Employee");
             var query = from q in list
                        
+
                         select new
                         {
                             q.Id,
@@ -47,7 +53,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                             EmployeeName = Localization.Arabic == lang ? q.Employee.FirstNameAr : q.Employee.FirstNameEn,
                             q.LeaveTime,
                             q.BackTime,
+
                             q.StatuesOfRequest.ApporvalStatus,
+
                             Attachment = q.AttachmentPath,
 
                         };
