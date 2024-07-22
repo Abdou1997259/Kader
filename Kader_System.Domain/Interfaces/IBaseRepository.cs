@@ -16,6 +16,8 @@
      int? skip = null,
      int? take = null);
 
+    public Task<List<T>> GetAllWithIncludeAsync(string includeProperties);
+
     Task<bool> ExistAsync(int id);
 
     Task<bool> ExistAsync(Expression<Func<T, bool>> filter = null!, string includeProperties = null!);

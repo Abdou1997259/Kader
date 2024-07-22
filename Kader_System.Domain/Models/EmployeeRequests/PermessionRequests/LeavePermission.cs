@@ -18,8 +18,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.PermessionRequests
 
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
-        public HrEmployee Employee { get; set; } = default!;
-        public int Status { get; set; }
+        public virtual HrEmployee Employee { get; set; } = default!;
         public string? StatusMessage { get; set; }
         public int? ApporvalStatus { get; set; }
         public DateTime ApprovedDate { get; set; }

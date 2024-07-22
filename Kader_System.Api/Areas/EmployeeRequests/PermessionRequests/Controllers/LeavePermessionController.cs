@@ -1,3 +1,4 @@
+using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
@@ -29,6 +30,18 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         }
         #endregion
 
-
+        #region Read
+        [HttpGet(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.GetAllLeavePermessionasRequests)]
+        public async Task<IActionResult> GetAllLeavePermessionasRequests([FromBody] GetAllFilltrationForEmployeeRequests model)
+        {
+            
+            var response = await service.GetAllLeavePermissionRequestRequstsAsync(requestService.GetRequestHeaderLanguage,model,requestService.GetCurrentHost);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        #endregion
     }
 }
