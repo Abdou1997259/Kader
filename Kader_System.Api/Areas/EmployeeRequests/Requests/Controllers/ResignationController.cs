@@ -2,29 +2,29 @@
 using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
+using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 {
-
     [Area(Modules.EmployeeRequest)]
     [ApiExplorerSettings(GroupName = Modules.EmployeeRequest)]
     [ApiController]
     [Route("api/v1/")]
     [Authorize(Permissions.Setting.View)]
-    public class LoanRequestController(ILoanRequestService service, IRequestService requestService
+    public class ResignationController(IResignationRequestService service, IRequestService requestService
         , IWebHostEnvironment hostEnvironment, IFileServer fileServer) : ControllerBase
     {
         #region Retrieve
 
-        [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.ListOfLoanRequests)]
-        public async Task<IActionResult> ListOfLoanRequestsAsync() =>
-            Ok(await service.ListOfLoanRequest());
+        [HttpGet(ApiRoutes.EmployeeRequests.ResignationRequests.ListOfResignationRequests)]
+        public async Task<IActionResult> ListOfResignationRequestsAsync() =>
+            Ok(await service.ListOfResignationRequest());
 
-        [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetAllLoanRequests)]
-        public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetFilterationLoanRequest model) =>
-            Ok(await service.GetAllLoanRequest( model, requestService.GetCurrentHost));
-        [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetLoanRequestsById)]
-        public async Task<IActionResult> GetLoanRequestByIdAsync(int id)
+        [HttpGet(ApiRoutes.EmployeeRequests.ResignationRequests.GetAllResignationRequests)]
+        public async Task<IActionResult> GetAllResignationRequestsAsync([FromQuery] GetFillterationResignationRequest model) =>
+            Ok(await service.GetAllResignationRequest(model, requestService.GetCurrentHost));
+        [HttpGet(ApiRoutes.EmployeeRequests.ResignationRequests.GetResignationRequestsById)]
+        public async Task<IActionResult> GetResignationRequestByIdAsync(int id)
         {
             var response = await service.GetById(id);
             if (response.Check)
@@ -38,10 +38,10 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #region Insert
 
-        [HttpPost(ApiRoutes.EmployeeRequests.LoanRequests.CreateLoanRequests)]
-        public async Task<IActionResult> CreateLoanRequestAsync([FromForm] DTOLoanRequest model)
+        [HttpPost(ApiRoutes.EmployeeRequests.ResignationRequests.CreateResignationRequests)]
+        public async Task<IActionResult> CreateResignationRequestAsync([FromForm] DTOResignationRequest model)
         {
-            var response = await service.AddNewLoanRequest(model,hostEnvironment.WebRootPath,requestService.client_id,
+            var response = await service.AddNewResignationRequest(model, hostEnvironment.WebRootPath, requestService.client_id,
 
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
@@ -55,10 +55,10 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #region Update
 
-        [HttpPut(ApiRoutes.EmployeeRequests.LoanRequests.UpdateLoanRequests)]
-        public async Task<IActionResult> UpdateLoanRequestAsync([FromRoute] int id, [FromForm] DTOLoanRequest model)
+        [HttpPut(ApiRoutes.EmployeeRequests.ResignationRequests.UpdateResignationRequests)]
+        public async Task<IActionResult> UpdateResignationRequestAsync([FromRoute] int id, [FromForm] DTOResignationRequest model)
         {
-            var response = await service.UpdateLoanRequest(id, model,hostEnvironment.WebRootPath,requestService.client_id,
+            var response = await service.UpdateResignationRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
                 return Ok(response);
@@ -67,16 +67,16 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
 
-  
+
 
         #endregion
 
         #region Delete
 
-        [HttpDelete(ApiRoutes.EmployeeRequests.LoanRequests.DeleteLoanRequests)]
-        public async Task<IActionResult> DeleteAllowanceAsync(int id)
+        [HttpDelete(ApiRoutes.EmployeeRequests.ResignationRequests.DeleteResignationRequests)]
+        public async Task<IActionResult> DeleteResignationAsync(int id)
         {
-            var response = await service.DeleteLoanRequest(id);
+            var response = await service.DeleteResignationRequest(id);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -87,3 +87,4 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #endregion
     }
 }
+

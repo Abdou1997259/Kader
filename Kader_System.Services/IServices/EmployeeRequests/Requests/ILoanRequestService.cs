@@ -13,8 +13,8 @@ namespace Kader_System.Services.IServices.EmployeeRequests.Requests
     public interface ILoanRequestService
     {
 
-        public Task<Response<GetAllLoanRequestResponse>> GetAllLoanReques(GetFilterationLoanRequest model,string host);
-        public Task<Response<LoanRequest>> AddNewLoanReques(DTOLoanRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
+        public Task<Response<GetAllLoanRequestResponse>> GetAllLoanRequest(GetFilterationLoanRequest model,string host);
+        public Task<Response<LoanRequest>> AddNewLoanRequest(DTOLoanRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
         public Task<Response<LoanRequest>> UpdateLoanRequest(int id, DTOLoanRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
         public Task<Response<LoanRequest>> DeleteLoanRequest(int id);
         public Task<Response<DTOListOfLoanRequestResponse>> GetById(int id);    

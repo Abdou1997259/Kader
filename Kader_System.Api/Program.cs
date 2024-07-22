@@ -229,6 +229,7 @@ builder.Services.AddScoped<ILoanRequestService, LoanRequesService>();
 builder.Services.AddSingleton<IStaticDataRepository, StaticDataRepository>();
 builder.Services.AddScoped<IStructureMangement,StructureMangement>();
 builder.Services.AddScoped<IScreenService, ScreenService>();
+builder.Services.AddScoped<IResignationRequestService, ResignationRequestService>();
 builder.Services.AddScoped<IFileServer, FileServer>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDbInitSeedsService, DbInitSeedsService>();
