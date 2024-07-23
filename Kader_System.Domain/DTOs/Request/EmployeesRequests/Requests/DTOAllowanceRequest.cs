@@ -5,7 +5,7 @@
         [Required(ErrorMessage = "please Insert Employee Id")]
         public int EmployeeId { get; set; }
         [Required(ErrorMessage = "please Insert Amount ")]
-        public int amount { get; set; }
+        public int Amount { get; set; }
         [Required(ErrorMessage = "please Insert allowance id")]
         public int allowance_id { get; set; }
         [Required(ErrorMessage = "please Insert Vacation allowance type id")]

@@ -3,6 +3,7 @@ using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.Services.EmployeeRequests.Requests;
 
 namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 {
@@ -17,9 +18,28 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment;
         private readonly IFileServer _fileServer = fileServer;
 
+        #region Retrieve
+        [HttpGet(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.GetAllDelayPermissionRequests)]
+        public async Task<IActionResult> GetAllSalaryIncreaseRequests([FromQuery] GetAlFilterationDelayPermissionReuquest model) =>
+            Ok(await delayPermission.GetAllDelayPermissionRequsts(model, requestService.GetCurrentHost));
+
+
+
+        [HttpGet(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.GetDelayPermissionRequestsById)]
+        public async Task<IActionResult> GetDelayPermissionRequestsById(int id)
+        {
+            var response = await delayPermission.GetById(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        #endregion
+
         #region Insert
         [HttpPost(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.CreateDelayPermissionRequests)]
-        public async Task<IActionResult> CreateLeavePermessionasRequests([FromForm] DTODelayPermissionRequest model)
+        public async Task<IActionResult> AddNewDelayPermissionRequest([FromForm] DTODelayPermissionRequest model)
         {
             var response = await delayPermission.AddNewDelayPermissionRequest(model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
             if (response.Check)
@@ -30,19 +50,19 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         }
         #endregion
 
-        #region Read
-        [HttpGet(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.GetAllDelayPermissionRequests)]
-        public async Task<IActionResult> GetAllDelayPermissionRequests([FromQuery] GetAllFilltrationForEmployeeRequests model)
-        {
+        //#region Read
+        //[HttpGet(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.GetAllDelayPermissionRequests)]
+        //public async Task<IActionResult> GetAllDelayPermissionRequests([FromQuery] GetAllFilltrationForEmployeeRequests model)
+        //{
 
-            var response = await delayPermission.GetAllDelayPermissionRequsts(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost);
-            if (response.Check)
-                return Ok(response);
-            else if (!response.Check)
-                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
-        }
-        #endregion
+        //    var response = await delayPermission.GetAllDelayPermissionRequsts(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost);
+        //    if (response.Check)
+        //        return Ok(response);
+        //    else if (!response.Check)
+        //        return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        //    return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        //}
+        //#endregion
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.UpdateDelayPermissionRequests)]
         public async Task<IActionResult> UpdateLeavePermessionasRequests([FromForm] DTODelayPermissionRequest model)

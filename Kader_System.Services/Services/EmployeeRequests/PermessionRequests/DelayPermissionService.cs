@@ -1,10 +1,12 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
+using Kader_System.Services.Services.EmployeeRequests.Requests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +22,37 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         private readonly IMapper _mapper = mapper;
         private readonly IFileServer _fileServer = fileServer;
 
+
+        #region ListOfIncreaseSalaryRequest
+
+        public async Task<Response<IEnumerable<DTODelayPermissionRequest>>> ListOfDelayPermissionRequest()
+        {
+            var result = await unitOfWork.DelayPermission.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var msg = sharLocalizer[Localization.NotFound];
+            if (result == null)
+            {
+                return new()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+                };
+
+            }
+            var mappingResult = mapper.Map<IEnumerable<DTODelayPermissionRequest>>(result);
+
+            return new()
+            {
+                Data = mappingResult,
+                Msg = msg,
+            };
+        }
+        #endregion
+
+
+         
+
+        #region insert
 
         public async Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
@@ -38,6 +71,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
 
         }
+        #endregion
+
+
+
         #region Delete
         public async Task<Response<string>> DeleteDelayPermissionRequest(int id, string fullPath)
         {
@@ -68,8 +105,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #endregion
 
         #region Read
-        public async Task<Response<GetAllDelayRequestRespond>> GetAllDelayPermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
+        public async Task<Response<GetAllDelayRequestRespond>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host)
         {
+          
             Expression<Func<DelayPermission, bool>> filter = x => x.IsDeleted == false;
 
             var totalRecords = await _unitOfWork.DelayPermission.CountAsync(filter: filter);
@@ -131,15 +169,17 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #endregion
 
         #region Update
-        public async Task<Response<DTOLeavePermissionRequest>> UpdateDelayPermissionRequest(DTODelayPermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        public async  Task<Response<DtoListOfDelayRequestReponse>> UpdateDelayPermissionRequest(DTODelayPermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
+        
+       
             var newRequest = _mapper.Map<DelayPermission>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
 
             newRequest.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
 
-            var Oldrequest = await _unitOfWork.DelayPermission.GetByIdWithNoTrackingAsync(model.Id);
+            var Oldrequest = await _unitOfWork.DelayPermission.GetByIdWithNoTrackingAsync(model.EmployeeId);
             var full_path = Path.Combine(root, clientName, moduleName);
             if (Oldrequest.AtachmentPath != null)
                 _fileServer.RemoveFile(full_path, Oldrequest.AtachmentPath);
@@ -153,6 +193,40 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 Check = true,
             };
         }
+
+
+
         #endregion
+
+        #region GetById
+        public  async Task<Response<DtoListOfDelayRequestReponse>> GetById(int id)
+        {
+            var result = await unitOfWork.SalaryIncreaseRequest.GetByIdAsync(id);
+            if (result == null)
+            {
+                var msg = sharLocalizer[Localization.NotFoundData];
+
+                return new()
+                {
+                    Data = null,
+                    Msg = msg,
+                    Check = false
+                };
+
+            }
+
+            var mappingResult = mapper.Map<DtoListOfDelayRequestReponse>(result);
+
+            return new()
+            {
+                Data = mappingResult,
+                Check = true,
+
+            };
+        }
+
+        #endregion
+
+
     }
 }
