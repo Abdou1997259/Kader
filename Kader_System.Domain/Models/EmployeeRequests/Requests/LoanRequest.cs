@@ -18,11 +18,11 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         public string? AttachmentFileName { get; set; }
         public string? Notes { get; set; }
 
-        public int EmployeeId { get; set; }
+        public int? EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
-        public virtual HrEmployee Employee { get; set; }
+        public virtual HrEmployee? Employee { get; set; }
 
-        public StatuesOfRequest StatuesOfRequest { get; set; }
+        public StatuesOfRequest? StatuesOfRequest { get; set; }
 
     }
 }

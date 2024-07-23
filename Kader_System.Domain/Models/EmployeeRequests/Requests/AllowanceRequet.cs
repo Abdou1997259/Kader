@@ -25,7 +25,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         public virtual TransSalaryEffect SalaryEffect { get; set; }
 
 
-        public StatuesOfRequest StatuesOfRequest { get; set; }
+        public StatuesOfRequest? StatuesOfRequest { get; set; }
 
     }
 }
