@@ -221,7 +221,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9785f7a7-97d2-41f9-b463-b99d3b79e5bb",
+                            ConcurrencyStamp = "93cf285d-1669-4078-ab43-c94c3dd96617",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +229,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDsayZnBxcsWI5kxQcaG5lTQeF6H7w3CMP30GQNQwrPqhLG/1OLIeYNNy//xzBSG0g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEISWJGy36hrvwnPq8FBs/EBPYQw9t7Efj5sWr9A6t5dYJe4Tu9MdMccyr6/eJwxptg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "684c7ea7-6079-46ec-a05b-8e0e0f340dce",
+                            SecurityStamp = "52c90f72-3da6-4670-833a-c53ce8f15507",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -702,7 +702,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -753,7 +753,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<int>("InstallmentsCount")
@@ -810,7 +810,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -912,7 +912,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -4716,8 +4716,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
@@ -4754,8 +4753,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Navigation("Employee");
 
-                    b.Navigation("StatuesOfRequest")
-                        .IsRequired();
+                    b.Navigation("StatuesOfRequest");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.LoanRequest", b =>
@@ -4763,8 +4761,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
@@ -4810,8 +4807,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
@@ -4904,8 +4900,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Kader_System.Domain.Models.HR.HrVacationType", "VacationType")
                         .WithMany()

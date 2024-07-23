@@ -16,11 +16,11 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
             public string? Notes { get; set; }
             public string? Attachment { get; set; }
             public string? AttachmentFileName { get; set; }
-            public int EmployeeId { get; set; }
+            public int? EmployeeId { get; set; }
             [ForeignKey(nameof(EmployeeId))]
-            public HrEmployee Employee { get; set; }
+            public HrEmployee? Employee { get; set; }
 
-            public StatuesOfRequest StatuesOfRequest { get; set; }
+            public StatuesOfRequest? StatuesOfRequest { get; set; }
 
         
     }
