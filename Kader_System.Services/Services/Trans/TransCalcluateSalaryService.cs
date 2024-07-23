@@ -447,7 +447,7 @@ namespace Kader_System.Services.Services.Trans
                     .Select(t => new AdditionalValues
                     {
                         Id = t.TransId,
-                        Name = t.JournalType.ToString(),
+                        Name = Localization.Arabic==lang? t.TransNameAr:t.TransNameEn,
                         Value = t.CalculatedSalary
                     }).ToList(),
                 MinuesValues = new MinuesValues
@@ -549,7 +549,7 @@ namespace Kader_System.Services.Services.Trans
                     .Select(t => new AdditionalValues
                     {
                         Id = t.TransId,
-                        Name = t.JournalType.ToString(),
+                        Name = Localization.Arabic==lang?t.TransNameAr:t.TransNameEn,
                         Value = t.CalculatedSalary
                     }).ToList(),
                 MinuesValues = new MinuesValues
