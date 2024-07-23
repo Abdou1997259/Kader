@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.HR;
 
-[Table("Hr_CompanyTypes")]
+[Table("hr_company_types")]
 public class HrCompanyType : SelectList
 {
 }

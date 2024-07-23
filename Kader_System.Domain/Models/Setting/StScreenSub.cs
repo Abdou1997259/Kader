@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Setting;
 
-[Table("St_ScreensSubs")]
+[Table("st_screens_subs")]
 public class StScreenSub : BaseEntity
 {
     [Key]

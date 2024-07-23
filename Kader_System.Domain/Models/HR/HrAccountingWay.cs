@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.HR;
 
-[Table("Hr_SalaryCalculators")]
+[Table("hr_salary_calculators")]
 public class HrSalaryCalculator : SelectList
 {
 }

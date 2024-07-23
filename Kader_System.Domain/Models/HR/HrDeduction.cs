@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.HR;
 
-[Table("Hr_Deductions")]
+[Table("hr_deductions")]
 public class HrDeduction : BaseEntity
 {
     [Key]

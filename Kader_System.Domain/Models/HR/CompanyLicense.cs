@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.HR
 {
-    [Table("Hr_CompanyLicenses")]
+    [Table("hr_company_licenses")]
     public class CompanyLicense:BaseEntity
     {
         [Key]

@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Setting;
 
-[Table("St_Actions")]
+[Table("st_actions")]
 public class StAction : SelectList
 {
     

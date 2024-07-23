@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.HR;
 
-[Table("Hr_Jobs")]
+[Table("hr_jobs")]
 public class HrJob : BaseEntity
 {
     [Key]

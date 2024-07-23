@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.HR;
 
-[Table("Hr_Sections")]
+[Table("hr_sections")]
 public class HrSection : SelectList
 {
     public int CompanyId { get; set; }

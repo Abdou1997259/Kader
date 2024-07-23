@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Kader_System.Domain.Models.EmployeeRequests.PermessionRequests
 {
-    [Table("Hr_DelayPermission")]
+    [Table("hr_delay_permission")]
     public class DelayPermission : BaseEntity
     {
          [Key]

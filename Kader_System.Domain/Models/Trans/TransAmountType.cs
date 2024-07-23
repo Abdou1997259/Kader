@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Trans;
 
-[Table("Trans_AmountTypes")]
+[Table("trans_amount_types")]
 public class TransAmountType : SelectList
 {
 }

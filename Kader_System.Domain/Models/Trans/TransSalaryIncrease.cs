@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Trans;
 
-[Table("Trans_SalaryIncreases")]
+[Table("trans_salary_increases")]
 public class TransSalaryIncrease : BaseEntity
 {
     [Key]

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Kader_System.Domain.Models.EmployeeRequests.Requests
 {
-    [Table("hr_salaryIncreaseRequest")]
+    [Table("Hr_SalaryIncreaseRequest")]
 
     public class SalaryIncreaseRequest : BaseEntity
     {

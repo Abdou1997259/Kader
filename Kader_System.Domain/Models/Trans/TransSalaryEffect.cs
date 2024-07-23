@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Trans;
 
-[Table("Trans_SalaryEffects")]
+[Table("trans_salary_effects")]
 public class TransSalaryEffect : SelectList
 {
 }

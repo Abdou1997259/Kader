@@ -1,5 +1,6 @@
 ﻿namespace Kader_System.Domain.Models
 {
+    [Table("st_title")]
     public class Title:BaseEntity
     {
         [Key]

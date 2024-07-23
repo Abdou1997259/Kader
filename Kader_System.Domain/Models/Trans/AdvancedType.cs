@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Trans
 {
-    [Table("Advanced_Types")]
+    [Table("trans_advanced_types")]
     public class AdvancedType
     {
         public int Id { get; set; }
