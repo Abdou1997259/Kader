@@ -2,7 +2,7 @@
 /// <summary>
 /// بدلات العقد
 /// </summary>
-[Table("Hr_ContractAllowancesDetails")]
+[Table("hr_contract_allowances_details")]
 public class HrContractAllowancesDetail : BaseEntity
 {
     [Key]

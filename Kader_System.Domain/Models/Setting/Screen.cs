@@ -1,6 +1,7 @@
 ﻿
 namespace Kader_System.Domain.Models.Setting
 {
+    [Table("st_screen")]
     public class Screen:BaseEntity
     {
         [Key]

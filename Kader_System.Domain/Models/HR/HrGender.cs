@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.HR;
 
-[Table("Hr_Genders")]
+[Table("hr_genders")]
 public class HrGender : SelectList
 {
 }

@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.HR;
 
-[Table("Hr_EmployeeAttachments")]
+[Table("hr_employee_attachments")]
 public class HrEmployeeAttachment : BaseEntity
 {
     [Key]

@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Trans;
 
-[Table("Trans_Covenants")]
+[Table("trans_covenants")]
 public class TransCovenant : BaseEntity
 {
     [Key]

@@ -1,7 +1,7 @@
 ﻿
 namespace Kader_System.Domain.Models.Setting
 {
-
+    [Table("st_main_screen_tree")]
     public class MainScreenTree : BaseEntity
     {
         [Key]

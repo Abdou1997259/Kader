@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.HR;
 
-[Table("Hr_FingerPrints")]
+[Table("hr_finger_prints")]
 public class HrFingerPrint : BaseEntity
 {
     [Key]

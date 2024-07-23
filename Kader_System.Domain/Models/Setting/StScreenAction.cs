@@ -1,5 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Setting
 {
+    [Table("st_screen_action")]
     public class StScreenAction:BaseEntity
     {
         [Key]

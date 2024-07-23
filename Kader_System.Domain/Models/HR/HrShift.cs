@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.HR;
 
-[Table("Hr_Shifts")]
+[Table("hr_shifts")]
 public class HrShift : BaseEntity
 {
     [Key]

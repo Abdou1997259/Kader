@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Trans;
 
-[Table("Trans_Deductions")]
+[Table("trans_deductions")]
 public class TransDeduction : BaseEntity
 {
     [Key]

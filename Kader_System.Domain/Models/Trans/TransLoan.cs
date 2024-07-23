@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Trans
 {
-    [Table("Trans_Loan")]
+    [Table("trans_loan")]
     public class TransLoan : BaseEntity
     {
         [Key]

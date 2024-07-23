@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.HR;
 
-[Table("Hr_Departments")]
+[Table("hr_departments")]
 public class HrDepartment : BaseEntity
 {
     public int Id { get; set; }

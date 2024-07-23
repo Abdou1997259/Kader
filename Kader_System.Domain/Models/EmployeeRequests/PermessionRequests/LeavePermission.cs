@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Kader_System.Domain.Models.EmployeeRequests.PermessionRequests
 {
-    [Table("Hr_LeavePermissionRequest")]
+    [Table("hr_leave_permission_request")]
     public class LeavePermissionRequest:BaseEntity
     {
         [Key]
