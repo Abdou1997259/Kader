@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Any;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Kader_System.Api.Helpers.SwaggerHelper
@@ -16,9 +17,13 @@ namespace Kader_System.Api.Helpers.SwaggerHelper
                 Required = false,
                 Schema = new OpenApiSchema
                 {
-                    Type = "string"
+                    Type = "string",
+                    Default = new OpenApiString("Kader") // Set the default value here
+
+
                 },
-                Description = "Client ID Header"
+                Description = "Client ID Header",
+               
             });
         }
     }

@@ -135,4 +135,12 @@ public class HrEmployee : BaseEntity
 
 
     public ICollection<TransLoan> TransLoans { get; set; } = [];
+    public string SetName() { 
+      if(Thread.CurrentThread.CurrentCulture.Name== "en-US")
+        {
+            return this.FirstNameEn;
+        }
+        return this.FirstNameAr;
+    
+    }
 }

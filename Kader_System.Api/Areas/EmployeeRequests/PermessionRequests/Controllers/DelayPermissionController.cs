@@ -32,7 +32,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Read
         [HttpGet(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.GetAllDelayPermissionRequests)]
-        public async Task<IActionResult> GetAllDelayPermissionRequests([FromBody] GetAllFilltrationForEmployeeRequests model)
+        public async Task<IActionResult> GetAllDelayPermissionRequests([FromQuery] GetAllFilltrationForEmployeeRequests model)
         {
 
             var response = await delayPermission.GetAllDelayPermissionRequsts(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost);
