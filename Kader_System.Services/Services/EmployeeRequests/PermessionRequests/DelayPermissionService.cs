@@ -1,6 +1,7 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.DTOs.Response;
+using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
@@ -67,23 +68,17 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #endregion
 
         #region Read
-        public async Task<Response<GetAllLeavePermissionRequestResponse>> GetAllDelayPermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
+        public async Task<Response<GetAllDelayRequestRespond>> GetAllDelayPermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
         {
-            var list = await _unitOfWork.DelayPermission.GetWithJoinAsync(
-                x => x.IsDeleted == model.IsDeleted &&
-                x.StatuesOfRequest.ApporvalStatus == null, "Employee");
-            var query = from q in list
-                        select new
-                        {
-                            q.Id,
-                            RequestDate = q.Add_date,
-                            EmployeeName = Localization.Arabic == lang ? q.Employee.FirstNameAr : q.Employee.FirstNameEn,
-                            q.DelayHours,
-                            q.StatuesOfRequest.ApporvalStatus,
-                            Attachment = q.AtachmentPath,
-                        };
+            Expression<Func<DelayPermission, bool>> filter = x => x.IsDeleted == false;
+
+            var totalRecords = await _unitOfWork.DelayPermission.CountAsync(filter: filter);
+            var items = await _unitOfWork.DelayPermission.GetSpecificSelectAsync(filter, x => x, orderBy: x => x.OrderBy(x => x.Id),
+                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee"
+            );
+            var mappeditems = _mapper.Map<List<DtoListOfDelayRequestReponse>>(items);
             #region Pagination
-            var totalRecords = query.Count();
+
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
             if (model.PageNumber < 1)
@@ -95,10 +90,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 .ToList();
             #endregion
 
-            var result = new GetAllLeavePermissionRequestResponse
+            var result = new GetAllDelayRequestRespond
             {
                 TotalRecords = totalRecords,
-                Items = query.OrderByDescending(x => x.Id).Cast<object>().ToList(),
+                Items =mappeditems,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,

@@ -1,6 +1,7 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.DTOs.Response;
+using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Kader_System.Services.IServices.EmployeeRequests.PermessionRequests
         public Task<Response<string>> DeleteDelayPermissionRequest(int id, string fullPath);
         #endregion
         #region Read
-        public Task<Response<GetAllLeavePermissionRequestResponse>> GetAllDelayPermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host);
+        public Task<Response<GetAllDelayRequestRespond>> GetAllDelayPermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host);
         #endregion
         #region Update
         public Task<Response<DTOLeavePermissionRequest>> UpdateDelayPermissionRequest(DTODelayPermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest);

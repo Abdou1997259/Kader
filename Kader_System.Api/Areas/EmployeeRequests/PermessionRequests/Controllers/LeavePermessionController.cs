@@ -21,7 +21,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [HttpPost(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.CreateLeavePermessionasRequests)]
         public async Task<IActionResult> CreateLeavePermessionasRequests([FromForm] DTOCreateLeavePermissionRequest model)
         {
-            var response = await service.AddNewLeavePermissionRequest(model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
+                var response = await service.AddNewLeavePermissionRequest(model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -32,7 +32,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Read
         [HttpGet(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.GetAllLeavePermessionasRequests)]
-        public async Task<IActionResult> GetAllLeavePermessionasRequests([FromBody] GetAllFilltrationForEmployeeRequests model)
+        public async Task<IActionResult> GetAllLeavePermessionasRequests([FromQuery] GetAllFilltrationForEmployeeRequests model)
         {
 
             var response = await service.GetAllLeavePermissionRequsts(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost);
@@ -46,9 +46,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.UpdateLeavePermessionasRequests)]
-        public async Task<IActionResult> UpdateLeavePermessionasRequests([FromForm] DTOCreateLeavePermissionRequest model)
+        public async Task<IActionResult> UpdateLeavePermessionasRequests([FromRoute] int id,[FromForm] DTOCreateLeavePermissionRequest model)
         {
-            var response = await service.UpdateLeavePermissionRequest(model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
+            var response = await service.UpdateLeavePermissionRequest(id,model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

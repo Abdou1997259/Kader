@@ -1,5 +1,6 @@
 ﻿using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
+using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
@@ -14,10 +15,11 @@ namespace Kader_System.Services.Services
             CreateMap<LoanRequest, DTOLoanRequest>().ReverseMap();
             CreateMap<DTOListOfLoanRequestResponse, LoanRequest>().ReverseMap();
             CreateMap<CreateTransSalaryIncreaseRequest, TransSalaryIncrease>();
-            CreateMap<DTOLeavePermissionRequest, LeavePermissionRequest>();
+            CreateMap<DTOLeavePermissionRequest, LeavePermissionRequest>().ReverseMap();
             CreateMap<DTOAllowanceRequest, AllowanceRequest>();
             CreateMap<DTODelayPermissionRequest, DelayPermission>();
             CreateMap<DTOVacationRequest, VacationRequests>().ReverseMap();
+            CreateMap<DTOCreateLeavePermissionRequest,LeavePermissionRequest>().ReverseMap();
             CreateMap<DTOSalaryIncreaseRequest, SalaryIncreaseRequest>();
             CreateMap<DTOContractTerminationRequest, ContractTerminationRequest>();
             CreateMap<ContractTerminationRequest, DTOListOfContractTerminationResponse>().ReverseMap();
@@ -30,6 +32,8 @@ namespace Kader_System.Services.Services
             CreateMap<SalaryIncreaseRequest, DTOListOfSalaryIncreaseRepostory>().ReverseMap();
             CreateMap<AllowanceRequest, DTOAllowanceRequest>().ReverseMap();
             CreateMap<AllowanceRequest, DTOAllowanceRequestResponse>().ReverseMap();
+            CreateMap<LeavePermissionRequest, ListOfLeavePermissionsReponse>().ForMember(x => x.EmployeeName, d => d.MapFrom(S => S.Employee.SetName()));
+            CreateMap<DelayPermission, DtoListOfDelayRequestReponse>().ForMember(x => x.EmployeeName, x => x.MapFrom(d => d.Employee.SetName()));
             
         }
     }

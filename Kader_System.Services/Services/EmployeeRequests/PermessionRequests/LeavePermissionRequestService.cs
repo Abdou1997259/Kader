@@ -48,7 +48,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             }
 
             unitOfWork.LeavePermissionRequest.Remove(obj);
-            if(await unitOfWork.CompleteAsync() > 0)
+            await unitOfWork.CompleteAsync(); 
+            if ( !string.IsNullOrWhiteSpace(obj.AttachmentPath))
                 _fileServer.RemoveFile(fullPath,obj.AttachmentPath);
 
             return new()
@@ -63,23 +64,15 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Read
         public async Task<Response<GetAllLeavePermissionRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
         {
-      var list = await _unitOfWork.LeavePermissionRequest.GetWithJoinAsync(
-          x => x.IsDeleted == model.IsDeleted &&
-          x.StatuesOfRequest.ApporvalStatus == null, "Employee");
-      var query = from q in list
-                  select new
-                  {
-                      q.Id,
-                      RequestDate = q.Add_date,
-                      EmployeeName = Localization.Arabic == lang ? q.Employee.FirstNameAr : q.Employee.FirstNameEn,
-                      q.LeaveTime,
-                      q.BackTime,
-                      q.StatuesOfRequest.ApporvalStatus,
-                      Attachment = q.AttachmentPath,
+            Expression<Func<LeavePermissionRequest, bool>> filter = x => x.IsDeleted == false;
 
-                  };
+            var totalRecords = await _unitOfWork.LeavePermissionRequest.CountAsync(filter: filter);
+            var items=await _unitOfWork.LeavePermissionRequest.GetSpecificSelectAsync(filter,x=>x,orderBy:x=>x.OrderBy(x=>x.Id),
+                skip:(model.PageNumber-1)*model.PageSize,take:model.PageSize,includeProperties: "Employee"
+            );
+            var mappeditems = _mapper.Map<List<ListOfLeavePermissionsReponse>>(items);
             #region Pagination
-            var totalRecords = query.Count();
+        
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
             if (model.PageNumber < 1)
@@ -94,7 +87,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             var result = new GetAllLeavePermissionRequestResponse
             {
                 TotalRecords = totalRecords,
-                Items = query.OrderByDescending(x => x.Id).Cast<object>().ToList(),
+                Items = mappeditems,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -132,21 +125,36 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #endregion
 
         #region Update
-        public async Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        public async Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(int id ,DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
-            var newRequest = _mapper.Map<LeavePermissionRequest>(model);
+            
+
+
+            var leave = await _unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
+            if (leave == null)
+            {
+                var msg = _sharLocalizer[Localization.NotFound];
+                return new()
+                {
+                    Check = false,
+                    Msg = msg,
+                    Data = null
+                };
+            }
+            var mappedleave = _mapper.Map(model, leave);
+            _unitOfWork.LeavePermissionRequest.Update(mappedleave);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
 
-            newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
+            leave.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
 
-            var Oldrequest = await _unitOfWork.LeavePermissionRequest.GetByIdWithNoTrackingAsync(model.Id);
+            
             var full_path = Path.Combine(root, clientName, moduleName);
-            if (Oldrequest.AttachmentPath != null)
-                _fileServer.RemoveFile(full_path, Oldrequest.AttachmentPath);
+            if (model.Attachment != null)
+                _fileServer.RemoveFile(full_path, leave.AttachmentPath);
 
 
-            _unitOfWork.LeavePermissionRequest.Update(newRequest);
+            _unitOfWork.LeavePermissionRequest.Update(leave);
             var result = await _unitOfWork.CompleteAsync();
             return new()
             {

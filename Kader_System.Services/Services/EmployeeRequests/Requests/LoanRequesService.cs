@@ -46,7 +46,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         {
             Expression<Func<LoanRequest, bool>> filter = x => x.IsDeleted == model.IsDeleted;
             var totalRecords = await unitOfWork.LoanRequestRepository.CountAsync(filter: filter);
-            var data = await unitOfWork.LoanRequestRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var data = await unitOfWork.LoanRequestRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id), take: model.PageSize,
+                        skip: (model.PageNumber - 1) * model.PageSize);
             var msg = localizer[Localization.NotFound];
             if (data == null)
             {

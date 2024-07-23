@@ -7,7 +7,7 @@ namespace Kader_System.Services.IServices.EmployeeRequests.PermessionRequests
     {
         public Task<Response<GetAllLeavePermissionRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host);
         public Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest);
-        public Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest);
+        public Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(int id ,DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest);
         public Task<Response<string>> DeleteLeavePermissionRequest(int id, string fullPath);
 
     }
