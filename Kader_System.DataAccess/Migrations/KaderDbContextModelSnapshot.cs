@@ -221,7 +221,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "efccbe0a-961c-41cc-978e-252dda05308f",
+                            ConcurrencyStamp = "93cf285d-1669-4078-ab43-c94c3dd96617",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +229,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOG0e6t9aELNZIvFKOvjP70BXdr0trz6GerrzPNjqImhoRUCmZ9KxHYhCrOAbwuYuA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEISWJGy36hrvwnPq8FBs/EBPYQw9t7Efj5sWr9A6t5dYJe4Tu9MdMccyr6/eJwxptg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "59549db7-019e-4b0f-bce5-52f69b91b0de",
+                            SecurityStamp = "52c90f72-3da6-4670-833a-c53ce8f15507",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -676,7 +676,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.ToTable("hr_allowance_request");
                 });
 
-            modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.HrContractTermination", b =>
+            modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.ContractTerminationRequest", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -4571,11 +4571,11 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("int")
                                 .HasColumnName("ApporvalStatus");
 
-                            b1.Property<int>("ApprovedBy")
+                            b1.Property<int?>("ApprovedBy")
                                 .HasColumnType("int")
                                 .HasColumnName("ApprovedBy");
 
-                            b1.Property<DateTime>("ApprovedDate")
+                            b1.Property<DateTime?>("ApprovedDate")
                                 .HasColumnType("datetime2")
                                 .HasColumnName("ApprovedDate");
 
@@ -4583,7 +4583,7 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("nvarchar(max)")
                                 .HasColumnName("StatusMessage");
 
-                            b1.Property<int>("StatusTypes")
+                            b1.Property<int?>("StatusTypes")
                                 .HasColumnType("int")
                                 .HasColumnName("Status");
 
@@ -4618,11 +4618,11 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("int")
                                 .HasColumnName("ApporvalStatus");
 
-                            b1.Property<int>("ApprovedBy")
+                            b1.Property<int?>("ApprovedBy")
                                 .HasColumnType("int")
                                 .HasColumnName("ApprovedBy");
 
-                            b1.Property<DateTime>("ApprovedDate")
+                            b1.Property<DateTime?>("ApprovedDate")
                                 .HasColumnType("datetime2")
                                 .HasColumnName("ApprovedDate");
 
@@ -4630,7 +4630,7 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("nvarchar(max)")
                                 .HasColumnName("StatusMessage");
 
-                            b1.Property<int>("StatusTypes")
+                            b1.Property<int?>("StatusTypes")
                                 .HasColumnType("int")
                                 .HasColumnName("Status");
 
@@ -4677,11 +4677,11 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("int")
                                 .HasColumnName("ApporvalStatus");
 
-                            b1.Property<int>("ApprovedBy")
+                            b1.Property<int?>("ApprovedBy")
                                 .HasColumnType("int")
                                 .HasColumnName("ApprovedBy");
 
-                            b1.Property<DateTime>("ApprovedDate")
+                            b1.Property<DateTime?>("ApprovedDate")
                                 .HasColumnType("datetime2")
                                 .HasColumnName("ApprovedDate");
 
@@ -4689,7 +4689,7 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("nvarchar(max)")
                                 .HasColumnName("StatusMessage");
 
-                            b1.Property<int>("StatusTypes")
+                            b1.Property<int?>("StatusTypes")
                                 .HasColumnType("int")
                                 .HasColumnName("Status");
 
@@ -4711,7 +4711,7 @@ namespace Kader_System.DataAccess.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.HrContractTermination", b =>
+            modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.ContractTerminationRequest", b =>
                 {
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
                         .WithMany()
@@ -4721,18 +4721,18 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
-                            b1.Property<int>("HrContractTerminationId")
+                            b1.Property<int>("ContractTerminationRequestId")
                                 .HasColumnType("int");
 
                             b1.Property<int?>("ApporvalStatus")
                                 .HasColumnType("int")
                                 .HasColumnName("ApporvalStatus");
 
-                            b1.Property<int>("ApprovedBy")
+                            b1.Property<int?>("ApprovedBy")
                                 .HasColumnType("int")
                                 .HasColumnName("ApprovedBy");
 
-                            b1.Property<DateTime>("ApprovedDate")
+                            b1.Property<DateTime?>("ApprovedDate")
                                 .HasColumnType("datetime2")
                                 .HasColumnName("ApprovedDate");
 
@@ -4740,16 +4740,16 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("nvarchar(max)")
                                 .HasColumnName("StatusMessage");
 
-                            b1.Property<int>("StatusTypes")
+                            b1.Property<int?>("StatusTypes")
                                 .HasColumnType("int")
                                 .HasColumnName("Status");
 
-                            b1.HasKey("HrContractTerminationId");
+                            b1.HasKey("ContractTerminationRequestId");
 
                             b1.ToTable("hr_contract_termination");
 
                             b1.WithOwner()
-                                .HasForeignKey("HrContractTerminationId");
+                                .HasForeignKey("ContractTerminationRequestId");
                         });
 
                     b.Navigation("Employee");
@@ -4775,11 +4775,11 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("int")
                                 .HasColumnName("ApporvalStatus");
 
-                            b1.Property<int>("ApprovedBy")
+                            b1.Property<int?>("ApprovedBy")
                                 .HasColumnType("int")
                                 .HasColumnName("ApprovedBy");
 
-                            b1.Property<DateTime>("ApprovedDate")
+                            b1.Property<DateTime?>("ApprovedDate")
                                 .HasColumnType("datetime2")
                                 .HasColumnName("ApprovedDate");
 
@@ -4787,7 +4787,7 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("nvarchar(max)")
                                 .HasColumnName("StatusMessage");
 
-                            b1.Property<int>("StatusTypes")
+                            b1.Property<int?>("StatusTypes")
                                 .HasColumnType("int")
                                 .HasColumnName("Status");
 
@@ -4822,11 +4822,11 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("int")
                                 .HasColumnName("ApporvalStatus");
 
-                            b1.Property<int>("ApprovedBy")
+                            b1.Property<int?>("ApprovedBy")
                                 .HasColumnType("int")
                                 .HasColumnName("ApprovedBy");
 
-                            b1.Property<DateTime>("ApprovedDate")
+                            b1.Property<DateTime?>("ApprovedDate")
                                 .HasColumnType("datetime2")
                                 .HasColumnName("ApprovedDate");
 
@@ -4834,7 +4834,7 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("nvarchar(max)")
                                 .HasColumnName("StatusMessage");
 
-                            b1.Property<int>("StatusTypes")
+                            b1.Property<int?>("StatusTypes")
                                 .HasColumnType("int")
                                 .HasColumnName("Status");
 
@@ -4869,11 +4869,11 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("int")
                                 .HasColumnName("ApporvalStatus");
 
-                            b1.Property<int>("ApprovedBy")
+                            b1.Property<int?>("ApprovedBy")
                                 .HasColumnType("int")
                                 .HasColumnName("ApprovedBy");
 
-                            b1.Property<DateTime>("ApprovedDate")
+                            b1.Property<DateTime?>("ApprovedDate")
                                 .HasColumnType("datetime2")
                                 .HasColumnName("ApprovedDate");
 
@@ -4881,7 +4881,7 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("nvarchar(max)")
                                 .HasColumnName("StatusMessage");
 
-                            b1.Property<int>("StatusTypes")
+                            b1.Property<int?>("StatusTypes")
                                 .HasColumnType("int")
                                 .HasColumnName("Status");
 
@@ -4922,11 +4922,11 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("int")
                                 .HasColumnName("ApporvalStatus");
 
-                            b1.Property<int>("ApprovedBy")
+                            b1.Property<int?>("ApprovedBy")
                                 .HasColumnType("int")
                                 .HasColumnName("ApprovedBy");
 
-                            b1.Property<DateTime>("ApprovedDate")
+                            b1.Property<DateTime?>("ApprovedDate")
                                 .HasColumnType("datetime2")
                                 .HasColumnName("ApprovedDate");
 
@@ -4934,7 +4934,7 @@ namespace Kader_System.DataAccess.Migrations
                                 .HasColumnType("nvarchar(max)")
                                 .HasColumnName("StatusMessage");
 
-                            b1.Property<int>("StatusTypes")
+                            b1.Property<int?>("StatusTypes")
                                 .HasColumnType("int")
                                 .HasColumnName("Status");
 

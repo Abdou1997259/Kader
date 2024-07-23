@@ -18,7 +18,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region ListOfLoanRequest
         public async Task<Response<IEnumerable<DTOListOfContractTerminationResponse>>> ListOfContractTerminationRequest()
         {
-            var result = unitOfWork.ContractTerminationRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var result = unitOfWork.ContractTerminationRequest.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = _sharLocalizer[Localization.NotFound];
             if (result == null)
             {
@@ -43,9 +43,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedLoanRequest
         public async Task<Response<GetAllContractTermiantionResponse>> GetAllContractTerminationRequest(GetFilterationContractTerminationRequest model, string host)
         {
-            Expression<Func<HrContractTermination, bool>> filter = x => x.IsDeleted == model.IsDeleted;
-            var totalRecords = await unitOfWork.ContractTerminationRequests.CountAsync(filter: filter);
-            var data = unitOfWork.ContractTerminationRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            Expression<Func<ContractTerminationRequest, bool>> filter = x => x.IsDeleted == model.IsDeleted;
+            var totalRecords = await unitOfWork.ContractTerminationRequest.CountAsync(filter: filter);
+            var data = await unitOfWork.ContractTerminationRequest.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = _sharLocalizer[Localization.NotFound];
             if (data == null)
             {
@@ -115,7 +115,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region GetLoanRequetById
         public async Task<Response<DTOListOfContractTerminationResponse>> GetById(int id)
         {
-            var result = unitOfWork.ContractTerminationRequests.GetByIdAsync(id);
+            var result =await unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
             if (result == null)
             {
                 var msg = _sharLocalizer[Localization.NotFoundData];
@@ -140,7 +140,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddLoanRequest
-        public async Task<Response<HrContractTermination>> AddNewContractTerminationRequest(DTOContractTerminationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<ContractTerminationRequest>> AddNewContractTerminationRequest(DTOContractTerminationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
             var IsEmpolyeeExisted = await unitOfWork.Employees.ExistAsync(model.EmployeeId);
             if (!IsEmpolyeeExisted)
@@ -155,11 +155,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 };
 
             }
-            var newRequest = mapper.Map<HrContractTermination>(model);
+            var newRequest = mapper.Map<ContractTerminationRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
-            await unitOfWork.ContractTerminationRequests.AddAsync(newRequest);
+            await unitOfWork.ContractTerminationRequest.AddAsync(newRequest);
             var result = await unitOfWork.CompleteAsync();
             return new()
             {
@@ -171,9 +171,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region DeleteLoanRequets
-        public async Task<Response<HrContractTermination>> DeleteContracTermniationRequest(int id, string fullPath)
+        public async Task<Response<ContractTerminationRequest>> DeleteContracTermniationRequest(int id, string fullPath)
         {
-            var loanRequest = await unitOfWork.ContractTerminationRequests.GetByIdAsync(id);
+            var loanRequest = await unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
             if (loanRequest == null)
             {
@@ -189,7 +189,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             {
                 _fileServer.RemoveFile(fullPath, loanRequest.AttachmentFileName);
             }
-            unitOfWork.ContractTerminationRequests.Remove(loanRequest);
+            unitOfWork.ContractTerminationRequest.Remove(loanRequest);
             await unitOfWork.CompleteAsync();
             msg = _sharLocalizer[Localization.Deleted];
 
@@ -204,9 +204,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region UpdateLoanRequest
-        public async Task<Response<HrContractTermination>> UpdateContractTerminationRequest(int id, DTOContractTerminationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<ContractTerminationRequest>> UpdateContractTerminationRequest(int id, DTOContractTerminationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
-            var result = await unitOfWork.ContractTerminationRequests.GetByIdAsync(id);
+            var result = await unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
 
             if (result == null)
             {
@@ -227,7 +227,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
             }
-            unitOfWork.ContractTerminationRequests.Update(result);
+            unitOfWork.ContractTerminationRequest.Update(result);
             await unitOfWork.CompleteAsync();
 
             return new()

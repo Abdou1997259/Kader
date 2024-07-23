@@ -9,9 +9,9 @@ namespace Kader_System.Services.IServices.EmployeeRequests.Requests
     {
 
         public Task<Response<GetAllContractTermiantionResponse>> GetAllContractTerminationRequest(GetFilterationContractTerminationRequest model, string host);
-        public Task<Response<HrContractTermination>> AddNewContractTerminationRequest(DTOContractTerminationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
-        public Task<Response<HrContractTermination>> UpdateContractTerminationRequest(int id, DTOContractTerminationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
-        public Task<Response<HrContractTermination>> DeleteContracTermniationRequest(int id, string path);
+        public Task<Response<ContractTerminationRequest>> AddNewContractTerminationRequest(DTOContractTerminationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
+        public Task<Response<ContractTerminationRequest>> UpdateContractTerminationRequest(int id, DTOContractTerminationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None);
+        public Task<Response<ContractTerminationRequest>> DeleteContracTermniationRequest(int id, string path);
         public Task<Response<DTOListOfContractTerminationResponse>> GetById(int id);
         public Task<Response<IEnumerable<DTOListOfContractTerminationResponse>>> ListOfContractTerminationRequest();
     }
