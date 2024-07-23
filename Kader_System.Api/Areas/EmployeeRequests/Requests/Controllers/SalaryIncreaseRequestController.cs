@@ -23,6 +23,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.GetAllSalaryIncreaseRequests)]
         public async Task<IActionResult> GetAllSalaryIncreaseRequests([FromQuery] GetAlFilterationForSalaryIncreaseRequest model) =>
             Ok(await increaseRequestService.GetAllSalaryIncreaseRequest(model, requestService.GetCurrentHost));
+
+
+
         [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.GetSalaryIncreaseId)]
         public async Task<IActionResult> GetSalaryIncreaseId(int id)
         {

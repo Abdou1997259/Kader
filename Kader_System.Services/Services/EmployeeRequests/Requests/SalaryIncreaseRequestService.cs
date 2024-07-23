@@ -23,7 +23,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
         public async Task<Response<IEnumerable<DTOSalaryIncreaseRequest>>> ListOfSalaryIncreaseRequest()
         {
-            var result = unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var result =  await unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = localizer[Localization.NotFound];
             if (result == null)
             {
@@ -50,11 +50,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
         public async Task<Response<GetSalaryIncreseRequestResponse>> GetAllSalaryIncreaseRequest(GetAlFilterationForSalaryIncreaseRequest model, string host)
         {
-            
-        
             Expression<Func<SalaryIncreaseRequest, bool>> filter = x => x.IsDeleted == model.IsDeleted;
             var totalRecords = await unitOfWork.SalaryIncreaseRequest.CountAsync(filter: filter);
-            var data = unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var data = await unitOfWork.SalaryIncreaseRequest.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = localizer[Localization.NotFound];
             if (data == null)
             {
@@ -126,7 +124,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<DTOListOfSalaryIncreaseRepostory>> GetById(int id)
 
         {
-            var result = unitOfWork.SalaryIncreaseRequest.GetByIdAsync(id);
+            var result = await unitOfWork.SalaryIncreaseRequest.GetByIdAsync(id);
             if (result == null)
             {
                 var msg = localizer[Localization.NotFoundData];

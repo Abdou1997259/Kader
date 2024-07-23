@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class AllowanceRequestService(  IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
+    public class AllowanceRequestService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -102,7 +102,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 {
                     Data = new()
                     {
-                        Items = null,
+                        Items = [],
                     },
                     Error = resultMsg,
                     Msg = resultMsg
