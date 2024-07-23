@@ -20,7 +20,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         [ForeignKey(nameof(EmployeeId))]
         public HrEmployee employee { get; set; }
 
-        public StatuesOfRequest StatuesOfRequest { get; set; }
+        public StatuesOfRequest? StatuesOfRequest { get; set; }
 
 
     }
