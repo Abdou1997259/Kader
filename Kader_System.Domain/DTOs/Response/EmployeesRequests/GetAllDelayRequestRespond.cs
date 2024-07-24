@@ -15,9 +15,10 @@ namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
     {
         public int Id { get; set; }
         public string EmployeeName{ get; set; }
-        public int amount { get; set; }
+        public int Amount { get; set; }
         public string? Notes { get; set; }
         public string? Atachment { get; set; }
+        public double HoursDelay { get; set; }
 
 
 

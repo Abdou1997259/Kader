@@ -24,7 +24,7 @@ namespace Kader_System.Services.IServices.EmployeeRequests.PermessionRequests
         #endregion
        
         #region Update
-        public Task<Response<DtoListOfDelayRequestReponse>> UpdateDelayPermissionRequest(DTODelayPermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest);
+        public Task<Response<DtoListOfDelayRequestReponse>> UpdateDelayPermissionRequest(int id,DTODelayPermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest);
         #endregion
 
         #region GetById

@@ -433,7 +433,7 @@ public static class SD
                 public const string CreateDelayPermissionRequests = "delayPermissionRequests/create";
                 public const string GetAllDelayPermissionRequests = "delayPermissionRequests/getAll";
                 public const string GetDelayPermissionRequestsById = "delayPermissionRequests/getById/{id}";
-                public const string UpdateDelayPermissionRequests = "delayPermissionRequests/update";
+                public const string UpdateDelayPermissionRequests = "delayPermissionRequests/update/{id}";
                 public const string DeleteDelayPermissionRequests = "delayPermissionRequests/delete/{id}";
             }
             public class VacationRequests

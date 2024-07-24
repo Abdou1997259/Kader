@@ -128,8 +128,6 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(int id ,DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
             
-
-
             var leave = await _unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
             if (leave == null)
             {

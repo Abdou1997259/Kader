@@ -65,9 +65,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         //#endregion
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.UpdateDelayPermissionRequests)]
-        public async Task<IActionResult> UpdateLeavePermessionasRequests([FromForm] DTODelayPermissionRequest model)
+        public async Task<IActionResult> UpdateDelayPermissionRequest([FromRoute] int id, [FromForm] DTODelayPermissionRequest model)
         {
-            var response = await delayPermission.UpdateDelayPermissionRequest(model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
+            var response = await delayPermission.UpdateDelayPermissionRequest(id,model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
