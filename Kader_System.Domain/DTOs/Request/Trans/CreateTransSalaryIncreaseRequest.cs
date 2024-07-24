@@ -2,7 +2,6 @@
 {
     public class CreateTransSalaryIncreaseRequest
     {
-        public int Id { get; set; }
         public double Amount { get; set; }
         public string? Notes { get; set; }
         public int Increase_type { get; set; }

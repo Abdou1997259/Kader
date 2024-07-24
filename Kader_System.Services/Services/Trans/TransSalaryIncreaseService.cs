@@ -191,7 +191,7 @@ namespace Kader_System.Services.Services.Trans
                          salrayIncreaseTypeId = x.Increase_type,
                          salrayIncreaseTypeName = x.ValueType.Name
                      },
-                     orderBy: x => x.OrderByDescending(x => x.Id), includeProperties: "HrEmployee")).ToList(),
+                     orderBy: x => x.OrderByDescending(x => x.Id), includeProperties: "Employee")).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -295,9 +295,9 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<CreateTransSalaryIncreaseRequest>> UpdateTransSalaryIncreaseAsync(CreateTransSalaryIncreaseRequest model)
+        public async Task<Response<CreateTransSalaryIncreaseRequest>> UpdateTransSalaryIncreaseAsync( int id, CreateTransSalaryIncreaseRequest model)
         {
-            var obj = await _unitOfWork.TransSalaryIncrease.GetByIdAsync(model.Id);
+            var obj = await _unitOfWork.TransSalaryIncrease.GetByIdAsync(id);
             var empSalary = (await _unitOfWork.Employees.GetByIdAsync(model.Employee_id)).FixedSalary;
             if (obj is null)
             {

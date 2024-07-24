@@ -18,7 +18,7 @@ namespace Kader_System.Services.IServices
 
         public Task<Response<TransSalaryIncreaseResponse>> GetTransSalaryIncreaseByIdAsync(int id, string lang);
 
-        public Task<Response<CreateTransSalaryIncreaseRequest>> UpdateTransSalaryIncreaseAsync(CreateTransSalaryIncreaseRequest model);
+        public Task<Response<CreateTransSalaryIncreaseRequest>> UpdateTransSalaryIncreaseAsync(int id, CreateTransSalaryIncreaseRequest model);
         public Task<Response<object>> RestoreTransSalaryIncreaseAsync(int id);
         public Task<Response<string>> DeleteTransSalaryIncreaseAsync(int id);
 
