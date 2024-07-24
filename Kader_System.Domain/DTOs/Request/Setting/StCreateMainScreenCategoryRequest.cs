@@ -10,4 +10,7 @@ public class StCreateMainScreenCategoryRequest
 
     [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length)]
     public IFormFile? Screen_main_image { get; set; }
+
+    public int Screen_main_id { get; set; }
+
 }

@@ -221,7 +221,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0246e826-de5f-48e7-bba0-45b95e31edf9",
+                            ConcurrencyStamp = "b8f7d58f-2caf-4722-a1a9-afdf73aa2baf",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +229,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAED9PKI+LnjlJS8kfzjA4oie6SmlqG//QsqWxx0JgDUwYKbdoPt18et9iKiA8vtXVkg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEO9oMnjZs9sgWiLvFy3MFFs6a8JLgOJaI7fOIGM4A+rP9AV/X2K35NYL8W5m0No2ww==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f14e30f7-e7d4-456b-b482-914f0aed6abf",
+                            SecurityStamp = "c178e3f5-e585-473d-8087-a6e03847089b",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"

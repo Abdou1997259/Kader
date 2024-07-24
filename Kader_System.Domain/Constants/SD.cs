@@ -105,22 +105,22 @@ public static class SD
     {
         public class MainScreenCategory
         {
-            public const string ListOfMainScreensCategories = "screen_main/getListOfMainScreens";
-            public const string GetAllMainScreenCategories = "screen_main";
-            public const string CreateMainScreenCategory = "screen_main";
-            public const string UpdateMainScreenCategory = "screen_main/{id}";
-            public const string GetMainScreenCategoryById = "screen_main/{id}";
-            public const string DeleteMainScreenCategory = "screen_main/{id}";
+            public const string ListOfMainScreensCategories = "screen_cat/getListOfMainScreens";
+            public const string GetAllMainScreenCategories = "screen_cat";
+            public const string CreateMainScreenCategory = "screen_cat";
+            public const string UpdateMainScreenCategory = "screen_cat/{id}";
+            public const string GetMainScreenCategoryById = "screen_cat/{id}";
+            public const string DeleteMainScreenCategory = "screen_cat/{id}";
         }
 
         public class MainScreen
         {
-            public const string ListOfMainScreens = "screen_cat/getListOfMainScreens";
-            public const string GetAllMainScreens = "screen_cat";
-            public const string CreateMainScreen = "screen_cat";
-            public const string UpdateMainScreen = "screen_cat/{id}";
-            public const string GetMainScreenById = "screen_cat/{id}";
-            public const string DeleteMainScreen = "screen_cat/{id}";
+            public const string ListOfMainScreens = "main_screen/getListOfMainScreens";
+            public const string GetAllMainScreens = "main_screen";
+            public const string CreateMainScreen = "main_screen";
+            public const string UpdateMainScreen = "main_screen/{id}";
+            public const string GetMainScreenById = "main_screen/{id}";
+            public const string DeleteMainScreen = "main_screen/{id}";
         }
 
         public class Screen

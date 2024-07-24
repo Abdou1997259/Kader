@@ -2,5 +2,5 @@
 
 public class StUpdateMainScreenCategoryRequest : StCreateMainScreenCategoryRequest
 {
-    public int Screen_title_id { get; set; }
+    //public int Screen_title_id { get; set; }
 }
