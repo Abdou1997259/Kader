@@ -287,6 +287,7 @@ namespace Kader_System.Domain.Constant
                 CompanyName = Localization.Arabic == lang ?
                 (string)typeof(HrCompany).GetProperty("NameAr")?.GetValue(companyNode.Value) :
                 (string)typeof(HrCompany).GetProperty("NameEn")?.GetValue(companyNode.Value),
+                ManagerId = (int?)typeof(HrCompany).GetProperty("ManagerId")?.GetValue(companyNode.Value) ?? 0,
                 Children = companyNode.Children.Select(managementNode => new ManagementResponse
                 {
                     ManagementId = (int)typeof(HrManagement).GetProperty("Id")?.GetValue(managementNode.Value),
@@ -294,20 +295,25 @@ namespace Kader_System.Domain.Constant
                     (string)typeof(HrManagement).GetProperty("NameAr")?.GetValue(managementNode.Value) :
                     (string)typeof(HrManagement).GetProperty("NameEn")?.GetValue(managementNode.Value),
                     ManagerId = (int?)typeof(HrManagement).GetProperty("ManagerId")?.GetValue(managementNode.Value)?? 0,
-                
+                    ManagerName = (string?)(typeof(HrManagement).GetProperty("Manager")?.GetValue(managementNode.Value) as HrEmployee)?.SetName() ?? "",
                     Children = managementNode.Children.Select(departmentNode => new DepartmentResponse
                     {
                         DepartmentId = (int)typeof(HrDepartment).GetProperty("Id")?.GetValue(departmentNode.Value),
                         DepartmentName = (string)typeof(HrDepartment).GetProperty("NameAr")?.GetValue(departmentNode.Value),
                         ManagementId= (int?)typeof(HrDepartment).GetProperty("ManagementId")?.GetValue(departmentNode.Value) ??0,
                         ManagerId = (int?)typeof(HrDepartment).GetProperty("ManagerId")?.GetValue(departmentNode.Value) ?? 0,
-          
+                        ManagerName = (string?)(typeof(HrDepartment).GetProperty("Manager")?.GetValue(departmentNode.Value) as HrEmployee)?.SetName() ?? "",
                         Children = departmentNode.Children.Select(employeeNode => new EmployeeResponse
                         {
                             EmployeeId = (int)typeof(HrEmployee).GetProperty("Id")?.GetValue(employeeNode.Value),
                             EmployeeName = Localization.Arabic == lang ?
                             (string)typeof(HrEmployee).GetProperty("FullNameAr")?.GetValue(employeeNode.Value) :
                             (string)typeof(HrEmployee).GetProperty("FullNameEn")?.GetValue(employeeNode.Value),
+                            JobName=
+                            Localization.Arabic == lang ?
+                            (string?)(typeof(HrEmployee).GetProperty("Job")?.GetValue(employeeNode.Value) as HrJob)?.NameAr ?? "":
+                            (string?)(typeof(HrEmployee).GetProperty("Job")?.GetValue(employeeNode.Value) as HrJob)?.NameEn ?? ""
+
                         }).ToList()
                     }).ToList()
                 }).ToList()

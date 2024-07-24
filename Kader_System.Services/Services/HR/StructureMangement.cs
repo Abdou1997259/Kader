@@ -23,9 +23,9 @@ namespace Kader_System.Services.Services.HR
             // Step 1: Fetch the company and check if it exists
             var company = await _unitOfWork.Companies.GetByIdAsync(companyId);
             var companies=await _unitOfWork.Companies.GetAllAsync();    
-            var emps=await _unitOfWork.Employees.GetAllAsync(); 
-            var mangs=await _unitOfWork.Managements.GetAllAsync();
-            var departs = await _unitOfWork.Departments.GetAllAsync();
+            var emps=await _unitOfWork.Employees.GetSpecificSelectAsync(x=>true,x=>x); 
+            var mangs=await _unitOfWork.Managements.GetSpecificSelectAsync(x=>true,x=>x,includeProperties: "Manager");
+            var departs = await _unitOfWork.Departments.GetSpecificSelectAsync(x=>true,x=>x,includeProperties: "Manager");
             if (company == null)
             {
                 var msg = $"{_sharLocalizer[Localization.Company]} {_sharLocalizer[Localization.NotFound]}";
@@ -45,7 +45,7 @@ namespace Kader_System.Services.Services.HR
             foreach (var item in managements)
             {
 
-                var management = item.Management;
+                var management = mangs.FirstOrDefault(x=>x.Id==item.Management.Id);
                 var departments = item.Departments;
 
                 var managementNode = tree.Add(management);
@@ -53,13 +53,16 @@ namespace Kader_System.Services.Services.HR
                 // Add departments to the management node
                 foreach (var department in departments)
                 {
+                    var depart= departs.FirstOrDefault(x=>x.Id== department.Id);
                     var departmentNode = managementNode.Add(department);
 
                     // Step 4: Fetch employees for each department and add them to the tree
                     var employees = await _unitOfWork.Employees
                         .GetSpecificSelectAsync(
                             e => e.DepartmentId == department.Id,
-                            e => e
+                            e => e,
+                            includeProperties: "Job"
+
                         );
 
                     foreach (var employee in employees)

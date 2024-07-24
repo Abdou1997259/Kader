@@ -16,6 +16,9 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     #region Data Sets
 
     public DbSet<SpCacluateSalary> SpCacluateSalariesModel { get; set; }
+    public DbSet<UserPermission> UserPermissions { get; set; }
+
+
     public DbSet<SpCaclauateSalaryDetails> SpCaclauateSalaryDetailsModel { get; set; }
     public DbSet<SpCaclauateSalaryDetailedTrans> SpCaclauateSalaryDetailedTransModel { get; set; }
 

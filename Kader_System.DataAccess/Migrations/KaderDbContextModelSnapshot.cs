@@ -221,7 +221,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0246e826-de5f-48e7-bba0-45b95e31edf9",
+                            ConcurrencyStamp = "7e71be53-7458-4890-b049-7a5dd403b22c",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +229,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAED9PKI+LnjlJS8kfzjA4oie6SmlqG//QsqWxx0JgDUwYKbdoPt18et9iKiA8vtXVkg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPn1Oo4FVhRX/Uf7SvyIWdcc+SwoATaIoXg5lEI5exOrlPW6DtHSdAFV5rQHset9RQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f14e30f7-e7d4-456b-b482-914f0aed6abf",
+                            SecurityStamp = "57e0a712-e842-4bfe-a9a4-f636dccea4a7",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -3451,6 +3451,30 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("ScreenSubId");
 
                     b.ToTable("st_sub_main_screen_actions");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Setting.UserPermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Permission")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SubScreenId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("st_user_permissions");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Title", b =>
