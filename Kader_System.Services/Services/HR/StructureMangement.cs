@@ -44,6 +44,7 @@ namespace Kader_System.Services.Services.HR
 
             foreach (var item in managements)
             {
+
                 var management = item.Management;
                 var departments = item.Departments;
 
