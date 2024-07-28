@@ -1,10 +1,22 @@
-﻿namespace Kader_System.Services.Services.Setting;
+﻿
+using Kader_System.DataAccesss.DbContext;
+using Microsoft.EntityFrameworkCore;
+
+namespace Kader_System.Services.Services.Setting;
 
 public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : IMainScreenService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
+
+    private readonly KaderDbContext _dbContext;
+
+    //public MainScreenService(KaderDbContext dbContext)
+    //{
+    //    _dbContext = dbContext;
+    //}
+
 
     #region Main screen
 
@@ -226,7 +238,18 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-   
+    public async Task<List<StMainScreen>> GetMainScreensWithRelatedDataAsync()
+    {
+ 
+                return await _dbContext.MainScreenCategories
+            .Include(ms => ms.CategoryScreen)
+                .ThenInclude(cs => cs.subScreen)
+            .ToListAsync();
+    }
+
+  
+
+
 
 
 

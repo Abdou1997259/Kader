@@ -13,5 +13,5 @@ public class StMainScreenCat : BaseEntity
 
     public int MainScreenId { get; set; }
     [ForeignKey(nameof(MainScreenId))]
-    public StMainScreen MainScreen { get; set; } = default!;
+    public StScreenSub subScreen { get; set; } = default!;
 }

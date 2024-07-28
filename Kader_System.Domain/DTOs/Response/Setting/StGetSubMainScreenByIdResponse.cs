@@ -9,6 +9,7 @@ public class StGetSubMainScreenByIdResponse
     public required string Url { get; set; }
     public required string Name { get; set; }
     public List<ActionsData> Actions { get; set; } = [];
+    public List<Title> Titles { get; set; } = [];
 }
 public class ActionsData : SpecificSelectListResponse
 {

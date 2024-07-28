@@ -117,6 +117,7 @@ public static class SD
         public class MainScreen
         {
             public const string ListOfMainScreens = "screen_main/getListOfMainScreens";
+            public const string GetMainScreensWithRelatedData = "screen_main"; 
             public const string GetAllMainScreens = "screen_main";
             public const string CreateMainScreen = "screen_main";
             public const string UpdateMainScreen = "screen_main/update/{id}";
@@ -140,9 +141,9 @@ public static class SD
             public const string ListOfSubMainScreens = "screen_sub/getListOfSubMainScreens";
             public const string GetAllSubMainScreens = "screen_sub";
             public const string CreateSubMainScreen = "screen_sub";
-            public const string UpdateSubMainScreen = "screen_sub/{id}";
-            public const string GetSubMainScreenById = "screen_sub/{id}";
-            public const string DeleteSubMainScreen = "screen_sub/{id}";
+            public const string UpdateSubMainScreen = "screen_sub/update/{id}";
+            public const string GetSubMainScreenById = "screen_sub/getById/{id}";
+            public const string DeleteSubMainScreen = "screen_sub/delete/{id}";
         }
         public class StResponsiblity
         {
