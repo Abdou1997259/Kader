@@ -2,6 +2,13 @@ namespace Kader_System.Domain.Models.Auth;
 
 public class ApplicationUser : IdentityUser, IBaseEntity
 {
+   
+    public string FullName { get; set; }
+   
+    public int TitleId { get; set; }
+    public int JobId { get; set; }
+    public int CompanyId { get; set; }
+    public int CompanyYear { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime? Add_date { get; set; }
     public DateTime? UpdateDate { get; set; }
@@ -10,6 +17,8 @@ public class ApplicationUser : IdentityUser, IBaseEntity
     public string? UpdateBy { get; set; }
     public string? DeleteBy { get; set; }
     public bool IsActive { get; set; } = true;
+
+    public string? ImagePath { get; set; }
 
     public required string VisiblePassword { get; set; }
 

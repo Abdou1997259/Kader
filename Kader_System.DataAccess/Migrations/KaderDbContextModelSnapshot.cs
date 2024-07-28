@@ -138,6 +138,12 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompanyYear")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -155,11 +161,21 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -186,6 +202,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TitleId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -221,17 +240,24 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7e71be53-7458-4890-b049-7a5dd403b22c",
+                            CompanyId = 3,
+                            CompanyYear = 2013,
+                            ConcurrencyStamp = "20adeb7f-a265-4279-936f-cf12d27cb4f5",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
+                            FullName = "Mohamed abdou",
+                            ImagePath = "/",
                             IsActive = true,
                             IsDeleted = false,
+                            JobId = 0,
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPn1Oo4FVhRX/Uf7SvyIWdcc+SwoATaIoXg5lEI5exOrlPW6DtHSdAFV5rQHset9RQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEByxsnUvgtjgaA8hMCif00MhoFcZDhdoq2fCowOxtPYM1PahCT+3mLhxU/LFA1qzCA==",
+                            PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "57e0a712-e842-4bfe-a9a4-f636dccea4a7",
+                            SecurityStamp = "e864ed61-9e2c-4344-904a-bdd68c49bf45",
+                            TitleId = 1,
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -307,7 +333,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Auth_UserDevices", (string)null);
+                    b.ToTable("Auth_UserDevices");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Auth.ApplicationUserLogin", b =>
@@ -452,7 +478,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("User_Id");
 
-                    b.ToTable("Auth_RefreshTokens", (string)null);
+                    b.ToTable("Auth_RefreshTokens");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.HrEmployeeRequests", b =>
@@ -504,7 +530,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_employee_request", (string)null);
+                    b.ToTable("hr_employee_request");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.PermessionRequests.DelayPermission", b =>
@@ -555,7 +581,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("hr_delay_permission", (string)null);
+                    b.ToTable("hr_delay_permission");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.PermessionRequests.LeavePermissionRequest", b =>
@@ -609,7 +635,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("hr_leave_permission_request", (string)null);
+                    b.ToTable("hr_leave_permission_request");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.AllowanceRequest", b =>
@@ -673,7 +699,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("allowance_type_id");
 
-                    b.ToTable("hr_allowance_request", (string)null);
+                    b.ToTable("hr_allowance_request");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.ContractTerminationRequest", b =>
@@ -724,7 +750,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("hr_contract_termination", (string)null);
+                    b.ToTable("hr_contract_termination");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.LoanRequest", b =>
@@ -781,7 +807,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("hr_loan_request", (string)null);
+                    b.ToTable("hr_loan_request");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.ResignationRequest", b =>
@@ -832,7 +858,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("hr_resignation_request", (string)null);
+                    b.ToTable("hr_resignation_request");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.SalaryIncreaseRequest", b =>
@@ -883,7 +909,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Hr_SalaryIncreaseRequest", (string)null);
+                    b.ToTable("Hr_SalaryIncreaseRequest");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.VacationRequests", b =>
@@ -942,7 +968,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("VacationTypeId");
 
-                    b.ToTable("hr_vacation_requests", (string)null);
+                    b.ToTable("hr_vacation_requests");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.CompanyLicense", b =>
@@ -992,7 +1018,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("hr_company_licenses", (string)null);
+                    b.ToTable("hr_company_licenses");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrAllowance", b =>
@@ -1040,7 +1066,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_allowances", (string)null);
+                    b.ToTable("hr_allowances");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrBenefit", b =>
@@ -1088,7 +1114,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_benefits", (string)null);
+                    b.ToTable("hr_benefits");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrCompany", b =>
@@ -1148,7 +1174,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("CompanyTypeId");
 
-                    b.ToTable("hr_companies", (string)null);
+                    b.ToTable("hr_companies");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrCompanyContract", b =>
@@ -1196,7 +1222,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("hr_company_contracts", (string)null);
+                    b.ToTable("hr_company_contracts");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrCompanyType", b =>
@@ -1241,7 +1267,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_company_types", (string)null);
+                    b.ToTable("hr_company_types");
 
                     b.HasData(
                         new
@@ -1324,7 +1350,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("hr_contracts", (string)null);
+                    b.ToTable("hr_contracts");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrContractAllowancesDetail", b =>
@@ -1377,7 +1403,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("ContractId");
 
-                    b.ToTable("hr_contract_allowances_details", (string)null);
+                    b.ToTable("hr_contract_allowances_details");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrDeduction", b =>
@@ -1425,7 +1451,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_deductions", (string)null);
+                    b.ToTable("hr_deductions");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrDepartment", b =>
@@ -1480,7 +1506,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("ManagerId");
 
-                    b.ToTable("hr_departments", (string)null);
+                    b.ToTable("hr_departments");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrEmployee", b =>
@@ -1690,7 +1716,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("VacationId");
 
-                    b.ToTable("hr_employees", (string)null);
+                    b.ToTable("hr_employees");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrEmployeeAttachment", b =>
@@ -1740,7 +1766,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("hr_employee_attachments", (string)null);
+                    b.ToTable("hr_employee_attachments");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrEmployeeType", b =>
@@ -1785,7 +1811,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_employee_types", (string)null);
+                    b.ToTable("hr_employee_types");
 
                     b.HasData(
                         new
@@ -1869,7 +1895,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("hr_finger_prints", (string)null);
+                    b.ToTable("hr_finger_prints");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrGender", b =>
@@ -1914,7 +1940,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_genders", (string)null);
+                    b.ToTable("hr_genders");
 
                     b.HasData(
                         new
@@ -1983,7 +2009,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_jobs", (string)null);
+                    b.ToTable("hr_jobs");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrManagement", b =>
@@ -2040,7 +2066,7 @@ namespace Kader_System.DataAccess.Migrations
                         .IsUnique()
                         .HasFilter("[ManagerId] IS NOT NULL");
 
-                    b.ToTable("hr_managements", (string)null);
+                    b.ToTable("hr_managements");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrMaritalStatus", b =>
@@ -2085,7 +2111,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_maritalStatus", (string)null);
+                    b.ToTable("hr_maritalStatus");
 
                     b.HasData(
                         new
@@ -2164,7 +2190,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_military_status", (string)null);
+                    b.ToTable("hr_military_status");
 
                     b.HasData(
                         new
@@ -2235,7 +2261,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_nationalities", (string)null);
+                    b.ToTable("hr_nationalities");
 
                     b.HasData(
                         new
@@ -2298,7 +2324,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_qualifications", (string)null);
+                    b.ToTable("hr_qualifications");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrRelegion", b =>
@@ -2343,7 +2369,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_relegion", (string)null);
+                    b.ToTable("hr_relegion");
 
                     b.HasData(
                         new
@@ -2414,7 +2440,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_salary_calculators", (string)null);
+                    b.ToTable("hr_salary_calculators");
 
                     b.HasData(
                         new
@@ -2485,7 +2511,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_salary_paymentWays", (string)null);
+                    b.ToTable("hr_salary_paymentWays");
 
                     b.HasData(
                         new
@@ -2561,7 +2587,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("CompanyId");
 
-                    b.ToTable("hr_sections", (string)null);
+                    b.ToTable("hr_sections");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrSectionDepartment", b =>
@@ -2608,7 +2634,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("Section_id");
 
-                    b.ToTable("hr_section_departments", (string)null);
+                    b.ToTable("hr_section_departments");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrShift", b =>
@@ -2659,7 +2685,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_shifts", (string)null);
+                    b.ToTable("hr_shifts");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrVacation", b =>
@@ -2718,7 +2744,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("VacationTypeId");
 
-                    b.ToTable("hr_vacations", (string)null);
+                    b.ToTable("hr_vacations");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrVacationDistribution", b =>
@@ -2776,7 +2802,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("VacationId");
 
-                    b.ToTable("hr_vacation_distributions", (string)null);
+                    b.ToTable("hr_vacation_distributions");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrVacationType", b =>
@@ -2821,7 +2847,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_vacation_types", (string)null);
+                    b.ToTable("hr_vacation_types");
 
                     b.HasData(
                         new
@@ -2892,7 +2918,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("hr_value_types", (string)null);
+                    b.ToTable("hr_value_types");
 
                     b.HasData(
                         new
@@ -2968,7 +2994,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Com_Logs", (string)null);
+                    b.ToTable("Com_Logs");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.MainScreenTree", b =>
@@ -3026,7 +3052,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("st_main_screen_tree", (string)null);
+                    b.ToTable("st_main_screen_tree");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.Screen", b =>
@@ -3097,7 +3123,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("st_screen", (string)null);
+                    b.ToTable("st_screen");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StAction", b =>
@@ -3142,7 +3168,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("st_actions", (string)null);
+                    b.ToTable("st_actions");
 
                     b.HasData(
                         new
@@ -3243,7 +3269,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("st_main_screens", (string)null);
+                    b.ToTable("st_main_screens");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StMainScreenCat", b =>
@@ -3293,7 +3319,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("MainScreenId");
 
-                    b.ToTable("st_main_screen_cats", (string)null);
+                    b.ToTable("st_main_screen_cats");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StScreenAction", b =>
@@ -3340,7 +3366,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("ScreenId");
 
-                    b.ToTable("st_screen_action", (string)null);
+                    b.ToTable("st_screen_action");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StScreenSub", b =>
@@ -3398,7 +3424,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("ScreenCatId");
 
-                    b.ToTable("st_screens_subs", (string)null);
+                    b.ToTable("st_screens_subs");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StSubMainScreenAction", b =>
@@ -3450,7 +3476,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("ScreenSubId");
 
-                    b.ToTable("st_sub_main_screen_actions", (string)null);
+                    b.ToTable("st_sub_main_screen_actions");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.UserPermission", b =>
@@ -3474,7 +3500,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("st_user_permissions", (string)null);
+                    b.ToTable("st_user_permissions");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Title", b =>
@@ -3519,7 +3545,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("st_title", (string)null);
+                    b.ToTable("st_title");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.TitlePermission", b =>
@@ -3547,7 +3573,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("TitleId");
 
-                    b.ToTable("st_title_permission", (string)null);
+                    b.ToTable("st_title_permission");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.AdvancedType", b =>
@@ -3564,7 +3590,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("trans_advanced_types", (string)null);
+                    b.ToTable("trans_advanced_types");
 
                     b.HasData(
                         new
@@ -3643,7 +3669,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("TransNameEn")
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("SpCaclauateSalaryDetailedTransModel", (string)null);
+                    b.ToTable("SpCaclauateSalaryDetailedTransModel");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCaclauateSalaryDetails", b =>
@@ -3658,7 +3684,7 @@ namespace Kader_System.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("SpCaclauateSalaryDetailsModel", (string)null);
+                    b.ToTable("SpCaclauateSalaryDetailsModel");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCacluateSalary", b =>
@@ -3683,7 +3709,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("TotalSalary")
                         .HasColumnType("float");
 
-                    b.ToTable("SpCacluateSalariesModel", (string)null);
+                    b.ToTable("SpCacluateSalariesModel");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransAllowance", b =>
@@ -3750,7 +3776,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("SalaryEffectId");
 
-                    b.ToTable("trans_allowances", (string)null);
+                    b.ToTable("trans_allowances");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransAmountType", b =>
@@ -3795,7 +3821,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("trans_amount_types", (string)null);
+                    b.ToTable("trans_amount_types");
 
                     b.HasData(
                         new
@@ -3899,7 +3925,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("SalaryEffectId");
 
-                    b.ToTable("trans_benefits", (string)null);
+                    b.ToTable("trans_benefits");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransCovenant", b =>
@@ -3964,7 +3990,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("trans_covenants", (string)null);
+                    b.ToTable("trans_covenants");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransDeduction", b =>
@@ -4042,7 +4068,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("SalaryEffectId");
 
-                    b.ToTable("trans_deductions", (string)null);
+                    b.ToTable("trans_deductions");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransLoan", b =>
@@ -4132,7 +4158,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("trans_loan", (string)null);
+                    b.ToTable("trans_loan");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransLoanDetails", b =>
@@ -4187,7 +4213,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("TransLoanId");
 
-                    b.ToTable("trans_loan_details", (string)null);
+                    b.ToTable("trans_loan_details");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransSalaryCalculator", b =>
@@ -4240,7 +4266,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("trans_salary_calculators", (string)null);
+                    b.ToTable("trans_salary_calculators");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransSalaryCalculatorDetail", b =>
@@ -4309,7 +4335,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("TransSalaryCalculatorsId");
 
-                    b.ToTable("trans_salary_calculators_details", (string)null);
+                    b.ToTable("trans_salary_calculators_details");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransSalaryEffect", b =>
@@ -4354,7 +4380,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("trans_salary_effects", (string)null);
+                    b.ToTable("trans_salary_effects");
 
                     b.HasData(
                         new
@@ -4434,7 +4460,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("Increase_type");
 
-                    b.ToTable("trans_salary_increases", (string)null);
+                    b.ToTable("trans_salary_increases");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransVacation", b =>
@@ -4502,7 +4528,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("VacationId");
 
-                    b.ToTable("trans_vacations", (string)null);
+                    b.ToTable("trans_vacations");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Auth.ApplicationRoleClaim", b =>
@@ -4586,7 +4612,7 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.PermessionRequests.DelayPermission.StatuesOfRequest#Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
                             b1.Property<int>("DelayPermissionId")
                                 .HasColumnType("int");
@@ -4613,7 +4639,7 @@ namespace Kader_System.DataAccess.Migrations
 
                             b1.HasKey("DelayPermissionId");
 
-                            b1.ToTable("hr_delay_permission", (string)null);
+                            b1.ToTable("hr_delay_permission");
 
                             b1.WithOwner()
                                 .HasForeignKey("DelayPermissionId");
@@ -4633,7 +4659,7 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.PermessionRequests.LeavePermissionRequest.StatuesOfRequest#Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
                             b1.Property<int>("LeavePermissionRequestId")
                                 .HasColumnType("int");
@@ -4660,7 +4686,7 @@ namespace Kader_System.DataAccess.Migrations
 
                             b1.HasKey("LeavePermissionRequestId");
 
-                            b1.ToTable("hr_leave_permission_request", (string)null);
+                            b1.ToTable("hr_leave_permission_request");
 
                             b1.WithOwner()
                                 .HasForeignKey("LeavePermissionRequestId");
@@ -4691,7 +4717,7 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.AllowanceRequest.StatuesOfRequest#Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
                             b1.Property<int>("AllowanceRequestId")
                                 .HasColumnType("int");
@@ -4718,7 +4744,7 @@ namespace Kader_System.DataAccess.Migrations
 
                             b1.HasKey("AllowanceRequestId");
 
-                            b1.ToTable("hr_allowance_request", (string)null);
+                            b1.ToTable("hr_allowance_request");
 
                             b1.WithOwner()
                                 .HasForeignKey("AllowanceRequestId");
@@ -4740,7 +4766,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.ContractTerminationRequest.StatuesOfRequest#Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
                             b1.Property<int>("ContractTerminationRequestId")
                                 .HasColumnType("int");
@@ -4767,7 +4793,7 @@ namespace Kader_System.DataAccess.Migrations
 
                             b1.HasKey("ContractTerminationRequestId");
 
-                            b1.ToTable("hr_contract_termination", (string)null);
+                            b1.ToTable("hr_contract_termination");
 
                             b1.WithOwner()
                                 .HasForeignKey("ContractTerminationRequestId");
@@ -4785,7 +4811,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.LoanRequest.StatuesOfRequest#Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
                             b1.Property<int>("LoanRequestId")
                                 .HasColumnType("int");
@@ -4812,7 +4838,7 @@ namespace Kader_System.DataAccess.Migrations
 
                             b1.HasKey("LoanRequestId");
 
-                            b1.ToTable("hr_loan_request", (string)null);
+                            b1.ToTable("hr_loan_request");
 
                             b1.WithOwner()
                                 .HasForeignKey("LoanRequestId");
@@ -4830,7 +4856,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.ResignationRequest.StatuesOfRequest#Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
                             b1.Property<int>("ResignationRequestId")
                                 .HasColumnType("int");
@@ -4857,7 +4883,7 @@ namespace Kader_System.DataAccess.Migrations
 
                             b1.HasKey("ResignationRequestId");
 
-                            b1.ToTable("hr_resignation_request", (string)null);
+                            b1.ToTable("hr_resignation_request");
 
                             b1.WithOwner()
                                 .HasForeignKey("ResignationRequestId");
@@ -4876,7 +4902,7 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.SalaryIncreaseRequest.StatuesOfRequest#Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
                             b1.Property<int>("SalaryIncreaseRequestId")
                                 .HasColumnType("int");
@@ -4903,7 +4929,7 @@ namespace Kader_System.DataAccess.Migrations
 
                             b1.HasKey("SalaryIncreaseRequestId");
 
-                            b1.ToTable("Hr_SalaryIncreaseRequest", (string)null);
+                            b1.ToTable("Hr_SalaryIncreaseRequest");
 
                             b1.WithOwner()
                                 .HasForeignKey("SalaryIncreaseRequestId");
@@ -4927,7 +4953,7 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.VacationRequests.StatuesOfRequest#Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
+                    b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
                             b1.Property<int>("VacationRequestsId")
                                 .HasColumnType("int");
@@ -4954,7 +4980,7 @@ namespace Kader_System.DataAccess.Migrations
 
                             b1.HasKey("VacationRequestsId");
 
-                            b1.ToTable("hr_vacation_requests", (string)null);
+                            b1.ToTable("hr_vacation_requests");
 
                             b1.WithOwner()
                                 .HasForeignKey("VacationRequestsId");

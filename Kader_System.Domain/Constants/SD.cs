@@ -161,6 +161,7 @@ public static class SD
             public const string LoginUser1 = "LoginUser1";
             public const string ChangeActiveOrNot = "ChangeActiveOrNotUser/{id}";
             public const string UpdateUser = "UpdateUser/{id}";
+            public const string AssginPermssionToUser = "assginPermissionToUser/{id}";
             public const string ShowPasswordToSpecificUser = "ShowPasswordToSpecificUser/{id}";
             public const string ChangePassword = "ChangePassword";
             public const string DeleteUser = "DeleteUser/{id}";
@@ -328,7 +329,7 @@ public static class SD
             public const string UpdateDepartment = "department/update/{id}";
             public const string GetDepartmentById = "department/getById/{id}";
             public const string DeleteDepartment = "department/delete/{id}";
-            public const string AddEmp = "department/addemployee";
+            public const string AddEmp = "department/addemployee/{id}";
         }
         public class Loan
         {
