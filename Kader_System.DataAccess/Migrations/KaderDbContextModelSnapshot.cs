@@ -221,7 +221,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0246e826-de5f-48e7-bba0-45b95e31edf9",
+                            ConcurrencyStamp = "cd7fc076-3def-4c02-b2d3-60a140912e2c",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             IsActive = true,
@@ -229,9 +229,9 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAED9PKI+LnjlJS8kfzjA4oie6SmlqG//QsqWxx0JgDUwYKbdoPt18et9iKiA8vtXVkg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJaROE+bWcad7b2BCVcgQhVXNV8E+lRKdBmEYclZ7wtBpt6kZ/FMesq+tRuDctL2Ng==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f14e30f7-e7d4-456b-b482-914f0aed6abf",
+                            SecurityStamp = "dcac93a0-681c-4c5b-b9c5-3e2a6fc0bb2d",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -3266,6 +3266,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ImageExtension")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3281,6 +3284,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("Screen_cat_title_en")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Screen_main_cat_image")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")

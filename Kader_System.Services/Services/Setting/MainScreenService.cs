@@ -118,9 +118,12 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
+
+
     public async Task<Response<StGetMainScreenByIdResponse>> GetMainScreenByIdAsync(int id)
     {
-        var obj = await _unitOfWork.MainScreens.GetFirstOrDefaultAsync(x => x.Id == id, includeProperties: "MainScreen");
+     
+        var obj = await _unitOfWork.MainScreens.GetFirstOrDefaultAsync(x => x.Id == id);
 
         if (obj is null)
         {
@@ -138,10 +141,8 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             Data = new()
             {
                 Id = id,
-                Screen_main_id = obj.Id,
                 Screen_cat_title_ar = obj.Screen_main_title_ar,
                 Screen_cat_title_en = obj.Screen_main_title_en,
-                //Screen_main_id = obj.id,
                 Main_title_ar = obj.Screen_main_title_ar,
                 Main_title_en = obj.Screen_main_title_en
             },
@@ -224,6 +225,11 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             Msg = _sharLocalizer[Localization.Deleted]
         };
     }
+
+   
+
+
+
 
     #endregion
 }

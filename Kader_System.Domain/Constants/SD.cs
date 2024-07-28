@@ -109,8 +109,8 @@ public static class SD
             public const string ListOfMainScreensCategories = "screen_cat/getListOfMainScreens";
             public const string GetAllMainScreenCategories = "screen_cat";
             public const string CreateMainScreenCategory = "screen_cat";
-            public const string UpdateMainScreenCategory = "screen_cat/{id}";
-            public const string GetMainScreenCategoryById = "screen_cat/{id}";
+            public const string UpdateMainScreenCategory = "screen_cat/update/{id}";
+            public const string GetMainScreenCategoryById = "screen_cat/getById/{id}";
             public const string DeleteMainScreenCategory = "screen_cat/{id}";
         }
 
@@ -119,8 +119,8 @@ public static class SD
             public const string ListOfMainScreens = "screen_main/getListOfMainScreens";
             public const string GetAllMainScreens = "screen_main";
             public const string CreateMainScreen = "screen_main";
-            public const string UpdateMainScreen = "screen_main/{id}";
-            public const string GetMainScreenById = "screen_main/{id}";
+            public const string UpdateMainScreen = "screen_main/update/{id}";
+            public const string GetMainScreenById = "screen_main/getById/{id}";
             public const string DeleteMainScreen = "screen_main/{id}";
 
         }
