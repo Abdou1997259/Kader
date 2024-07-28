@@ -286,7 +286,7 @@ namespace Kader_System.Services.Services.HR
                 };
 
             }
-            if(department.ManagementId== management.Id)
+            if(department.ManagementId!= management.Id)
             {
                 var msg = $"{shareLocalizer[Localization.IsDepartmentInMang]}";
                 return new()
