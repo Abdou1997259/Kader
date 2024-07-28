@@ -287,7 +287,8 @@ namespace Kader_System.Domain.Constant
                 CompanyName = Localization.Arabic == lang ?
                 (string)typeof(HrCompany).GetProperty("NameAr")?.GetValue(companyNode.Value) :
                 (string)typeof(HrCompany).GetProperty("NameEn")?.GetValue(companyNode.Value),
-                ManagerId = (int?)typeof(HrCompany).GetProperty("ManagerId")?.GetValue(companyNode.Value) ?? 0,
+                MangerName = (string?)typeof(HrCompany).GetProperty("CompanyOwner")?.GetValue(companyNode.Value) ?? " ",
+               
                 Children = companyNode.Children.Select(managementNode => new ManagementResponse
                 {
                     ManagementId = (int)typeof(HrManagement).GetProperty("Id")?.GetValue(managementNode.Value),

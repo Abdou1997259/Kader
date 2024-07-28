@@ -8,7 +8,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [Area(Modules.HR)]
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [ApiController]
-    [Authorize(Permissions.HR.View)]
+    //[Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
     public class VacationController (IVacationService service, IRequestService requestService): ControllerBase
     {

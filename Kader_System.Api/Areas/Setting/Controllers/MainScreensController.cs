@@ -4,7 +4,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [Area(Modules.Setting)]
 [ApiExplorerSettings(GroupName = Modules.Setting)]
 [ApiController]
-[Authorize(Permissions.Setting.View)]
+//[Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
 public class LeavePermessionController(IMainScreenService service, IRequestService requestService) : ControllerBase
 {

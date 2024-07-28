@@ -10,7 +10,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
     [ApiExplorerSettings(GroupName = Modules.EmployeeRequest)]
     [ApiController]
     [Route("api/v1/")]
-    [Authorize(Permissions.Setting.View)]
+    //[Authorize(Permissions.Setting.View)]
     public class ResignationController(IResignationRequestService service, IRequestService requestService
         , IWebHostEnvironment hostEnvironment, IFileServer fileServer) : ControllerBase
     {

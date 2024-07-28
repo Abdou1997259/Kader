@@ -57,6 +57,7 @@ public static class SD
     public static class SuperAdmin
     {
         public const string Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1";
+
         public const string RoleId = "fab4fac1-c546-41de-aebc-a14da68957ab1";
         public static string Password = "123456";
         public static string RoleNameInAr = "سوبر أدمن";

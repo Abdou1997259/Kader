@@ -4,7 +4,7 @@ using Kader_System.Services.IServices.HTTP;
 namespace Kader_System.Api.Areas.HR.Controllers
 {
     [Area(Modules.HR)]
-    [Authorize(Permissions.HR.View)]
+    //[Authorize(Permissions.HR.View)]
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [ApiController]
     [Route("api/v1/")]

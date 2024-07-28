@@ -11,7 +11,7 @@ namespace Kader_System.Domain.DTOs.Response.HR
     {
         public int CompanyId { get; set; }
         public string CompanyName { get; set; }
-        public int ManagerId { get; set; }
+        public string? MangerName { get; set; }
         public int Level { get; set; } = 1;
         public List<ManagementResponse> Children { get; set; }
     }

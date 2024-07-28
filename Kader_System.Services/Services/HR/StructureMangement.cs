@@ -54,7 +54,7 @@ namespace Kader_System.Services.Services.HR
                 foreach (var department in departments)
                 {
                     var depart= departs.FirstOrDefault(x=>x.Id== department.Id);
-                    var departmentNode = managementNode.Add(department);
+                    var departmentNode = managementNode.Add(depart);
 
                     // Step 4: Fetch employees for each department and add them to the tree
                     var employees = await _unitOfWork.Employees

@@ -3,7 +3,7 @@
 [Area(Modules.Auth)]
 [ApiController]
 [ApiExplorerSettings(GroupName = Modules.Auth)]
-[Authorize(Permissions.Setting.View)]
+//[Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
 public class PermController(IPermService service) : ControllerBase
 {
