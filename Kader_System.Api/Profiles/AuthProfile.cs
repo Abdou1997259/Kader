@@ -1,4 +1,6 @@
-﻿namespace Kader_System.Api.Profiles;
+﻿using Kader_System.Domain.DTOs.Request.Auth;
+
+namespace Kader_System.Api.Profiles;
 
 public class AuthProfile : Profile
 {
@@ -29,6 +31,8 @@ public class AuthProfile : Profile
 
         CreateMap<AuthChangePassOfUserResponse, AuthChangePassOfUserRequest>()
                 .ReverseMap();
+
+        CreateMap<CreateUserRequest, ApplicationUser>().ForMember(d => d.VisiblePassword, s => s.MapFrom(x => x.Password));
 
         #endregion
     }

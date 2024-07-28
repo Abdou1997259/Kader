@@ -23,8 +23,8 @@ namespace Kader_System.Services.Services.HR
             // Step 1: Fetch the company and check if it exists
             var company = await _unitOfWork.Companies.GetByIdAsync(companyId);
             var companies=await _unitOfWork.Companies.GetAllAsync();    
-            var emps=await _unitOfWork.Employees.GetSpecificSelectAsync(x=>true,x=>x); 
-            var mangs=await _unitOfWork.Managements.GetSpecificSelectAsync(x=>true,x=>x,includeProperties: "Manager");
+            var emps=await _unitOfWork.Employees.GetSpecificSelectAsync(x=>x.CompanyId==company.Id,x=>x); 
+            var mangs=await _unitOfWork.Managements.GetSpecificSelectAsync(x=>x.CompanyId==company.Id,x=>x,includeProperties: "Manager");
             var departs = await _unitOfWork.Departments.GetSpecificSelectAsync(x=>true,x=>x,includeProperties: "Manager");
             if (company == null)
             {

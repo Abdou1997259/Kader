@@ -35,6 +35,13 @@ public static class ModelBuilderExtensions
                 UserName = "admin",
                 NormalizedUserName = "ADMIN",
                 Email = "mohammed88@gmail.com",
+                FullName="Mohamed abdou",
+                ImagePath="/",
+                TitleId=1,
+                PhoneNumber="1202200",
+                CompanyYear=2013,
+                CompanyId=3,
+         
                 NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                 EmailConfirmed = true,
                 IsActive = true,

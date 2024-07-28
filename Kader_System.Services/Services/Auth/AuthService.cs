@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Kader_System.Domain.DTOs.Request.Auth;
+using Kader_System.Domain.DTOs.Response;
+using Microsoft.AspNetCore.Identity;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -13,10 +18,11 @@ public class AuthService : IAuthService
     private readonly ILogger<AuthService> _logger;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer;
     private readonly IHttpContextAccessor _accessor;
-
+    private readonly IFileServer _fileServer;
     public AuthService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager,
                        JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
                        IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
+                       IFileServer fileServer,
                        RoleManager<ApplicationRole> roleManager)
     {
         _unitOfWork = unitOfWork;
@@ -26,6 +32,7 @@ public class AuthService : IAuthService
         _sharLocalizer = sharLocalizer;
         _logger = logger;
         _accessor = accessor;
+        _fileServer=fileServer;
         _signInManager = signInManager;
         _roleManager = roleManager;
     }
@@ -395,6 +402,7 @@ public class AuthService : IAuthService
             };
         }
     }
+    
 
     private string GetUserId() =>
         _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
@@ -437,6 +445,117 @@ public class AuthService : IAuthService
             claims: claims,
             expires: DateTime.UtcNow.AddDays(2).Add(_jwt.TokenLifetime),
             signingCredentials: signingCredentials);
+    }
+
+    public async  Task<Response<CreateUserResponse>> CreateUserAsync(CreateUserRequest model, string root, string clientName, string moduleName, UsereEnum userenum= UsereEnum.None)
+    {  // Check if user already exists
+        var isExited = await _unitOfWork.Users.ExistAsync(x => x.UserName == model.UserName);
+        if (isExited)
+        {
+            var msg = _sharLocalizer[Localization.IsExist];
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+        }
+
+        // Map CreateUserRequest to ApplicationUser
+        var user = _mapper.Map<ApplicationUser>(model);
+        
+        // Set additional user properties if needed
+        user.Id = Guid.NewGuid().ToString();
+
+      
+        var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
+        user.ImagePath = (model.Image == null || model.Image.Length == 0) ? null :
+            await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Image);
+
+        // Add user to the database
+        await _unitOfWork.Users.AddAsync(user);
+     
+
+    
+        if(model.TitleId ==null)
+        {
+            var errorMsg = _sharLocalizer[Localization.Error];
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = errorMsg,
+                Data = null
+            };
+        }
+
+        var titlePermisssions = await _unitOfWork.TitlePermissionRepository.GetSpecificSelectAsync(x => x.TitleId == model.TitleId, x => x);
+        if (titlePermisssions != null)
+        {
+            foreach (var pTitle in titlePermisssions)
+            {
+                await _unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission { UserId = user.Id, Permission = pTitle.Permissions, SubScreenId = pTitle.SubScreenId });
+
+
+
+            }
+        
+        }
+     
+        var result = await _unitOfWork.CompleteAsync();
+        if (result <= 0)
+        {
+            var errorMsg = _sharLocalizer[Localization.Error];
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = errorMsg,
+                Data = null
+            };
+        }
+
+        // Optionally, generate JWT token
+        var token = await CreateJwtToken(user); // Implement this method if needed
+        var resutl = new CreateUserResponse
+        {
+            CompanyId = model.CompanyId,
+            FullName = model.FullName,
+            Email = model.Email,
+            JobTitle = model.JobTitle,
+            CompanyYear = model.CompanyYear,
+            TitleId=model.TitleId,
+            Token = "Bearer" + " " + new JwtSecurityTokenHandler().WriteToken(token),
+            UserName = model.UserName,
+        };
+        // Return success response
+        return new Response<CreateUserResponse>
+        {
+            Check = true,
+            Data =resutl ,
+          // Include the token if you generated it
+        };
+
+
+
+    }
+
+    public async Task<Response<string>> AssignPermissionForUser(Guid id, IEnumerable<AssignPermissionRequest> model)
+    {
+        var UserPermission = model.Select(x => new UserPermission
+        {
+            UserId=id.ToString(),
+            Permission =string.Join(',', x.Permission) ,
+            SubScreenId = x.SubScreenId,
+
+        });
+        _unitOfWork.UserPermssionRepositroy.AddRangeAsync(UserPermission);
+         await _unitOfWork.CompleteAsync();
+        return new()
+        {
+            Check = true,
+            Data = "",
+
+        };
+      
     }
 
     #endregion
