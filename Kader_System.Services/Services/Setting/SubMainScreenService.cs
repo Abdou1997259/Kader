@@ -60,10 +60,10 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                      Sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
                      Url = x.Url,
                      Screen_cat_id = x.ScreenCatId,
-                     Cat_title = lang == Localization.Arabic ? x.ScreenCat.subScreen.Screen_sub_title_ar : x.ScreenCat.subScreen.Screen_sub_title_en,
+                     Cat_title = lang == Localization.Arabic ? x.ScreenCat.screenCat.Screen_main_title_ar : x.ScreenCat.screenCat.Screen_main_title_en,
                      Main_id = x.ScreenCatId,
                      Main_title = lang == Localization.Arabic ? x.ScreenCat.Screen_cat_title_ar : x.ScreenCat.Screen_cat_title_en,
-                     Main_image = string.Concat(ReadRootPath.SettingImagesPath, x.ScreenCat.subScreen.Screen_main_cat_image)
+                     Main_image = string.Concat(ReadRootPath.SettingImagesPath, x.ScreenCat.Screen_main_cat_image)
                  }, orderBy: x =>
                    x.OrderByDescending(x => x.Id))).ToList()
         };

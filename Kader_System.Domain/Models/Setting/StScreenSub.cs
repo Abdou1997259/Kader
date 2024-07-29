@@ -18,9 +18,5 @@ public class StScreenSub : BaseEntity
     public StMainScreenCat ScreenCat { get; set; } = default!;
 
 
-
-
-
-
     public ICollection<StSubMainScreenAction> ListOfActions { get; set; } = [];
 }

@@ -26,9 +26,9 @@ namespace Kader_System.DataAccess.Repositories.Setting
                         url = p.ScreenSub!.Url,
                         cat_id = p.ScreenSub!.ScreenCatId,
                         cat_title = p.ScreenSub!.ScreenCat!.Screen_cat_title_ar,
-                        main_id = p.ScreenSub!.ScreenCat!.MainScreenId,
-                        main_title = p.ScreenSub!.ScreenCat!.subScreen!.Screen_sub_title_en,
-                        main_image = p.ScreenSub!.ScreenCat!.subScreen!.Screen_main_cat_image,
+                        main_id = p.ScreenSub!.ScreenCatId,
+                        main_title = p.ScreenSub!.ScreenCat!.screenCat!.Screen_main_title_ar,
+                        main_image = p.ScreenSub!.ScreenCat!.screenCat!.Screen_main_image,
                         sub_id = p.SubScreenId,
                         actions = "",
 

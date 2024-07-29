@@ -117,7 +117,7 @@ public static class SD
         public class MainScreen
         {
             public const string ListOfMainScreens = "screen_main/getListOfMainScreens";
-            public const string GetMainScreensWithRelatedData = "screen_main"; 
+            public const string GetMainScreensWithRelatedData = "screen_main/myendpoint"; 
             public const string GetAllMainScreens = "screen_main";
             public const string CreateMainScreen = "screen_main";
             public const string UpdateMainScreen = "screen_main/update/{id}";

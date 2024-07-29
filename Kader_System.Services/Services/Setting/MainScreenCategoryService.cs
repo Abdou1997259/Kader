@@ -114,7 +114,7 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
             Screen_cat_title_en = model.Screen_main_cat_title_en,
             Screen_main_cat_image = imageName,
             ImageExtension = imageExtension,
-            MainScreenId = model.Screen_main_id,
+            MainScreenId= model.Screen_main_id,
         });
         await _unitOfWork.CompleteAsync();
 

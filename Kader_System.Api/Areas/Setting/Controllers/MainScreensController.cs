@@ -1,6 +1,8 @@
+using Kader_System.DataAccesss.DbContext;
 using Kader_System.Domain.DTOs.Response.Setting;
 using Kader_System.Domain.Interfaces.Setting;
 using Kader_System.Services.IServices.HTTP;
+using Microsoft.EntityFrameworkCore;
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.Setting)]
@@ -8,11 +10,12 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 [Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
-public class MainScreensController(IMainScreenService service, IRequestService requestService) : ControllerBase
+public class MainScreensController(IMainScreenService service, IRequestService requestService,KaderDbContext context) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;
 
     private readonly IMainScreenService _mainScreenRepository = service;
+    private readonly KaderDbContext _dbcontext = context;
 
     
      
@@ -29,41 +32,48 @@ public class MainScreensController(IMainScreenService service, IRequestService r
 
 
     [HttpGet(ApiRoutes.MainScreen.GetMainScreensWithRelatedData)]
-    public async Task<IActionResult> GetMainScreensWithRelatedData()
+    public async Task<IActionResult> GetMainScreensWithRelatedData([FromQuery] StGetAllFiltrationsForMainScreenRequest model)
     {
-        var mainScreens = await service.GetMainScreensWithRelatedDataAsync();
+        
+        var mainScreens = await _dbcontext.MainScreenCategories
+        .Include(ms => ms.CategoryScreen)
+            .ThenInclude(cs => cs.StScreenSub)
+        .ToListAsync();
+
+        if (mainScreens == null)
+        {
+            return NotFound();
+        }
 
         var response = mainScreens.Select(ms => new StMainScreen
         {
             Screen_main_title_ar = ms.Screen_main_title_ar,
-            Screen_main_title_en = ms .Screen_main_title_en,
+            Screen_main_title_en = ms.Screen_main_title_en,
 
-            // Map other properties
-
-            CategoryScreen = new StMainScreenCat
+            CategoryScreen = ms.CategoryScreen == null ? null : new StMainScreenCat
             {
                 Id = ms.CategoryScreen.Id,
-                Screen_cat_title_ar =ms.Screen_main_title_ar,
-                Screen_cat_title_en =ms.Screen_main_title_en,
-                // Map other properties
+                Screen_cat_title_ar = ms.CategoryScreen.Screen_cat_title_ar,
+                Screen_cat_title_en = ms.CategoryScreen.Screen_cat_title_en,
 
-                subScreen = new StScreenSub
+
+                StScreenSub = ms.CategoryScreen.StScreenSub == null ? null : new StScreenSub
                 {
-                    Id = ms.CategoryScreen.subScreen.Id,
-                    Screen_sub_title_ar =ms.Screen_main_title_ar,
-                    Screen_sub_title_en = ms.Screen_main_title_en,
-                    Url = ms.Url,
-                    Name =ms.Name,
-                    // Map other properties
+                    Id = ms.CategoryScreen.StScreenSub.Id,
+                    Screen_sub_title_ar = ms.CategoryScreen.StScreenSub.Screen_sub_title_ar,
+                    Screen_sub_title_en = ms.CategoryScreen.StScreenSub.Screen_sub_title_en,
+                    Url = ms.CategoryScreen.StScreenSub.Url,
+                    Name = ms.CategoryScreen.StScreenSub.Name
                 }
             }
         }).ToList();
+
 
         return Ok(response);
     }
 
 
-[HttpGet(ApiRoutes.MainScreen.GetMainScreenById)]
+    [HttpGet(ApiRoutes.MainScreen.GetMainScreenById)]
     public async Task<IActionResult> GetMainScreenByIdAsync([FromRoute] int id)
     {
         var response = await service.GetMainScreenByIdAsync(id);

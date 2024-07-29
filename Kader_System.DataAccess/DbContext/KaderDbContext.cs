@@ -204,7 +204,16 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .Property(p => p.Amount)
             .HasPrecision(18, 2);
         #endregion
+
+        #region SubScreen
+        //modelBuilder.Entity<StMainScreenCat>()
+        //    .HasMany(s => s.StScreenSub)
+        //    .WithOne(sub => sub.ScreenCat)
+        //    .HasForeignKey(sub => sub.ScreenCatId);
+        #endregion
+
     }
+
 
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
     {
