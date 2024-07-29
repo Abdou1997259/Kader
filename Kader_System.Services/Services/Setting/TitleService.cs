@@ -1,5 +1,7 @@
 ﻿
 
+using Kader_System.Domain.DTOs.Request.Auth;
+
 namespace Kader_System.Services.Services.Setting
 {
     
@@ -92,7 +94,7 @@ namespace Kader_System.Services.Services.Setting
                 Check = true
             };
         }
-
+        
         public async Task<Response<CreateTitleRequest>> CreateTitleAsync(CreateTitleRequest model)
         {
             bool exists = false;
@@ -160,6 +162,26 @@ namespace Kader_System.Services.Services.Setting
         public Task<Response<string>> DeleteTitleAsync(int id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<AssginTitlePermissionRequest> model)
+        {
+            
+            var TPermission = model.Select(x => new TitlePermission
+            {
+                Id = id,
+                Permissions = string.Join(',', x.Permission),
+                SubScreenId = x.SubScreenId,
+
+            });
+            await unitOfWork.TitlePermissionRepository.AddRangeAsync(TPermission);
+            await unitOfWork.CompleteAsync();
+            return new()
+            {
+                Check = true,
+                Data = "",
+
+            };
         }
     }
 }

@@ -5,7 +5,7 @@ public class ApplicationUser : IdentityUser, IBaseEntity
    
     public string FullName { get; set; }
    
-    public int TitleId { get; set; }
+    public string  TitleId { get; set; }
     public int JobId { get; set; }
     public int CompanyId { get; set; }
     public int CompanyYear { get; set; }

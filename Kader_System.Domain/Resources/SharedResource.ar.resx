@@ -177,6 +177,9 @@
   <data name="MainScreenCategory" xml:space="preserve">
     <value>تصنيف الشاشة الرئيسية</value>
   </data>
+  <data name="MangerAlready" xml:space="preserve">
+    <value>مدير لاداره اخري  لا يمكن تعيين اكثر من مدير </value>
+  </data>
   <data name="NotFoundData" xml:space="preserve">
     <value>لا يوجد بيانات</value>
   </data>

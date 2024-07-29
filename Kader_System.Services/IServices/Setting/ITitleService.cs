@@ -1,4 +1,6 @@
 ﻿
+using Kader_System.Domain.DTOs.Request.Auth;
+
 namespace Kader_System.Services.IServices.Setting
 {
     public interface ITitleService
@@ -10,5 +12,6 @@ namespace Kader_System.Services.IServices.Setting
         Task<Response<CreateTitleRequest>> UpdateTitleAsync(int id, CreateTitleRequest model);
         Task<Response<string>> UpdateActiveOrNotTitleAsync(int id);
         Task<Response<string>> DeleteTitleAsync(int id);
+        Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<AssginTitlePermissionRequest> AssginPermssion);
     }
 }

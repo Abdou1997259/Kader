@@ -1,9 +1,13 @@
-﻿using Kader_System.Domain.DTOs.Request.Auth;
+﻿using Kader_System.Domain.DTOs;
+using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.DTOs.Response;
+using Kader_System.Domain.DTOs.Response.Auth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
+using static Kader_System.Domain.Constants.SD.ApiRoutes;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -488,7 +492,7 @@ public class AuthService : IAuthService
             };
         }
 
-        var titlePermisssions = await _unitOfWork.TitlePermissionRepository.GetSpecificSelectAsync(x => x.TitleId == model.TitleId, x => x);
+        var titlePermisssions = await _unitOfWork.TitlePermissionRepository.GetSpecificSelectAsync(x=>model.TitleId.Any(t=>t==x.TitleId), x => x);
         if (titlePermisssions != null)
         {
             foreach (var pTitle in titlePermisssions)
@@ -556,6 +560,284 @@ public class AuthService : IAuthService
 
         };
       
+    }
+
+    public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model,string host,string lang)
+    {
+        Expression<Func<ApplicationUser, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
+            (string.IsNullOrEmpty(model.Word) || x.Email.Contains(model.Word) 
+             
+            
+            );
+        var companise =await _unitOfWork.Companies.GetAllAsync();
+        var jobs=await _unitOfWork.Jobs.GetAllAsync();
+        var totalRecords = await _unitOfWork.Users.CountAsync(filter: filter);
+        int page = 1;
+        int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+        if (model.PageNumber < 1)
+            page = 1;
+        else
+            page = model.PageNumber;
+        var pageLinks = Enumerable.Range(1, totalPages)
+            .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+            .ToList();
+
+        // Fetch the necessary data from the database
+        var users = await _unitOfWork.Users.GetSpecificSelectAsync(
+            filter: filter,
+            take: model.PageSize,
+            skip: (model.PageNumber - 1) * model.PageSize,
+            select: x => new
+            {
+                x.Id,
+                x.CompanyId,
+                x.CompanyYear,
+                x.Email,
+                x.JobId,
+                x.PhoneNumber,
+                x.UserName
+            },
+            orderBy: x => x.OrderByDescending(x => x.Id)
+        );
+
+        // Perform the in-memory transformations
+        var items = users.Select(x => new ListOfUsersResponse
+        {
+            Id=x.Id,
+            CompanyName = Localization.Arabic == lang
+                ? companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameAr
+                : companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameEn,
+            CompanyYear = x.CompanyYear,
+            Email = x.Email,
+            JobName = Localization.Arabic == lang
+                ? jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameAr
+                : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
+            Phone = x.PhoneNumber,
+            UserName=x.UserName
+        }).ToList();
+
+        var result = new GetAllUsersResponse
+        {
+            TotalRecords = totalRecords,
+
+            Items = items,
+            CurrentPage = model.PageNumber,
+            FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+            From = (page - 1) * model.PageSize + 1,
+            To = Math.Min(page * model.PageSize, totalRecords),
+            LastPage = totalPages,
+            LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+            PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+            NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+            Path = host,
+            PerPage = model.PageSize,
+            Links = pageLinks
+        };
+
+        if (result.TotalRecords is 0)
+        {
+            string resultMsg = _sharLocalizer[Localization.NotFoundData];
+
+            return new()
+            {
+                Data = new()
+                {
+                    Items = []
+                },
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+
+        return new()
+        {
+            Data = result,
+            Check = true
+        };
+    }
+
+    public async Task<Response<IEnumerable<ListOfUsersResponse>>> ListListOfUsers(string lang)
+    {
+        var companise = await _unitOfWork.Companies.GetAllAsync();
+        var jobs = await _unitOfWork.Jobs.GetAllAsync();
+        var users = await _unitOfWork.Users.GetSpecificSelectAsync(null!,
+            select: x => new
+            {
+                x.Id,
+                x.CompanyId,
+                x.CompanyYear,
+                x.Email,
+                x.JobId,
+                x.PhoneNumber,
+                x.UserName,
+               
+            },
+            orderBy: x => x.OrderByDescending(x => x.Id)
+        );
+
+        // Perform the in-memory transformations
+        var result = users.Select(x => new ListOfUsersResponse
+        {
+
+            CompanyName = Localization.Arabic == lang
+                ? companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameAr
+                : companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameEn,
+            CompanyYear = x.CompanyYear,
+            Email = x.Email,
+            JobName = Localization.Arabic == lang
+                ? jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameAr
+                : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
+            Phone = x.PhoneNumber,
+            Id=x.Id,
+            UserName=x.UserName
+        }).ToList();
+
+        if (!result.Any())
+        {
+            string resultMsg = _sharLocalizer[Localization.NotFoundData];
+
+            return new()
+            {
+                Data = [],
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+
+        return new()
+        {
+            Data = result,
+            Check = true
+        };
+    }
+
+    public async Task<Response<ListOfUsersResponse>> GetUserById(Guid id,string lang)
+    {
+       
+       
+        var obj = await _userManager.FindByIdAsync(id.ToString());
+        var companise = await _unitOfWork.Companies.GetByIdAsync(obj.CompanyId);
+        var jobs = await _unitOfWork.Jobs.GetByIdAsync(obj.JobId);
+        if (obj is null)
+        {
+            string resultMsg = _sharLocalizer[Localization.NotFoundData];
+
+            return new()
+            {
+                Data = new(),
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+
+        return new()
+        {
+            Data = new()
+            {
+                Id=obj.Id,
+                CompanyName = Localization.Arabic == lang ?companise?.NameAr :
+                companise?.NameEn  ?? " ",
+                CompanyYear = obj.CompanyYear,
+                Email = obj.Email,
+                JobName = Localization.Arabic == lang ? jobs?.NameAr:jobs?.NameEn ?? " ",
+                Phone = obj?.PhoneNumber  ?? " "
+            },
+            Check = true
+        };
+    }
+
+    public async Task<Response<UsersLookups>> UsersGetLookups(string lang)
+    {
+        var jobs =( await _unitOfWork.Jobs.GetAllAsync()).Select(x=>new JobsLookups
+        {
+            Id=x.Id,
+            JobName=Localization.Arabic==lang? x.NameAr: x.NameEn
+        });
+
+        var compaines = (await _unitOfWork.Companies.GetAllAsync()).Select(x=>new CompanyLookup
+        {
+            Id = x.Id,  
+            CompnayName=Localization.Arabic ==lang? x.NameAr: x.NameEn  
+        });
+
+        var titles =( await _unitOfWork.Titles.GetAllAsync()).Select(x=>new TitleLookups
+        {
+            Id=x.Id,
+            TitleName=Localization.Arabic==lang?x.TitleNameAr:x.TitleNameEn
+        });
+
+        var companyyear = new List<int> { 2024};
+       
+
+        return new Response<UsersLookups>()
+        {
+            Data = new()
+            {
+                CompanyYear=companyyear,
+                Companies=compaines,
+                Titles=titles,
+                Jobs=jobs
+
+            }
+        };
+    }
+
+    public async Task<Response<string>> DeleteUser(Guid id,string deletedby)
+    {
+        var obj = await _userManager.FindByIdAsync(id.ToString());
+
+        if (obj == null)
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+                _sharLocalizer[Localization.User]);
+
+            return new()
+            {
+                Data = string.Empty,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+        obj.IsDeleted = true;
+        obj.DeleteBy = deletedby;
+        obj.DeleteDate = DateTime.Now;
+
+        _unitOfWork.Users.Update(obj);
+        await _unitOfWork.CompleteAsync();
+
+        return new()
+        {
+            Check = true,
+            Data = string.Empty,
+            Msg = _sharLocalizer[Localization.Deleted]
+        };
+    }
+
+    public async Task<Response<string>> RestoreUser(Guid id)
+    {
+        var obj = await _userManager.FindByIdAsync(id.ToString());
+        if (obj == null)
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+                _sharLocalizer[Localization.User]);
+
+            return new()
+            {
+                Data = null,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+
+        obj.IsDeleted = false;
+        _unitOfWork.Users.Update(obj);
+        await _unitOfWork.CompleteAsync();
+        return new()
+        {
+            Check = true,
+            Data = _sharLocalizer[Localization.Restored],
+            Msg = _sharLocalizer[Localization.Restored]
+        };
     }
 
     #endregion

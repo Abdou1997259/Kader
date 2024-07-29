@@ -203,8 +203,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TitleId")
-                        .HasColumnType("int");
+                    b.Property<string>("TitleId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -242,7 +243,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 3,
                             CompanyYear = 2013,
-                            ConcurrencyStamp = "20adeb7f-a265-4279-936f-cf12d27cb4f5",
+                            ConcurrencyStamp = "f6df4c33-d7b6-434e-b780-2e1766ca74da",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Mohamed abdou",
@@ -253,11 +254,11 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEByxsnUvgtjgaA8hMCif00MhoFcZDhdoq2fCowOxtPYM1PahCT+3mLhxU/LFA1qzCA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELcJx+Dj0qpmTzobsISZikLLJLEHOHGaY1NPFV6sqw8vii/qu8djBddJKfcQPXSSqQ==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e864ed61-9e2c-4344-904a-bdd68c49bf45",
-                            TitleId = 1,
+                            SecurityStamp = "66bcbe7c-abd6-4f16-bd16-43f1035a36a9",
+                            TitleId = "1",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -3395,10 +3396,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ScreenCatId")
                         .HasColumnType("int");
 
@@ -3417,7 +3414,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Url")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

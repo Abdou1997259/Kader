@@ -168,6 +168,12 @@ public static class SD
             public const string SetNewPasswordToSpecificUser = "SetNewPasswordToSpecificUser";
             public const string SetNewPasswordToSuperAdmin = "SetNewPasswordToSuperAdmin/{newPassword}";
             public const string GetMyProfile = "getMyProfile/{userId}";
+
+            public const string GetUserById = "GetUserById/{id}";
+            public const string RestoreUser = "RestoreUser/{id}";
+            public const string GetListOfUser = "GetListOfUsers";
+            public const string GetLookups = "GetLookups";
+        
         }
 
         public class Perm
@@ -552,7 +558,7 @@ public static class SD
         public const string ItIsNecessaryThatAmountMoreThanZero = "ItIsNecessaryThatAmountMoreThanZero";
         public const string Used = "Used";
         public const string CannotBeFound = "CannotBeFound";
-
+        public const string MangerAlready = "MangerAlready";
         public const string Restored = "Restored";
         public const string Departments = "Departments";
         public const string DelayedSuccessfully = "DelayedSuccessfully";
