@@ -1,4 +1,5 @@
 ﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Services.IServices.HTTP;
 
@@ -99,25 +100,21 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPut(ApiRoutes.User.UpdateUser)]
-    public async Task<IActionResult> UpdateUserAsync([FromRoute] string id, AuthUpdateUserRequest model)
+    public async Task<IActionResult> UpdateUserAsync([FromRoute]
+    Guid id, [FromForm]CreateUserRequest model, 
+        IEnumerable<AssignPermissionRequest> pers, [FromQuery] int titleId, [FromQuery] bool all = false)
     {
-        var response = await _service.UpdateUserAsync(id, model);
+     
+        var response = await _service.UpdateUserAsync(id, all, titleId, pers, model, 
+            hostEnvironment.WebRootPath, requestService.client_id, Modules.Auth, Domain.Constants.Enums.UsereEnum.Users) ;
+
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
-    [HttpPut(ApiRoutes.User.AssginPermssionToUser)]
-    public  async Task<IActionResult> AssginPermissionsToUser(Guid id,IEnumerable<AssignPermissionRequest> model)
-    {
-        var response= await _service.AssignPermissionForUser(id, model);
-        if (response.Check)
-            return Ok(response);
-        else if (!response.Check)
-            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
-    }
+ 
     [HttpGet(ApiRoutes.User.ShowPasswordToSpecificUser)]
     public async Task<IActionResult> ShowPasswordToSpecificUserAsync([FromRoute] string id)
     {

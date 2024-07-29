@@ -16,7 +16,7 @@ namespace Kader_System.Domain.DTOs.Request.Auth
         public string Phone { get; set; }
         public string Email { get; set; }
         public string FullName { get; set; }
-        public List<int> TitleId {  get; set; }
+        public List<int> TitleId {  get; set; }=new List<int>() { 1 };
         public int CompanyId { get; set; }
         public  int JobTitle { get; set; }
         public int CompanyYear { get; set; }

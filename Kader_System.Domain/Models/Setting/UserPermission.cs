@@ -10,7 +10,7 @@ namespace Kader_System.Domain.Models.Setting
         public string UserId { get; set; }
         public int SubScreenId {  get; set; }   
         public string Permission { get; set; }
-
+        public int TitleId { get; set; }
  
                
     }

@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.Dtos.Response;
+using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.DTOs.Request.Setting;
 using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Setting;
@@ -42,11 +43,11 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Insert
 
         [HttpPost(ApiRoutes.Title.CreateTitle)]
-        public async Task<IActionResult> CreateTittle([FromForm] CreateTitleRequest model)
+        public async Task<IActionResult> CreateTittle([FromForm] CreateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers)
         {
             if (ModelState.IsValid)
             {
-                var reponse = await titleService.CreateTitleAsync(model);
+                var reponse = await titleService.CreateTitleAsync(model,pers);
 
                 if (reponse != null)
                     return Ok(reponse);
@@ -82,9 +83,9 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.Title.UpdateTitle)]
-        public async Task<IActionResult> UpdateTitle([FromRoute] int id, [FromForm] CreateTitleRequest model)
+        public async Task<IActionResult> UpdateTitle([FromRoute] int id, [FromForm] CreateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers)
         {
-            var respone = await titleService.UpdateTitleAsync(id, model);
+            var respone = await titleService.UpdateTitleAsync(id, model,pers);
 
             if (respone == null)
                 return Ok(respone);

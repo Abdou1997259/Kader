@@ -82,6 +82,7 @@ public static class SD
         public const string RolePermission = "RolePermission";
         public const string UserPermission = "UserPermission";
         public const string DomainRestricted = "DomainRestricted";
+        public const string Company = "CompanyId";
         public const string UserId = "uid";
     }
     public static class Shared

@@ -2,12 +2,15 @@
 using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.Auth;
+using Kader_System.Domain.Models;
+using Kader_System.Domain.Models.EmployeeRequests;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
 using static Kader_System.Domain.Constants.SD.ApiRoutes;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -129,35 +132,35 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<Response<AuthUpdateUserRequest>> UpdateUserAsync(string id, AuthUpdateUserRequest model)
-    {
-        if (id == null || model.Id != id)
-        {
-            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                _sharLocalizer[Localization.User], id);
+    //public async Task<Response<AuthUpdateUserRequest>> UpdateUserAsync(string id, AuthUpdateUserRequest model)
+    //{
+    //    if (id == null || model.Id != id)
+    //    {
+    //        string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+    //            _sharLocalizer[Localization.User], id);
 
-            return new Response<AuthUpdateUserRequest>()
-            {
-                Data = model,
-                Error = resultMsg,
-                Msg = resultMsg
-            };
-        }
-        string err = _sharLocalizer[Localization.Error];
+    //        return new Response<AuthUpdateUserRequest>()
+    //        {
+    //            Data = model,
+    //            Error = resultMsg,
+    //            Msg = resultMsg
+    //        };
+    //    }
+    //    string err = _sharLocalizer[Localization.Error];
 
-        var obj = _mapper.Map<AuthUpdateUserRequest, ApplicationUser>(model, (await _userManager.FindByIdAsync(id))!);
-        obj.UpdateDate = new DateTime().NowEg();
-        obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
+    //    var obj = _mapper.Map<AuthUpdateUserRequest, ApplicationUser>(model, (await _userManager.FindByIdAsync(id))!);
+    //    obj.UpdateDate = new DateTime().NowEg();
+    //    obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
 
-        bool isSucceeded = (await _userManager.UpdateAsync(obj)).Succeeded;
+    //    bool isSucceeded = (await _userManager.UpdateAsync(obj)).Succeeded;
 
-        return new Response<AuthUpdateUserRequest>()
-        {
-            Check = isSucceeded,
-            Data = model,
-            Msg = isSucceeded ? _sharLocalizer[Localization.Updated] : _sharLocalizer[err]
-        };
-    }
+    //    return new Response<AuthUpdateUserRequest>()
+    //    {
+    //        Check = isSucceeded,
+    //        Data = model,
+    //        Msg = isSucceeded ? _sharLocalizer[Localization.Updated] : _sharLocalizer[err]
+    //    };
+    //}
 
     public async Task<Response<string>> ShowPasswordToSpecificUserAsync(string id)
     {
@@ -435,6 +438,7 @@ public class AuthService : IAuthService
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName!),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(RequestClaims.Company,user.CompanyId.ToString()),
             new Claim(RequestClaims.UserId, user.Id)
         }
         .Union(roleClaims)
@@ -450,7 +454,51 @@ public class AuthService : IAuthService
             expires: DateTime.UtcNow.AddDays(2).Add(_jwt.TokenLifetime),
             signingCredentials: signingCredentials);
     }
+    
+    public async Task<Response<CreateUserResponse>> UpdateUserAsync(Guid id, bool all, int titleId, IEnumerable<AssignPermissionRequest> model
+        , CreateUserRequest request, string root, string clientName, 
+        
+        string moduleName, UsereEnum userenum = UsereEnum.None)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
+        var msg = _sharLocalizer[Localization.NotFoundData];
+        if (user == null)
+        {
+           
+            return new()
+            {
+                Check = false,
+                Data = null,
+                Msg = msg
+            };
+        }
 
+    
+
+        // Map CreateUserRequest to ApplicationUser
+        var mappeduser=_mapper.Map(request,user);
+
+        // Set additional user properties if needed
+        mappeduser.Id = Guid.NewGuid().ToString();
+        var full_path = Path.Combine(root, clientName, moduleName);
+        var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
+        if (request.Image != null)
+            _fileServer.RemoveFile(full_path, mappeduser.ImagePath);
+        mappeduser.ImagePath = (request.Image == null || request.Image.Length == 0) ? null :
+           await _fileServer.UploadFile(root, clientName, moduleNameWithType, request.Image);
+
+        _unitOfWork.Users.Update(mappeduser);
+        await _unitOfWork.CompleteAsync();
+        await AssignPermissionForUser(id, all, titleId, model);
+         msg = _sharLocalizer[Localization.Updated];
+        return new()
+        {
+            Check = true,
+            Data = null,
+            Msg = msg
+        };
+
+    }
     public async  Task<Response<CreateUserResponse>> CreateUserAsync(CreateUserRequest model, string root, string clientName, string moduleName, UsereEnum userenum= UsereEnum.None)
     {  // Check if user already exists
         var isExited = await _unitOfWork.Users.ExistAsync(x => x.UserName == model.UserName);
@@ -464,7 +512,7 @@ public class AuthService : IAuthService
                 Data = null
             };
         }
-
+        
         // Map CreateUserRequest to ApplicationUser
         var user = _mapper.Map<ApplicationUser>(model);
         
@@ -475,35 +523,26 @@ public class AuthService : IAuthService
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         user.ImagePath = (model.Image == null || model.Image.Length == 0) ? null :
             await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Image);
+       IEnumerable< UserPermission> listofPermission = null;
+        foreach (int i in model.TitleId)
+        {
+            var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetSpecificSelectAsync(x => x.TitleId == i, x => x);
+             listofPermission = titlepermissions.Select(x => new UserPermission
+            {
+                UserId=user.Id,
+                TitleId=x.TitleId,
+                SubScreenId=x.SubScreenId,
+                Permission=x.Permissions
+
+            });
+
+        }
+        _unitOfWork.UserPermssionRepositroy.UpdateRange(listofPermission);
 
         // Add user to the database
         await _unitOfWork.Users.AddAsync(user);
      
 
-    
-        if(model.TitleId ==null)
-        {
-            var errorMsg = _sharLocalizer[Localization.Error];
-            return new Response<CreateUserResponse>
-            {
-                Check = false,
-                Msg = errorMsg,
-                Data = null
-            };
-        }
-
-        var titlePermisssions = await _unitOfWork.TitlePermissionRepository.GetSpecificSelectAsync(x=>model.TitleId.Any(t=>t==x.TitleId), x => x);
-        if (titlePermisssions != null)
-        {
-            foreach (var pTitle in titlePermisssions)
-            {
-                await _unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission { UserId = user.Id, Permission = pTitle.Permissions, SubScreenId = pTitle.SubScreenId });
-
-
-
-            }
-        
-        }
      
         var result = await _unitOfWork.CompleteAsync();
         if (result <= 0)
@@ -542,7 +581,7 @@ public class AuthService : IAuthService
 
     }
 
-    public async Task<Response<string>> AssignPermissionForUser(Guid id, IEnumerable<AssignPermissionRequest> model)
+    private async Task<Response<string>> AssignPermissionForUser(Guid id, bool all,int titleId,IEnumerable<AssignPermissionRequest> model)
     {
         var UserPermission = model.Select(x => new UserPermission
         {
@@ -551,8 +590,144 @@ public class AuthService : IAuthService
             SubScreenId = x.SubScreenId,
 
         });
-        _unitOfWork.UserPermssionRepositroy.AddRangeAsync(UserPermission);
-         await _unitOfWork.CompleteAsync();
+        if(titleId ==null)
+        {
+            return new()
+            {
+                Check = false,
+                Data = "",
+
+            };
+        }
+        List<TitlePermission> AddedPer = null;
+        foreach (var AssginedPermssion in model) {
+            var titlePermission = await _unitOfWork.TitlePermissionRepository
+                .GetSpecificSelectAsync(x => x.TitleId == titleId && x.SubScreenId== AssginedPermssion.SubScreenId , x => x);
+           IEnumerable< TitlePermission> listUpdatedper = null;
+            
+             if (titlePermission != null)
+            {
+
+                 listUpdatedper = titlePermission.Select(x =>new TitlePermission {
+                  Permissions = string.Join(',', AssginedPermssion.Permission),
+                  ScreenSub=x.ScreenSub,
+                  TitleId=x.TitleId
+                });
+                _unitOfWork.TitlePermissionRepository.UpdateRange(listUpdatedper); 
+
+
+               
+            } 
+            else
+            {
+                AddedPer.Add(new TitlePermission
+                {
+                    TitleId = titleId,
+                    SubScreenId = AssginedPermssion.SubScreenId,
+                    Permissions = string.Join(',', AssginedPermssion.Permission)
+                });
+
+
+
+            }
+
+
+
+        }
+        await _unitOfWork.TitlePermissionRepository.AddRangeAsync(AddedPer);
+        await _unitOfWork.CompleteAsync();
+       
+         
+        if (all)
+        {
+            List <UserPermission> AddedUserPer = null;
+            foreach (var AssginedPermssion in model)
+            {
+                var titlePermission = await _unitOfWork.UserPermssionRepositroy
+                    .GetSpecificSelectAsync(x => x.UserId ==id.ToString()  && x.SubScreenId == AssginedPermssion.SubScreenId, x => x);
+                IEnumerable<UserPermission> listUpdatedper = null;
+
+                if (titlePermission != null)
+                {
+
+                    listUpdatedper = titlePermission.Select(x => new UserPermission
+                    {
+                        Permission = string.Join(',', AssginedPermssion.Permission),
+                        SubScreenId = x.SubScreenId,
+                        TitleId = x.TitleId
+                    });
+                    _unitOfWork.UserPermssionRepositroy.UpdateRange(listUpdatedper);
+
+
+
+                }
+                else
+                {
+                    AddedPer.Add(new TitlePermission
+                    {
+                        TitleId = titleId,
+                        SubScreenId = AssginedPermssion.SubScreenId,
+                        Permissions = string.Join(',', AssginedPermssion.Permission)
+                    });
+
+
+
+                }
+
+
+
+            }
+            await _unitOfWork.TitlePermissionRepository.AddRangeAsync(AddedPer);
+            await _unitOfWork.CompleteAsync();
+
+
+        }
+        else
+        {
+            List<UserPermission> AddedUserPer = null;
+            foreach (var AssginedPermssion in model)
+            {
+                var titlePermission = await _unitOfWork.UserPermssionRepositroy
+                    .GetSpecificSelectAsync(x =>  x.SubScreenId == AssginedPermssion.SubScreenId, x => x);
+                IEnumerable<UserPermission> listUpdatedper = null;
+
+                if (titlePermission != null)
+                {
+
+                    listUpdatedper = titlePermission.Select(x => new UserPermission
+                    {
+                        Permission = string.Join(',', AssginedPermssion.Permission),
+                        SubScreenId = x.SubScreenId,
+                        TitleId = x.TitleId
+                    });
+                    _unitOfWork.UserPermssionRepositroy.UpdateRange(listUpdatedper);
+
+
+
+                }
+                else
+                {
+                    AddedPer.Add(new TitlePermission
+                    {
+                        TitleId = titleId,
+                        SubScreenId = AssginedPermssion.SubScreenId,
+                        Permissions = string.Join(',', AssginedPermssion.Permission)
+                    });
+
+
+
+                }
+
+
+
+            }
+            await _unitOfWork.TitlePermissionRepository.AddRangeAsync(AddedPer);
+            await _unitOfWork.CompleteAsync();
+
+        }
+    
+        
+         
         return new()
         {
             Check = true,
