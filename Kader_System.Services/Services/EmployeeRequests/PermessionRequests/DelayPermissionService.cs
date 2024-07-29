@@ -187,15 +187,16 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             }
             var mappedleave = _mapper.Map(model, leave);
             _unitOfWork.DelayPermission.Update(mappedleave);
+            var full_path = Path.Combine(root, clientName, moduleName);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-
+              if (model.Attachment != null)
+                _fileServer.RemoveFile(full_path, leave.AtachmentPath);
             leave.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
 
 
-            var full_path = Path.Combine(root, clientName, moduleName);
-            if (model.Attachment != null)
-                _fileServer.RemoveFile(full_path, leave.AtachmentPath);
+ 
+          
 
 
             _unitOfWork.DelayPermission.Update(leave);

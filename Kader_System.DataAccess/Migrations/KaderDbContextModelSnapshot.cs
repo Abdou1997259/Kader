@@ -243,7 +243,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = 3,
                             CompanyYear = 2013,
-                            ConcurrencyStamp = "f6df4c33-d7b6-434e-b780-2e1766ca74da",
+                            ConcurrencyStamp = "072078eb-4928-4e90-928c-38160b1f1bf3",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             FullName = "Mohamed abdou",
@@ -254,10 +254,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAELcJx+Dj0qpmTzobsISZikLLJLEHOHGaY1NPFV6sqw8vii/qu8djBddJKfcQPXSSqQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGZcynbzMAwGS+8fJ9+Pq0LOLHLCRJcV+UAdxVboQAvsk0qCJ2rRIwJsOlKSY9FvEQ==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "66bcbe7c-abd6-4f16-bd16-43f1035a36a9",
+                            SecurityStamp = "8ad892b0-28ca-4cdb-b7b2-f2beea905796",
                             TitleId = "1",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -3488,6 +3488,9 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SubScreenId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TitleId")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
