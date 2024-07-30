@@ -81,13 +81,13 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     #region EmployeeRequest_Dbset
     public DbSet<HrEmployeeRequests> HrEmployeeRequests { get; set; }
     public DbSet<LeavePermissionRequest> LeavePermissionsRequests { get; set; }
-    public DbSet<DelayPermission> HrDelayPermissions { get; set; } 
+    public DbSet<DelayPermission> HrDelayPermissions { get; set; }
     public DbSet<LoanRequest> HrLoanRequests { get; set; }
     public DbSet<ResignationRequest> HrResignationRequests { get; set; }
     public DbSet<VacationRequests> HrVacationRequests { get; set; }
-    public DbSet<AllowanceRequest> AllowanceRequests { get; set; }    
-    public DbSet<SalaryIncreaseRequest> SalaryIncreaseRequests { get; set; }    
-    public DbSet<ContractTerminationRequest>   ContractTerminationRequests { get; set; }
+    public DbSet<AllowanceRequest> AllowanceRequests { get; set; }
+    public DbSet<SalaryIncreaseRequest> SalaryIncreaseRequests { get; set; }
+    public DbSet<ContractTerminationRequest> ContractTerminationRequests { get; set; }
 
 
 
@@ -207,7 +207,26 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .Property(p => p.Amount)
             .HasPrecision(18, 2);
         #endregion
+
+        #region SubScreen
+        //modelBuilder.Entity<StMainScreenCat>()
+        //    .HasMany(s => s.StScreenSub)
+        //    .WithOne(sub => sub.ScreenCat)
+        //    .HasForeignKey(sub => sub.ScreenCatId);
+
+        modelBuilder.Entity<StMainScreen>().
+            HasMany(x => x.CategoryScreen).
+            WithOne(x => x.screenCat).
+            HasForeignKey(x => x.MainScreenId);
+
+        modelBuilder.Entity<StMainScreenCat>().
+            HasMany(x => x.StScreenSub).
+            WithOne(x => x.ScreenCat).
+            HasForeignKey(x => x.ScreenCatId);
+        #endregion
+
     }
+
 
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
     {

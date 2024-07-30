@@ -107,22 +107,25 @@ public static class SD
     {
         public class MainScreenCategory
         {
-            public const string ListOfMainScreensCategories = "screen_main/getListOfMainScreens";
-            public const string GetAllMainScreenCategories = "screen_main";
-            public const string CreateMainScreenCategory = "screen_main";
-            public const string UpdateMainScreenCategory = "screen_main/{id}";
-            public const string GetMainScreenCategoryById = "screen_main/{id}";
-            public const string DeleteMainScreenCategory = "screen_main/{id}";
+             
+            public const string ListOfMainScreensCategories = "screen_cat/getListOfMainScreens";
+            public const string GetAllMainScreenCategories = "screen_cat";
+            public const string CreateMainScreenCategory = "screen_cat";
+            public const string UpdateMainScreenCategory = "screen_cat/update/{id}";
+            public const string GetMainScreenCategoryById = "screen_cat/getById/{id}";
+            public const string DeleteMainScreenCategory = "screen_cat/{id}";
         }
 
         public class MainScreen
         {
-            public const string ListOfMainScreens = "screen_cat/getListOfMainScreens";
-            public const string GetAllMainScreens = "screen_cat";
-            public const string CreateMainScreen = "screen_cat";
-            public const string UpdateMainScreen = "screen_cat/{id}";
-            public const string GetMainScreenById = "screen_cat/{id}";
-            public const string DeleteMainScreen = "screen_cat/{id}";
+            public const string ListOfMainScreens = "screen_main/getListOfMainScreens";
+            public const string GetMainScreensWithRelatedData = "screen_main/myendpoint"; 
+            public const string GetAllMainScreens = "screen_main";
+            public const string CreateMainScreen = "screen_main";
+            public const string UpdateMainScreen = "screen_main/update/{id}";
+            public const string GetMainScreenById = "screen_main/getById/{id}";
+            public const string DeleteMainScreen = "screen_main/{id}";
+
         }
 
         public class Screen
@@ -140,9 +143,9 @@ public static class SD
             public const string ListOfSubMainScreens = "screen_sub/getListOfSubMainScreens";
             public const string GetAllSubMainScreens = "screen_sub";
             public const string CreateSubMainScreen = "screen_sub";
-            public const string UpdateSubMainScreen = "screen_sub/{id}";
-            public const string GetSubMainScreenById = "screen_sub/{id}";
-            public const string DeleteSubMainScreen = "screen_sub/{id}";
+            public const string UpdateSubMainScreen = "screen_sub/update/{id}";
+            public const string GetSubMainScreenById = "screen_sub/getById/{id}";
+            public const string DeleteSubMainScreen = "screen_sub/delete/{id}";
         }
         public class StResponsiblity
         {

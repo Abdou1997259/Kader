@@ -14,7 +14,7 @@ namespace Kader_System.DataAccess.Repositories.Setting
                 .Include(t => t.TitlePermissions)
                 .Include(t => t.TitlePermissions.Select(p => p.ScreenSub))
                 .ThenInclude(t => t.ScreenCat)
-                .ThenInclude(t => t.MainScreen)
+                //.ThenInclude(t => t.MainScreen)
                 .Select(t => new GetTitleByIdResponse()
                 {
                     Id = t.Id,
@@ -26,9 +26,9 @@ namespace Kader_System.DataAccess.Repositories.Setting
                         url = p.ScreenSub!.Url,
                         cat_id = p.ScreenSub!.ScreenCatId,
                         cat_title = p.ScreenSub!.ScreenCat!.Screen_cat_title_ar,
-                        main_id = p.ScreenSub!.ScreenCat!.MainScreenId,
-                        main_title = p.ScreenSub!.ScreenCat!.MainScreen!.Screen_main_title_ar,
-                        main_image = p.ScreenSub!.ScreenCat!.MainScreen!.Screen_main_image,
+                        main_id = p.ScreenSub!.ScreenCatId,
+                        main_title = p.ScreenSub!.ScreenCat!.screenCat!.Screen_main_title_ar,
+                        main_image = p.ScreenSub!.ScreenCat!.screenCat!.Screen_main_image,
                         sub_id = p.SubScreenId,
                         actions = "",
 
