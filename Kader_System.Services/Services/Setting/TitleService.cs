@@ -54,19 +54,19 @@ namespace Kader_System.Services.Services.Setting
                         Id = x.Id,
                         TitleNameAr = x.TitleNameAr,
                         TitleNameEn = x.TitleNameEn,
-                        Permissions = x.TitlePermissions.Select(p=>new GetAllTitlePermissionResponse()
-                        {
-                            Id = p.Id,
-                            SubScreenId = p.SubScreenId,
-                            sub_title = p.ScreenSub!.Screen_sub_title_ar,
-                            actions = "",
-                            url = p.ScreenSub!.Url,
-                            title_permission = new List<int>()
-                            {
-                               1,2, 3, 4,
-                            }
+                        //Permissions = x.TitlePermissions.Select(p=>new GetAllTitlePermissionResponse()
+                        //{
+                        //    Id = p.Id,
+                        //    SubScreenId = p.SubScreenId,
+                        //    sub_title = p.ScreenSub!.Screen_sub_title_ar,
+                        //    actions = "",
+                        //    url = p.ScreenSub!.Url,
+                        //    title_permission = new List<int>()
+                        //    {
+                        //       1,2, 3, 4,
+                        //    }
                             
-                        }).ToList()
+                        //}).ToList()
                     }, orderBy: x =>
                         x.OrderByDescending(x => x.Id))).ToList()
             };
