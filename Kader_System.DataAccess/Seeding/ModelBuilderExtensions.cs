@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.Constants.Enums;
+using Microsoft.IdentityModel.Abstractions;
 
 namespace Kader_System.DataAccess.Seeding;
 
@@ -35,6 +36,13 @@ public static class ModelBuilderExtensions
                 UserName = "admin",
                 NormalizedUserName = "ADMIN",
                 Email = "mohammed88@gmail.com",
+                FullName="Mohamed abdou",
+                ImagePath="/",
+                TitleId="1",
+                PhoneNumber="1202200",
+                CompanyYear=2013,
+                CompanyId=3,
+         
                 NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                 EmailConfirmed = true,
                 IsActive = true,
@@ -62,7 +70,22 @@ public static class ModelBuilderExtensions
            new() { Id = 5, Name = "حذف نهائى", NameInEnglish = ActionsEnums.ForceDelete.ToString() },
            new() { Id = 6, Name = "طباعة", NameInEnglish = ActionsEnums.Print.ToString() }
            );
+      //  modelBuilder.Entity<StMainScreen>().HasData(
+      //      new StMainScreen { Id = 1, Screen_main_title_ar = "الموارد البشريه", Screen_main_title_en="Human Resources" },
+      //      new StMainScreen { Id = 2, Screen_main_title_ar = "الاعدادات", Screen_main_title_en = "Setting" }
+               
+      //  );
+      //  modelBuilder.Entity<StMainScreenCat>().HasData(
+      //    new StMainScreenCat { Id = 1,MainScreenId=1, Screen_cat_title_en = "الاكواد", Screen_cat_title_ar = "Codes" },
+      //    new StMainScreenCat { Id = 2,MainScreenId=1, Screen_cat_title_en = "الحركات", Screen_cat_title_ar = "Transcation" },
+      //    new StMainScreenCat { Id = 3,MainScreenId=2, Screen_cat_title_en = "الاعدادات", Screen_cat_title_ar = "Setting" }
+      //);
 
+       
+       // modelBuilder.Entity<StScreenSub>().HasData(
+       //      new StScreenSub { Id = 1, Screen_sub_title_ar = "الشركات", Screen_sub_title_en = "Companies", ScreenCatId =1  ,Url=""}
+            
+       //);
         modelBuilder.Entity<HrVacationType>()
             .HasData(
            new() { Id = 1, Name = "عام كامل", NameInEnglish = "Full year" },

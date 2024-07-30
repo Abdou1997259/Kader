@@ -9,5 +9,5 @@ public interface IDepartmentService
     Task<Response<CreateDepartmentRequest>> UpdateDepartmentAsync(int id, CreateDepartmentRequest model);
     Task<Response<string>> UpdateActiveOrNotDepartmentAsync(int id);
     Task<Response<string>> DeleteDepartmentAsync(int id);
-    Task<Response<string>> AddEmployee(AddEmpolyeeToDepartmentRequest model);   
+    Task<Response<string>> AddEmployee( int id, AddEmpolyeeToDepartmentRequest model);   
 }

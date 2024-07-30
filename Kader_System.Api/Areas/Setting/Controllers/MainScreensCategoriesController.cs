@@ -5,7 +5,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [Area(Modules.Setting)]
 [ApiExplorerSettings(GroupName = Modules.Setting)]
 [ApiController]
-[Authorize(Permissions.MainScreenCat.View)]
+//[Authorize(Permissions.MainScreenCat.View)]
 [Route("api/v1/")]
 
 public class MainScreensCategoriesController(IMainScreenCategoryService service, IRequestService requestService) : ControllerBase

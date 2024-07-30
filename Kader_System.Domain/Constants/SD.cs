@@ -57,6 +57,7 @@ public static class SD
     public static class SuperAdmin
     {
         public const string Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1";
+
         public const string RoleId = "fab4fac1-c546-41de-aebc-a14da68957ab1";
         public static string Password = "123456";
         public static string RoleNameInAr = "سوبر أدمن";
@@ -81,6 +82,7 @@ public static class SD
         public const string RolePermission = "RolePermission";
         public const string UserPermission = "UserPermission";
         public const string DomainRestricted = "DomainRestricted";
+        public const string Company = "CompanyId";
         public const string UserId = "uid";
     }
     public static class Shared
@@ -163,12 +165,19 @@ public static class SD
             public const string LoginUser1 = "LoginUser1";
             public const string ChangeActiveOrNot = "ChangeActiveOrNotUser/{id}";
             public const string UpdateUser = "UpdateUser/{id}";
+            public const string AssginPermssionToUser = "assginPermissionToUser/{id}";
             public const string ShowPasswordToSpecificUser = "ShowPasswordToSpecificUser/{id}";
             public const string ChangePassword = "ChangePassword";
             public const string DeleteUser = "DeleteUser/{id}";
             public const string SetNewPasswordToSpecificUser = "SetNewPasswordToSpecificUser";
             public const string SetNewPasswordToSuperAdmin = "SetNewPasswordToSuperAdmin/{newPassword}";
             public const string GetMyProfile = "getMyProfile/{userId}";
+
+            public const string GetUserById = "GetUserById/{id}";
+            public const string RestoreUser = "RestoreUser/{id}";
+            public const string GetListOfUser = "GetListOfUsers";
+            public const string GetLookups = "GetLookups";
+        
         }
 
         public class Perm
@@ -330,7 +339,7 @@ public static class SD
             public const string UpdateDepartment = "department/update/{id}";
             public const string GetDepartmentById = "department/getById/{id}";
             public const string DeleteDepartment = "department/delete/{id}";
-            public const string AddEmp = "department/addemployee";
+            public const string AddEmp = "department/addemployee/{id}";
         }
         public class Loan
         {
@@ -553,7 +562,7 @@ public static class SD
         public const string ItIsNecessaryThatAmountMoreThanZero = "ItIsNecessaryThatAmountMoreThanZero";
         public const string Used = "Used";
         public const string CannotBeFound = "CannotBeFound";
-
+        public const string MangerAlready = "MangerAlready";
         public const string Restored = "Restored";
         public const string Departments = "Departments";
         public const string DelayedSuccessfully = "DelayedSuccessfully";

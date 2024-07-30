@@ -23,4 +23,10 @@ namespace Kader_System.Domain.Constants.Enums
         #endregion
         None = 0
     }
+    public enum UsereEnum
+    {
+        None = 0,
+        Users=1,
+
+    }
 }

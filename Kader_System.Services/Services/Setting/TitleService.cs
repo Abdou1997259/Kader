@@ -1,5 +1,7 @@
 ﻿
 
+using Kader_System.Domain.DTOs.Request.Auth;
+
 namespace Kader_System.Services.Services.Setting
 {
     
@@ -92,8 +94,8 @@ namespace Kader_System.Services.Services.Setting
                 Check = true
             };
         }
-
-        public async Task<Response<CreateTitleRequest>> CreateTitleAsync(CreateTitleRequest model)
+        
+        public async Task<Response<CreateTitleRequest>> CreateTitleAsync(CreateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers)
         {
             bool exists = false;
             exists = await unitOfWork.Titles.ExistAsync(x => x.TitleNameAr.Trim() == model.TitleNameAr
@@ -132,7 +134,18 @@ namespace Kader_System.Services.Services.Setting
 
             await unitOfWork.Titles.AddAsync(newTitle);
 
+
             await unitOfWork.CompleteAsync();
+            var listOfTitlePermssion = pers.Select(x => new TitlePermission
+            {
+                SubScreenId = x.SubScreenId,
+                TitleId = newTitle.Id,
+                Permissions = string.Join(',', x.Permission)
+
+            });
+            await unitOfWork.TitlePermissionRepository.AddRangeAsync(listOfTitlePermssion);
+            await unitOfWork.CompleteAsync();
+
 
             return new()
             {
@@ -147,9 +160,37 @@ namespace Kader_System.Services.Services.Setting
             return await unitOfWork.Titles.GetTitleByIdAsync(id, lang);
         }
 
-        public Task<Response<CreateTitleRequest>> UpdateTitleAsync(int id, CreateTitleRequest model)
+        public async  Task<Response<CreateTitleRequest>> UpdateTitleAsync(int id, CreateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers)
         {
-            throw new NotImplementedException();
+            var title = await unitOfWork.Titles.GetByIdAsync(id);
+            var msg = sharLocalizer[Localization.IsExist];
+            if (title == null)
+            {
+                
+                return new()
+                {
+                    Data = null,
+                    Check = false
+                   ,
+                    Msg = msg
+                };
+
+            }
+            title.TitleNameAr = model.TitleNameAr;
+            title.TitleNameEn = model.TitleNameEn;
+            unitOfWork.Titles.Update(title);
+            await unitOfWork.CompleteAsync();
+           await AssginTitlePermssion(id, pers);
+            msg = sharLocalizer[Localization.Updated];
+            return new()
+            {
+               
+                Check = true,
+                Data = model,
+                Msg= msg    
+
+            };
+
         }
 
         public Task<Response<string>> UpdateActiveOrNotTitleAsync(int id)
@@ -160,6 +201,56 @@ namespace Kader_System.Services.Services.Setting
         public Task<Response<string>> DeleteTitleAsync(int id)
         {
             throw new NotImplementedException();
+        }
+
+        private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<AssginTitlePermissionRequest> model)
+        {
+
+            List<TitlePermission> AddedPer = null;
+            foreach (var AssginedPermssion in model)
+            {
+                var titlePermission = await unitOfWork.TitlePermissionRepository
+                    .GetSpecificSelectAsync(x => x.TitleId == id && x.SubScreenId == AssginedPermssion.SubScreenId, x => x);
+                IEnumerable<TitlePermission> listUpdatedper = null;
+
+                if (titlePermission != null)
+                {
+
+                    listUpdatedper = titlePermission.Select(x => new TitlePermission
+                    {
+                        Permissions = string.Join(',', AssginedPermssion.Permission),
+                        ScreenSub = x.ScreenSub,
+                        TitleId = x.TitleId
+                    });
+                    unitOfWork.TitlePermissionRepository.UpdateRange(listUpdatedper);
+
+
+
+                }
+                else
+                {
+                    AddedPer.Add(new TitlePermission
+                    {
+                        TitleId = id,
+                        SubScreenId = AssginedPermssion.SubScreenId,
+                        Permissions = string.Join(',', AssginedPermssion.Permission)
+                    });
+
+
+
+                }
+
+
+
+            }
+            await unitOfWork.TitlePermissionRepository.AddRangeAsync(AddedPer);
+            await unitOfWork.CompleteAsync();
+            return new()
+            {
+                Check = true,
+                Data = "",
+
+            };
         }
     }
 }

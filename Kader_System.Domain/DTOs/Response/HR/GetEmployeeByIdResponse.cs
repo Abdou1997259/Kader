@@ -103,7 +103,7 @@ namespace Kader_System.Domain.DTOs.Response.HR
         public string qualification_name { get; set; }
         public double allowances_sum { get; set; }
         public double employee_loans_sum { get; set; }
-
+        
     }
 
 

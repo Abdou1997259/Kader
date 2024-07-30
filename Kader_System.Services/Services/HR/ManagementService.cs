@@ -189,7 +189,24 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<CreateManagementRequest>> UpdateManagementAsync(int id, CreateManagementRequest model)
         {
+            var mangements = await unitOfWork.Managements.GetAllAsync();
             var obj = await unitOfWork.Managements.GetByIdAsync(id);
+
+            foreach (var item in mangements) {
+
+                if (item.ManagerId == model.ManagerId) {
+                    string resultMsg = string.Format(shareLocalizer[Localization.MangerAlready]);
+                    
+                    return new()
+                    {
+
+                        Data = model,
+                        Error = resultMsg,
+                        Msg = resultMsg
+                    };
+
+                }
+            }
             if (obj == null)
             {
                 string resultMsg = string.Format(shareLocalizer[Localization.CannotBeFound],

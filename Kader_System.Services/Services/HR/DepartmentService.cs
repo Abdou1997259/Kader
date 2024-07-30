@@ -247,7 +247,7 @@ namespace Kader_System.Services.Services.HR
             };
         }
 
-        public async Task<Response<string>> AddEmployee(AddEmpolyeeToDepartmentRequest model)
+        public async Task<Response<string>> AddEmployee(int id,AddEmpolyeeToDepartmentRequest model)
         {
             var empolyee = await unitOfWork.Employees.GetByIdAsync( model.EmpolyeeId);
             if (empolyee is  null) {
@@ -273,7 +273,7 @@ namespace Kader_System.Services.Services.HR
                 };
 
             }
-            var department = await unitOfWork.Departments.GetByIdAsync(model.DepartmentId);
+            var department = await unitOfWork.Departments.GetByIdAsync(id);
             if (department == null)
             {
                 var msg = $"{shareLocalizer[Localization.Departments]} {shareLocalizer[Localization.NotFound]}";
@@ -286,7 +286,7 @@ namespace Kader_System.Services.Services.HR
                 };
 
             }
-            if(department.ManagementId== management.Id)
+            if(department.ManagementId!= management.Id)
             {
                 var msg = $"{shareLocalizer[Localization.IsDepartmentInMang]}";
                 return new()
@@ -298,7 +298,7 @@ namespace Kader_System.Services.Services.HR
                 };
             }
             //return $"{FirstNameEn} {FatherNameEn} {GrandFatherNameEn} {FamilyNameEn}";
-             empolyee.DepartmentId = model.DepartmentId;
+             empolyee.DepartmentId = id;
             empolyee.ManagementId = model.MangamentId;
             unitOfWork.Employees.Update(empolyee);
            await unitOfWork.CompleteAsync();

@@ -2,4 +2,6 @@
 
 public interface ISubMainScreenRepository : IBaseRepository<StScreenSub>
 {
+
+
 }

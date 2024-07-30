@@ -5,7 +5,7 @@
     {
         [Key]
         public int Id { get; set; }
-        public int TitleId { get; set; }
+        public int TitleId { get; set; } 
         [ForeignKey(nameof(TitleId))] 
         public Title Title { get; set; } = default!;
         public int SubScreenId { get; set; }
