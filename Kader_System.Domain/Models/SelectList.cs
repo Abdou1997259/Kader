@@ -15,3 +15,11 @@ public abstract class SpecificSelectList : BaseEntity
 }
 
 
+public abstract class SpecificSelectListMain : BaseEntity
+{
+    [Key]
+    public int Id { get; set; }
+    public required string Title { get; set; }
+}
+
+

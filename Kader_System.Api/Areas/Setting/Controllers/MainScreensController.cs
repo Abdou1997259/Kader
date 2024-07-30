@@ -1,4 +1,10 @@
+using Kader_System.DataAccesss.DbContext;
+using Kader_System.Domain.DTOs.Request.Setting;
+using Kader_System.Domain.DTOs.Response.Setting;
+using Kader_System.Domain.Interfaces.Setting;
 using Kader_System.Services.IServices.HTTP;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.Setting)]
@@ -6,18 +12,64 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 //[Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
-public class LeavePermessionController(IMainScreenService service, IRequestService requestService) : ControllerBase
+public class MainScreensController(IMainScreenService service, IRequestService requestService, KaderDbContext context) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;
- 
+
+    private readonly IMainScreenService _mainScreenRepository = service;
+    private readonly KaderDbContext _dbcontext = context;
+
+
+
+
     #region Retrieve
     [HttpGet(ApiRoutes.MainScreen.ListOfMainScreens)]
-    public async Task<IActionResult> ListOfMainScreensAsync() => 
+    public async Task<IActionResult> ListOfMainScreensAsync() =>
         Ok(await service.ListOfMainScreensAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.MainScreen.GetAllMainScreens)]
     public async Task<IActionResult> GetAllMainScreensAsync([FromQuery] StGetAllFiltrationsForMainScreenRequest model) =>
         Ok(await service.GetAllMainScreensAsync(requestService.GetRequestHeaderLanguage, model));
+
+
+
+    [HttpGet(ApiRoutes.MainScreen.GetMainScreensWithRelatedData)]
+    public async Task<IActionResult> GetMainScreensWithRelatedData([FromQuery] StGetAllFiltrationsForMainScreenRequest model)
+    {
+
+        var mainScreens = await _dbcontext.MainScreenCategories
+        .Include(ms => ms.CategoryScreen)
+            .ThenInclude(cs => cs.StScreenSub)
+        .ToListAsync();
+
+        if (mainScreens == null)
+        {
+            return NotFound();
+        }
+
+
+        var ChildScreens = mainScreens.Select(ms => new GetAllStMainScreen
+        {
+            Screen_main_title_ar = ms.Screen_main_title_ar,
+            Screen_main_title_en = ms.Screen_main_title_en,
+            CategoryScreen = ms.CategoryScreen.Select(x => new GetAllStMainScreenCat
+            {
+                Ids = ms.CategoryScreen.Select(x => x.Id).ToList(),
+                Screen_cat_title_ar = ms.CategoryScreen.Select(x => x.Screen_cat_title_ar).ToList(),
+                Screen_cat_title_en = ms.CategoryScreen.Select(x => x.Screen_cat_title_en).ToList(),
+                StScreenSub = x.StScreenSub.Select(k => new GetAllStScreenSub
+                {
+                    Ids = k.ScreenSubs.Select(x => x.Id).ToList(),
+                    Screen_sub_title_ar = k.ScreenSubs.Select(y => y.Screen_sub_title_ar).ToList(),
+                    Screen_sub_title_en = k.ScreenSubs.Select(y => y.Screen_sub_title_ar).ToList()
+                }).ToList(),
+            }).ToList()
+        });
+
+
+        return Ok(ChildScreens);
+    }
+
 
     [HttpGet(ApiRoutes.MainScreen.GetMainScreenById)]
     public async Task<IActionResult> GetMainScreenByIdAsync([FromRoute] int id)

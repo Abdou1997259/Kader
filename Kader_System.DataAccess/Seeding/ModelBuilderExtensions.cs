@@ -184,6 +184,7 @@ public static class ModelBuilderExtensions
                 new() { Id = 2, Name = "أيام عمل", NameInEnglish = "Work days" },
                 new() { Id = 3, Name = "القيمة", NameInEnglish = "Value" }
             );
+
     }
 
     public static void AddQueryFilterToAllEntitiesAssignableFrom<T>(this ModelBuilder modelBuilder,
