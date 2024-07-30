@@ -97,6 +97,7 @@ namespace Kader_System.Services.Services.HR
                     BirthDate = obj.BirthDate,
                     ChildrenNumber = obj.ChildrenNumber,
                     DepartmentId = obj.DepartmentId,
+                   
                     Email = obj.Email,
                     EmployeeImageExtension = obj.EmployeeImageExtension,
                     EmployeeTypeId = obj.EmployeeTypeId,
@@ -113,6 +114,7 @@ namespace Kader_System.Services.Services.HR
                     NationalId = obj.NationalId,
                     NationalityId = obj.NationalityId,
                     Phone = obj.Phone,
+                    
                     QualificationId = obj.QualificationId,
                     ReligionId = obj.ReligionId,
                     SalaryPaymentWayId = obj.SalaryPaymentWayId,

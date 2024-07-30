@@ -7,8 +7,8 @@ public class StGetSubMainScreenByIdResponse
     public required string Screen_sub_title_ar { get; set; }
     public int Screen_cat_id { get; set; }
     public required string Url { get; set; }
-    public required string Name { get; set; }
     public List<ActionsData> Actions { get; set; } = [];
+    public List<Title> Titles { get; set; } = [];
 }
 public class ActionsData : SpecificSelectListResponse
 {

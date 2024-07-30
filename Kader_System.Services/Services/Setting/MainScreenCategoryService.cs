@@ -15,8 +15,8 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
                 select: x => new StSelectListForMainScreenCategoryResponse
                 {
                     Id = x.Id,
-                    Screen_main_title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en,
-                    Screen_main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty
+                    Screen_cat_title_en = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
+                    //Screen_cat_image = x.Screen_cat_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.) : string.Empty
                 }, orderBy: x =>
                   x.OrderByDescending(x => x.Id));
 
@@ -41,7 +41,7 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
 
     public async Task<Response<StGetAllMainScreensCategoriesResponse>> GetAllMainScreensCategoriesAsync(string lang, StGetAllFiltrationsForMainScreenCategoryRequest model)
     {
-        Expression<Func<StMainScreen, bool>> filter = x => x.IsDeleted == model.IsDeleted;
+        Expression<Func<StMainScreenCat, bool>> filter = x => x.IsDeleted == model.IsDeleted;
 
         var result = new StGetAllMainScreensCategoriesResponse
         {
@@ -53,8 +53,8 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
                  select: x => new MainScreenCategoryData
                  {
                      Id = x.Id,
-                     Screen_main_title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en,
-                     Screen_main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty
+                     Screen_main_title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
+                     //Screen_main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty
                  }, orderBy: x =>
                    x.OrderByDescending(x => x.Id))).ToList()
         };
@@ -84,8 +84,8 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
     public async Task<Response<StCreateMainScreenCategoryRequest>> CreateMainScreenCategoryAsync(StCreateMainScreenCategoryRequest model)
     {
         bool exists = false;
-        exists = await _unitOfWork.MainScreenCategories.ExistAsync(x => x.Screen_main_title_ar.Trim() == model.Screen_main_title_ar
-        && x.Screen_main_title_en.Trim() == model.Screen_main_title_en.Trim());
+        exists = await _unitOfWork.MainScreenCategories.ExistAsync(x => x.Screen_cat_title_ar.Trim() == model.Screen_main_cat_title_ar
+        && x.Screen_cat_title_en.Trim() == model.Screen_main_cat_title_en.Trim());
 
         if (exists)
         {
@@ -110,10 +110,11 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
 
         await _unitOfWork.MainScreenCategories.AddAsync(new()
         {
-            Screen_main_title_ar = model.Screen_main_title_ar,
-            Screen_main_title_en = model.Screen_main_title_en,
-            Screen_main_image = imageName,
+            Screen_cat_title_ar = model.Screen_main_cat_title_ar,
+            Screen_cat_title_en = model.Screen_main_cat_title_en,
+            Screen_main_cat_image = imageName,
             ImageExtension = imageExtension,
+            MainScreenId= model.Screen_main_id,
         });
         await _unitOfWork.CompleteAsync();
 
@@ -146,9 +147,9 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
             Data = new()
             {
                 Id = id,
-                Screen_main_title_ar = obj.Screen_main_title_ar,
-                Screen_main_title_en = obj.Screen_main_title_en,
-                Screen_main_image = string.Concat(ReadRootPath.SettingImagesPath, obj.Screen_main_image)
+                Screen_main_title_ar = obj.Screen_cat_title_ar,
+                Screen_main_title_en = obj.Screen_cat_title_en,
+                Screen_main_cat_image = string.Concat(ReadRootPath.SettingImagesPath, obj.Screen_main_cat_image)
             },
             Check = true
         };
@@ -175,15 +176,15 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
         {
             string path = GoRootPath.SettingImagesPath;
 
-            ManageFilesHelper.RemoveFile(path + "/" + obj.Screen_main_image);
+            //ManageFilesHelper.RemoveFile(path + "/" + obj.Screen_main_image);
 
             var fileObj = ManageFilesHelper.UploadFile(model.Screen_main_image, path);
-            obj.Screen_main_image = fileObj.FileName;
-            obj.ImageExtension= fileObj.FileExtension;
+            //obj.Screen_main_image = fileObj.FileName;
+            //obj.ImageExtension= fileObj.FileExtension;
         }
 
-        obj.Screen_main_title_ar = model.Screen_main_title_ar;
-        obj.Screen_main_title_en = model.Screen_main_title_en;
+        obj.Screen_cat_title_ar = model.Screen_main_cat_title_ar;
+        obj.Screen_cat_title_en = model.Screen_main_cat_title_en;
 
         _unitOfWork.MainScreenCategories.Update(obj);
         await _unitOfWork.CompleteAsync();

@@ -6,7 +6,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiExplorerSettings(GroupName = Modules.HR)]
     [Route("api/v1/")]
     [ApiController]
-    [Authorize(Permissions.HR.View)]
+    //[Authorize(Permissions.HR.View)]
     public class JobController(IHrJobService jobService, IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;

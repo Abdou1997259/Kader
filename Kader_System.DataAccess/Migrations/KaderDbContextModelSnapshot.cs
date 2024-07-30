@@ -138,6 +138,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -155,11 +158,24 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int>("FinancialYear")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -185,6 +201,10 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TitleId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -221,17 +241,21 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b8f7d58f-2caf-4722-a1a9-afdf73aa2baf",
+                            ConcurrencyStamp = "0246e826-de5f-48e7-bba0-45b95e31edf9",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
+                            FinancialYear = 2013,
+                            FullName = "Mohamed abdou",
+                            ImagePath = "/",
                             IsActive = true,
                             IsDeleted = false,
+                            JobId = 0,
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEO9oMnjZs9sgWiLvFy3MFFs6a8JLgOJaI7fOIGM4A+rP9AV/X2K35NYL8W5m0No2ww==",
+                            PasswordHash = "AQAAAAIAAYagAAAAED9PKI+LnjlJS8kfzjA4oie6SmlqG//QsqWxx0JgDUwYKbdoPt18et9iKiA8vtXVkg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c178e3f5-e585-473d-8087-a6e03847089b",
+                            SecurityStamp = "f14e30f7-e7d4-456b-b482-914f0aed6abf",
                             TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
@@ -3224,6 +3248,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Screen_main_image")
                         .HasColumnType("nvarchar(max)");
 
@@ -3240,6 +3267,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -3266,6 +3296,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("ImageExtension")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -3281,6 +3314,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("Screen_cat_title_en")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Screen_main_cat_image")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdateBy")
@@ -3369,12 +3405,11 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("ScreenCatId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Screen_main_cat_image")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Screen_sub_title_ar")
                         .IsRequired()
@@ -3384,6 +3419,9 @@ namespace Kader_System.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("StScreenSubId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -3391,12 +3429,13 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Url")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ScreenCatId");
+
+                    b.HasIndex("StScreenSubId");
 
                     b.ToTable("st_screens_subs");
                 });
@@ -3451,6 +3490,33 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("ScreenSubId");
 
                     b.ToTable("st_sub_main_screen_actions");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Setting.UserPermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Permission")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SubScreenId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TitleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("st_user_permissions");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Title", b =>
@@ -5258,13 +5324,13 @@ namespace Kader_System.DataAccess.Migrations
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StMainScreenCat", b =>
                 {
-                    b.HasOne("Kader_System.Domain.Models.Setting.StMainScreen", "MainScreen")
-                        .WithMany()
+                    b.HasOne("Kader_System.Domain.Models.Setting.StMainScreen", "screenCat")
+                        .WithMany("CategoryScreen")
                         .HasForeignKey("MainScreenId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("MainScreen");
+                    b.Navigation("screenCat");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StScreenAction", b =>
@@ -5289,10 +5355,15 @@ namespace Kader_System.DataAccess.Migrations
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StScreenSub", b =>
                 {
                     b.HasOne("Kader_System.Domain.Models.Setting.StMainScreenCat", "ScreenCat")
-                        .WithMany()
+                        .WithMany("StScreenSub")
                         .HasForeignKey("ScreenCatId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("Kader_System.Domain.Models.Setting.StScreenSub", null)
+                        .WithMany("ScreenSubs")
+                        .HasForeignKey("StScreenSubId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("ScreenCat");
                 });
@@ -5583,9 +5654,21 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("Actions");
                 });
 
+            modelBuilder.Entity("Kader_System.Domain.Models.Setting.StMainScreen", b =>
+                {
+                    b.Navigation("CategoryScreen");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Setting.StMainScreenCat", b =>
+                {
+                    b.Navigation("StScreenSub");
+                });
+
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StScreenSub", b =>
                 {
                     b.Navigation("ListOfActions");
+
+                    b.Navigation("ScreenSubs");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Title", b =>

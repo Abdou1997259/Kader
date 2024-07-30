@@ -1,4 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Kader_System.Domain.DTOs;
+using Kader_System.Domain.DTOs.Request.Auth;
+using Kader_System.Domain.DTOs.Response;
+using Kader_System.Domain.DTOs.Response.Auth;
+using Kader_System.Domain.Models;
+using Kader_System.Domain.Models.EmployeeRequests;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
+using static Kader_System.Domain.Constants.SD.ApiRoutes;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -13,10 +25,11 @@ public class AuthService : IAuthService
     private readonly ILogger<AuthService> _logger;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer;
     private readonly IHttpContextAccessor _accessor;
-
+    private readonly IFileServer _fileServer;
     public AuthService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager,
                        JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
                        IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
+                       IFileServer fileServer,
                        RoleManager<ApplicationRole> roleManager)
     {
         _unitOfWork = unitOfWork;
@@ -26,6 +39,7 @@ public class AuthService : IAuthService
         _sharLocalizer = sharLocalizer;
         _logger = logger;
         _accessor = accessor;
+        _fileServer=fileServer;
         _signInManager = signInManager;
         _roleManager = roleManager;
     }
@@ -118,14 +132,15 @@ public class AuthService : IAuthService
         };
     }
 
-    public async Task<Response<AuthUpdateUserRequest>> UpdateUserAsync(string id, AuthUpdateUserRequest model)
+    public async Task<Response<CreateUserRequest>> UpdateUserAsync(Guid id,string lang, 
+        CreateUserRequest model, string root, string clientName, string moduleName, UsereEnum userenum = UsereEnum.None)
     {
-        if (id == null || model.Id != id)
+        if (id == null)
         {
             string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
                 _sharLocalizer[Localization.User], id);
 
-            return new Response<AuthUpdateUserRequest>()
+            return new Response<CreateUserRequest>()
             {
                 Data = model,
                 Error = resultMsg,
@@ -134,17 +149,36 @@ public class AuthService : IAuthService
         }
         string err = _sharLocalizer[Localization.Error];
 
-        var obj = _mapper.Map<AuthUpdateUserRequest, ApplicationUser>(model, (await _userManager.FindByIdAsync(id))!);
+        var obj = _mapper.Map<CreateUserRequest, ApplicationUser>(model, (
+            await _userManager.FindByIdAsync(id.ToString()))!);
+        var full_path = Path.Combine(root, clientName, moduleName);
+        var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
+        if (model.image != null)
+            _fileServer.RemoveFile(full_path, obj.ImagePath);
+        obj.ImagePath = (model.image == null || model.image.Length == 0) ? " " :
+           await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.image);
         obj.UpdateDate = new DateTime().NowEg();
         obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
+        obj.VisiblePassword = model.password;
+        obj.PhoneNumber = model.phone;
+        obj.UserName = model.user_name;
+       
+       
+        obj.FullName = model.full_name;
+        obj.Email = model.email;
+        obj.FinancialYear = model.financial_year;
+        obj.CompanyId = model.company_id;
+        obj.JobId = model.job_title;
+    
+        _unitOfWork.Users.Update(obj);
+      await  _unitOfWork.CompleteAsync();
 
-        bool isSucceeded = (await _userManager.UpdateAsync(obj)).Succeeded;
-
-        return new Response<AuthUpdateUserRequest>()
+        return new Response<CreateUserRequest>()
         {
-            Check = isSucceeded,
+            Check = true,
             Data = model,
-            Msg = isSucceeded ? _sharLocalizer[Localization.Updated] : _sharLocalizer[err]
+            Msg = _sharLocalizer[Localization.Updated]
+
         };
     }
 
@@ -395,6 +429,7 @@ public class AuthService : IAuthService
             };
         }
     }
+    
 
     private string GetUserId() =>
         _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
@@ -423,6 +458,7 @@ public class AuthService : IAuthService
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName!),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(RequestClaims.Company,user.CompanyId.ToString()),
             new Claim(RequestClaims.UserId, user.Id)
         }
         .Union(roleClaims)
@@ -437,6 +473,627 @@ public class AuthService : IAuthService
             claims: claims,
             expires: DateTime.UtcNow.AddDays(2).Add(_jwt.TokenLifetime),
             signingCredentials: signingCredentials);
+    }
+    
+    //public async Task<Response<CreateUserResponse>> UpdateUserAsync(Guid id, 
+    //     CreateUserRequest request, string root, string clientName, 
+        
+    //    string moduleName, UsereEnum userenum = UsereEnum.None)
+    //{
+    //    var user = await _userManager.FindByIdAsync(id.ToString());
+    //    var msg = _sharLocalizer[Localization.NotFoundData];
+    //    if (user == null)
+    //    {
+           
+    //        return new()
+    //        {
+    //            Check = false,
+    //            Data = null,
+    //            Msg = msg
+    //        };
+    //    }
+
+    
+
+    //    // Map CreateUserRequest to ApplicationUser
+    //    var mappeduser=_mapper.Map(request,user);
+
+    //    // Set additional user properties if needed
+    //    mappeduser.Id = Guid.NewGuid().ToString();
+    //    var full_path = Path.Combine(root, clientName, moduleName);
+    //    var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
+    //    if (request.image != null)
+    //        _fileServer.RemoveFile(full_path, mappeduser.ImagePath);
+    //    mappeduser.ImagePath = (request.image == null || request.image.Length == 0) ? null :
+    //       await _fileServer.UploadFile(root, clientName, moduleNameWithType, request.image);
+
+    //    _unitOfWork.Users.Update(mappeduser);
+    //    await _unitOfWork.CompleteAsync();
+   
+    //     msg = _sharLocalizer[Localization.Updated];
+    //    return new()
+    //    {
+    //        Check = true,
+    //        Data = null,
+    //        Msg = msg
+    //    };
+
+    //}
+    public async  Task<Response<CreateUserResponse>> CreateUserAsync(CreateUserRequest model,
+        string root, string clientName, string moduleName, UsereEnum userenum= UsereEnum.None)
+    {  // Check if user already exists
+        var isExited = await _unitOfWork.Users.ExistAsync(x => x.UserName == model.user_name);
+        if (isExited)
+        {
+            var msg = _sharLocalizer[Localization.IsExist];
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+        }
+        
+        // Map CreateUserRequest to ApplicationUser
+        var user = _mapper.Map<ApplicationUser>(model);
+
+        user.VisiblePassword = model.password;
+        user.PhoneNumber = model.phone;
+        user.FullName = model.full_name;
+        user.Email = model.email;
+        user.FinancialYear= model.financial_year;
+        user.CompanyId = model.company_id;
+        user.JobId = model.job_title;
+        user.UserName = model.user_name;
+        user.Add_date = new DateTime().NowEg();
+        user.Added_by = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
+        // Set additional user properties if needed
+        user.Id = Guid.NewGuid().ToString();
+
+      
+        var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
+        user.ImagePath = (model.image == null || model.image.Length == 0) ? null :
+            await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.image);
+       IEnumerable< UserPermission> listofPermission = null;
+        foreach (int i in model.title_id)
+        {
+            var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetSpecificSelectAsync(x => x.TitleId == i, x => x);
+             listofPermission = titlepermissions.Select(x => new UserPermission
+            {
+                UserId=user.Id,
+                TitleId = x.TitleId,
+                SubScreenId=x.SubScreenId,
+                Permission=x.Permissions
+
+            });
+
+        }
+        if (listofPermission != null) {
+
+            _unitOfWork.UserPermssionRepositroy.UpdateRange(listofPermission);
+        }
+      
+
+        // Add user to the database
+        await _unitOfWork.Users.AddAsync(user);
+     
+
+     
+        var result = await _unitOfWork.CompleteAsync();
+        if (result <= 0)
+        {
+            var errorMsg = _sharLocalizer[Localization.Error];
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = errorMsg,
+                Data = null
+            };
+        }
+
+        // Optionally, generate JWT token
+        var token = await CreateJwtToken(user); // Implement this method if needed
+        var resutl = new CreateUserResponse
+        {
+            CompanyId = model.company_id,
+            FullName = model.full_name,
+            Email = model.email,
+            JobTitle = model.job_title,
+            CompanyYear = model.company_id,
+            TitleId=model.title_id,
+            Token = "Bearer" + " " + new JwtSecurityTokenHandler().WriteToken(token),
+            UserName = model.user_name,
+        };
+        // Return success response
+        return new Response<CreateUserResponse>
+        {
+            Check = true,
+            Data =resutl ,
+          // Include the token if you generated it
+        };
+
+
+
+    }
+
+    public async Task<Response<string>> AssignPermissionForUser(Guid id, bool all,int titleId,IEnumerable<AssignPermissionRequest> model)
+    {
+        var UserPermission = model.Select(x => new UserPermission
+        {
+            UserId=id.ToString(),
+            Permission =string.Join(',', x.Permission) ,
+            SubScreenId = x.SubScreenId,
+
+        });
+        if(titleId ==null)
+        {
+            return new()
+            {
+                Check = false,
+                Data = "",
+
+            };
+        }
+        List<TitlePermission> AddedPer = null;
+        foreach (var AssginedPermssion in model) {
+            var titlePermission = await _unitOfWork.TitlePermissionRepository
+                .GetSpecificSelectAsync(x =>   x.TitleId == titleId && x.SubScreenId== AssginedPermssion.SubScreenId , x => x);
+           IEnumerable< TitlePermission> listUpdatedper = null;
+            
+             if (titlePermission != null)
+            {
+
+                 listUpdatedper = titlePermission.Select(x =>new TitlePermission {
+                  
+                  Permissions = string.Join(',', AssginedPermssion.Permission),
+                  ScreenSub=x.ScreenSub,
+                  TitleId=x.TitleId
+                });
+                _unitOfWork.TitlePermissionRepository.UpdateRange(listUpdatedper); 
+
+
+               
+            } 
+            else
+            {
+                AddedPer.Add(new TitlePermission
+                {
+
+                    TitleId = titleId,
+                    SubScreenId = AssginedPermssion.SubScreenId,
+                    Permissions = string.Join(',', AssginedPermssion.Permission)
+                });
+
+
+
+            }
+
+
+
+        }
+        await _unitOfWork.TitlePermissionRepository.AddRangeAsync(AddedPer);
+        await _unitOfWork.CompleteAsync();
+       
+         
+        if (all)
+        {
+            List <UserPermission> AddedUserPer = null;
+
+            foreach (var AssginedPermssion in model)
+            {
+                var titlePermission = await _unitOfWork.UserPermssionRepositroy
+                    .GetSpecificSelectAsync(x => x.UserId ==id.ToString()&&x.TitleId==titleId  && x.SubScreenId == AssginedPermssion.SubScreenId, x => x);
+                IEnumerable<UserPermission> listUpdatedper = null;
+
+                if (titlePermission != null)
+                {
+
+                    listUpdatedper = titlePermission.Select(x => new UserPermission
+                    {
+                        UserId=x.UserId,
+                        Permission = string.Join(',', AssginedPermssion.Permission),
+                        SubScreenId = x.SubScreenId,
+                        TitleId = x.TitleId
+                    });
+                    _unitOfWork.UserPermssionRepositroy.UpdateRange(listUpdatedper);
+
+
+
+                }
+                else
+                {
+                    AddedUserPer.Add(new UserPermission
+                    {
+                        UserId=id.ToString(),
+                        TitleId = titleId,
+                        SubScreenId = AssginedPermssion.SubScreenId,
+                        Permission = string.Join(',', AssginedPermssion.Permission)
+                    });
+
+
+
+                }
+
+
+
+            }
+            await _unitOfWork.TitlePermissionRepository.AddRangeAsync(AddedPer);
+            await _unitOfWork.CompleteAsync();
+
+
+        }
+        else
+        {
+            List<UserPermission> AddedUserPer = null;
+            foreach (var AssginedPermssion in model)
+            {
+                var titlePermission = await _unitOfWork.UserPermssionRepositroy
+                    .GetSpecificSelectAsync(x =>  x.SubScreenId == AssginedPermssion.SubScreenId&&x.TitleId==titleId, x => x);
+                IEnumerable<UserPermission> listUpdatedper = null;
+
+                if (titlePermission != null)
+                {
+
+                    listUpdatedper = titlePermission.Select(x => new UserPermission
+                    {
+                        UserId=x.UserId,
+                        Permission = string.Join(',', AssginedPermssion.Permission),
+                        SubScreenId = x.SubScreenId,
+                        TitleId = x.TitleId
+                    });
+                    _unitOfWork.UserPermssionRepositroy.UpdateRange(listUpdatedper);
+
+
+
+                }
+                else
+                {
+                    AddedUserPer.Add(new UserPermission
+                    {
+                        UserId = id.ToString(),
+                        TitleId = titleId,
+                        SubScreenId = AssginedPermssion.SubScreenId,
+                        Permission = string.Join(',', AssginedPermssion.Permission)
+                    });
+
+
+
+                }
+
+
+
+            }
+            await _unitOfWork.TitlePermissionRepository.AddRangeAsync(AddedPer);
+            await _unitOfWork.CompleteAsync();
+
+        }
+    
+        
+         
+        return new()
+        {
+            Check = true,
+            Data = "",
+
+        };
+      
+    }
+
+    public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model,string host,string lang)
+    {
+        Expression<Func<ApplicationUser, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
+            (string.IsNullOrEmpty(model.Word) || x.Email.Contains(model.Word) 
+             
+            
+            );
+        var companise =await _unitOfWork.Companies.GetAllAsync();
+        var jobs=await _unitOfWork.Jobs.GetAllAsync();
+        var totalRecords = await _unitOfWork.Users.CountAsync(filter: filter);
+        int page = 1;
+        int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+        if (model.PageNumber < 1)
+            page = 1;
+        else
+            page = model.PageNumber;
+        var pageLinks = Enumerable.Range(1, totalPages)
+            .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+            .ToList();
+
+        // Fetch the necessary data from the database
+        var users = await _unitOfWork.Users.GetSpecificSelectAsync(
+            filter: filter,
+            take: model.PageSize,
+            skip: (model.PageNumber - 1) * model.PageSize,
+            select: x => new
+            {
+                x.Id,
+                x.CompanyId,
+                x.FinancialYear,
+                x.Email,
+                x.JobId,
+                x.PhoneNumber,
+                x.UserName
+            },
+            orderBy: x => x.OrderByDescending(x => x.Id)
+        );
+
+        // Perform the in-memory transformations
+        var items = users.Select(x => new ListOfUsersResponse
+        {
+            Id=x.Id,
+            CompanyName = Localization.Arabic == lang
+                ? companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameAr
+                : companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameEn,
+            FinancialYear = x.FinancialYear,
+            Email = x.Email,
+            JobName = Localization.Arabic == lang
+                ? jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameAr
+                : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
+            Phone = x.PhoneNumber,
+            UserName=x.UserName
+        }).ToList();
+
+        var result = new GetAllUsersResponse
+        {
+            TotalRecords = totalRecords,
+
+            Items = items,
+            CurrentPage = model.PageNumber,
+            FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+            From = (page - 1) * model.PageSize + 1,
+            To = Math.Min(page * model.PageSize, totalRecords),
+            LastPage = totalPages,
+            LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+            PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+            NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+            Path = host,
+            PerPage = model.PageSize,
+            Links = pageLinks
+        };
+
+        if (result.TotalRecords is 0)
+        {
+            string resultMsg = _sharLocalizer[Localization.NotFoundData];
+
+            return new()
+            {
+                Data = new()
+                {
+                    Items = []
+                },
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+
+        return new()
+        {
+            Data = result,
+            Check = true
+        };
+    }
+
+    public async Task<Response<IEnumerable<ListOfUsersResponse>>> ListListOfUsers(string lang)
+    {
+        var companise = await _unitOfWork.Companies.GetAllAsync();
+        var jobs = await _unitOfWork.Jobs.GetAllAsync();
+        var users = await _unitOfWork.Users.GetSpecificSelectAsync(null!,
+            select: x => new
+            {
+                x.Id,
+                x.CompanyId,
+                x.FinancialYear,
+                x.Email,
+                x.JobId,
+                x.PhoneNumber,
+                x.UserName,
+               
+            },
+            orderBy: x => x.OrderByDescending(x => x.Id)
+        );
+
+        // Perform the in-memory transformations
+        var result = users.Select(x => new ListOfUsersResponse
+        {
+
+            CompanyName = Localization.Arabic == lang
+                ? companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameAr
+                : companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameEn,
+            FinancialYear = x.FinancialYear,
+            Email = x.Email,
+            JobName = Localization.Arabic == lang
+                ? jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameAr
+                : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
+            Phone = x.PhoneNumber,
+            Id=x.Id,
+            UserName=x.UserName
+        }).ToList();
+
+        if (!result.Any())
+        {
+            string resultMsg = _sharLocalizer[Localization.NotFoundData];
+
+            return new()
+            {
+                Data = [],
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+
+        return new()
+        {
+            Data = result,
+            Check = true
+        };
+    }
+
+    public async Task<Response<GetUserByIdResponse>> GetUserById(Guid id,string lang)
+    {
+       
+       
+        var obj = await _userManager.FindByIdAsync(id.ToString());
+        var companise = await _unitOfWork.Companies.GetByIdAsync(obj.CompanyId);
+        var jobs = await _unitOfWork.Jobs.GetByIdAsync(obj.JobId);
+        if (obj is null)
+        {
+            string resultMsg = _sharLocalizer[Localization.NotFoundData];
+
+            return new()
+            {
+                Data = new(),
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+   var lookups = await UsersGetLookups(lang);
+        var trimmedTitleId = obj.TitleId.Trim(',').Trim();
+
+        // Split the string by comma, trim each part, and parse to int
+        var titleIdList = trimmedTitleId
+            .Split(',')
+            .Select(x => x.Trim())
+            .Where(x => int.TryParse(x, out _)) // Optional: Ensure only valid integers are included
+            .Select(int.Parse)
+            .ToList();
+        return new()
+        {
+            Data = new()
+            {
+                Id=obj.Id,
+                FullName=obj.FullName,
+                Phone = obj?.PhoneNumber ?? " ",
+                CompanyId =obj.CompanyId,
+                FinancialYear = obj.FinancialYear,
+                Email = obj.Email,
+                JobTitle = obj.JobId,
+                TitleId= titleIdList,
+                IsActive=obj.IsActive,
+                Image=obj.ImagePath,
+                Password =null,
+                UserName=obj.UserName
+               
+            },
+            LookUps= lookups,
+            Check = true
+        };
+    }
+
+    public async Task<Response<UsersLookups>> UsersGetLookups(string lang)
+    {
+        var jobs =( await _unitOfWork.Jobs.GetAllAsync()).Select(x=>new JobsLookups
+        {
+            Id=x.Id,
+            JobName=Localization.Arabic==lang? x.NameAr: x.NameEn
+        });
+
+        var compaines = (await _unitOfWork.Companies.GetAllAsync()).Select(x=>new CompanyLookup
+        {
+            Id = x.Id,  
+            CompnayName=Localization.Arabic ==lang? x.NameAr: x.NameEn  
+        });
+
+        var titles =( await _unitOfWork.Titles.GetAllAsync()).Select(x=>new TitleLookups
+        {
+            Id=x.Id,
+            TitleName=Localization.Arabic==lang?x.TitleNameAr:x.TitleNameEn
+        });
+
+        var FinancalYear = new List<FinancalYear>
+        {
+            new FinancalYear
+            {
+                Id=1,
+                Year=2025
+            }
+            ,   new FinancalYear
+            {
+                Id=2,
+                Year=2022
+            }
+            ,   new FinancalYear
+            {
+                Id=3,
+                Year=2021
+            }
+
+        };
+
+
+
+        return new Response<UsersLookups>()
+        {
+            Check= true,    
+            Data = new()
+            {
+                FinancalYear=FinancalYear,
+                Companies=compaines,
+                Titles=titles,
+                Jobs=jobs
+
+            }
+        };
+    }
+
+    public async Task<Response<string>> DeleteUser(Guid id)
+    {
+        var obj = await _userManager.FindByIdAsync(id.ToString());
+
+        if (obj == null)
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+                _sharLocalizer[Localization.User]);
+
+            return new()
+            {
+                Data = string.Empty,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+        obj.IsDeleted = true;
+ 
+        obj.DeleteDate = new DateTime().NowEg();
+        obj.DeleteBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
+
+        _unitOfWork.Users.Update(obj);
+        await _unitOfWork.CompleteAsync();
+
+        return new()
+        {
+            Check = true,
+            Data = string.Empty,
+            Msg = _sharLocalizer[Localization.Deleted]
+        };
+    }
+
+    public async Task<Response<string>> RestoreUser(Guid id)
+    {
+        var obj = await _userManager.FindByIdAsync(id.ToString());
+        if (obj == null)
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+                _sharLocalizer[Localization.User]);
+
+            return new()
+            {
+                Data = null,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+
+        obj.IsDeleted = false;
+        obj.UpdateDate = new DateTime().NowEg();
+        obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
+        _unitOfWork.Users.Update(obj);
+        await _unitOfWork.CompleteAsync();
+        return new()
+        {
+            Check = true,
+            Data = _sharLocalizer[Localization.Restored],
+            Msg = _sharLocalizer[Localization.Restored]
+        };
     }
 
     #endregion

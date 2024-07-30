@@ -1,3 +1,4 @@
+using Kader_System.Api.Helpers;
 using Kader_System.Api.Helpers.SwaggerHelper;
 using Kader_System.DataAccess.Repositories;
 using Kader_System.DataAccess.Repositories.EmployeeRequests;
@@ -59,7 +60,10 @@ builder.Host.UseSerilog();
 //            .AllowAnyHeader());
 //});
 builder.Services.AddCors();
-builder.Services.AddControllers();
+builder.Services.AddControllers(op =>
+{
+    op.Filters.Add<PermissionFilter>();
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

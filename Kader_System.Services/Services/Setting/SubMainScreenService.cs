@@ -1,4 +1,6 @@
-﻿namespace Kader_System.Services.Services.Setting;
+﻿using Kader_System.Domain.Dtos.Response;
+
+namespace Kader_System.Services.Services.Setting;
 
 public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository) : ISubMainScreenService
 {
@@ -17,8 +19,8 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                 {
                     Id = x.Id,
                     Sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
-                    Screen_main_id = x.ScreenCatId,
-                    Url = x.Url
+                    Screen_main_cat_id = x.ScreenCatId,
+                    Url = x.Url,
                 }, orderBy: x =>
                   x.OrderByDescending(x => x.Id));
 
@@ -57,11 +59,11 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                      Sub_id = x.Id,
                      Sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
                      Url = x.Url,
-                     Screen_cat_id = x.ScreenCat.MainScreenId,
-                     Cat_title = lang == Localization.Arabic ? x.ScreenCat.MainScreen.Screen_main_title_ar : x.ScreenCat.MainScreen.Screen_main_title_en,
+                     Screen_cat_id = x.ScreenCatId,
+                     Cat_title = lang == Localization.Arabic ? x.ScreenCat.screenCat.Screen_main_title_ar : x.ScreenCat.screenCat.Screen_main_title_en,
                      Main_id = x.ScreenCatId,
                      Main_title = lang == Localization.Arabic ? x.ScreenCat.Screen_cat_title_ar : x.ScreenCat.Screen_cat_title_en,
-                     Main_image = string.Concat(ReadRootPath.SettingImagesPath, x.ScreenCat.MainScreen.Screen_main_image)
+                     Main_image = string.Concat(ReadRootPath.SettingImagesPath, x.ScreenCat.Screen_main_cat_image)
                  }, orderBy: x =>
                    x.OrderByDescending(x => x.Id))).ToList()
         };
@@ -91,7 +93,8 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
     {
         bool exists = false;
         exists = await _unitOfWork.SubMainScreens.ExistAsync(x => x.Screen_sub_title_ar.Trim() == model.Screen_sub_title_ar
-        || x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim() || x.Name.Trim() == model.Name.Trim());
+        || x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim() );
+
 
         if (exists)
         {
@@ -111,7 +114,7 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
             Screen_sub_title_ar = model.Screen_sub_title_ar,
             ScreenCatId = model.Screen_main_id,
             Url = model.Url,
-            Name = model.Name,
+            //Name = model.Name,
             ListOfActions = model.Actions.Select(ob => new StSubMainScreenAction
             {
                 ActionId = ob,
@@ -154,13 +157,15 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                 Screen_sub_title_ar = obj.Screen_sub_title_ar,
                 Screen_sub_title_en = obj.Screen_sub_title_en,
                 Url = obj.Url,
-                Name = obj.Name,
+                //Name = obj.Name,
                 Actions = obj.ListOfActions.Select(x => new ActionsData
                 {
                     Id = x.ActionId,
                     Name = x.Action.Name,
                     NameInEnglish = x.Action.NameInEnglish
                 }).ToList()
+
+
             },
             Check = true
         };
@@ -269,6 +274,11 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
             Data = string.Empty,
             Msg = _sharLocalizer[Localization.Deleted]
         };
+    }
+
+    public Task<Response<GetAllSubScreenInfo>> GetAllInfo(string lang)
+    {
+        throw new NotImplementedException();
     }
 
     #endregion

@@ -10,7 +10,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
     [Area(Modules.EmployeeRequest)]
     [ApiExplorerSettings(GroupName = Modules.EmployeeRequest)]
     [ApiController]
-    [Authorize(Permissions.Setting.View)]
+    //[Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
     public class DelayPermissionController(IDelayPermissionService delayPermission , IRequestService  requestService, IWebHostEnvironment hostEnvironment, IFileServer fileServer) : ControllerBase
     {

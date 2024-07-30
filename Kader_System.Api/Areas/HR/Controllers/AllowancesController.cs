@@ -3,7 +3,7 @@
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.HR)]
-[Authorize(Permissions.HR.View)]
+//[Authorize(Permissions.HR.View)]
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Route("api/v1/")]

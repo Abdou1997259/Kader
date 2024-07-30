@@ -9,7 +9,7 @@ namespace Kader_System.Domain.DTOs.Request.HR
     public class AddEmpolyeeToDepartmentRequest
     {
         public int EmpolyeeId { get; set; }
-        public int DepartmentId { get; set; }
+        
         public int MangamentId { get; set; }
 
     }

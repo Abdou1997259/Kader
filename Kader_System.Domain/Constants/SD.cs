@@ -57,6 +57,7 @@ public static class SD
     public static class SuperAdmin
     {
         public const string Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1";
+
         public const string RoleId = "fab4fac1-c546-41de-aebc-a14da68957ab1";
         public static string Password = "123456";
         public static string RoleNameInAr = "سوبر أدمن";
@@ -81,6 +82,7 @@ public static class SD
         public const string RolePermission = "RolePermission";
         public const string UserPermission = "UserPermission";
         public const string DomainRestricted = "DomainRestricted";
+        public const string Company = "CompanyId";
         public const string UserId = "uid";
     }
     public static class Shared
@@ -105,22 +107,22 @@ public static class SD
     {
         public class MainScreenCategory
         {
-            public const string ListOfMainScreensCategories = "screen_cat/getListOfMainScreens";
-            public const string GetAllMainScreenCategories = "screen_cat";
-            public const string CreateMainScreenCategory = "screen_cat";
-            public const string UpdateMainScreenCategory = "screen_cat/{id}";
-            public const string GetMainScreenCategoryById = "screen_cat/{id}";
-            public const string DeleteMainScreenCategory = "screen_cat/{id}";
+            public const string ListOfMainScreensCategories = "screen_main/getListOfMainScreens";
+            public const string GetAllMainScreenCategories = "screen_main";
+            public const string CreateMainScreenCategory = "screen_main";
+            public const string UpdateMainScreenCategory = "screen_main/{id}";
+            public const string GetMainScreenCategoryById = "screen_main/{id}";
+            public const string DeleteMainScreenCategory = "screen_main/{id}";
         }
 
         public class MainScreen
         {
-            public const string ListOfMainScreens = "main_screen/getListOfMainScreens";
-            public const string GetAllMainScreens = "main_screen";
-            public const string CreateMainScreen = "main_screen";
-            public const string UpdateMainScreen = "main_screen/{id}";
-            public const string GetMainScreenById = "main_screen/{id}";
-            public const string DeleteMainScreen = "main_screen/{id}";
+            public const string ListOfMainScreens = "screen_cat/getListOfMainScreens";
+            public const string GetAllMainScreens = "screen_cat";
+            public const string CreateMainScreen = "screen_cat";
+            public const string UpdateMainScreen = "screen_cat/{id}";
+            public const string GetMainScreenById = "screen_cat/{id}";
+            public const string DeleteMainScreen = "screen_cat/{id}";
         }
 
         public class Screen
@@ -138,9 +140,9 @@ public static class SD
             public const string ListOfSubMainScreens = "screen_sub/getListOfSubMainScreens";
             public const string GetAllSubMainScreens = "screen_sub";
             public const string CreateSubMainScreen = "screen_sub";
-            public const string UpdateSubMainScreen = "screen_sub/{id}";
-            public const string GetSubMainScreenById = "screen_sub/{id}";
-            public const string DeleteSubMainScreen = "screen_sub/{id}";
+            public const string UpdateSubMainScreen = "screen_sub/update/{id}";
+            public const string GetSubMainScreenById = "screen_sub/getById/{id}";
+            public const string DeleteSubMainScreen = "screen_sub/delete/{id}";
         }
         public class StResponsiblity
         {
@@ -160,12 +162,19 @@ public static class SD
             public const string LoginUser1 = "LoginUser1";
             public const string ChangeActiveOrNot = "ChangeActiveOrNotUser/{id}";
             public const string UpdateUser = "UpdateUser/{id}";
+            public const string AssginPermssionToUser = "assginPermissionToUser/{id}";
             public const string ShowPasswordToSpecificUser = "ShowPasswordToSpecificUser/{id}";
             public const string ChangePassword = "ChangePassword";
             public const string DeleteUser = "DeleteUser/{id}";
             public const string SetNewPasswordToSpecificUser = "SetNewPasswordToSpecificUser";
             public const string SetNewPasswordToSuperAdmin = "SetNewPasswordToSuperAdmin/{newPassword}";
             public const string GetMyProfile = "getMyProfile/{userId}";
+
+            public const string GetUserById = "GetUserById/{id}";
+            public const string RestoreUser = "RestoreUser/{id}";
+            public const string GetListOfUser = "GetListOfUsers";
+            public const string GetLookups = "GetLookups";
+        
         }
 
         public class Perm
@@ -327,7 +336,7 @@ public static class SD
             public const string UpdateDepartment = "department/update/{id}";
             public const string GetDepartmentById = "department/getById/{id}";
             public const string DeleteDepartment = "department/delete/{id}";
-            public const string AddEmp = "department/addemployee";
+            public const string AddEmp = "department/addemployee/{id}";
         }
         public class Loan
         {
@@ -550,7 +559,7 @@ public static class SD
         public const string ItIsNecessaryThatAmountMoreThanZero = "ItIsNecessaryThatAmountMoreThanZero";
         public const string Used = "Used";
         public const string CannotBeFound = "CannotBeFound";
-
+        public const string MangerAlready = "MangerAlready";
         public const string Restored = "Restored";
         public const string Departments = "Departments";
         public const string DelayedSuccessfully = "DelayedSuccessfully";
