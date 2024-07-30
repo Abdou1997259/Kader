@@ -43,11 +43,11 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Insert
 
         [HttpPost(ApiRoutes.Title.CreateTitle)]
-        public async Task<IActionResult> CreateTittle([FromForm] CreateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers)
+        public async Task<IActionResult> CreateTittle([FromForm] CreateTitleRequest model)
         {
             if (ModelState.IsValid)
             {
-                var reponse = await titleService.CreateTitleAsync(model,pers);
+                var reponse = await titleService.CreateTitleAsync(model);
 
                 if (reponse != null)
                     return Ok(reponse);
@@ -83,11 +83,13 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.Title.UpdateTitle)]
-        public async Task<IActionResult> UpdateTitle([FromRoute] int id, [FromForm] CreateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers)
+        public async Task<IActionResult> UpdateTitle(
+            [FromRoute] int id, [FromBody] CreateTitleRequest model
+           )
         {
-            var respone = await titleService.UpdateTitleAsync(id, model,pers);
+            var respone = await titleService.UpdateTitleAsync(id, model,model.pers);
 
-            if (respone == null)
+            if (respone.Check == true)
                 return Ok(respone);
             else
                 return BadRequest(respone);

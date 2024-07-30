@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Auth;
 
-public class ApplicationRole : IdentityRole, IBaseEntity
+public class ApplicationRole : IdentityRole<string>, IBaseEntity
 {
     public string Title_name_ar { get; set; } = string.Empty;        
     public bool IsDeleted { get; set; }

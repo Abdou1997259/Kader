@@ -94,8 +94,8 @@ namespace Kader_System.Services.Services.Setting
                 Check = true
             };
         }
-        
-        public async Task<Response<CreateTitleRequest>> CreateTitleAsync(CreateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers)
+
+        public async Task<Response<CreateTitleRequest>> CreateTitleAsync(CreateTitleRequest model)
         {
             bool exists = false;
             exists = await unitOfWork.Titles.ExistAsync(x => x.TitleNameAr.Trim() == model.TitleNameAr
@@ -111,15 +111,49 @@ namespace Kader_System.Services.Services.Setting
                     Error = resultMsg,
                     Msg = resultMsg
                 };
+                
             }
-
             var newTitle = new Title()
             {
 
-               TitleNameAr = model.TitleNameAr,
-               TitleNameEn = model.TitleNameEn,
-               
+                TitleNameAr = model.TitleNameAr,
+                TitleNameEn = model.TitleNameEn,
+
             };
+
+            await unitOfWork.Titles.AddAsync(newTitle);
+
+
+            await unitOfWork.CompleteAsync();
+            return new()
+            {
+                Msg = sharLocalizer[Localization.Done],
+                Check = true,
+                Data = model
+            };
+        }
+        public async Task<Response<CreateTitleRequest>> UpdateTitleAsync(int id,CreateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers)
+        {
+            var title = await unitOfWork.Titles.GetByIdAsync(id);
+
+            if (title==null)
+            {
+                string resultMsg = string.Format(sharLocalizer[Localization.IsNotExisted],
+                    sharLocalizer[Localization.Vacation]);
+
+                return new()
+                {
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
+
+
+
+            title.TitleNameAr = model.TitleNameAr;
+            title.TitleNameEn = model.TitleNameEn;
+               
+            
             //foreach (var titlePermission in model.Permissions)
             //{
             //    newTitle.TitlePermissions.Add(new TitlePermission()
@@ -132,20 +166,20 @@ namespace Kader_System.Services.Services.Setting
 
 
 
-            await unitOfWork.Titles.AddAsync(newTitle);
-
-
-            await unitOfWork.CompleteAsync();
+             unitOfWork.Titles.Update(title);
             var listOfTitlePermssion = pers.Select(x => new TitlePermission
             {
                 SubScreenId = x.SubScreenId,
-                TitleId = newTitle.Id,
+                TitleId = title.Id,
                 Permissions = string.Join(',', x.Permission)
 
             });
             await unitOfWork.TitlePermissionRepository.AddRangeAsync(listOfTitlePermssion);
-            await unitOfWork.CompleteAsync();
 
+
+            await unitOfWork.CompleteAsync();
+     
+      
 
             return new()
             {
@@ -160,39 +194,7 @@ namespace Kader_System.Services.Services.Setting
             return await unitOfWork.Titles.GetTitleByIdAsync(id, lang);
         }
 
-        public async  Task<Response<CreateTitleRequest>> UpdateTitleAsync(int id, CreateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers)
-        {
-            var title = await unitOfWork.Titles.GetByIdAsync(id);
-            var msg = sharLocalizer[Localization.IsExist];
-            if (title == null)
-            {
-                
-                return new()
-                {
-                    Data = null,
-                    Check = false
-                   ,
-                    Msg = msg
-                };
-
-            }
-            title.TitleNameAr = model.TitleNameAr;
-            title.TitleNameEn = model.TitleNameEn;
-            unitOfWork.Titles.Update(title);
-            await unitOfWork.CompleteAsync();
-           await AssginTitlePermssion(id, pers);
-            msg = sharLocalizer[Localization.Updated];
-            return new()
-            {
-               
-                Check = true,
-                Data = model,
-                Msg= msg    
-
-            };
-
-        }
-
+   
         public Task<Response<string>> UpdateActiveOrNotTitleAsync(int id)
         {
             throw new NotImplementedException();

@@ -31,10 +31,10 @@ public class AuthProfile : Profile
 
         CreateMap<AuthChangePassOfUserResponse, AuthChangePassOfUserRequest>()
                 .ReverseMap();
-
-        CreateMap<CreateUserRequest, ApplicationUser>().ForMember(d => d.VisiblePassword, s => s.MapFrom(x => x.Password));
-        CreateMap<CreateUserRequest, ApplicationUser>().ForMember(d => d.PhoneNumber, s => s.MapFrom(x => x.Phone));
-        CreateMap<CreateUserRequest, ApplicationUser>().ForMember(d => d.TitleId, s => s.MapFrom(x => string.Join(',',x.TitleId)));
+        CreateMap<CreateUserRequest, ApplicationUser>().ReverseMap();
+        CreateMap<CreateUserRequest, ApplicationUser>().ForMember(d => d.VisiblePassword, s => s.MapFrom(x => x.password));
+        CreateMap<CreateUserRequest, ApplicationUser>().ForMember(d => d.PhoneNumber, s => s.MapFrom(x => x.phone));
+        CreateMap<CreateUserRequest, ApplicationUser>().ForMember(d => d.TitleId, s => s.MapFrom(x => string.Join(',',x.title_id)));
         #endregion
     }
 }

@@ -11,8 +11,9 @@ namespace Kader_System.Domain.DTOs.Response.Auth
     {
         public IEnumerable<CompanyLookup> Companies { get; set; }
         public IEnumerable<JobsLookups> Jobs { get; set; }
-        public IEnumerable<int> CompanyYear { get; set; }
+        public IEnumerable<FinancalYear> FinancalYear { get; set; }
         public IEnumerable<TitleLookups> Titles { get; set; }
+
     }
     public class JobsLookups
     {
@@ -26,5 +27,11 @@ namespace Kader_System.Domain.DTOs.Response.Auth
       public string TitleName { get; set; }   
 
     
+    }
+    public class  FinancalYear
+    {
+        public int Id { get; set; } 
+        public int Year { get; set; }
+        
     }
 }
