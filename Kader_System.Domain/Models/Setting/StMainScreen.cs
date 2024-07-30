@@ -12,6 +12,6 @@ public class StMainScreen : BaseEntity
     public string? Url { get; set; }
     public string? Name { get; set; }
 
-    public StMainScreenCat CategoryScreen { get; set; }
+    public ICollection<StMainScreenCat> CategoryScreen { get; set; }
     //public StScreenSub subScreen { get; set; }
 }

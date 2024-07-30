@@ -15,6 +15,6 @@ public class StMainScreenCat : BaseEntity
     [ForeignKey(nameof(MainScreenId))]
     public StMainScreen screenCat { get; set; } = default!;
 
-    public StScreenSub StScreenSub { get; set; }
+    public ICollection<StScreenSub> StScreenSub { get; set; }
     //public StMainScreenCat stMainScreenCat { get; set; }
 }

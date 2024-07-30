@@ -93,7 +93,7 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
     {
         bool exists = false;
         exists = await _unitOfWork.SubMainScreens.ExistAsync(x => x.Screen_sub_title_ar.Trim() == model.Screen_sub_title_ar
-        || x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim() || x.Name.Trim() == model.Name.Trim());
+        || x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim() );
 
         if (exists)
         {
@@ -113,7 +113,7 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
             Screen_sub_title_ar = model.Screen_sub_title_ar,
             ScreenCatId = model.Screen_main_id,
             Url = model.Url,
-            Name = model.Name,
+            //Name = model.Name,
             ListOfActions = model.Actions.Select(ob => new StSubMainScreenAction
             {
                 ActionId = ob,
@@ -156,7 +156,7 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                 Screen_sub_title_ar = obj.Screen_sub_title_ar,
                 Screen_sub_title_en = obj.Screen_sub_title_en,
                 Url = obj.Url,
-                Name = obj.Name,
+                //Name = obj.Name,
                 Actions = obj.ListOfActions.Select(x => new ActionsData
                 {
                     Id = x.ActionId,

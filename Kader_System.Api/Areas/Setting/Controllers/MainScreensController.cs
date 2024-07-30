@@ -1,8 +1,10 @@
 using Kader_System.DataAccesss.DbContext;
+using Kader_System.Domain.DTOs.Request.Setting;
 using Kader_System.Domain.DTOs.Response.Setting;
 using Kader_System.Domain.Interfaces.Setting;
 using Kader_System.Services.IServices.HTTP;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.Setting)]
@@ -10,19 +12,19 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 [Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
-public class MainScreensController(IMainScreenService service, IRequestService requestService,KaderDbContext context) : ControllerBase
+public class MainScreensController(IMainScreenService service, IRequestService requestService, KaderDbContext context) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;
 
     private readonly IMainScreenService _mainScreenRepository = service;
     private readonly KaderDbContext _dbcontext = context;
 
-    
-     
+
+
 
     #region Retrieve
     [HttpGet(ApiRoutes.MainScreen.ListOfMainScreens)]
-    public async Task<IActionResult> ListOfMainScreensAsync() => 
+    public async Task<IActionResult> ListOfMainScreensAsync() =>
         Ok(await service.ListOfMainScreensAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.MainScreen.GetAllMainScreens)]
@@ -34,7 +36,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     [HttpGet(ApiRoutes.MainScreen.GetMainScreensWithRelatedData)]
     public async Task<IActionResult> GetMainScreensWithRelatedData([FromQuery] StGetAllFiltrationsForMainScreenRequest model)
     {
-        
+
         var mainScreens = await _dbcontext.MainScreenCategories
         .Include(ms => ms.CategoryScreen)
             .ThenInclude(cs => cs.StScreenSub)
@@ -45,31 +47,27 @@ public class MainScreensController(IMainScreenService service, IRequestService r
             return NotFound();
         }
 
-        var response = mainScreens.Select(ms => new StMainScreen
+
+        var ChildScreens = mainScreens.Select(ms => new GetAllStMainScreen
         {
             Screen_main_title_ar = ms.Screen_main_title_ar,
             Screen_main_title_en = ms.Screen_main_title_en,
-
-            CategoryScreen = ms.CategoryScreen == null ? null : new StMainScreenCat
+            CategoryScreen = ms.CategoryScreen.Select(x => new GetAllStMainScreenCat
             {
-                Id = ms.CategoryScreen.Id,
-                Screen_cat_title_ar = ms.CategoryScreen.Screen_cat_title_ar,
-                Screen_cat_title_en = ms.CategoryScreen.Screen_cat_title_en,
-
-
-                StScreenSub = ms.CategoryScreen.StScreenSub == null ? null : new StScreenSub
+                Ids = ms.CategoryScreen.Select(x => x.Id).ToList(),
+                Screen_cat_title_ar = ms.CategoryScreen.Select(x => x.Screen_cat_title_ar).ToList(),
+                Screen_cat_title_en = ms.CategoryScreen.Select(x => x.Screen_cat_title_en).ToList(),
+                StScreenSub = x.StScreenSub.Select(k => new GetAllStScreenSub
                 {
-                    Id = ms.CategoryScreen.StScreenSub.Id,
-                    Screen_sub_title_ar = ms.CategoryScreen.StScreenSub.Screen_sub_title_ar,
-                    Screen_sub_title_en = ms.CategoryScreen.StScreenSub.Screen_sub_title_en,
-                    Url = ms.CategoryScreen.StScreenSub.Url,
-                    Name = ms.CategoryScreen.StScreenSub.Name
-                }
-            }
-        }).ToList();
+                    Ids = k.ScreenSubs.Select(x => x.Id).ToList(),
+                    Screen_sub_title_ar = k.ScreenSubs.Select(y => y.Screen_sub_title_ar).ToList(),
+                    Screen_sub_title_en = k.ScreenSubs.Select(y => y.Screen_sub_title_ar).ToList()
+                }).ToList(),
+            }).ToList()
+        });
 
 
-        return Ok(response);
+        return Ok(ChildScreens);
     }
 
 

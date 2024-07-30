@@ -13,7 +13,7 @@ public class SubMainScreenActionRepository(KaderDbContext context) : BaseReposit
                 {
                     ActionId = y.ActionId,
                     ActionName = lang == Localization.Arabic ? y.Action.Name : y.Action.NameInEnglish,
-                    ClaimValue = $"Permissions.{y.ScreenSub.Name}.{y.Action.NameInEnglish}"
+                    //ClaimValue = $"Permissions.{y.ScreenSub.Name}.{y.Action.NameInEnglish}"
                 }).ToList()
             }).ToListAsync();
 
