@@ -54,6 +54,7 @@ namespace Kader_System.Services.Services.Setting
                         Id = x.Id,
                         TitleNameAr = x.TitleNameAr,
                         TitleNameEn = x.TitleNameEn,
+                        Add_date = x.Add_date,
                         //Permissions = x.TitlePermissions.Select(p=>new GetAllTitlePermissionResponse()
                         //{
                         //    Id = p.Id,
