@@ -6,7 +6,7 @@ public class StGetAllSubMainScreensResponse : PaginationData<SubMainScreenData>
 public class SubMainScreenData
 {
     public int Sub_id { get; set; }
-    public string Sub_title { get; set; } = string.Empty;
+    public string Screen_sub_title { get; set; } = string.Empty;
     public string Url { get; set; } = string.Empty;
     public int Screen_cat_id { get; set; }
     public string Cat_title { get; set; } = string.Empty;

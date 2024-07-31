@@ -52,10 +52,12 @@ public class MainScreensController(IMainScreenService service, IRequestService r
         {
             Screen_main_title_ar = ms.Screen_main_title_ar,
             //Screen_main_title_en = ms.Screen_main_title_en,
+            Screen_main_image = ms.Screen_main_image,
             CategoryScreen = ms.CategoryScreen.Select(x => new GetAllStMainScreenCat
             {
                 Ids = ms.CategoryScreen.Select(x => x.Id).ToList(),
                 Screen_cat_title_ar = ms.CategoryScreen.Select(x => x.Screen_cat_title_ar).ToList(),
+                Screen_main_cat_image = ms.CategoryScreen.Select(x => x.Screen_main_cat_image).ToList(),
                 //Screen_cat_title_en = ms.CategoryScreen.Select(x => x.Screen_cat_title_en).ToList(),
                 StScreenSub = x.StScreenSub.Select(k => new GetAllStScreenSub
                 {
@@ -90,7 +92,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     #region Insert
 
     [HttpPost(ApiRoutes.MainScreen.CreateMainScreen)]
-    public async Task<IActionResult> CreateMainScreenAsync([FromForm] StCreateMainScreenRequest model)
+    public async Task<IActionResult> CreateMainScreenAsync([FromBody] StCreateMainScreenRequest model)
     {
         var response = await service.CreateMainScreenAsync(model);
         if (response.Check)
@@ -105,7 +107,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     #region Update
 
     [HttpPut(ApiRoutes.MainScreen.UpdateMainScreen)]
-    public async Task<IActionResult> UpdateMainScreenAsync([FromRoute] int id, [FromForm] StUpdateMainScreenRequest model)
+    public async Task<IActionResult> UpdateMainScreenAsync([FromRoute] int id, [FromBody] StUpdateMainScreenRequest model)
     {
         var response = await service.UpdateMainScreenAsync(id, model);
         if (response.Check)

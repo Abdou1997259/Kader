@@ -11,6 +11,7 @@ namespace Kader_System.Domain.DTOs.Request.Setting
         public List<int> Ids { get; set; }
         //public required List<string> Screen_cat_title_en { get; set; }
         public required List<string> Screen_cat_title_ar { get; set; }
-        public List<GetAllStScreenSub> StScreenSub { get; set; }
+        public required List<IFormFile> Screen_main_cat_image { get; set; }
+        public List<GetAllStScreenSub> StScreenSub { get; set; } = [];
     }
 }

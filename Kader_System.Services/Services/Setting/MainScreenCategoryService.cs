@@ -84,8 +84,8 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
     public async Task<Response<StCreateMainScreenCategoryRequest>> CreateMainScreenCategoryAsync(StCreateMainScreenCategoryRequest model)
     {
         bool exists = false;
-        exists = await _unitOfWork.MainScreenCategories.ExistAsync(x => x.Screen_cat_title_ar.Trim() == model.Screen_main_cat_title_ar
-        && x.Screen_cat_title_en.Trim() == model.Screen_main_cat_title_en.Trim());
+        exists = await _unitOfWork.MainScreenCategories.ExistAsync(x => x.Screen_cat_title_ar.Trim() == model.Screen_cat_title_ar
+        && x.Screen_cat_title_en.Trim() == model.Screen_cat_title_ar.Trim());
 
         if (exists)
         {
@@ -100,9 +100,9 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
         }
 
         string imageName = null!, imageExtension = null!;
-        if (model.Screen_main_image is not null)
+        if (model.Screen_main_cat_image is not null)
         {
-            var fileObj = ManageFilesHelper.UploadFile(model.Screen_main_image, GoRootPath.SettingImagesPath);
+            var fileObj = ManageFilesHelper.UploadFile(model.Screen_main_cat_image, GoRootPath.SettingImagesPath);
             imageName = fileObj.FileName;
             imageExtension = fileObj.FileExtension;
         }
@@ -110,9 +110,9 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
 
         await _unitOfWork.MainScreenCategories.AddAsync(new()
         {
-            Screen_cat_title_ar = model.Screen_main_cat_title_ar,
-            Screen_cat_title_en = model.Screen_main_cat_title_en,
-            Screen_main_cat_image = imageName,
+            Screen_cat_title_ar = model.Screen_cat_title_ar,
+            Screen_cat_title_en = model.Screen_cat_title_en,
+            //Screen_main_cat_image = imageName,
             ImageExtension = imageExtension,
             MainScreenId= model.Screen_main_id,
         });
@@ -172,19 +172,19 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
             };
         }
 
-        if (model.Screen_main_image is not null)
+        if (model.Screen_main_cat_image is not null)
         {
             string path = GoRootPath.SettingImagesPath;
 
             //ManageFilesHelper.RemoveFile(path + "/" + obj.Screen_main_image);
 
-            var fileObj = ManageFilesHelper.UploadFile(model.Screen_main_image, path);
+            var fileObj = ManageFilesHelper.UploadFile(model.Screen_main_cat_image, path);
             //obj.Screen_main_image = fileObj.FileName;
             //obj.ImageExtension= fileObj.FileExtension;
         }
 
-        obj.Screen_cat_title_ar = model.Screen_main_cat_title_ar;
-        obj.Screen_cat_title_en = model.Screen_main_cat_title_en;
+        obj.Screen_cat_title_ar = model.Screen_cat_title_ar;
+        obj.Screen_cat_title_en = model.Screen_cat_title_ar;
 
         _unitOfWork.MainScreenCategories.Update(obj);
         await _unitOfWork.CompleteAsync();

@@ -69,7 +69,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                      //Main_id = x.MainScreenId,
                      Main_title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en,
                      Main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty,
-                     Title = lang == Localization.Arabic ? x.Screen_main_image : x.Screen_main_title_ar
+                     Title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en
                  }, orderBy: x =>
                    x.OrderByDescending(x => x.Id))).ToList()
         };
@@ -98,8 +98,8 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
     public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model)
     {
         bool exists = false;
-        exists = await _unitOfWork.MainScreens.ExistAsync(x => x.Screen_main_title_ar.Trim() == model.Screen_cat_title_ar
-        && x.Screen_main_title_en.Trim() == model.Screen_cat_title_en.Trim());
+        exists = await _unitOfWork.MainScreens.ExistAsync(x => x.Screen_main_title_ar.Trim() == model.Screen_main_title_ar
+        && x.Screen_main_title_en.Trim() == model.Screen_main_title_en.Trim());
 
         if (exists)
         {
@@ -115,8 +115,8 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
         await _unitOfWork.MainScreens.AddAsync(new()
         {
-            Screen_main_title_ar = model.Screen_cat_title_ar,
-            Screen_main_title_en = model.Screen_cat_title_en,
+            Screen_main_title_ar = model.Screen_main_title_ar,
+            Screen_main_title_en = model.Screen_main_title_en,
             Id = model.Screen_main_id
         });
         await _unitOfWork.CompleteAsync();
@@ -178,8 +178,8 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             };
         }
 
-        obj.Screen_main_title_ar = model.Screen_cat_title_ar;
-        obj.Screen_main_title_en = model.Screen_cat_title_en;
+        obj.Screen_main_title_ar = model.Screen_main_title_ar;
+        obj.Screen_main_title_en = model.Screen_main_title_en;
         obj.Id = model.Screen_main_id;
 
         _unitOfWork.MainScreens.Update(obj);
