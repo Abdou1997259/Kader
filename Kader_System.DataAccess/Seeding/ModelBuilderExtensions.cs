@@ -1,5 +1,7 @@
 ﻿using Kader_System.Domain.Constants.Enums;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Abstractions;
+using static Kader_System.Domain.Constants.SD.ApiRoutes;
 
 namespace Kader_System.DataAccess.Seeding;
 
@@ -88,22 +90,79 @@ public static class ModelBuilderExtensions
            new() { Id = 5, Name = "حذف نهائى", NameInEnglish = ActionsEnums.ForceDelete.ToString() },
            new() { Id = 6, Name = "طباعة", NameInEnglish = ActionsEnums.Print.ToString() }
            );
-      //  modelBuilder.Entity<StMainScreen>().HasData(
-      //      new StMainScreen { Id = 1, Screen_main_title_ar = "الموارد البشريه", Screen_main_title_en="Human Resources" },
-      //      new StMainScreen { Id = 2, Screen_main_title_ar = "الاعدادات", Screen_main_title_en = "Setting" }
-               
-      //  );
-      //  modelBuilder.Entity<StMainScreenCat>().HasData(
-      //    new StMainScreenCat { Id = 1,MainScreenId=1, Screen_cat_title_en = "الاكواد", Screen_cat_title_ar = "Codes" },
-      //    new StMainScreenCat { Id = 2,MainScreenId=1, Screen_cat_title_en = "الحركات", Screen_cat_title_ar = "Transcation" },
-      //    new StMainScreenCat { Id = 3,MainScreenId=2, Screen_cat_title_en = "الاعدادات", Screen_cat_title_ar = "Setting" }
-      //);
-
+        modelBuilder.Entity<StMainScreen>().HasData(
+            new StMainScreen { Id = 1, Screen_main_title_ar = "الموارد البشريه", Screen_main_title_en = "Human Resources" }
        
-       // modelBuilder.Entity<StScreenSub>().HasData(
-       //      new StScreenSub { Id = 1, Screen_sub_title_ar = "الشركات", Screen_sub_title_en = "Companies", ScreenCatId =1  ,Url=""}
-            
-       //);
+
+        );
+        modelBuilder.Entity<StMainScreenCat>().HasData(
+       
+   
+         new StMainScreenCat { Id = 1, MainScreenId = 1, Screen_cat_title_ar = "الاعدادات", Screen_cat_title_en = "Setting"},
+         new StMainScreenCat { Id = 2, MainScreenId = 1, Screen_cat_title_ar = "اكواد", Screen_cat_title_en = "Codes" },
+         new StMainScreenCat { Id = 3, MainScreenId = 1, Screen_cat_title_ar = "طلبات", Screen_cat_title_en = "Request" },
+         new StMainScreenCat { Id = 4, MainScreenId = 1, Screen_cat_title_ar = "حركات", Screen_cat_title_en = "Transcation" },
+        new StMainScreenCat { Id = 5, MainScreenId = 1, Screen_cat_title_ar= "تقارير", Screen_cat_title_en= "Reports" },
+
+
+         new StMainScreenCat { Id = 6, MainScreenId = 1, Screen_cat_title_ar = "توظيف", Screen_cat_title_en = "Hiring" },
+         new StMainScreenCat { Id = 7, MainScreenId = 1, Screen_cat_title_ar = "الاعدادات HR", Screen_cat_title_en = "Hr Setting" }
+       
+      );
+
+        modelBuilder.Entity<StScreenSub>().HasData(
+
+
+        new StScreenSub { Id = 1, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الرئيسية", Screen_sub_title_en = "Main Screen",Url="" },
+        new StScreenSub { Id = 2, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الفرعية", Screen_sub_title_en = "Sub Screen", Url = "" },
+        new StScreenSub { Id = 3, ScreenCatId = 1, Screen_sub_title_ar = "المسئوليات", Screen_sub_title_en = "Titles", Url = "" },
+        new StScreenSub { Id = 4, ScreenCatId = 1, Screen_sub_title_ar = "مستخدمين", Screen_sub_title_en = "Users", Url = "" },
+        new StScreenSub { Id = 5, ScreenCatId = 1, Screen_sub_title_ar = "صلاحيات المستخدمين", Screen_sub_title_en = "Users Privilige", Url = "" },
+        new StScreenSub { Id = 6, ScreenCatId = 1, Screen_sub_title_ar = "اعدادات", Screen_sub_title_en = "Setting", Url = "" },
+        new StScreenSub { Id = 7, ScreenCatId = 2, Screen_sub_title_ar = "شركات", Screen_sub_title_en = "Company", Url = "" },
+        new StScreenSub { Id = 8, ScreenCatId = 2, Screen_sub_title_ar = "الوظائف", Screen_sub_title_en = "Jobs", Url = "" },
+        new StScreenSub { Id = 10, ScreenCatId = 2, Screen_sub_title_ar = "المؤهلات", Screen_sub_title_en = "Qualifications", Url = "" },
+        new StScreenSub { Id = 11, ScreenCatId = 2, Screen_sub_title_ar = "الهيكل الاداري", Screen_sub_title_en = "Strucutred Mangements", Url = "" },
+        new StScreenSub { Id = 12, ScreenCatId = 2, Screen_sub_title_ar = "الاجازات", Screen_sub_title_en = "Vacations", Url = "" },
+        new StScreenSub { Id = 13, ScreenCatId = 2, Screen_sub_title_ar = "الموظفين", Screen_sub_title_en = "Employee", Url = "" },
+        new StScreenSub { Id = 14, ScreenCatId = 2, Screen_sub_title_ar = "المؤهلات", Screen_sub_title_en = "Qualifications", Url = "" },
+        new StScreenSub { Id = 15, ScreenCatId = 2, Screen_sub_title_ar = "بدلات", Screen_sub_title_en = "Allowneces", Url = "" },
+        new StScreenSub { Id = 16, ScreenCatId = 2, Screen_sub_title_ar = "استقطاعات", Screen_sub_title_en = "Deductions", Url = "" },
+        new StScreenSub { Id = 17, ScreenCatId = 2, Screen_sub_title_ar = "استحقاقات", Screen_sub_title_en = "Benefits", Url = "" },
+        new StScreenSub { Id = 18, ScreenCatId = 2, Screen_sub_title_ar = "العقود", Screen_sub_title_en = "Contracts", Url = "" },
+        new StScreenSub { Id = 19, ScreenCatId = 2, Screen_sub_title_ar = "اجهزة البصمة", Screen_sub_title_en = "Print Devices", Url = "" },
+        new StScreenSub { Id = 20, ScreenCatId = 3, Screen_sub_title_ar = "متابعة الطلبات", Screen_sub_title_en = "Request tracking ", Url = "" },
+        new StScreenSub { Id = 21, ScreenCatId = 3, Screen_sub_title_ar = "طلب", Screen_sub_title_en = "Request", Url = "" },
+
+        new StScreenSub { Id = 12, ScreenCatId = 4, Screen_sub_title_ar = "الاستقطاعات", Screen_sub_title_en = "Vacations", Url = "" },
+        new StScreenSub { Id = 13, ScreenCatId = 4, Screen_sub_title_ar = "الاستحقاقات", Screen_sub_title_en = "Employee", Url = "" },
+        new StScreenSub { Id = 14, ScreenCatId = 4, Screen_sub_title_ar = "الاجازات", Screen_sub_title_en = "Qualifications", Url = "" },
+        new StScreenSub { Id = 15, ScreenCatId = 4, Screen_sub_title_ar = "البدلات", Screen_sub_title_en = "Allowneces", Url = "" },
+        new StScreenSub { Id = 16, ScreenCatId = 4, Screen_sub_title_ar = "العهد العينية", Screen_sub_title_en = "Deductions", Url = "" },
+        new StScreenSub { Id = 17, ScreenCatId = 4, Screen_sub_title_ar = "حساب الرواتب", Screen_sub_title_en = "Benefits", Url = "" },
+        new StScreenSub { Id = 18, ScreenCatId = 4, Screen_sub_title_ar = "الصرف", Screen_sub_title_en = "Contracts", Url = "" },
+        new StScreenSub { Id = 19, ScreenCatId = 4, Screen_sub_title_ar = "زيادة المرتبات", Screen_sub_title_en = "Print Devices", Url = "" }
+
+
+
+
+     );
+
+
+        modelBuilder.Entity<Kader_System.Domain.Models.Title>().HasData(
+                  new Kader_System.Domain.Models.Title { Id = 1, TitleNameAr = "مدير عام", TitleNameEn = "maanger" }
+
+            );
+
+
+        modelBuilder.Entity<TitlePermission>().HasData(
+                  new TitlePermission { Id = 1, TitleId = 1, Permissions = "1,2,3",SubScreenId=4 }
+
+            );
+        modelBuilder.Entity<StScreenSub>().HasData(
+             new StScreenSub { Id = 1, Screen_sub_title_ar = "الشركات", Screen_sub_title_en = "Companies", ScreenCatId = 1, Url = "" }
+
+       );
         modelBuilder.Entity<HrVacationType>()
             .HasData(
            new() { Id = 1, Name = "عام كامل", NameInEnglish = "Full year" },
