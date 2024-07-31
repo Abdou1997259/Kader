@@ -7,7 +7,7 @@ using Kader_System.Domain.Models.EmployeeRequests.Requests;
 
 namespace Kader_System.DataAccesss.DbContext;
 
-public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpContextAccessor accessor) : 
+public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpContextAccessor accessor) :
     IdentityDbContext<ApplicationUser, ApplicationRole, string,
              ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin,
              ApplicationRoleClaim, ApplicationUserToken>(options)
@@ -138,6 +138,11 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasForeignKey(x => x.TransLoanId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<StScreenAction>()
+            .Property(x => x.ScreenSubId)
+            .HasColumnName("ScreenSubId");
+
 
         modelBuilder.Entity<TransSalaryCalculator>()
       .Property(p => p.Status)

@@ -71,6 +71,8 @@ public interface IUnitOfWork : IDisposable
     IMaritalStatusRepository MaritalStatus { get; }
     IGenderRepository Genders { get; }
     IReligionRepository Religions { get; }
+    IPermessionStructureRepository PermessionStructure { get; } 
+    IActionsRepository ActionsRepo { get; } 
     #region Employee_Requests_UOW
     IEmployeeRequestsRepository EmployeeRequests { get; } 
     ILeavePermissionRequestRepository LeavePermissionRequest { get; }

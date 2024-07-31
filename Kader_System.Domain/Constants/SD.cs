@@ -531,6 +531,10 @@ public static class SD
             public const string DeleteTitle = "title/delete/{id}";
             public const string RestoreTitle = "title/restore/{id}";
         }
+        public class PermessionStruct
+        {
+            public const string GetAllPermessions = "PermessionStruct/getAllPermessions";
+        }
     }
 
     public static class Localization
