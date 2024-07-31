@@ -115,9 +115,9 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
         await _unitOfWork.MainScreens.AddAsync(new()
         {
-            Screen_cat_title_ar = model.Screen_cat_title_ar,
-            Screen_cat_title_en = model.Screen_cat_title_en,
-            MainScreenId = model.Screen_main_id
+            Screen_main_title_ar = model.Screen_cat_title_ar,
+            Screen_main_title_en = model.Screen_cat_title_en,
+            Id = model.Screen_main_id
         });
         await _unitOfWork.CompleteAsync();
 
@@ -178,9 +178,9 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             };
         }
 
-        obj.Screen_cat_title_ar = model.Screen_cat_title_ar;
-        obj.Screen_cat_title_en = model.Screen_cat_title_en;
-        obj.MainScreenId = model.Screen_main_id;
+        obj.Screen_main_title_ar = model.Screen_cat_title_ar;
+        obj.Screen_main_title_en = model.Screen_cat_title_en;
+        obj.Id = model.Screen_main_id;
 
         _unitOfWork.MainScreens.Update(obj);
         await _unitOfWork.CompleteAsync();
