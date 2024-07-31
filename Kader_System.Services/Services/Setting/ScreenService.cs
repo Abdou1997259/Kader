@@ -227,7 +227,7 @@ namespace Kader_System.Services.Services.Setting
             await unitOfWork.ScreenActions.AddRangeAsync(model.Actions.Select(a => new StScreenAction()
             {
                 ActionId = a,
-                ScreenSubId  = id
+                ScreenId  = id
 
             }));
 

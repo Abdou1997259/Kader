@@ -140,7 +140,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<StScreenAction>()
-            .Property(x => x.ScreenSubId)
+            .Property(x => x.ScreenId)
             .HasColumnName("ScreenSubId");
 
 

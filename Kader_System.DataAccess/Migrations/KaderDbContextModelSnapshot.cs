@@ -244,7 +244,7 @@ namespace Kader_System.DataAccess.Migrations
 
                             CompanyId = 3,
 
-                            ConcurrencyStamp = "22fa51dd-aa23-4131-94d0-e4f19eeadc17",r
+                            ConcurrencyStamp = "22fa51dd-aa23-4131-94d0-e4f19eeadc17",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             FinancialYear = 2013,

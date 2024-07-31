@@ -10,10 +10,8 @@ public class StScreenSub : BaseEntity
     public required string Screen_sub_title_ar { get; set; } 
     public  string? Screen_main_cat_image { get; set; }
 
-
- 
-
     public string ScreenCode { get; set; }
+    public string Url { get; set; }
 
     
     public int ScreenCatId { get; set; }
