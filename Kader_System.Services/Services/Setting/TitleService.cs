@@ -133,7 +133,7 @@ namespace Kader_System.Services.Services.Setting
                 Data = model
             };
         }
-        public async Task<Response<CreateTitleRequest>> UpdateTitleAsync(int id,CreateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers)
+        public async Task<Response<CreateTitleRequest>> UpdateTitleAsync(int id,CreateTitleRequest model)
         {
             var title = await unitOfWork.Titles.GetByIdAsync(id);
 
@@ -168,14 +168,14 @@ namespace Kader_System.Services.Services.Setting
 
 
              unitOfWork.Titles.Update(title);
-            var listOfTitlePermssion = pers.Select(x => new TitlePermission
-            {
-                SubScreenId = x.SubScreenId,
-                TitleId = title.Id,
-                Permissions = string.Join(',', x.Permission)
+            //var listOfTitlePermssion = pers.Select(x => new TitlePermission
+            //{
+            //    SubScreenId = x.SubScreenId,
+            //    TitleId = title.Id,
+            //    Permissions = string.Join(',', x.Permission)
 
-            });
-            await unitOfWork.TitlePermissionRepository.AddRangeAsync(listOfTitlePermssion);
+            //});
+            //await unitOfWork.TitlePermissionRepository.AddRangeAsync(listOfTitlePermssion);
 
 
             await unitOfWork.CompleteAsync();
