@@ -162,14 +162,14 @@ public class AuthService : IAuthService
         obj.VisiblePassword = model.password;
         obj.PhoneNumber = model.phone;
         obj.UserName = model.user_name;
-       
+        
        
         obj.FullName = model.full_name;
         obj.Email = model.email;
         obj.FinancialYear = model.financial_year;
         obj.CompanyId = model.company_id;
         obj.JobId = model.job_title;
-    
+        obj.IsActive = model.is_active;
         _unitOfWork.Users.Update(obj);
       await  _unitOfWork.CompleteAsync();
 
@@ -616,168 +616,128 @@ public class AuthService : IAuthService
 
     }
 
-    public async Task<Response<string>> AssignPermissionForUser(Guid id, bool all,int titleId,IEnumerable<AssignPermissionRequest> model)
+    public async Task<Response<string>> AssignPermissionForUser(Guid id, bool all, int titleId, IEnumerable<AssignPermissionRequest> model)
     {
-        var UserPermission = model.Select(x => new UserPermission
+        if (titleId == 0)
         {
-            UserId=id.ToString(),
-            Permission =string.Join(',', x.Permission) ,
-            SubScreenId = x.SubScreenId,
-
-        });
-        if(titleId ==null)
-        {
-            return new()
+            return new Response<string>
             {
                 Check = false,
                 Data = "",
-
             };
         }
-        List<TitlePermission> AddedPer = null;
-        foreach (var AssginedPermssion in model) {
+
+        var userPermissions = model.Select(x => new UserPermission
+        {
+            UserId = id.ToString(),
+            Permission = string.Join(',', x.Permission),
+            SubScreenId = x.SubScreenId,
+            TitleId = titleId
+        }).ToList();
+
+        // Process Title Permissions
+        foreach (var assignedPermission in model)
+        {
             var titlePermission = await _unitOfWork.TitlePermissionRepository
-                .GetSpecificSelectAsync(x =>   x.TitleId == titleId && x.SubScreenId== AssginedPermssion.SubScreenId , x => x);
-           IEnumerable< TitlePermission> listUpdatedper = null;
-            
-             if (titlePermission != null)
+                .GetSpecificSelectAsync(x => x.TitleId == titleId && x.SubScreenId == assignedPermission.SubScreenId, x => x);
+
+            if (titlePermission.Any())
             {
-
-                 listUpdatedper = titlePermission.Select(x =>new TitlePermission {
-                  
-                  Permissions = string.Join(',', AssginedPermssion.Permission),
-                  ScreenSub=x.ScreenSub,
-                  TitleId=x.TitleId
+                var listUpdatedPer = titlePermission.Select(x => new TitlePermission
+                {
+                    Id=x.Id,
+                    Permissions = string.Join(',', assignedPermission.Permission),
+                    SubScreenId = x.SubScreenId,
+                    TitleId = x.TitleId
                 });
-                _unitOfWork.TitlePermissionRepository.UpdateRange(listUpdatedper); 
-
-
-               
-            } 
+                _unitOfWork.TitlePermissionRepository.UpdateRange(listUpdatedPer);
+            }
             else
             {
-                AddedPer.Add(new TitlePermission
+                // Check if the SubScreenId exists in the st_screens_subs table
+                var subScreenExists = await _unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubScreenId);
+
+                if (subScreenExists)
                 {
-
-                    TitleId = titleId,
-                    SubScreenId = AssginedPermssion.SubScreenId,
-                    Permissions = string.Join(',', AssginedPermssion.Permission)
-                });
-
-
-
+                    await _unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
+                    {
+                        TitleId = titleId,
+                        SubScreenId = assignedPermission.SubScreenId,
+                        Permissions = string.Join(',', assignedPermission.Permission)
+                    });
+                }
+                else
+                {
+                    // Log the invalid SubScreenId or handle accordingly
+                    Console.WriteLine("Invalid SubScreenId: " + assignedPermission.SubScreenId);
+                    continue;
+                }
             }
-
-
-
         }
-        await _unitOfWork.TitlePermissionRepository.AddRangeAsync(AddedPer);
+
         await _unitOfWork.CompleteAsync();
-       
-         
-        if (all)
-        {
-            List <UserPermission> AddedUserPer = null;
 
-            foreach (var AssginedPermssion in model)
-            {
-                var titlePermission = await _unitOfWork.UserPermssionRepositroy
-                    .GetSpecificSelectAsync(x => x.UserId ==id.ToString()&&x.TitleId==titleId  && x.SubScreenId == AssginedPermssion.SubScreenId, x => x);
-                IEnumerable<UserPermission> listUpdatedper = null;
+        // Process User Permissions
+        await ProcessUserPermissions(id, titleId, model, all);
 
-                if (titlePermission != null)
-                {
-
-                    listUpdatedper = titlePermission.Select(x => new UserPermission
-                    {
-                        UserId=x.UserId,
-                        Permission = string.Join(',', AssginedPermssion.Permission),
-                        SubScreenId = x.SubScreenId,
-                        TitleId = x.TitleId
-                    });
-                    _unitOfWork.UserPermssionRepositroy.UpdateRange(listUpdatedper);
-
-
-
-                }
-                else
-                {
-                    AddedUserPer.Add(new UserPermission
-                    {
-                        UserId=id.ToString(),
-                        TitleId = titleId,
-                        SubScreenId = AssginedPermssion.SubScreenId,
-                        Permission = string.Join(',', AssginedPermssion.Permission)
-                    });
-
-
-
-                }
-
-
-
-            }
-            await _unitOfWork.TitlePermissionRepository.AddRangeAsync(AddedPer);
-            await _unitOfWork.CompleteAsync();
-
-
-        }
-        else
-        {
-            List<UserPermission> AddedUserPer = null;
-            foreach (var AssginedPermssion in model)
-            {
-                var titlePermission = await _unitOfWork.UserPermssionRepositroy
-                    .GetSpecificSelectAsync(x =>  x.SubScreenId == AssginedPermssion.SubScreenId&&x.TitleId==titleId, x => x);
-                IEnumerable<UserPermission> listUpdatedper = null;
-
-                if (titlePermission != null)
-                {
-
-                    listUpdatedper = titlePermission.Select(x => new UserPermission
-                    {
-                        UserId=x.UserId,
-                        Permission = string.Join(',', AssginedPermssion.Permission),
-                        SubScreenId = x.SubScreenId,
-                        TitleId = x.TitleId
-                    });
-                    _unitOfWork.UserPermssionRepositroy.UpdateRange(listUpdatedper);
-
-
-
-                }
-                else
-                {
-                    AddedUserPer.Add(new UserPermission
-                    {
-                        UserId = id.ToString(),
-                        TitleId = titleId,
-                        SubScreenId = AssginedPermssion.SubScreenId,
-                        Permission = string.Join(',', AssginedPermssion.Permission)
-                    });
-
-
-
-                }
-
-
-
-            }
-            await _unitOfWork.TitlePermissionRepository.AddRangeAsync(AddedPer);
-            await _unitOfWork.CompleteAsync();
-
-        }
-    
-        
-         
-        return new()
+        return new Response<string>
         {
             Check = true,
             Data = "",
-
         };
-      
     }
+
+    private async Task ProcessUserPermissions(Guid userId, int titleId, IEnumerable<AssignPermissionRequest> model, bool all)
+    {
+        int userCounter = 0;
+        foreach (var assignedPermission in model)
+        {
+            var userPermissionQuery = await _unitOfWork.UserPermssionRepositroy
+                .GetSpecificSelectAsync(x => x.TitleId == titleId && x.SubScreenId == assignedPermission.SubScreenId, x => x);
+
+            var userPermission = all ? userPermissionQuery : userPermissionQuery.Where(x => x.UserId == userId.ToString());
+
+            if (userPermission.Any())
+            {
+                var listUpdatedPer = userPermission.Select(x => new UserPermission
+                {
+                    Id=x.Id,
+                    UserId=x.UserId,
+                    Permission = string.Join(',', assignedPermission.Permission),
+                    SubScreenId = x.SubScreenId,
+                    TitleId = x.TitleId
+                });
+                _unitOfWork.UserPermssionRepositroy.UpdateRange(listUpdatedPer);
+            }
+            else
+            {
+                // Check if the SubScreenId exists in the st_screens_subs table
+                var subScreenExists = await _unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubScreenId);
+
+                if (subScreenExists)
+                {
+                    await _unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission
+                    { 
+
+                        UserId=userId.ToString(),
+                       
+                        TitleId = titleId,
+                        SubScreenId = assignedPermission.SubScreenId,
+                        Permission = string.Join(',', assignedPermission.Permission)
+                    });
+                }
+                else
+                {
+                    // Log the invalid SubScreenId or handle accordingly
+                    Console.WriteLine("Invalid SubScreenId: " + assignedPermission.SubScreenId);
+                    continue;
+                }
+            }
+        }
+
+        await _unitOfWork.CompleteAsync();
+    }
+
 
     public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model,string host,string lang)
     {
@@ -814,7 +774,7 @@ public class AuthService : IAuthService
                 x.PhoneNumber,
                 x.UserName
             },
-            orderBy: x => x.OrderByDescending(x => x.Id)
+            orderBy: x => x.OrderByDescending(x => x.Add_date)
         );
 
         // Perform the in-memory transformations
