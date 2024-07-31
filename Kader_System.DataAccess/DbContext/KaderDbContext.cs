@@ -139,10 +139,6 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .IsRequired(false)
             .OnDelete(DeleteBehavior.Cascade);
 
-        modelBuilder.Entity<StScreenAction>()
-            .Property(x => x.ScreenSubId)
-            .HasColumnName("ScreenSubId");
-
 
         modelBuilder.Entity<TransSalaryCalculator>()
       .Property(p => p.Status)

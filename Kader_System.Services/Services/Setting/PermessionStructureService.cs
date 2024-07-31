@@ -13,11 +13,10 @@ namespace Kader_System.Services.Services.Setting
         public async Task<Response<object>> GetAllPermessionStructure(string lang)
         {
             var actions = await unitOfWork.ActionsRepo.GetAllAsync();
-            var test = await unitOfWork.PermessionStructure.GetAllAsync();
             var per = (from q in await unitOfWork.PermessionStructure.GetAllAsync()
                        select new
                        {
-                           sub_id = q.ScreenSubId,
+                           sub_id = q.ScreenId,
                            sub_title = lang == Localization.Arabic ? q.ScreenSub.Screen_sub_title_ar : q.ScreenSub.Screen_sub_title_en,
                            cat_id = q.ScreenSub.ScreenCatId,
                            cat_title = lang == Localization.Arabic ? q.ScreenSub.ScreenCat.Screen_cat_title_ar : q.ScreenSub.ScreenCat.Screen_cat_title_en,
