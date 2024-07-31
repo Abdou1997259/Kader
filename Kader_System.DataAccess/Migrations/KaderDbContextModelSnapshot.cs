@@ -242,7 +242,7 @@ namespace Kader_System.DataAccess.Migrations
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
                             CompanyId = 3,
-                            ConcurrencyStamp = "acc48c28-07b5-450f-8efb-d7daa556827c",
+                            ConcurrencyStamp = "22fa51dd-aa23-4131-94d0-e4f19eeadc17",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             FinancialYear = 2013,
@@ -254,10 +254,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAECWTHiFCDPPTC2RLdZ08J3OF7A6Y80WhptTLM8C8mb0u15xH7AZ5yiymQWrTydYbtw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEM4V9M8+w4FfNwKxOKUM438OsR16Zng5hFyS6+aF9dK5CcG/ktJbSVqhB6ChLT5Kaw==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "78637603-775c-4f29-a6f2-0eed1e988568",
+                            SecurityStamp = "eb110247-e464-4a26-bcfc-59475e15737c",
                             TitleId = "1",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -3277,6 +3277,16 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("st_main_screens");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            Screen_main_title_ar = "الموارد البشريه",
+                            Screen_main_title_en = "Human Resources"
+                        });
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StMainScreenCat", b =>
@@ -3333,6 +3343,71 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("MainScreenId");
 
                     b.ToTable("st_main_screen_cats");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            MainScreenId = 1,
+                            Screen_cat_title_ar = "الاعدادات",
+                            Screen_cat_title_en = "Setting"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsActive = true,
+                            IsDeleted = false,
+                            MainScreenId = 1,
+                            Screen_cat_title_ar = "اكواد",
+                            Screen_cat_title_en = "Codes"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsActive = true,
+                            IsDeleted = false,
+                            MainScreenId = 1,
+                            Screen_cat_title_ar = "طلبات",
+                            Screen_cat_title_en = "Request"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IsActive = true,
+                            IsDeleted = false,
+                            MainScreenId = 1,
+                            Screen_cat_title_ar = "حركات",
+                            Screen_cat_title_en = "Transcation"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IsActive = true,
+                            IsDeleted = false,
+                            MainScreenId = 1,
+                            Screen_cat_title_ar = "تقارير",
+                            Screen_cat_title_en = "Reports"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IsActive = true,
+                            IsDeleted = false,
+                            MainScreenId = 1,
+                            Screen_cat_title_ar = "توظيف",
+                            Screen_cat_title_en = "Hiring"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            IsActive = true,
+                            IsDeleted = false,
+                            MainScreenId = 1,
+                            Screen_cat_title_ar = "الاعدادات HR",
+                            Screen_cat_title_en = "Hr Setting"
+                        });
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StScreenAction", b =>
@@ -3380,6 +3455,88 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("ScreenId");
 
                     b.ToTable("st_screen_action");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ActionId = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ActionId = 2,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ActionId = 3,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ActionId = 4,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ActionId = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenId = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ActionId = 2,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenId = 2
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ActionId = 3,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenId = 2
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ActionId = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ActionId = 2,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenId = 3
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ActionId = 2,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenId = 3
+                        });
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StScreenSub", b =>
@@ -3411,6 +3568,10 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int>("ScreenCatId")
                         .HasColumnType("int");
 
+                    b.Property<string>("ScreenCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Screen_main_cat_image")
                         .HasColumnType("nvarchar(max)");
 
@@ -3421,9 +3582,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Screen_sub_title_en")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("StScreenSubId")
-                        .HasColumnType("int");
 
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
@@ -3439,9 +3597,306 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("ScreenCatId");
 
-                    b.HasIndex("StScreenSubId");
-
                     b.ToTable("st_screens_subs");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 1,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "القائمة الرئيسية",
+                            Screen_sub_title_en = "Main Screen",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 1,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "القائمة الفرعية",
+                            Screen_sub_title_en = "Sub Screen",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 1,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "المسئوليات",
+                            Screen_sub_title_en = "Titles",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 1,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "مستخدمين",
+                            Screen_sub_title_en = "Users",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 1,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "صلاحيات المستخدمين",
+                            Screen_sub_title_en = "Users Privilige",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 1,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "اعدادات",
+                            Screen_sub_title_en = "Setting",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 7,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 2,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "شركات",
+                            Screen_sub_title_en = "Company",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 8,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 2,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "الوظائف",
+                            Screen_sub_title_en = "Jobs",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 9,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 2,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "المؤهلات",
+                            Screen_sub_title_en = "Qualifications",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 10,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 2,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "الهيكل الاداري",
+                            Screen_sub_title_en = "Strucutred Mangements",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 11,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 2,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "الاجازات",
+                            Screen_sub_title_en = "Vacations",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 12,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 2,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "الموظفين",
+                            Screen_sub_title_en = "Employee",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 13,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 2,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "بدلات",
+                            Screen_sub_title_en = "Allowneces",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 14,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 2,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "استقطاعات",
+                            Screen_sub_title_en = "Deductions",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 15,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 2,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "استحقاقات",
+                            Screen_sub_title_en = "Benefits",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 16,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 2,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "العقود",
+                            Screen_sub_title_en = "Contracts",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 17,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 2,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "اجهزة البصمة",
+                            Screen_sub_title_en = "Print Devices",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 18,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 3,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "متابعة الطلبات",
+                            Screen_sub_title_en = "Request tracking",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 19,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 3,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "طلب",
+                            Screen_sub_title_en = "Request",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 20,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 4,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "الاستقطاعات",
+                            Screen_sub_title_en = "Vacations",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 21,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 4,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "الاستحقاقات",
+                            Screen_sub_title_en = "Employee",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 22,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 4,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "الاجازات",
+                            Screen_sub_title_en = "Qualifications",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 23,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 4,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "البدلات",
+                            Screen_sub_title_en = "Allowneces",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 24,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 4,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "العهد العينية",
+                            Screen_sub_title_en = "Deductions",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 25,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 4,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "حساب الرواتب",
+                            Screen_sub_title_en = "Benefits",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 26,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 4,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "الصرف",
+                            Screen_sub_title_en = "Contracts",
+                            Url = ""
+                        },
+                        new
+                        {
+                            Id = 27,
+                            IsActive = true,
+                            IsDeleted = false,
+                            ScreenCatId = 4,
+                            ScreenCode = "01001",
+                            Screen_sub_title_ar = "زيادة المرتبات",
+                            Screen_sub_title_en = "Print Devices",
+                            Url = ""
+                        });
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StSubMainScreenAction", b =>
@@ -3566,6 +4021,16 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("st_title");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            TitleNameAr = "مدير عام",
+                            TitleNameEn = "maanger"
+                        });
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.TitlePermission", b =>
@@ -3594,6 +4059,15 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("TitleId");
 
                     b.ToTable("st_title_permission");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Permissions = "1,2,3",
+                            SubScreenId = 4,
+                            TitleId = 1
+                        });
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.AdvancedType", b =>
@@ -5345,8 +5819,8 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Kader_System.Domain.Models.Setting.Screen", "Screen")
-                        .WithMany("Actions")
+                    b.HasOne("Kader_System.Domain.Models.Setting.StScreenSub", "Screen")
+                        .WithMany()
                         .HasForeignKey("ScreenId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -5363,11 +5837,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasForeignKey("ScreenCatId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.HasOne("Kader_System.Domain.Models.Setting.StScreenSub", null)
-                        .WithMany("ScreenSubs")
-                        .HasForeignKey("StScreenSubId")
-                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("ScreenCat");
                 });
@@ -5653,11 +6122,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("ListOfActions");
                 });
 
-            modelBuilder.Entity("Kader_System.Domain.Models.Setting.Screen", b =>
-                {
-                    b.Navigation("Actions");
-                });
-
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StMainScreen", b =>
                 {
                     b.Navigation("CategoryScreen");
@@ -5671,8 +6135,6 @@ namespace Kader_System.DataAccess.Migrations
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StScreenSub", b =>
                 {
                     b.Navigation("ListOfActions");
-
-                    b.Navigation("ScreenSubs");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Title", b =>

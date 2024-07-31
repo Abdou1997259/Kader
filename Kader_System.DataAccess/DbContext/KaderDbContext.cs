@@ -200,7 +200,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
         modelBuilder.Entity<TransLoan>()
            .Property(p => p.PrevDedcutedAmount)
            .HasPrecision(18, 2);
-
+        
         modelBuilder.Entity<TransLoan>()
            .Property(p => p.MonthlyDeducted)
            .HasPrecision(18, 2);
@@ -208,7 +208,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .Property(p => p.Amount)
             .HasPrecision(18, 2);
         #endregion
-
+        
         #region SubScreen
         //modelBuilder.Entity<StMainScreenCat>()
         //    .HasMany(s => s.StScreenSub)

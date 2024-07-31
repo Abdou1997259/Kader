@@ -14,7 +14,7 @@ public class StScreenSub : BaseEntity
 
  
 
-
+    public string ScreenCode { get; set; }
     
     public int ScreenCatId { get; set; }
     [ForeignKey(nameof(ScreenCatId))]
