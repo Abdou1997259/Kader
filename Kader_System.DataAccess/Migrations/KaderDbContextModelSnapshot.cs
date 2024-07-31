@@ -241,6 +241,7 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
+
                             CompanyId = 3,
                             ConcurrencyStamp = "89a6492a-235b-44f2-be69-cbdc87308f7f",
                             Email = "mohammed88@gmail.com",
@@ -254,12 +255,13 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
+
                             PasswordHash = "AQAAAAIAAYagAAAAECRLzk9qtjgiVQqKkp1QX94TrJQo1UIgsdsnqICg/xzI3qIHZB1c2gH9uU2S3HWY3Q==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "9ea4de3d-f626-4b5c-aba5-582215b8442c",
                             TitleId = "1",
-                            TwoFactorEnabled = false,
+                          TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
                         });

@@ -10,6 +10,7 @@ namespace Kader_System.Services.IServices.Setting
         Task<Response<CreateTitleRequest>> CreateTitleAsync(CreateTitleRequest model);
       
         Task<Response<GetTitleByIdResponse>> GetTitleByIdAsync(int id,string lang);
+
         Task<Response<UpdateTitleRequest>> UpdateTitleAsync(int id, UpdateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers);
         Task<Response<string>> UpdateActiveOrNotTitleAsync(int id);
         Task<Response<string>> DeleteTitleAsync(int id);
