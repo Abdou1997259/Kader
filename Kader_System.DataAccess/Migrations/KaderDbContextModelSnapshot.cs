@@ -241,7 +241,9 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0246e826-de5f-48e7-bba0-45b95e31edf9",
+
+                            CompanyId = 3,
+                            ConcurrencyStamp = "23109ca0-87c0-44cb-92ca-8c012a906ddd",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             FinancialYear = 2013,
@@ -253,10 +255,13 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAED9PKI+LnjlJS8kfzjA4oie6SmlqG//QsqWxx0JgDUwYKbdoPt18et9iKiA8vtXVkg==",
+
+                            PasswordHash = "AQAAAAIAAYagAAAAEGZcynbzMAwGS+8fJ9+Pq0LOLHLCRJcV+UAdxVboQAvsk0qCJ2rRIwJsOlKSY9FvEQ==",
+                            PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f14e30f7-e7d4-456b-b482-914f0aed6abf",
-                            TwoFactorEnabled = false,
+                            SecurityStamp = "9a3818a2-a6ae-40c5-9056-ff4caa9fd818",
+                            TitleId = "1",
+                          TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
                         });
@@ -3429,6 +3434,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Url")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

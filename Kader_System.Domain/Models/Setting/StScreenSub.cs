@@ -12,15 +12,13 @@ public class StScreenSub : BaseEntity
 
     public  string? Screen_main_cat_image { get; set; }
 
-    public  string? Url { get; set; } 
+ 
 
 
     
     public int ScreenCatId { get; set; }
     [ForeignKey(nameof(ScreenCatId))]
     public StMainScreenCat ScreenCat { get; set; } = default!;
-
-    public ICollection<StScreenSub> ScreenSubs { get; set; }
 
 
     public ICollection<StSubMainScreenAction> ListOfActions { get; set; } = [];

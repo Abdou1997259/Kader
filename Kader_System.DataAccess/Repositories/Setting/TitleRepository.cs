@@ -23,7 +23,7 @@ namespace Kader_System.DataAccess.Repositories.Setting
                     all_permissions = t.TitlePermissions.Select(p => new GetTitlePermissionResponse()
                     {
                         sub_title = p.ScreenSub!.Screen_sub_title_ar,
-                        url = p.ScreenSub!.Url,
+                      
                         cat_id = p.ScreenSub!.ScreenCatId,
                         cat_title = p.ScreenSub!.ScreenCat!.Screen_cat_title_ar,
                         main_id = p.ScreenSub!.ScreenCatId,
