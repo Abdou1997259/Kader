@@ -4,6 +4,7 @@ using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.Auth;
 using Kader_System.Domain.Models;
 using Kader_System.Domain.Models.EmployeeRequests;
+using Kader_System.Domain.Models.Setting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using System.IdentityModel.Tokens.Jwt;
@@ -151,10 +152,13 @@ public class AuthService : IAuthService
 
         var obj = _mapper.Map<CreateUserRequest, ApplicationUser>(model, (
             await _userManager.FindByIdAsync(id.ToString()))!);
+
         var full_path = Path.Combine(root, clientName, moduleName);
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         if (model.image != null)
             _fileServer.RemoveFile(full_path, obj.ImagePath);
+
+       
         obj.ImagePath = (model.image == null || model.image.Length == 0) ? " " :
            await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.image);
         obj.UpdateDate = new DateTime().NowEg();
@@ -162,7 +166,7 @@ public class AuthService : IAuthService
         obj.VisiblePassword = model.password;
         obj.PhoneNumber = model.phone;
         obj.UserName = model.user_name;
-        
+       
        
         obj.FullName = model.full_name;
         obj.Email = model.email;
@@ -554,6 +558,7 @@ public class AuthService : IAuthService
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         user.ImagePath = (model.image == null || model.image.Length == 0) ? null :
             await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.image);
+        var userpermssions =await _unitOfWork.UserPermssionRepositroy.GetAllAsync();
        IEnumerable< UserPermission> listofPermission = null;
         foreach (int i in model.title_id)
         {
@@ -566,12 +571,11 @@ public class AuthService : IAuthService
                 Permission=x.Permissions
 
             });
+            var unreaptedUserperssion = userpermssions.Concat(listofPermission).Except(userpermssions, new UserPermissionComperer());
+            await            _unitOfWork.UserPermssionRepositroy.AddRangeAsync(unreaptedUserperssion);
 
         }
-        if (listofPermission != null) {
-
-            _unitOfWork.UserPermssionRepositroy.UpdateRange(listofPermission);
-        }
+     
       
 
         // Add user to the database
