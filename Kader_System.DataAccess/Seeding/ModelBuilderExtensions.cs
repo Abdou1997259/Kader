@@ -60,7 +60,25 @@ public static class ModelBuilderExtensions
            });
 
         #endregion
+        #region screen data
 
+        //modelBuilder.Entity<StMainScreen>()
+        //   .HasData(
+        //      new StMainScreen() { Id = 1, Screen_main_title_ar = "شئون العاملين", Screen_main_title_en = "HR" }
+          
+        //  );
+
+
+        //modelBuilder.Entity<StMainScreenCat>()
+        //  .HasData(
+        // new StMainScreenCat() { Id = 1, Screen_cat_title_ar = "الاعدادات", Screen_cat_title_en ="Setting" ,MainScreenId=1},
+        // new StMainScreenCat() { Id = 2, Screen_cat_title_ar = "الاكواد", Screen_cat_title_en = "Codes", MainScreenId = 1 },
+        // new StMainScreenCat() { Id = 3, Screen_cat_title_ar = "طلبات", Screen_cat_title_en ="Request", MainScreenId = 1 },
+        // new StMainScreenCat() { Id = 4, Screen_cat_title_ar = "حركات", Screen_cat_title_en = "Transcation", MainScreenId = 1 },
+        // new StMainScreenCat () { Id = 5, Screen_cat_title_ar = "التقارير", Screen_cat_title_en ="Reports", MainScreenId = 1 },
+        // new StMainScreenCat() { Id = 6, Screen_cat_title_ar = "طباعة", Screen_cat_title_en = ActionsEnums.Print.ToString(), MainScreenId = 1 }
+        // );
+        #endregion
         modelBuilder.Entity<StAction>()
             .HasData(
            new() { Id = 1, Name = "إظهار", NameInEnglish = ActionsEnums.View.ToString() },
