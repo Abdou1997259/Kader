@@ -8,29 +8,29 @@ namespace Kader_System.DataAccess.Repositories.Setting
             int? skip = null,
             int? take = null, string lang = "ar")
         {
-           var query= context.Screens.AsNoTracking().Where(filter)
-                .Include(s => s.ParentScreen)
-                .Include(a => a.Actions)
-                .ThenInclude(a => a.Action)
-                .Select(s => new ScreenInfoData()
-                {
-                    Actions = s.Actions.Any() ? s.Actions.Select(a => a.Action.Id).ToList() : new List<int>(),
-                    ActiveIcon = $"{ReadRootPath.SettingImagesPath}{s.ActiveIcon}",
-                    Code = s.Code,
-                    EndPoint = s.EndPoint,
-                    Icon = $"{ReadRootPath.SettingImagesPath}{s.Icon}",
-                    Id = s.Id,
-                    NameAr = s.NameAr,
-                    NameEn = s.NameEn,
-                    Url = s.Url,
-                    ScreenType = s.ScreenType,
-                    Sort = s.Sort,
-                    ParentId = s.ParentId,
-                    ParentName = lang == Localization.Arabic ? s.ParentScreen!.NameAr : s.ParentScreen!.NameEn,
+            var query = context.Screens.AsNoTracking().Where(filter)
+                 .Include(s => s.ParentScreen)
+                 //.Include(a => a.Actions)
+                 //.ThenInclude(a => a.Action)
+                 .Select(s => new ScreenInfoData()
+                 {
+                     //Actions = s.Actions.Any() ? s.Actions.Select(a => a.Action.Id).ToList() : new List<int>(),
+                     ActiveIcon = $"{ReadRootPath.SettingImagesPath}{s.ActiveIcon}",
+                     Code = s.Code,
+                     EndPoint = s.EndPoint,
+                     Icon = $"{ReadRootPath.SettingImagesPath}{s.Icon}",
+                     Id = s.Id,
+                     NameAr = s.NameAr,
+                     NameEn = s.NameEn,
+                     Url = s.Url,
+                     ScreenType = s.ScreenType,
+                     Sort = s.Sort,
+                     ParentId = s.ParentId,
+                     ParentName = lang == Localization.Arabic ? s.ParentScreen!.NameAr : s.ParentScreen!.NameEn,
 
-                });
+                 });
 
-           if (skip.HasValue)
+            if (skip.HasValue)
                query = query.Skip(skip.Value);
            if (take.HasValue)
                query = query.Take(take.Value);
@@ -43,8 +43,8 @@ namespace Kader_System.DataAccess.Repositories.Setting
         {
              return await  context.Screens
                 .Include(s => s.ParentScreen)
-                .Include(a => a.Actions)
-                .ThenInclude(a => a.Action)
+                //.Include(a => a.Actions)
+                //.ThenInclude(a => a.Action)
                 .FirstOrDefaultAsync(s=>s.Id==id);
         }
         public async Task<int> GenerateNewCode_Async(int? parentId)
