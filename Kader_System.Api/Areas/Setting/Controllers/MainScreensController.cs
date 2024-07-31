@@ -59,9 +59,9 @@ public class MainScreensController(IMainScreenService service, IRequestService r
                 Screen_cat_title_en = ms.CategoryScreen.Select(x => x.Screen_cat_title_en).ToList(),
                 StScreenSub = x.StScreenSub.Select(k => new GetAllStScreenSub
                 {
-                    Ids = k.ScreenSubs.Select(x => x.Id).ToList(),
-                    Screen_sub_title_ar = k.ScreenSubs.Select(y => y.Screen_sub_title_ar).ToList(),
-                    Screen_sub_title_en = k.ScreenSubs.Select(y => y.Screen_sub_title_ar).ToList()
+                    Ids = k.ScreenCat.StScreenSub.Select(x => x.Id).ToList(),
+                    Screen_sub_title_ar = k.ScreenCat.StScreenSub.Select(y => y.Screen_sub_title_ar).ToList(),
+                    Screen_sub_title_en = k.ScreenCat.StScreenSub.Select(y => y.Screen_sub_title_ar).ToList()
                 }).ToList(),
             }).ToList()
         });

@@ -11,7 +11,8 @@
         public int Id { get; set; }
         public string TitleNameAr { get; set; }
         public string TitleNameEn { get; set; }
-        public List<GetAllTitlePermissionResponse> Permissions { get; set; }
+        public DateTime? Add_date { get; set; }
+        //public List<GetAllTitlePermissionResponse> Permissions { get; set; }
     }
 
     public class GetAllTitlePermissionResponse
