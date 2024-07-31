@@ -20,8 +20,6 @@ public class StScreenSub : BaseEntity
     [ForeignKey(nameof(ScreenCatId))]
     public StMainScreenCat ScreenCat { get; set; } = default!;
 
-    public ICollection<StScreenSub> ScreenSubs { get; set; }
-
 
     public ICollection<StSubMainScreenAction> ListOfActions { get; set; } = [];
 }
