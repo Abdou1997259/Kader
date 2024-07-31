@@ -12,7 +12,7 @@ public class StScreenSub : BaseEntity
 
     public  string? Screen_main_cat_image { get; set; }
 
-    public  string? Url { get; set; } 
+ 
 
 
     
