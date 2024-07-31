@@ -8,14 +8,21 @@ namespace Kader_System.Domain.DTOs.Request.Setting
         public string TitleNameEn { get; set; }
         //public List<CreateTitlePermissionRequest> Permissions { get; set; }
 
-        //  public  List<AssginTitlePermissionRequest> pers { get; set; }    
-        //}
+      //public  List<AssginTitlePermissionRequest> pers { get; set; }    
+    }
+    public class UpdateTitleRequest
+    {
+        public string TitleNameAr { get; set; }
+        public string TitleNameEn { get; set; }
+        //public List<CreateTitlePermissionRequest> Permissions { get; set; }
 
-        //public class CreateTitlePermissionRequest
-        //{
-        //    public int SubScreenId { get; set; }
-        //    public string Permissions { get; set; }
-        //}
+        public List<AssginTitlePermissionRequest> pers { get; set; }
+
+    }
+    public class CreateTitlePermissionRequest
+    {
+        public int SubScreenId { get; set; }
+        public string Permissions { get; set; }
     }
 
 }

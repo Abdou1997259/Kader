@@ -84,7 +84,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
 
         [HttpPut(ApiRoutes.Title.UpdateTitle)]
         public async Task<IActionResult> UpdateTitle(
-            [FromRoute] int id, [FromBody] CreateTitleRequest model
+            [FromRoute] int id, [FromBody] UpdateTitleRequest model
            )
         {
             var respone = await titleService.UpdateTitleAsync(id, model);

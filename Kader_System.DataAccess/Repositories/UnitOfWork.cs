@@ -13,7 +13,7 @@ public class UnitOfWork : IUnitOfWork
     protected readonly IConfiguration _config;
 
     public IAdvancedTypesRepository AdvancedTypesRepository { get; private set; }
-    
+
     public ITransLoanRepository LoanRepository { get; private set; }
     public IUserRepository Users { get; private set; }
     public IRoleClaimRepository RoleClaims { get; private set; }
@@ -76,6 +76,8 @@ public class UnitOfWork : IUnitOfWork
 
     public ITransSalaryIncreaseRepository TransSalaryIncrease { get; private set; }
     public ISalaryIncreaseTypeRepository SalaryIncreaseTypeRepository { get; private set; }
+    public IPermessionStructureRepository PermessionStructure { get; private set; }
+
     #region Employee_Requests_UOW
     public IEmployeeRequestsRepository EmployeeRequests { get; private set; }
     public ILeavePermissionRequestRepository LeavePermissionRequest { get; private set; }
@@ -87,19 +89,19 @@ public class UnitOfWork : IUnitOfWork
 
     public ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; private set; }
 
-    public IContractTerminationRequestRepositroy  ContractTerminationRequest { get; private set; }
+    public IContractTerminationRequestRepositroy ContractTerminationRequest { get; private set; }
 
     public ILoanRequestRepository LoanRequestRepository { get; private set; }
 
-  
+
 
     public IResignationRequesteRepository ResignationRepository { get; private set; }
 
     public ITitlePermissionRepositroy TitlePermissionRepository { get; private set; }
 
     public IUserPermssionRepositroy UserPermssionRepositroy { get; private set; }
-
     #endregion
+    public IActionsRepository ActionsRepo  { get; private set; }
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
     {
@@ -173,9 +175,9 @@ public class UnitOfWork : IUnitOfWork
         AllowanceRequests = new AllowanceRequestRepository(_context);
         SalaryIncreaseRequest = new SalaryIncreaseRequestRepository(_context);
         DelayPermission = new DelayPermissionRepository(_context);
-
-     
         EmployeeRequests = new EmployeeRequestsRepository(_context);
+        PermessionStructure = new PermessionStructureRepository(_context);  
+        ActionsRepo = new ActionsRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>

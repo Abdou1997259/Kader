@@ -133,7 +133,8 @@ namespace Kader_System.Services.Services.Setting
                 Data = model
             };
         }
-        public async Task<Response<CreateTitleRequest>> UpdateTitleAsync(int id,CreateTitleRequest model)
+
+        public async Task<Response<UpdateTitleRequest>> UpdateTitleAsync(int id, UpdateTitleRequest model, IEnumerable<AssginTitlePermissionRequest> pers)
         {
             var title = await unitOfWork.Titles.GetByIdAsync(id);
 

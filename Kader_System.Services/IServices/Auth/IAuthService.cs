@@ -18,14 +18,14 @@ public interface IAuthService
     Task<Response<string>> SetNewPasswordToSuperAdminAsync(string newPassword);
     Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model,string host,string lang);
     Task<Response<IEnumerable<ListOfUsersResponse>>> ListListOfUsers(string lang);
-    Task<Response<GetUserByIdResponse>> GetUserById(Guid id,string lang);
+    Task<Response<GetUserByIdResponse>> GetUserById(string id,string lang);
     Task<Response<UsersLookups>> UsersGetLookups(string lang);
 
-    Task<Response<CreateUserRequest>> UpdateUserAsync(Guid id, string lang,
-        CreateUserRequest model, string root, string clientName, string moduleName, UsereEnum userenum = UsereEnum.None);
+    Task<Response<UpdateUserRequest>> UpdateUserAsync(string id, string lang,
+         UpdateUserRequest model, string root, string clientName, string moduleName, UsereEnum userenum = UsereEnum.None);
 
-        Task<Response<string>> DeleteUser(Guid id);
-    Task<Response<string>> RestoreUser(Guid id);
-    Task<Response<string>> AssignPermissionForUser(Guid id, bool all, int titleId, IEnumerable<AssignPermissionRequest> model);
+        Task<Response<string>> DeleteUser(string id);
+    Task<Response<string>> RestoreUser(string id);
+    Task<Response<string>> AssignPermissionForUser(string id, bool all, int titleId, IEnumerable<AssignPermissionRequest> model);
 
 }
