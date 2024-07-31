@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.HTTP;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
@@ -14,6 +15,7 @@ public class DeductionsController(IDeductionService service, IRequestService req
 
 
     [HttpGet(ApiRoutes.Deduction.ListOfDeductions)]
+    [Permission(Permission.View, 14)]
     public async Task<IActionResult> ListOfDeductionsAsync() =>
         Ok(await _service.ListOfDeductionsAsync(requestService.GetRequestHeaderLanguage));
 
@@ -22,6 +24,7 @@ public class DeductionsController(IDeductionService service, IRequestService req
         Ok(await _service.GetAllDeductionsAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
     [HttpPost(ApiRoutes.Deduction.CreateDeduction)]
+    [Permission(Permission.Add, 14)]
     public async Task<IActionResult> CreateDeductionAsync(HrCreateDeductionRequest model)
     {
         var response = await _service.CreateDeductionAsync(model);
@@ -33,6 +36,7 @@ public class DeductionsController(IDeductionService service, IRequestService req
     }
 
     [HttpGet(ApiRoutes.Deduction.GetDeductionById)]
+    [Permission(Permission.View, 14)]
     public async Task<IActionResult> GetDeductionByIdAsync(int id)
     {
         var response = await _service.GetDeductionByIdAsync(id);
@@ -44,6 +48,7 @@ public class DeductionsController(IDeductionService service, IRequestService req
     }
 
     [HttpPut(ApiRoutes.Deduction.UpdateDeduction)]
+    [Permission(Permission.Edit, 14)]
     public async Task<IActionResult> UpdateDeductionAsync([FromRoute] int id, HrUpdateDeductionRequest model)
     {
         var response = await _service.UpdateDeductionAsync(id, model);
@@ -56,6 +61,7 @@ public class DeductionsController(IDeductionService service, IRequestService req
 
 
     [HttpPut(ApiRoutes.Deduction.RestoreDeduction)]
+    [Permission(Permission.Edit, 14)]
     public async Task<IActionResult> RestoreDeduction([FromRoute] int id)
     {
         var response = await _service.RestoreDeductionAsync(id);
@@ -66,6 +72,7 @@ public class DeductionsController(IDeductionService service, IRequestService req
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpDelete(ApiRoutes.Deduction.DeleteDeduction)]
+    [Permission(Permission.Delete, 14)]
     public async Task<IActionResult> DeleteDeductionAsync(int id)
     {
         var response = await _service.DeleteDeductionAsync(id);
