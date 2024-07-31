@@ -18,6 +18,6 @@ namespace Kader_System.Domain.Models.Setting
         public string? ActiveIcon { get; set; }
         public int Sort { get; set; }
         public int ScreenType { get; set; }
-        public ICollection<StScreenAction> Actions { get; set; } = [];
+
     }
 }

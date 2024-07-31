@@ -1,4 +1,5 @@
-﻿namespace Kader_System.Domain.Constants;
+﻿
+namespace Kader_System.Domain.Constants;
 
 public static class SD
 {
@@ -107,7 +108,7 @@ public static class SD
     {
         public class MainScreenCategory
         {
-             
+
             public const string ListOfMainScreensCategories = "screen_cat/getListOfMainScreens";
             public const string GetAllMainScreenCategories = "screen_cat";
             public const string CreateMainScreenCategory = "screen_cat";
@@ -119,7 +120,7 @@ public static class SD
         public class MainScreen
         {
             public const string ListOfMainScreens = "screen_main/getListOfMainScreens";
-            public const string GetMainScreensWithRelatedData = "screen_main/myendpoint"; 
+            public const string GetMainScreensWithRelatedData = "screen_main/myendpoint";
             public const string GetAllMainScreens = "screen_main";
             public const string CreateMainScreen = "screen_main";
             public const string UpdateMainScreen = "screen_main/update/{id}";
@@ -177,7 +178,7 @@ public static class SD
             public const string RestoreUser = "RestoreUser/{id}";
             public const string GetListOfUser = "GetListOfUsers";
             public const string GetLookups = "GetLookups";
-        
+
         }
 
         public class Perm
@@ -450,7 +451,7 @@ public static class SD
             }
             public class VacationRequests
             {
-             
+
                 public const string ListOfVacationRequests = "vacationrequest/getListOfvacationRequests";
                 public const string GetAllVacationRequests = "vacationrequest/getAll";
                 public const string CreateVacationRequests = "vacationrequest/create";
@@ -458,7 +459,8 @@ public static class SD
                 public const string RestoreVacationRequests = "vacationrequest/restore/{id}";
                 public const string GetVacationRequestsById = "vacationrequest/getById/{id}";
                 public const string DeleteVacationRequests = "vacationrequest/delete/{id}";
-            } public class AllowanceRequests
+            }
+            public class AllowanceRequests
             {
                 public const string GetAllowanceRequests = "allowanceRequests/getAll";
                 public const string CreateAllowanceRequests = "allowanceRequests/create";
@@ -480,7 +482,7 @@ public static class SD
             }
             public class ContractTerminationRequest
             {
-                
+
                 public const string ListOContractTerminationRequest = "contractTerminationRequest/getListOfcontractTerminationRequests";
                 public const string GetAllContractTerminationRequest = "contractTerminationRequest/getAll";
                 public const string CreateContractTerminationRequest = "contractTerminationRequest/create";

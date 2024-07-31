@@ -43,7 +43,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Insert
 
         [HttpPost(ApiRoutes.Title.CreateTitle)]
-        public async Task<IActionResult> CreateTittle([FromForm] CreateTitleRequest model)
+        public async Task<IActionResult> CreateTittle([FromBody] CreateTitleRequest model)
         {
             if (ModelState.IsValid)
             {
@@ -84,10 +84,10 @@ namespace Kader_System.Api.Areas.Setting.Controllers
 
         [HttpPut(ApiRoutes.Title.UpdateTitle)]
         public async Task<IActionResult> UpdateTitle(
-            [FromRoute] int id, [FromBody] CreateTitleRequest model
+            [FromRoute] int id, [FromBody] UpdateTitleRequest model
            )
         {
-            var respone = await titleService.UpdateTitleAsync(id, model,model.pers);
+            var respone = await titleService.UpdateTitleAsync(id, model);
 
             if (respone.Check == true)
                 return Ok(respone);
@@ -95,7 +95,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
                 return BadRequest(respone);
         }
 
-        [HttpGet(ApiRoutes.Title.RestoreTitle)]
+        [HttpPut(ApiRoutes.Title.RestoreTitle)]
         public async Task<IActionResult> RestoreTitle([FromForm] int id)
         {
             if (Response == null)

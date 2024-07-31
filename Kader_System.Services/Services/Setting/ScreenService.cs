@@ -87,7 +87,7 @@ namespace Kader_System.Services.Services.Setting
                 Check = true,
                 Data = new()
                 {
-                    Actions = obj.Actions.Select(a => a.Action.Id).ToList(),
+                    //Actions = obj.Actions.Select(a => a.Action.Id).ToList(),
                     ActiveIcon = $"{ReadRootPath.SettingImagesPath}{obj.ActiveIcon}",
                     Code = obj.Code,
                     EndPoint = obj.EndPoint,
@@ -139,10 +139,11 @@ namespace Kader_System.Services.Services.Setting
             {
                 NameEn = model.NameEn,
                 NameAr = model.NameAr,
-                Actions = model.Actions.Select(a => new StScreenAction()
-                {
-                    ActionId = a
-                }).ToList(),
+                //Actions = model.Actions.Select(a => new StScreenAction()
+                //{
+                //    ActionId = a
+                //}).ToList()
+                
                 ActiveIcon = activeIcon?.FileName,
                 Code = await unitOfWork.Screens.GenerateNewCode_Async(model.ParentId),
                 EndPoint = model.EndPoint,
@@ -191,10 +192,10 @@ namespace Kader_System.Services.Services.Setting
                 ManageFilesHelper.RemoveFile(Path.Combine(GoRootPath.SettingImagesPath, obj.Icon));
             }
 
-            if (obj.Actions.Any())
-            {
-                unitOfWork.ScreenActions.RemoveRange(obj.Actions);
-            }
+            //if (obj.Actions.Any())
+            //{
+            //    unitOfWork.ScreenActions.RemoveRange(obj.Actions);
+            //}
 
             GetFileNameAndExtension? activeIcon = null;
             if (model.ActiveIcon != null)
@@ -259,13 +260,13 @@ namespace Kader_System.Services.Services.Setting
             }
 
             obj.IsDeleted = false;
-            foreach (var action in obj.Actions)
-            {
-                action.IsDeleted = false;
-            }
+            //foreach (var action in obj.Actions)
+            //{
+            //    action.IsDeleted = false;
+            //}
 
             unitOfWork.Screens.Update(obj);
-            unitOfWork.ScreenActions.UpdateRange(obj.Actions);
+            //unitOfWork.ScreenActions.UpdateRange(obj.Actions);
             await unitOfWork.CompleteAsync();
 
             return new()
@@ -275,7 +276,7 @@ namespace Kader_System.Services.Services.Setting
                 Msg = sharLocalizer[Localization.Restored],
                 Data = new()
                 {
-                    Actions = obj.Actions.Select(a => a.Action.Id).ToList(),
+                    //Actions = obj.Actions.Select(a => a.Action.Id).ToList(),
                     ActiveIcon = $"{ReadRootPath.SettingImagesPath}{obj.ActiveIcon}",
                     Code = obj.Code,
                     EndPoint = obj.EndPoint,
@@ -320,7 +321,7 @@ namespace Kader_System.Services.Services.Setting
                 }
             }
             unitOfWork.Screens.Remove(obj);
-            unitOfWork.ScreenActions.RemoveRange(obj.Actions);
+            //unitOfWork.ScreenActions.RemoveRange(obj.Actions);
             await unitOfWork.CompleteAsync();
             return new()
             {

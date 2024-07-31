@@ -101,7 +101,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     }
     [HttpPut(ApiRoutes.User.UpdateUser)]
     public async Task<IActionResult> UpdateUserAsync([FromRoute]
-    Guid id, [FromForm] CreateUserRequest model)
+    string id, [FromForm] UpdateUserRequest  model)
 
     {
 
@@ -148,7 +148,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpDelete(ApiRoutes.User.DeleteUser)]
-    public async Task<IActionResult> DeleteUser(Guid id)
+    public async Task<IActionResult> DeleteUser(string id)
     {
         var response = await _service.DeleteUser(id );
         if (response.Check)
@@ -158,7 +158,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPut(ApiRoutes.User.RestoreUser)]
-    public async Task<IActionResult> RestoreUser(Guid id)
+    public async Task<IActionResult> RestoreUser(string id)
     {
         var response = await _service.RestoreUser(id);
         if (response.Check)
@@ -178,7 +178,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpGet(ApiRoutes.User.GetUserById)]
-    public async Task<IActionResult> GetUsersById(Guid id)
+    public async Task<IActionResult> GetUsersById(string id)
     {
         var response = await _service.GetUserById(id, requestService.GetRequestHeaderLanguage);
         if (response.Check)
@@ -218,7 +218,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
 
     }
     [HttpPost(ApiRoutes.User.AssginPermssionToUser)]
-    public async Task<IActionResult> GetUserLookups([FromRoute] Guid id,[FromBody]  IEnumerable<AssignPermissionRequest> model, [FromQuery] bool all = false, 
+    public async Task<IActionResult> GetUserLookups([FromRoute] string id,[FromBody]  IEnumerable<AssignPermissionRequest> model, [FromQuery] bool all = false, 
         [FromQuery] int titleId = 1)
     {
         var response = await _service.AssignPermissionForUser(id,all,titleId,model);

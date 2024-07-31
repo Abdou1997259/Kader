@@ -61,7 +61,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
                 {
                     Ids = k.ScreenCat.StScreenSub.Select(x => x.Id).ToList(),
                     Screen_sub_title_ar = k.ScreenCat.StScreenSub.Select(y => y.Screen_sub_title_ar).ToList(),
-                    //Screen_sub_title_en = k.ScreenCat.StScreenSub.Select(y => y.Screen_sub_title_ar).ToList(),
+                    Url = k.ScreenCat.StScreenSub.Select(y => y.Url).ToList(),
                     Screen_main_cat_image = k.ScreenCat.StScreenSub.Select(y => y.Screen_main_cat_image).ToList(),
 
                 }).ToList(),

@@ -6,9 +6,11 @@
         [Key]
         public int Id { get; set; }
 
+
         public int ScreenId { get; set; }
         [ForeignKey(nameof(ScreenId))]
-        public StScreenSub ScreenSub { get; set; } = default!;
+        public StScreenSub Screen { get; set; } = default!;
+
 
         public int ActionId { get; set; }
         [ForeignKey(nameof(ActionId))]
