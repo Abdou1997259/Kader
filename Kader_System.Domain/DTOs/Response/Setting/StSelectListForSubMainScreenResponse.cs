@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.DTOs.Response.Setting;
 
-public class StSelectListForSubMainScreenResponse
+public class StSelectListForSubMainScreenResponse : PaginationRequest
 {
     public int Id { get; set; }
     public string Sub_title { get; set; } = string.Empty;

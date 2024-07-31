@@ -12,9 +12,6 @@ public class StScreenSub : BaseEntity
 
     public  string? Screen_main_cat_image { get; set; }
 
- 
-
-
     
     public int ScreenCatId { get; set; }
     [ForeignKey(nameof(ScreenCatId))]
