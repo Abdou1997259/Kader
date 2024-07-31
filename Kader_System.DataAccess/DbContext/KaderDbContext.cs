@@ -89,6 +89,9 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<AllowanceRequest> AllowanceRequests { get; set; }
     public DbSet<SalaryIncreaseRequest> SalaryIncreaseRequests { get; set; }
     public DbSet<ContractTerminationRequest> ContractTerminationRequests { get; set; }
+    public DbSet<StScreenAction> ScreenActions { get; set; }
+
+
 
 
 
