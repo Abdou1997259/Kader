@@ -40,7 +40,7 @@ public static class ModelBuilderExtensions
                 ImagePath="/",
                 TitleId="1",
                 PhoneNumber="1202200",
-                CompanyYear=2013,
+                FinancialYear=2013,
                 CompanyId=3,
          
                 NormalizedEmail = "MOHAMMED88@GMAIL.COM",

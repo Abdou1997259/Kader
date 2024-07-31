@@ -141,9 +141,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CompanyYear")
-                        .HasColumnType("int");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -160,6 +157,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<int>("FinancialYear")
+                        .HasColumnType("int");
 
                     b.Property<string>("FullName")
                         .IsRequired()
@@ -242,10 +242,12 @@ namespace Kader_System.DataAccess.Migrations
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
                             CompanyId = 3,
+
                             CompanyYear = 2013,
-                            ConcurrencyStamp = "5ab93d82-7a60-4119-816f-b43dcd3e3847",
+                            ConcurrencyStamp = "acc48c28-07b5-450f-8efb-d7daa556827c",
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
+                            FinancialYear = 2013,
                             FullName = "Mohamed abdou",
                             ImagePath = "/",
                             IsActive = true,
@@ -254,10 +256,12 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJNg/gV5bfLBqPKEAjYe+hglj0G/jAukIc+Ktixko5kB+utsi6m5169yLLy3EZXE2w==",
+
+                            PasswordHash = "AQAAAAIAAYagAAAAECWTHiFCDPPTC2RLdZ08J3OF7A6Y80WhptTLM8C8mb0u15xH7AZ5yiymQWrTydYbtw==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a19c0684-c6e9-42a2-99cb-29ce6201df8b",
+                            SecurityStamp = "78637603-775c-4f29-a6f2-0eed1e988568",
+
                             TitleId = "1",
                             TwoFactorEnabled = false,
                             UserName = "admin",

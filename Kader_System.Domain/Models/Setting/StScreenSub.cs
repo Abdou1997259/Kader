@@ -11,6 +11,7 @@ public class StScreenSub : BaseEntity
     public required string Url { get; set; } 
 
     public  string? Screen_main_cat_image { get; set; }
+
     
     public int ScreenCatId { get; set; }
     [ForeignKey(nameof(ScreenCatId))]

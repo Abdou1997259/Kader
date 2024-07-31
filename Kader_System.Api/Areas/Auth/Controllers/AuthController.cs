@@ -101,12 +101,12 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     }
     [HttpPut(ApiRoutes.User.UpdateUser)]
     public async Task<IActionResult> UpdateUserAsync([FromRoute]
-    Guid id, [FromForm]CreateUserRequest model, 
-        IEnumerable<AssignPermissionRequest> pers, [FromQuery] int titleId, [FromQuery] bool all = false)
+    Guid id, [FromForm] CreateUserRequest model)
+
     {
-     
-        var response = await _service.UpdateUserAsync(id, all, titleId, pers, model, 
-            hostEnvironment.WebRootPath, requestService.client_id, Modules.Auth, Domain.Constants.Enums.UsereEnum.Users) ;
+
+        var response = await _service.UpdateUserAsync(id, requestService.GetRequestHeaderLanguage,  model,
+            hostEnvironment.WebRootPath, requestService.client_id, Modules.Auth, Domain.Constants.Enums.UsereEnum.Users);
 
         if (response.Check)
             return Ok(response);
@@ -114,7 +114,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
- 
+
     [HttpGet(ApiRoutes.User.ShowPasswordToSpecificUser)]
     public async Task<IActionResult> ShowPasswordToSpecificUserAsync([FromRoute] string id)
     {
@@ -150,7 +150,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     [HttpDelete(ApiRoutes.User.DeleteUser)]
     public async Task<IActionResult> DeleteUser(Guid id)
     {
-        var response = await _service.DeleteUser(id,User.GetUserId());
+        var response = await _service.DeleteUser(id );
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -210,6 +210,18 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     public async Task<IActionResult> GetUserLookups()
     {
         var response = await _service.UsersGetLookups(requestService.GetRequestHeaderLanguage);
+        if (response.Check)
+            return Ok(response);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+
+    }
+    [HttpPost(ApiRoutes.User.AssginPermssionToUser)]
+    public async Task<IActionResult> GetUserLookups([FromRoute] Guid id,[FromBody]  IEnumerable<AssignPermissionRequest> model, [FromQuery] bool all = false, 
+        [FromQuery] int titleId = 1)
+    {
+        var response = await _service.AssignPermissionForUser(id,all,titleId,model);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

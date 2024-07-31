@@ -7,7 +7,8 @@ using Kader_System.Domain.Models.EmployeeRequests.Requests;
 
 namespace Kader_System.DataAccesss.DbContext;
 
-public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpContextAccessor accessor) : IdentityDbContext<ApplicationUser, ApplicationRole, string,
+public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpContextAccessor accessor) : 
+    IdentityDbContext<ApplicationUser, ApplicationRole, string,
              ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin,
              ApplicationRoleClaim, ApplicationUserToken>(options)
 {

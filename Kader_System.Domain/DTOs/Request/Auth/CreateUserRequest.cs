@@ -10,18 +10,18 @@ namespace Kader_System.Domain.DTOs.Request.Auth
     {
 
 
-        public string UserName { get; set; }
+        public string user_name { get; set; }
        
-        public string Password { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
-        public string FullName { get; set; }
-        public List<int> TitleId {  get; set; }=new List<int>() { 1 };
-        public int CompanyId { get; set; }
-        public  int JobTitle { get; set; }
-        public int CompanyYear { get; set; }
-        public IFormFile? Image { get; set; }   
+        public string? password { get; set; }
+        public string phone { get; set; }
+        public string email { get; set; }
+        public string full_name { get; set; }
+        public List<int> title_id {  get; set; }=new List<int>() { 1 };
+        public int company_id { get; set; }
+        public  int job_title { get; set; }
+        public int financial_year { get; set; }
+        public IFormFile? image { get; set; }   
         
-        public bool IsActive { get;set; }
+        public bool is_active { get;set; }
     }
 }
