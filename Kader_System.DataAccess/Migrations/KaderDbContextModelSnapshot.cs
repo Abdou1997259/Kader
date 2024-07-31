@@ -241,8 +241,10 @@ namespace Kader_System.DataAccess.Migrations
                         {
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
+
                             CompanyId = 3,
-                            ConcurrencyStamp = "22fa51dd-aa23-4131-94d0-e4f19eeadc17",
+
+                            ConcurrencyStamp = "22fa51dd-aa23-4131-94d0-e4f19eeadc17",r
                             Email = "mohammed88@gmail.com",
                             EmailConfirmed = true,
                             FinancialYear = 2013,
@@ -254,12 +256,16 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
+
                             PasswordHash = "AQAAAAIAAYagAAAAEM4V9M8+w4FfNwKxOKUM438OsR16Zng5hFyS6+aF9dK5CcG/ktJbSVqhB6ChLT5Kaw==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "eb110247-e464-4a26-bcfc-59475e15737c",
+
+
+             
                             TitleId = "1",
-                            TwoFactorEnabled = false,
+                          TwoFactorEnabled = false,
                             UserName = "admin",
                             VisiblePassword = "123456"
                         });
@@ -3439,8 +3445,12 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ScreenId")
+                    b.Property<int?>("ScreenId")
                         .HasColumnType("int");
+
+                    b.Property<int>("ScreenSubId")
+                        .HasColumnType("int")
+                        .HasColumnName("ScreenSubId");
 
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
@@ -3453,6 +3463,8 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("ActionId");
 
                     b.HasIndex("ScreenId");
+
+                    b.HasIndex("ScreenSubId");
 
                     b.ToTable("st_screen_action");
 
@@ -3568,7 +3580,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int>("ScreenCatId")
                         .HasColumnType("int");
 
+
                     b.Property<string>("ScreenCode")
+
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -3590,7 +3604,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Url")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -5821,13 +5834,19 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasOne("Kader_System.Domain.Models.Setting.StScreenSub", "Screen")
                         .WithMany()
+
                         .HasForeignKey("ScreenId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Kader_System.Domain.Models.Setting.StScreenSub", "ScreenSub")
+                        .WithMany()
+                        .HasForeignKey("ScreenSubId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Action");
 
-                    b.Navigation("Screen");
+                    b.Navigation("ScreenSub");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.StScreenSub", b =>

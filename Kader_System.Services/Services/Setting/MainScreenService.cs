@@ -1,6 +1,8 @@
 ﻿
 using Kader_System.DataAccesss.DbContext;
+using Kader_System.Domain.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.Setting;
 
@@ -115,7 +117,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         {
             Screen_main_title_ar = model.Screen_cat_title_ar,
             Screen_main_title_en = model.Screen_cat_title_en,
-            //MainScreenId = model.Screen_main_id
+            Id = model.Screen_main_id
         });
         await _unitOfWork.CompleteAsync();
 
@@ -177,8 +179,8 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         }
 
         obj.Screen_main_title_ar = model.Screen_cat_title_ar;
-        obj.Screen_main_title_ar = model.Screen_cat_title_en;
-        //obj.MainScreenId = model.Screen_main_id;
+        obj.Screen_main_title_en = model.Screen_cat_title_en;
+        obj.Id = model.Screen_main_id;
 
         _unitOfWork.MainScreens.Update(obj);
         await _unitOfWork.CompleteAsync();
@@ -235,12 +237,76 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<List<StMainScreen>> GetMainScreensWithRelatedDataAsync()
+    public async Task<Response<GetMainScreensWithRelatedDataResponse>> GetMainScreensWithRelatedDataAsync(string lang,
+        StGetAllFiltrationsForMainScreenRequest model, string host)
     {
-        return await _dbContext.MainScreenCategories
-       .Include(ms => ms.CategoryScreen)
-           .ThenInclude(cs => cs.StScreenSub)
-       .ToListAsync();
+
+
+        Expression<Func<StMainScreen, bool>> filter = x => x.IsDeleted == model.IsDeleted;
+        var totalRecords = await unitOfWork.MainScreens.CountAsync(filter: filter);
+        int page = 1;
+        int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+        if (model.PageNumber < 1)
+            page = 1;
+        else
+            page = model.PageNumber;
+        var pageLinks = Enumerable.Range(1, totalPages)
+            .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+            .ToList();
+        var result = new GetMainScreensWithRelatedDataResponse
+        {
+            TotalRecords = totalRecords,
+
+            Items = (await unitOfWork.MainScreens.GetSpecificSelectAsync(filter: filter, includeProperties: $"{nameof(StMainScreenCat.Id)}",
+                take: model.PageSize,
+                skip: (model.PageNumber - 1) * model.PageSize,
+                select: x => new MainScreenWithCatSubScreens
+                {
+                    Id = x.Id,
+                    Screen_main_title_ar = lang == Localization.Arabic ? x.Screen_main_title_ar: x.Screen_main_title_en,
+                }, orderBy: x =>
+                    x.OrderByDescending(x => x.Id))).ToList(),
+            CurrentPage = model.PageNumber,
+            FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+            From = (page - 1) * model.PageSize + 1,
+            To = Math.Min(page * model.PageSize, totalRecords),
+            LastPage = totalPages,
+            LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+            PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+            NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+            Path = host,
+            PerPage = model.PageSize,
+            Links = pageLinks
+        };
+
+        if (result.TotalRecords is 0)
+        {
+            string resultMsg = sharLocalizer[Localization.NotFoundData];
+
+            return new()
+            {
+                Data = new()
+                {
+                    Items = []
+                },
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+
+        return new()
+        {
+            Data = result,
+            Check = true
+        };
+
+        // return await _dbContext.MainScreenCategories
+        //.Include(ms => ms.CategoryScreen)
+        //    .ThenInclude(cs => cs.StScreenSub)
+        //.ToListAsync();
+
+
+
     }
 
    
