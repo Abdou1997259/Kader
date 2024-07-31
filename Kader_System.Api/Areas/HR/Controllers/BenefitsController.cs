@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.HTTP;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
@@ -6,7 +7,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Route("api/v1/")]
-[Authorize(Permissions.HR.View)]
+/*[Authorize(Permissions.HR.View)*/
 public class BenefitsController(IBenefitService service, IRequestService requestService) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;
@@ -14,6 +15,7 @@ public class BenefitsController(IBenefitService service, IRequestService request
     #region Retrieve
 
     [HttpGet(ApiRoutes.Benefit.ListOfBenefits)]
+    [Permission(Permission.View,4)]
     public async Task<IActionResult> ListOfBenefitsAsync() =>
         Ok(await service.ListOfBenefitsAsync(requestService.GetRequestHeaderLanguage));
 

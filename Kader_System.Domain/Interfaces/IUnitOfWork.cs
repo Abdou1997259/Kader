@@ -7,6 +7,8 @@ namespace Kader_System.Domain.Interfaces;
 public interface IUnitOfWork : IDisposable
 {
     IDatabaseTransaction BeginTransaction();
+    IUserPermssionRepositroy UserPermssionRepositroy { get; }   
+    ITitlePermissionRepositroy TitlePermissionRepository { get; }
     ILoanRequestRepository LoanRequestRepository { get; }
     ITransLoanDetailsRepository TransLoanDetails { get; }
     IResignationRequesteRepository ResignationRepository { get; }    

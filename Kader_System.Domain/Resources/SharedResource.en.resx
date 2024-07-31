@@ -177,6 +177,9 @@
   <data name="MainScreenCategory" xml:space="preserve">
     <value>Main screen category</value>
   </data>
+  <data name="MangerAlready" xml:space="preserve">
+    <value>Manger Already , Can't Assgin more than Manger</value>
+  </data>
   <data name="NotFoundData" xml:space="preserve">
     <value>Not found data</value>
   </data>

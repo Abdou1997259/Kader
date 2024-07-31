@@ -95,6 +95,7 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
         exists = await _unitOfWork.SubMainScreens.ExistAsync(x => x.Screen_sub_title_ar.Trim() == model.Screen_sub_title_ar
         || x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim() );
 
+
         if (exists)
         {
             string resultMsg = string.Format(_sharLocalizer[Localization.IsExist],
@@ -273,6 +274,11 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
             Data = string.Empty,
             Msg = _sharLocalizer[Localization.Deleted]
         };
+    }
+
+    public Task<Response<GetAllSubScreenInfo>> GetAllInfo(string lang)
+    {
+        throw new NotImplementedException();
     }
 
     #endregion

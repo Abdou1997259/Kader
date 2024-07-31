@@ -18,29 +18,29 @@ public class DbInitSeedsService(RoleManager<ApplicationRole> roleManager, IUnitO
 
         var allClaims = await _roleManager.GetClaimsAsync(superAdminRole!);
         List<GetPermissionsWithActions> allRoleClaims = [];
-        foreach (string module in modules)
-            allRoleClaims.AddRange(Permissions.GeneratePermissionsList(module));
+        //foreach (string module in modules)
+        //    allRoleClaims.AddRange(Permissions.GeneratePermissionsList(module));
 
-        foreach (var roleClaim in allRoleClaims)
-            if (!allClaims.Any(c => c.Type == RequestClaims.RolePermission && c.Value == roleClaim.ClaimValue))
-            {
-                //await _roleManager.AddClaimAsync(superAdminRole!, new Claim(RolesClaims.Permission, permission));
+        //foreach (var roleClaim in allRoleClaims)
+        //    if (!allClaims.Any(c => c.Type == RequestClaims.RolePermission && c.Value == roleClaim.ClaimValue))
+        //    {
+        //        //await _roleManager.AddClaimAsync(superAdminRole!, new Claim(RolesClaims.Permission, permission));
 
-                await _unitOfWork.RoleClaims.AddAsync(new ApplicationRoleClaim
-                {
-                    RoleId = superAdminRole!.Id,
-                    ClaimType = RequestClaims.RolePermission,
-                    ClaimValue = roleClaim.ClaimValue
-                });
-                await _unitOfWork.UserClaims.AddAsync(new ApplicationUserClaim()
-                {
-                    UserId = SuperAdmin.Id,
-                    ClaimType = RequestClaims.RolePermission,
-                    ClaimValue = roleClaim.ClaimValue
-                });
+        //        await _unitOfWork.RoleClaims.AddAsync(new ApplicationRoleClaim
+        //        {
+        //            RoleId = superAdminRole!.Id,
+        //            ClaimType = RequestClaims.RolePermission,
+        //            ClaimValue = roleClaim.ClaimValue
+        //        });
+        //        await _unitOfWork.UserClaims.AddAsync(new ApplicationUserClaim()
+        //        {
+        //            UserId = SuperAdmin.Id,
+        //            ClaimType = RequestClaims.RolePermission,
+        //            ClaimValue = roleClaim.ClaimValue
+        //        });
 
-                await _unitOfWork.CompleteAsync();
-            }
+        //        await _unitOfWork.CompleteAsync();
+        //    }
     }
 
     #endregion

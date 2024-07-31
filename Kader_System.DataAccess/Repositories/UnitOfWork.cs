@@ -95,12 +95,18 @@ public class UnitOfWork : IUnitOfWork
 
     public IResignationRequesteRepository ResignationRepository { get; private set; }
 
+    public ITitlePermissionRepositroy TitlePermissionRepository { get; private set; }
+
+    public IUserPermssionRepositroy UserPermssionRepositroy { get; private set; }
+
     #endregion
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
     {
         _context = context;
         _config = config;
+        UserPermssionRepositroy = new UserPermissionRepository(_context);
+        TitlePermissionRepository = new TitlePermssionRepository(_context);
         ContractTerminationRequest = new ContractTerminationRequestRepository(_context);
         TransSalaryCalculator = new TransSalaryCalculatorRepo(_context);
         ResignationRepository = new ResignationRequestRepository(_context);

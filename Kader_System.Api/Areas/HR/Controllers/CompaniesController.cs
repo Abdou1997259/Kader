@@ -8,7 +8,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiExplorerSettings(GroupName = Modules.HR)]
 [ApiController]
 [Route("api/v1/")]
-[Authorize(Permissions.HR.View)]
+//[Authorize(Permissions.HR.View)]
 public class CompaniesController(ICompanyService service, IRequestService requestService) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;

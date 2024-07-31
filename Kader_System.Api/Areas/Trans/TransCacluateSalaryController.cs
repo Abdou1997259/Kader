@@ -3,7 +3,7 @@
 namespace Kader_System.Api.Areas.Trans
 {
     [Area(Modules.Trans)]
-    [Authorize(Permissions.Transaction.View)]
+    //[Authorize(Permissions.Transaction.View)]
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
