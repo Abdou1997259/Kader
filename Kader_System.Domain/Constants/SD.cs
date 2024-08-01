@@ -535,7 +535,8 @@ public static class SD
         }
         public class PermessionStruct
         {
-            public const string GetAllPermessions = "PermessionStruct/getAllPermessions";
+            public const string GetAllPermessionsForUser = "PermessionStruct/getAllPermessionsForUser";
+            public const string GetAllPermessionsForProfile = "PermessionStruct/getAllPermessionsForProfile";
         }
         public class UserPermession
         {

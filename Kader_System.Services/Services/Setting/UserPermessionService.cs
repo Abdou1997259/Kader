@@ -7,9 +7,9 @@ namespace Kader_System.Services.Services.Setting
 {
     public class UserPermessionService(KaderDbContext _context, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, IPermessionStructureService permession) : IUserPermessionService
     {
-        public async Task<Response<DTOUserPermessions>> GetAllUserPermession(string userId, string lang)
+        public async Task<Response<DTOUserPermessionsForUser>> GetAllUserPermession(string userId, string lang)
         {
-            var permStruct = (await permession.GetAllPermessionStructure(lang)).DataList;
+            var permStruct = (await permession.GetAllPermessionStructureForUser(lang)).DataList;
             var userPermessions = await _context.UserPermissions
                                                 .Where(x => x.UserId == userId)
                                                 .FirstOrDefaultAsync();
@@ -35,7 +35,7 @@ namespace Kader_System.Services.Services.Setting
                 perm.permissions = permissionsDict;
             }
 
-            return new Response<DTOUserPermessions>()
+            return new Response<DTOUserPermessionsForUser>()
             {
                 Check = true,
                 DataList = permStruct,

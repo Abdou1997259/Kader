@@ -7,9 +7,9 @@ namespace Kader_System.Services.Services.Setting
 {
     public class TitlePermessionService(KaderDbContext _context, IPermessionStructureService permession) : ITitlePermessionService
     {
-        public async Task<Response<DTOUserPermessions>> GetAllTitlePermession(int titleId, string lang)
+        public async Task<Response<DTOUserPermessionsForUser>> GetAllTitlePermession(int titleId, string lang)
         {
-            var permStruct = (await permession.GetAllPermessionStructure(lang)).DataList;
+            var permStruct = (await permession.GetAllPermessionStructureForUser(lang)).DataList;
             var titlePermessions = await _context.TitlePermissions
                                                 .Where(x => x.TitleId == titleId)
                                                 .FirstOrDefaultAsync();
@@ -35,7 +35,7 @@ namespace Kader_System.Services.Services.Setting
                 perm.permissions = permissionsDict;
             }
 
-            return new Response<DTOUserPermessions>()
+            return new Response<DTOUserPermessionsForUser>()
             {
                 Check = true,
                 DataList = permStruct,
