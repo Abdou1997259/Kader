@@ -4,8 +4,8 @@ using Kader_System.Domain.DTOs.Request.Auth;
 
 namespace Kader_System.Services.Services.Setting
 {
-    
-    public class TitleService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITitleService
+
+    public class TitleService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ITitlePermessionService permessionService) : ITitleService
     {
         private Title _instance;
         public async Task<Response<IEnumerable<SelectListOfTitleResponse>>> ListOfTitlesAsync(string lang)
@@ -48,7 +48,7 @@ namespace Kader_System.Services.Services.Setting
                 TotalRecords = await unitOfWork.Titles.CountAsync(filter: filter),
 
                 Items = (await unitOfWork.Titles.GetSpecificSelectAsync(filter: filter,
-                    includeProperties:$"{nameof(_instance.TitlePermissions)}",
+                    includeProperties: $"{nameof(_instance.TitlePermissions)}",
                     take: model.PageSize,
                     skip: (model.PageNumber - 1) * model.PageSize,
                     select: x => new TitleData()
@@ -68,7 +68,7 @@ namespace Kader_System.Services.Services.Setting
                         //    {
                         //       1,2, 3, 4,
                         //    }
-                            
+
                         //}).ToList()
                     }, orderBy: x =>
                         x.OrderByDescending(x => x.Id))).ToList()
@@ -112,7 +112,7 @@ namespace Kader_System.Services.Services.Setting
                     Error = resultMsg,
                     Msg = resultMsg
                 };
-                
+
             }
             var newTitle = new Title()
             {
@@ -138,7 +138,7 @@ namespace Kader_System.Services.Services.Setting
         {
             var title = await unitOfWork.Titles.GetByIdAsync(id);
 
-            if (title==null)
+            if (title == null)
             {
                 string resultMsg = string.Format(sharLocalizer[Localization.IsNotExisted],
                     sharLocalizer[Localization.Vacation]);
@@ -154,8 +154,8 @@ namespace Kader_System.Services.Services.Setting
 
             title.TitleNameAr = model.TitleNameAr;
             title.TitleNameEn = model.TitleNameEn;
-               
-            
+
+
             //foreach (var titlePermission in model.Permissions)
             //{
             //    newTitle.TitlePermissions.Add(new TitlePermission()
@@ -167,8 +167,8 @@ namespace Kader_System.Services.Services.Setting
             //}
 
 
-
-             unitOfWork.Titles.Update(title);
+            await AssginTitlePermssion(id, model.Permssions);
+            unitOfWork.Titles.Update(title);
             //var listOfTitlePermssion = pers.Select(x => new TitlePermission
             //{
             //    SubScreenId = x.SubScreenId,
@@ -180,8 +180,8 @@ namespace Kader_System.Services.Services.Setting
 
 
             await unitOfWork.CompleteAsync();
-     
-      
+
+
 
             return new()
             {
@@ -191,12 +191,38 @@ namespace Kader_System.Services.Services.Setting
             };
         }
 
-        public async Task<Response<GetTitleByIdResponse>> GetTitleByIdAsync(int id,string lang)
+        public async Task<Response<GetTitleByIdResponse>> GetTitleByIdAsync(int id, string lang)
         {
-            return await unitOfWork.Titles.GetTitleByIdAsync(id, lang);
+            var title = await unitOfWork.Titles.GetByIdAsync(id);
+            if (title is null)
+            {
+                var msg = sharLocalizer[Localization.NotFound];
+                return new()
+                {
+                    Msg = msg,
+                    Check = false,
+                    Data = null,
+                };
+
+            }
+
+
+            return new Response<GetTitleByIdResponse>()
+            {
+                Check = true,
+                Data = new GetTitleByIdResponse
+                {
+                   Id = id,
+                    Name = Localization.Arabic == lang ? title.TitleNameAr : title.TitleNameEn,
+                    all_permissions = (await permessionService.GetAllTitlePermession(id, lang)).DataList,
+
+
+                }
+
+            };
         }
 
-   
+
         public Task<Response<string>> UpdateActiveOrNotTitleAsync(int id)
         {
             throw new NotImplementedException();
@@ -207,14 +233,14 @@ namespace Kader_System.Services.Services.Setting
             throw new NotImplementedException();
         }
 
-        private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<AssginTitlePermissionRequest> model)
+        private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model)
         {
 
             List<TitlePermission> AddedPer = null;
             foreach (var AssginedPermssion in model)
             {
                 var titlePermission = await unitOfWork.TitlePermissionRepository
-                    .GetSpecificSelectAsync(x => x.TitleId == id && x.SubScreenId == AssginedPermssion.SubScreenId, x => x);
+                    .GetSpecificSelectAsync(x => x.TitleId == id && x.SubScreenId == AssginedPermssion.SubId, x => x);
                 IEnumerable<TitlePermission> listUpdatedper = null;
 
                 if (titlePermission != null)
@@ -222,7 +248,7 @@ namespace Kader_System.Services.Services.Setting
 
                     listUpdatedper = titlePermission.Select(x => new TitlePermission
                     {
-                        Permissions = string.Join(',', AssginedPermssion.Permission),
+                        Permissions = string.Join(',', AssginedPermssion.TitlePermssion),
                         ScreenSub = x.ScreenSub,
                         TitleId = x.TitleId
                     });
@@ -236,8 +262,8 @@ namespace Kader_System.Services.Services.Setting
                     AddedPer.Add(new TitlePermission
                     {
                         TitleId = id,
-                        SubScreenId = AssginedPermssion.SubScreenId,
-                        Permissions = string.Join(',', AssginedPermssion.Permission)
+                        SubScreenId = AssginedPermssion.SubId,
+                        Permissions = string.Join(',', AssginedPermssion.TitlePermssion)
                     });
 
 
