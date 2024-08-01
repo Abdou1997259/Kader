@@ -8,7 +8,7 @@ public class StMainScreenCat : BaseEntity
     public required string Screen_cat_title_en { get; set; }
     public required string Screen_cat_title_ar { get; set; }
 
-    public IFormFile? Screen_main_cat_image { get; set; }
+    public string? Screen_main_cat_image { get; set; }
     public string? ImageExtension { get; set; }
 
     public int MainScreenId { get; set; }

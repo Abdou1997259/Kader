@@ -50,21 +50,22 @@ public class MainScreensController(IMainScreenService service, IRequestService r
 
         var ChildScreens = mainScreens.Select(ms => new GetAllStMainScreen
         {
-            Screen_main_title_ar = ms.Screen_main_title_ar,
+            Screen_main_title = ms.Screen_main_title_ar,
             //Screen_main_title_en = ms.Screen_main_title_en,
             Screen_main_image = ms.Screen_main_image,
             CategoryScreen = ms.CategoryScreen.Select(x => new GetAllStMainScreenCat
             {
                 Ids = ms.CategoryScreen.Select(x => x.Id).ToList(),
-                Screen_cat_title_ar = ms.CategoryScreen.Select(x => x.Screen_cat_title_ar).ToList(),
+                Screen_cat_title = ms.CategoryScreen.Select(x => x.Screen_cat_title_ar).ToList(),
                 Screen_main_cat_image = ms.CategoryScreen.Select(x => x.Screen_main_cat_image).ToList(),
                 //Screen_cat_title_en = ms.CategoryScreen.Select(x => x.Screen_cat_title_en).ToList(),
                 StScreenSub = x.StScreenSub.Select(k => new GetAllStScreenSub
                 {
                     Ids = k.ScreenCat.StScreenSub.Select(x => x.Id).ToList(),
-                    Screen_sub_title_ar = k.ScreenCat.StScreenSub.Select(y => y.Screen_sub_title_ar).ToList(),
+                    Screen_sub_title = k.ScreenCat.StScreenSub.Select(y => y.Screen_sub_title_ar).ToList(),
                     Url = k.ScreenCat.StScreenSub.Select(y => y.Url).ToList(),
-                    Screen_main_cat_image = k.ScreenCat.StScreenSub.Select(y => y.Screen_main_cat_image).ToList(),
+                    Screen_sub_image = k.ScreenCat.StScreenSub.Select(y => y.Screen_sub_image).ToList(),
+                    ScreenCode = k.ScreenCat.StScreenSub.Select(y => y.ScreenCode).ToList(),
 
                 }).ToList(),
             }).ToList()
@@ -119,6 +120,15 @@ public class MainScreensController(IMainScreenService service, IRequestService r
 
     #endregion
 
+    #region Restore
+    //[HttpPut(ApiRoutes.MainScreen.RestoreMainScreen)]
+    //public async Task<IActionResult> RestoreMainScreen([FromBody] int id)
+    //{
+    //    if (Response == null)
+    //        return Ok(Response);
+    //    else return BadRequest(Response);
+    //}
+    #endregion
 
     #region Delete
 

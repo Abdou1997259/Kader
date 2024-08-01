@@ -14,9 +14,9 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
                 await _unitOfWork.MainScreenCategories.GetSpecificSelectAsync(null!,
                 select: x => new StSelectListForMainScreenCategoryResponse
                 {
-                    Id = x.Id,
-                    Screen_cat_title_en = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
-                    //Screen_cat_image = x.Screen_cat_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.) : string.Empty
+                    Ids = x.Id,
+                    Screen_cat_title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
+                    Screen_main_cat_image = x.Screen_main_cat_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_cat_image) : string.Empty
                 }, orderBy: x =>
                   x.OrderByDescending(x => x.Id));
 

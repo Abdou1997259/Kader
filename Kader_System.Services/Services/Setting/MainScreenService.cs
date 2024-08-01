@@ -66,10 +66,9 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                  select: x => new MainScreenData
                  {
                      Id = x.Id,
-                     //Main_id = x.MainScreenId,
-                     Main_title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en,
-                     Main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty,
-                     Title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en
+                     Screen_main_title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en,
+                     Screen_main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty,
+                     //Title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en
                  }, orderBy: x =>
                    x.OrderByDescending(x => x.Id))).ToList()
         };

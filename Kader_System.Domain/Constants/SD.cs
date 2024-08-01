@@ -126,6 +126,7 @@ public static class SD
             public const string UpdateMainScreen = "screen_main/update/{id}";
             public const string GetMainScreenById = "screen_main/getById/{id}";
             public const string DeleteMainScreen = "screen_main/{id}";
+            public const string RestoreMainScreen = "screen_main/restore/{id}";
 
         }
 
