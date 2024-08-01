@@ -6,6 +6,7 @@ using Kader_System.Domain.Models;
 using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.Setting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Hosting;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
@@ -173,9 +174,13 @@ public class AuthService : IAuthService
         obj.FullName = model.full_name;
         obj.Email = model.email;
         obj.FinancialYear = model.financial_year;
-        obj.CompanyId = model.company_id;
+        obj.CompanyId = model.company_id.Concater();
+
+       obj.TitleId=model.title_id.Concater();
         obj.JobId = model.job_title;
         obj.IsActive = model.is_active;
+        obj.CurrentTitleId = model.current_title;
+        obj.CurrentCompanyId = model.current_company;
         _unitOfWork.Users.Update(obj);
       await  _unitOfWork.CompleteAsync();
 
@@ -465,7 +470,14 @@ public class AuthService : IAuthService
             new Claim(JwtRegisteredClaimNames.Sub, user.UserName!),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(RequestClaims.Company,user.CompanyId.ToString()),
-            new Claim(RequestClaims.UserId, user.Id)
+            new Claim(RequestClaims.UserId, user.Id),
+            new Claim(RequestClaims.Mobile,user.PhoneNumber),
+            new Claim(RequestClaims.FullName,user.FullName),
+            new Claim(RequestClaims.Titles,user.TitleId),
+            new Claim(RequestClaims.Email,user.Email),
+            new Claim(RequestClaims.Image,user.ImagePath),
+            new Claim(RequestClaims.CurrentCompany,user.CurrentCompanyId.ToString()),
+            new Claim(RequestClaims.CurrentTitle,user.CurrentTitleId.ToString())
         }
         .Union(roleClaims)
         .Union(listOfUserClaims);
@@ -548,10 +560,12 @@ public class AuthService : IAuthService
         user.FullName = model.full_name;
         user.Email = model.email;
         user.FinancialYear= model.financial_year;
-        user.CompanyId = model.company_id;
+        user.CompanyId = model.company_id.Concater();
         user.JobId = model.job_title;
         user.UserName = model.user_name;
         user.Add_date = new DateTime().NowEg();
+        user.CurrentCompanyId = model.current_company;
+        user.CurrentTitleId = model.current_title;
         user.Added_by = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
         // Set additional user properties if needed
         user.Id = Guid.NewGuid().ToString();
@@ -560,23 +574,21 @@ public class AuthService : IAuthService
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         user.ImagePath = (model.image == null || model.image.Length == 0) ? null :
             await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.image);
-        var userpermssions =await _unitOfWork.UserPermssionRepositroy.GetAllAsync();
-       IEnumerable< UserPermission> listofPermission = null;
-        foreach (int i in model.title_id)
+      
+
+       
+       var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetByIdAsync(model.current_title);
+       var userpermission = new UserPermission
         {
-            var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetSpecificSelectAsync(x => x.TitleId == i, x => x);
-             listofPermission = titlepermissions.Select(x => new UserPermission
-            {
-                UserId=user.Id,
-                TitleId = x.TitleId,
-                SubScreenId=x.SubScreenId,
-                Permission=x.Permissions
 
-            });
-            var unreaptedUserperssion = userpermssions.Concat(listofPermission).Except(userpermssions, new UserPermissionComperer());
-            await            _unitOfWork.UserPermssionRepositroy.AddRangeAsync(unreaptedUserperssion);
+                UserId = user.Id,
+                TitleId = titlepermissions.TitleId,
+                SubScreenId = titlepermissions.SubScreenId,
+                Permission = titlepermissions.Permissions
+       };
+       await  _unitOfWork.UserPermssionRepositroy.AddAsync(userpermission);
 
-        }
+        
      
       
 
@@ -605,7 +617,7 @@ public class AuthService : IAuthService
             FullName = model.full_name,
             Email = model.email,
             JobTitle = model.job_title,
-            CompanyYear = model.company_id,
+            CompanyYear = 2023,
             TitleId=model.title_id,
             Token = "Bearer" + " " + new JwtSecurityTokenHandler().WriteToken(token),
             UserName = model.user_name,
@@ -789,8 +801,8 @@ public class AuthService : IAuthService
         {
             Id=x.Id,
             CompanyName = Localization.Arabic == lang
-                ? companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameAr
-                : companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameEn,
+                ? companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameAr
+                : companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId )?.NameEn,
             FinancialYear = x.FinancialYear,
             Email = x.Email,
             JobName = Localization.Arabic == lang
@@ -864,8 +876,8 @@ public class AuthService : IAuthService
         {
 
             CompanyName = Localization.Arabic == lang
-                ? companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameAr
-                : companise.FirstOrDefault(c => c.Id == x.CompanyId)?.NameEn,
+                ? companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameAr
+                : companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameEn,
             FinancialYear = x.FinancialYear,
             Email = x.Email,
             JobName = Localization.Arabic == lang
@@ -900,7 +912,7 @@ public class AuthService : IAuthService
        
        
         var obj = await _userManager.FindByIdAsync(id.ToString());
-        var companise = await _unitOfWork.Companies.GetByIdAsync(obj.CompanyId);
+        var companise = await _unitOfWork.Companies.GetByIdAsync(obj.CurrentCompanyId);
         var jobs = await _unitOfWork.Jobs.GetByIdAsync(obj.JobId);
         if (obj is null)
         {
@@ -927,21 +939,23 @@ public class AuthService : IAuthService
         {
             Data = new()
             {
-                Id=obj.Id,
-                FullName=obj.FullName,
+                Id = obj.Id,
+                FullName = obj.FullName,
                 Phone = obj?.PhoneNumber ?? " ",
-                CompanyId =obj.CompanyId,
+                CompanyId = obj.CurrentCompanyId,
+                Companys = obj.CompanyId.Splitter(),
+                CurrentTitle=obj.CurrentTitleId,
                 FinancialYear = obj.FinancialYear,
                 Email = obj.Email,
                 JobTitle = obj.JobId,
-                TitleId= titleIdList,
-                IsActive=obj.IsActive,
-                Image=obj.ImagePath,
-                Password =null,
-                UserName=obj.UserName
-               
+                TitleId = titleIdList,
+                IsActive = obj.IsActive,
+                Image = obj.ImagePath,
+                Password = null,
+                UserName = obj.UserName
+
             },
-            LookUps= lookups,
+            LookUps = lookups,
             Check = true
         };
     }

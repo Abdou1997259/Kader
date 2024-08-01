@@ -43,7 +43,7 @@ public static class ModelBuilderExtensions
                 TitleId = "1",
                 PhoneNumber = "1202200",
                 FinancialYear = 2013,
-                CompanyId = 3,
+                CurrentCompanyId = 3,
 
                 NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                 EmailConfirmed = true,

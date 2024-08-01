@@ -7,7 +7,9 @@ public class ApplicationUser : IdentityUser, IBaseEntity
    
     public string  TitleId { get; set; }
     public int JobId { get; set; }
-    public int CompanyId { get; set; }
+    public string CompanyId { get; set; }
+    public int CurrentCompanyId { get; set; }
+    public int CurrentTitleId { get; set; }
     public int FinancialYear { get; set; }
     public bool IsDeleted { get; set; }
     public DateTime? Add_date { get; set; }

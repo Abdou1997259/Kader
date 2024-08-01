@@ -85,6 +85,14 @@ public static class SD
         public const string DomainRestricted = "DomainRestricted";
         public const string Company = "CompanyId";
         public const string UserId = "uid";
+        public const string Titles = "Titles";
+        public const string Mobile = "Mobile";
+        public const string Image="Image";  
+        public const string Email="Email";
+        public const string FullName = "FullName";
+        public const string CurrentCompany = "CurrentCompany";
+        public const string CurrentTitle = "CurrentTitle";
+
     }
     public static class Shared
     {
