@@ -12,13 +12,6 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     {
         return await dbSet.AsNoTracking().FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id);
     }
-
-
-
-
-
-
-
     public async Task<IEnumerable<TType>> GetSpecificSelectAsync<TType>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, TType>> select,

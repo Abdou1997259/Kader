@@ -2,9 +2,7 @@
 
 public class StSelectListForMainScreenCategoryResponse
 {
-    public int Id { get; set; }
-    public string Screen_cat_title_en { get; set; } = string.Empty;
-    public string Screen_cat_title_ar { get; set; } = string.Empty;
-     public string Screen_main_id { get; set; }
-    public string? Screen_cat_image { get; set; }
+     public int Ids { get; set; }
+    public required string Screen_cat_title { get; set; }
+    public required string Screen_main_cat_image { get; set; }
 }
