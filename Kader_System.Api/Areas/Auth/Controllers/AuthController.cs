@@ -226,7 +226,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
 
     }
     [HttpPost(ApiRoutes.User.AssginPermssionToUser)]
-    public async Task<IActionResult> GetUserLookups([FromRoute] string id,[FromBody]  IEnumerable<AssignPermissionRequest> model, [FromQuery] bool all = false, 
+    public async Task<IActionResult> GetUserLookups([FromRoute] string id,[FromBody]  IEnumerable<Kader_System.Domain.DTOs.Request.Auth.Permissions> model, [FromQuery] bool all = false, 
         [FromQuery] int titleId = 1)
     {
         var response = await _service.AssignPermissionForUser(id,all,titleId,model);
