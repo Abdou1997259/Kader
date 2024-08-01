@@ -28,6 +28,7 @@ namespace Kader_System.Services.Services.Setting
                                  main_id = sc.MainScreenId,
                                  main_title = lang == Localization.Arabic ? ms.Screen_main_title_ar : ms.Screen_main_title_en,
                                  screen_code = s.ScreenCode,
+                                 url = s.Url,
                                  actions = actions.Select(x => x.Id).ToArray(), // This part remains unchanged
                              }).ToListAsync();
      
@@ -45,6 +46,7 @@ namespace Kader_System.Services.Services.Setting
                 main_id = x.main_id,
                 main_title = x.main_title,
                 screen_code = x.screen_code,
+                url = x.url,
                 actions = x.actions,
                 permissions = (lang == Localization.Arabic ?
                                actions.ToDictionary(a => a.Name, a => true) :
@@ -75,6 +77,7 @@ namespace Kader_System.Services.Services.Setting
                                 main_id = sc.MainScreenId,
                                 main_title = lang == Localization.Arabic ? ms.Screen_main_title_ar : ms.Screen_main_title_en,
                                 screen_code = s.ScreenCode,
+                                url = s.Url,
                                 actions = string.Join(",",actions.Select(x => x.Id.ToString()).ToList()), // This part remains unchanged
                             }).ToListAsync();
 
@@ -88,6 +91,7 @@ namespace Kader_System.Services.Services.Setting
                 main_id = x.main_id,
                 main_title = x.main_title,
                 screen_code = x.screen_code,
+                url = x.url,    
                 actions = x.actions,
                 permissions = [.. actions.Select(x =>x.Id)]
             }).ToList();

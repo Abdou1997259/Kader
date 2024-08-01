@@ -18,5 +18,6 @@ namespace Kader_System.Domain.DTOs.Response.Setting
         public string screen_code { get; set; }
         public string actions { get; set; }
         public int [] permissions { get; set; }
+        public string url { get; set; }
     }
 }
