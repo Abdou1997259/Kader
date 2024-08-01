@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Kader_System.Services.IServices.Setting
 {
-    public interface IPermessionStructureService
+    public interface IUserPermessionService
     {
-        public  Task<Response<DTOUserPermessions>> GetAllPermessionStructure(string lang);
+        public  Task<Response<DTOUserPermessions>> GetAllUserPermession(string userId,string lang);
     }
 }

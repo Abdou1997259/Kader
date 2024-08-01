@@ -270,6 +270,8 @@ builder.Services.AddScoped<ITransSalaryIncreaseRepository, TransSalaryIncreaseRe
 builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<ITitleService, TitleService>();
 builder.Services.AddScoped<IPermessionStructureService, PermessionStructureService>();
+builder.Services.AddScoped<IUserPermessionService, UserPermessionService>();
+builder.Services.AddScoped<ITitlePermessionService, TitlePermessionService>();    
 #region Employee_Requests
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
 builder.Services.AddScoped<IVacationRequestService, VacationRequestService>();

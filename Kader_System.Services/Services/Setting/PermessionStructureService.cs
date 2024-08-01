@@ -1,4 +1,5 @@
 ﻿using Kader_System.DataAccesss.DbContext;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -8,30 +9,48 @@ using System.Threading.Tasks;
 
 namespace Kader_System.Services.Services.Setting
 {
-    public class PermessionStructureService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, KaderDbContext context) : IPermessionStructureService
+    public class PermessionStructureService(KaderDbContext _context, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : IPermessionStructureService
     {
-        public async Task<Response<object>> GetAllPermessionStructure(string lang)
+        public async Task<Response<DTOUserPermessions>> GetAllPermessionStructure(string lang)
         {
-            var actions = await unitOfWork.ActionsRepo.GetAllAsync();
-            var test = await unitOfWork.PermessionStructure.GetAllAsync();
-            var per = (from q in await unitOfWork.PermessionStructure.GetAllAsync()
-                       select new
-                       {
-                           sub_id = q.ScreenId,
-                           sub_title = lang == Localization.Arabic ? q.Screen.Screen_sub_title_ar : q.Screen.Screen_sub_title_en,
-                           cat_id = q.Screen.ScreenCatId,
-                           cat_title = lang == Localization.Arabic ? q.Screen.ScreenCat.Screen_cat_title_ar : q.Screen.ScreenCat.Screen_cat_title_en,
-                           main_id = q.Screen.ScreenCat.MainScreenId,
-                           main_title = lang == Localization.Arabic ? q.Screen.ScreenCat.screenCat.Screen_main_title_ar : q.Screen.ScreenCat.screenCat.Screen_main_title_en,
-                           screen_code = q.Screen.ScreenCode,
-                           actions = actions.Select(x => x.Id).ToArray(),
-                           permissions = lang == Localization.Arabic ? actions.Select(x =>x.Name).ToArray() : actions.Select(x => x.NameInEnglish).ToArray()
-                       }).ToList();
+     }).ToList();
+            var actions = _context.Actions.AsNoTracking(); 
 
-            return new Response<object>()
+            var per = await (from q in _context.ScreenActions.AsNoTracking()
+                             join s in _context.SubMainScreens on q.ScreenId equals s.Id
+                             join sc in _context.MainScreens on s.ScreenCatId equals sc.Id
+                             join ms in _context.MainScreenCategories on sc.MainScreenId equals ms.Id
+                             select new DTOUserPermessions
+                             {
+                                 sub_id = q.ScreenId,
+                                 sub_title = lang == Localization.Arabic ? s.Screen_sub_title_ar : s.Screen_sub_title_en,
+                                 cat_id = s.ScreenCatId,
+                                 cat_title = lang == Localization.Arabic ? sc.Screen_cat_title_ar : sc.Screen_cat_title_en,
+                                 main_id = sc.MainScreenId,
+                                 main_title = lang == Localization.Arabic ? ms.Screen_main_title_ar : ms.Screen_main_title_en,
+                                 screen_code = s.ScreenCode,
+                                 actions = actions.Select(x => x.Id).ToArray(), // This part remains unchanged
+                             }).ToListAsync();
+
+            // Perform the dictionary creation on the client side
+            var result = per.Select(x => new DTOUserPermessions
+            {
+                sub_id = x.sub_id,
+                sub_title = x.sub_title,
+                cat_id = x.cat_id,
+                cat_title = x.cat_title,
+                main_id = x.main_id,
+                main_title = x.main_title,
+                screen_code = x.screen_code,
+                actions = x.actions,
+                permissions = (lang == Localization.Arabic ?
+                               actions.ToDictionary(a => a.Name, a => true) :
+                               actions.ToDictionary(a => a.NameInEnglish, a => true))
+            }).ToList();
+            return new Response<DTOUserPermessions>()
             {
                 Check = true,
-                DynamicData = per,
+                DataList = result,
                 Msg = ""
             };
         }

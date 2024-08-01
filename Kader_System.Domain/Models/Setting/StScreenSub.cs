@@ -20,4 +20,5 @@ public class StScreenSub : BaseEntity
 
 
     public ICollection<StSubMainScreenAction> ListOfActions { get; set; } = [];
+    public string Url { get; set; }
 }

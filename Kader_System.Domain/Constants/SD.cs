@@ -538,6 +538,14 @@ public static class SD
         {
             public const string GetAllPermessions = "PermessionStruct/getAllPermessions";
         }
+        public class UserPermession
+        {
+            public const string GetAllUserPermessions = "userPermession/getAllUserPermessions/{userId}";
+        }
+        public class TitlePermession
+        {
+            public const string GetAllTitlePermessions = "titlePermession/getAllTitlePermessions/{titleId}";
+        }
     }
 
     public static class Localization

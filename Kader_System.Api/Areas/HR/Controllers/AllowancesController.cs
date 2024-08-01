@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.HTTP;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
@@ -18,10 +19,12 @@ public class AllowancesController(IAllowanceService service, IRequestService req
         Ok(await service.ListOfAllowancesAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.Allowance.GetAllAllowances)]
+    [Permission(Permission.View, 13)]
     public async Task<IActionResult> GetAllAllowancesAsync([FromQuery] HrGetAllFiltrationsForAllowancesRequest model) =>
         Ok(await service.GetAllAllowancesAsync(requestService.GetRequestHeaderLanguage, model,requestService.GetCurrentHost));
 
     [HttpGet(ApiRoutes.Allowance.GetAllowanceById)]
+    [Permission(Permission.View, 13)]
     public async Task<IActionResult> GetAllowanceByIdAsync(int id)
     {
         var response = await service.GetAllowanceByIdAsync(id);
@@ -36,6 +39,7 @@ public class AllowancesController(IAllowanceService service, IRequestService req
 
     #region Insert
     [HttpPost(ApiRoutes.Allowance.CreateAllowance)]
+    [Permission(Permission.Add, 13)]
     public async Task<IActionResult> CreateCompanyAsync(HrCreateAllowanceRequest model)
     {
         var response = await service.CreateAllowanceAsync(model);
@@ -53,6 +57,7 @@ public class AllowancesController(IAllowanceService service, IRequestService req
     #region Update
 
     [HttpPut(ApiRoutes.Allowance.UpdateAllowance)]
+    [Permission(Permission.Edit, 13)]
     public async Task<IActionResult> UpdateAllowanceAsync([FromRoute] int id, HrUpdateAllowanceRequest model)
     {
         var response = await service.UpdateAllowanceAsync(id, model);
@@ -77,6 +82,7 @@ public class AllowancesController(IAllowanceService service, IRequestService req
     #region Delete
 
     [HttpDelete(ApiRoutes.Allowance.DeleteAllowance)]
+    [Permission(Permission.Delete, 13)]
     public async Task<IActionResult> DeleteAllowanceAsync(int id)
     {
         var response = await service.DeleteAllowanceAsync(id);

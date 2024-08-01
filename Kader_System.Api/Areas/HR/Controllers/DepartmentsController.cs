@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Kader_System.Api.Helpers;
 using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.HR.Controllers
@@ -21,6 +22,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
 
         [HttpGet(ApiRoutes.Department.GetAllDepartments)]
+
         public async Task<IActionResult> GetAll([FromQuery]GetAllFiltrationsForDepartmentsRequest filter)
             => Ok(await service.GetAllDepartmentsAsync(requestService.GetRequestHeaderLanguage, filter, requestService.GetCurrentHost));
 
