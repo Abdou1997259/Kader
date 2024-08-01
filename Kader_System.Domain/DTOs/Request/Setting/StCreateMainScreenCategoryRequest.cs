@@ -11,15 +11,15 @@ public class StGetAllMainScreenCatByIdResponse : PaginationData<StCreateMainScre
 public class StCreateMainScreenCategoryRequest
 {
     [Display(Name = Annotations.NameInEnglish), Required(ErrorMessage = Annotations.FieldIsRequired)]
-    public required string Screen_main_cat_title_en { get; set; } 
+    public required string Screen_cat_title_en { get; set; } 
 
     [Display(Name = Annotations.NameInArabic), Required(ErrorMessage = Annotations.FieldIsRequired)]
-    public required string Screen_main_cat_title_ar { get; set; }
+    public required string Screen_cat_title_ar { get; set; }
 
     public int Screen_main_id { get; set; }
 
     [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length)]
-    public IFormFile? Screen_main_image { get; set; }
+    public IFormFile? Screen_main_cat_image { get; set; }
 
     //public int Screen_main_id { get; set; }
 

@@ -6,9 +6,7 @@ public class StGetAllMainScreensResponse : PaginationData<MainScreenData>
 public class MainScreenData
 {
     public int Id { get; set; }
-    public required string Title { get; set; } 
-    public int Main_id { get; set; }
-    public required string Main_title { get; set; } 
-    public string Main_image { get; set; } = string.Empty;
+    public required string Screen_main_title { get; set; }
+     public string? Screen_main_image { get; set; } = string.Empty;
 }
 

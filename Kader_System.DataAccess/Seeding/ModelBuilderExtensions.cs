@@ -110,35 +110,38 @@ public static class ModelBuilderExtensions
 
       );
 
-        modelBuilder.Entity<StScreenSub>().HasData(
+modelBuilder.Entity<StScreenSub>().HasData(
 
-new StScreenSub { Id = 1, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الرئيسية", Screen_sub_title_en = "Main Screen", Url = "" ,ScreenCode="01001"},
-new StScreenSub { Id = 2, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الفرعية", Screen_sub_title_en = "Sub Screen", Url = "", ScreenCode = "01001" },
-new StScreenSub { Id = 3, ScreenCatId = 1, Screen_sub_title_ar = "المسئوليات", Screen_sub_title_en = "Titles", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 4, ScreenCatId = 1, Screen_sub_title_ar = "مستخدمين", Screen_sub_title_en = "Users", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 5, ScreenCatId = 1, Screen_sub_title_ar = "صلاحيات المستخدمين", Screen_sub_title_en = "Users Privilige", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 6, ScreenCatId = 1, Screen_sub_title_ar = "اعدادات", Screen_sub_title_en = "Setting", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 7, ScreenCatId = 2, Screen_sub_title_ar = "شركات", Screen_sub_title_en = "Company", Url = "", ScreenCode = "01001" },
-new StScreenSub { Id = 8, ScreenCatId = 2, Screen_sub_title_ar = "الوظائف", Screen_sub_title_en = "Jobs", Url = "", ScreenCode = "01001" },
-new StScreenSub { Id = 9, ScreenCatId = 2, Screen_sub_title_ar = "المؤهلات", Screen_sub_title_en = "Qualifications", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 10, ScreenCatId = 2, Screen_sub_title_ar = "الهيكل الاداري", Screen_sub_title_en = "Strucutred Mangements", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 11, ScreenCatId = 2, Screen_sub_title_ar = "الاجازات", Screen_sub_title_en = "Vacations", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 12, ScreenCatId = 2, Screen_sub_title_ar = "الموظفين", Screen_sub_title_en = "Employee", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 13, ScreenCatId = 2, Screen_sub_title_ar = "بدلات", Screen_sub_title_en = "Allowneces", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 14, ScreenCatId = 2, Screen_sub_title_ar = "استقطاعات", Screen_sub_title_en = "Deductions", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 15, ScreenCatId = 2, Screen_sub_title_ar = "استحقاقات", Screen_sub_title_en = "Benefits", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 16, ScreenCatId = 2, Screen_sub_title_ar = "العقود", Screen_sub_title_en = "Contracts", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 17, ScreenCatId = 2, Screen_sub_title_ar = "اجهزة البصمة", Screen_sub_title_en = "Print Devices", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 18, ScreenCatId = 3, Screen_sub_title_ar = "متابعة الطلبات", Screen_sub_title_en = "Request tracking", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 19, ScreenCatId = 3, Screen_sub_title_ar = "طلب", Screen_sub_title_en = "Request", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 20, ScreenCatId = 4, Screen_sub_title_ar = "الاستقطاعات", Screen_sub_title_en = "Vacations", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 21, ScreenCatId = 4, Screen_sub_title_ar = "الاستحقاقات", Screen_sub_title_en = "Employee", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 22, ScreenCatId = 4, Screen_sub_title_ar = "الاجازات", Screen_sub_title_en = "Qualifications", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 23, ScreenCatId = 4, Screen_sub_title_ar = "البدلات", Screen_sub_title_en = "Allowneces", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 24, ScreenCatId = 4, Screen_sub_title_ar = "العهد العينية", Screen_sub_title_en = "Deductions", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 25, ScreenCatId = 4, Screen_sub_title_ar = "حساب الرواتب", Screen_sub_title_en = "Benefits", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 26, ScreenCatId = 4, Screen_sub_title_ar = "الصرف", Screen_sub_title_en = "Contracts", Url = "" , ScreenCode = "01001" },
-new StScreenSub { Id = 27, ScreenCatId = 4, Screen_sub_title_ar = "زيادة المرتبات", Screen_sub_title_en = "Print Devices", Url = "" , ScreenCode = "01001" }
+new StScreenSub { Id = 1, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الرئيسية", Screen_sub_title_en = "Main Screen", Url = "/main/screen_main", ScreenCode="01001"},
+new StScreenSub { Id = 2, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الفرعية", Screen_sub_title_en = "Sub Screen", Url = "/main/screen_sub", ScreenCode = "01001" },
+new StScreenSub { Id = 3, ScreenCatId = 1, Screen_sub_title_ar = "المسئوليات", Screen_sub_title_en = "Titles", Url = "/main/title", ScreenCode = "01001" },
+new StScreenSub { Id = 4, ScreenCatId = 1, Screen_sub_title_ar = "مستخدمين", Screen_sub_title_en = "Users", Url = "/main/user", ScreenCode = "01001" },
+new StScreenSub { Id = 5, ScreenCatId = 1, Screen_sub_title_ar = "صلاحيات المستخدمين", Screen_sub_title_en = "Users Privilige", Url = "/main/user_permission", ScreenCode = "01001" },
+new StScreenSub { Id = 6, ScreenCatId = 1, Screen_sub_title_ar = "اعدادات", Screen_sub_title_en = "Setting", Url = "/main/settings/10", ScreenCode = "01001" },
+new StScreenSub { Id = 7, ScreenCatId = 2, Screen_sub_title_ar = "شركات", Screen_sub_title_en = "Company", Url = "/codes/company", ScreenCode = "01001" },
+new StScreenSub { Id = 8, ScreenCatId = 2, Screen_sub_title_ar = "الوظائف", Screen_sub_title_en = "Jobs", Url = "/codes/job", ScreenCode = "01001" },
+new StScreenSub { Id = 9, ScreenCatId = 2, Screen_sub_title_ar = "المؤهلات", Screen_sub_title_en = "Qualifications", Url = "/codes/qualification", ScreenCode = "01001" },
+new StScreenSub { Id = 10, ScreenCatId = 2, Screen_sub_title_ar = "الهيكل الاداري", Screen_sub_title_en = "Strucutred Mangements", Url = "/codes/admin_structure", ScreenCode = "01001" },
+new StScreenSub { Id = 11, ScreenCatId = 2, Screen_sub_title_ar = "الاجازات", Screen_sub_title_en = "Vacations", Url = "/codes/vacation", ScreenCode = "01001" },
+new StScreenSub { Id = 12, ScreenCatId = 2, Screen_sub_title_ar = "الموظفين", Screen_sub_title_en = "Employee", Url = "/codes/employee", ScreenCode = "01001" },
+new StScreenSub { Id = 13, ScreenCatId = 2, Screen_sub_title_ar = "بدلات", Screen_sub_title_en = "Allowneces", Url = "/codes/allowance'", ScreenCode = "01001" },
+new StScreenSub { Id = 14, ScreenCatId = 2, Screen_sub_title_ar = "استقطاعات", Screen_sub_title_en = "Deductions", Url = "/codes/deduction", ScreenCode = "01001" },
+new StScreenSub { Id = 15, ScreenCatId = 2, Screen_sub_title_ar = "استحقاقات", Screen_sub_title_en = "Benefits", Url = "/codes/benefit", ScreenCode = "01001" },
+new StScreenSub { Id = 16, ScreenCatId = 2, Screen_sub_title_ar = "العقود", Screen_sub_title_en = "Contracts", Url = "/codes/contract", ScreenCode = "01001" },
+new StScreenSub { Id = 17, ScreenCatId = 2, Screen_sub_title_ar = "اجهزة البصمة", Screen_sub_title_en = "Print Devices", Url = "/codes/fingerprint", ScreenCode = "01001" },
+new StScreenSub { Id = 18, ScreenCatId = 3, Screen_sub_title_ar = "متابعة الطلبات", Screen_sub_title_en = "Request tracking", Url = "/requests/follow_request", ScreenCode = "01001" },
+new StScreenSub { Id = 19, ScreenCatId = 3, Screen_sub_title_ar = "طلب", Screen_sub_title_en = "Request", Url = "/requests/request", ScreenCode = "01001" },
+new StScreenSub { Id = 20, ScreenCatId = 4, Screen_sub_title_ar = "الاستقطاعات", Screen_sub_title_en = "Vacations", Url = "/transactions/deduction_transaction'", ScreenCode = "01001" },
+new StScreenSub { Id = 21, ScreenCatId = 4, Screen_sub_title_ar = "الاستحقاقات", Screen_sub_title_en = "Employee", Url = "/transactions/benefit_transaction", ScreenCode = "01001" },
+new StScreenSub { Id = 22, ScreenCatId = 4, Screen_sub_title_ar = "الاجازات", Screen_sub_title_en = "Qualifications", Url = "/transactions/vacation_transaction", ScreenCode = "01001" },
+new StScreenSub { Id = 23, ScreenCatId = 4, Screen_sub_title_ar = "البدلات", Screen_sub_title_en = "Allowneces", Url = "/transactions/loan_transaction", ScreenCode = "01001" },
+new StScreenSub { Id = 24, ScreenCatId = 4, Screen_sub_title_ar = "العهد العينية", Screen_sub_title_en = "Deductions", Url = "/transactions/covenant_transaction", ScreenCode = "01001" },
+new StScreenSub { Id = 25, ScreenCatId = 4, Screen_sub_title_ar = "حساب الرواتب", Screen_sub_title_en = "Benefits", Url = "/transactions/salary_calculator_transaction", ScreenCode = "01001" },
+new StScreenSub { Id = 26, ScreenCatId = 4, Screen_sub_title_ar = "الصرف", Screen_sub_title_en = "Contracts", Url = "/transactions/disbursement_transaction", ScreenCode = "01001" },
+new StScreenSub { Id = 27, ScreenCatId = 4, Screen_sub_title_ar = "زيادة المرتبات", Screen_sub_title_en = "Print Devices", Url = "/transactions/salary_increase", ScreenCode = "01001" }
+
+
+
 
 
 

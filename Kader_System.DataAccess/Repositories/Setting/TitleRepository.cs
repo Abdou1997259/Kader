@@ -7,6 +7,7 @@ namespace Kader_System.DataAccess.Repositories.Setting
     public class TitleRepository(KaderDbContext context) : BaseRepository<Title>(context), ITitleRepository
     {
 
+
         //public async Task<Response<GetTitleByIdResponse>> GetTitleByIdAsync(int id,string lang)
         //{
 
@@ -53,5 +54,6 @@ namespace Kader_System.DataAccess.Repositories.Setting
             //    Check = true
             //};
         //}
+
     }
 }

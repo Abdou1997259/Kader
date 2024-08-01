@@ -23,8 +23,9 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
         Ok(await service.GetAllSubMainScreensAsync(headerService.GetRequestHeaderLanguage, model));
 
     [HttpGet(ApiRoutes.SubMainScreen.GetSubMainScreenById)]
-    public async Task<IActionResult> GetSubMainScreenByIdAsync([FromRoute] int id)
+    public async Task<IActionResult> GetSubMainScreenByIdAsync([FromQuery] int id)
     {
+
         var response = await service.GetSubMainScreenByIdAsync(id);
         if (response.Check)
             return Ok(response);

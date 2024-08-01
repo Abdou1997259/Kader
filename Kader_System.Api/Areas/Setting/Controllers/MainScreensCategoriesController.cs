@@ -36,7 +36,7 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
     #region Insert
 
     [HttpPost(ApiRoutes.MainScreenCategory.CreateMainScreenCategory)]
-    public async Task<IActionResult> CreateServiceAsync([FromForm] StCreateMainScreenCategoryRequest model)
+    public async Task<IActionResult> CreateServiceAsync([FromBody] StCreateMainScreenCategoryRequest model)
     {
         var response = await service.CreateMainScreenCategoryAsync(model);
         if (response.Check)
