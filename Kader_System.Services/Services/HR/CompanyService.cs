@@ -318,7 +318,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
                     CompanyId = id
                 }).ToList());
             }
-
+            unitOfWork.Companies.Update(obj);
 
             await unitOfWork.CompleteAsync();
             transaction.Commit();
