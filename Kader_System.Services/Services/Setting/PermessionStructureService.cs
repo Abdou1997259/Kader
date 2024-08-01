@@ -99,7 +99,7 @@ namespace Kader_System.Services.Services.Setting
             {
                 Check = true,
                 DataList = result,
-                Msg = ""
+                Msg = "",
             };
         }
     }
