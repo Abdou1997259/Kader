@@ -13,6 +13,7 @@ namespace Kader_System.Services.Services.Setting
     {
         public async Task<Response<DTOUserPermessions>> GetAllPermessionStructure(string lang)
         {
+     }).ToList();
             var actions = _context.Actions.AsNoTracking(); 
 
             var per = await (from q in _context.ScreenActions.AsNoTracking()
