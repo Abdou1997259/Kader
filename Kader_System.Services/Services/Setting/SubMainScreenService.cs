@@ -1,8 +1,9 @@
-﻿using Kader_System.Domain.Dtos.Response;
+﻿using Kader_System.DataAccesss.DbContext;
+using Kader_System.Domain.Dtos.Response;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository) : ISubMainScreenService
+public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository) : ISubMainScreenService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -60,7 +61,7 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                      Screen_sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
                      Url = x.Url,
                      Screen_cat_id = x.ScreenCatId,
-                     Screen_sub_image= string.Concat(ReadRootPath.SettingImagesPath, x.ScreenCat.StScreenSub.Select(y => y.Screen_sub_image).ToList())
+                     Screen_sub_image = string.Concat(ReadRootPath.SettingImagesPath, x.ScreenCat.StScreenSub.Select(y => y.Screen_sub_image).ToList())
                  }, orderBy: x =>
                    x.OrderByDescending(x => x.Id))).ToList()
         };
@@ -90,7 +91,7 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
     {
         bool exists = false;
         exists = await _unitOfWork.SubMainScreens.ExistAsync(x => x.Screen_sub_title_ar.Trim() == model.Screen_sub_title_ar
-        || x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim() );
+        || x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim());
 
 
         if (exists)
@@ -128,7 +129,7 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
         };
     }
 
-    public async Task<Response<StGetSubMainScreenByIdResponse>> GetSubMainScreenByIdAsync(int id)
+    public async Task<Response<StGetSubMainScreenByIdResponse>> GetSubMainScreenByIdAsync(int id, string lang)
     {
         var obj = await _unitOfWork.SubMainScreens.GetFirstOrDefaultAsync(x => x.Id == id, includeProperties: "ListOfActions.Action");
 
@@ -144,7 +145,9 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                 Msg = resultMsg
             };
         }
-
+        var lookup = await  _context.MainScreens.
+            AsQueryable().
+            ToDynamicLookUpAsync("Id", lang == "ar" ? "Screen_cat_title_ar" : "Screen_cat_title_en");
         return new()
         {
             Data = new()
@@ -164,7 +167,8 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
 
 
             },
-            Check = true
+            Check = true,
+            LookUps = lookup
         };
     }
 
