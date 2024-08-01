@@ -16,7 +16,9 @@ namespace Kader_System.Domain.DTOs.Response.Setting
         public string cat_title { get; set; }
         public string main_title { get; set; }
         public string screen_code { get; set; }
+
         public int[] actions { get; set; }
         public Dictionary<string,bool> permissions { get; set; }
+        public string url { get; set; }
     }
 }
