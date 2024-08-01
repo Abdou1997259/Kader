@@ -486,10 +486,13 @@ namespace Kader_System.Services.Services.HR
                     NormalizedEmail = newEmployee.Email.ToUpper(),
                     EmailConfirmed = true,
                     IsActive = true,
+                    TitleId="1",
+                    FullName=newEmployee.FullNameAr,
                     PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, model.password),
                     VisiblePassword = model.password
 
                 });
+                await unitOfWork.CompleteAsync();
                 if (newUser != null)
                 {
                     newEmployee.UserId = newUser.Id;
