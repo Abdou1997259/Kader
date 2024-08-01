@@ -1,11 +1,13 @@
-﻿namespace Kader_System.Domain.DTOs.Response.Trans
+﻿using Kader_System.Domain.DTOs.Response.Setting;
+
+namespace Kader_System.Domain.DTOs.Response.Trans
 {
     public class GetTitleByIdResponse
     {
         public int Id { get; set; }
-        public string TitleNameAr { get; set; }
-        public string TitleNameEn { get; set; }
-        public List<GetTitlePermissionResponse>  all_permissions { get; set; }
+        public string Name { get; set; }
+        
+        public   List<DTOUserPermessions>  all_permissions { get; set; }
     }
 
     public class GetTitlePermissionResponse

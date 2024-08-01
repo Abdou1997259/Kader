@@ -96,7 +96,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         }
 
         [HttpPut(ApiRoutes.Title.RestoreTitle)]
-        public async Task<IActionResult> RestoreTitle([FromForm] int id)
+        public async Task<IActionResult> RestoreTitle([FromBody] int id)
         {
             if (Response == null)
                 return Ok(Response);

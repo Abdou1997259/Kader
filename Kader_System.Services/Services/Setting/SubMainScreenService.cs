@@ -18,7 +18,7 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                 select: x => new StSelectListForSubMainScreenResponse
                 {
                     Id = x.Id,
-                    Sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
+                    Screen_sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
                     Screen_main_cat_id = x.ScreenCatId,
                     Url = x.Url,
                 }, orderBy: x =>
@@ -56,14 +56,11 @@ public class SubMainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                  skip: (model.PageNumber - 1) * model.PageSize,
                  select: x => new SubMainScreenData
                  {
-                     Sub_id = x.Id,
-                     Sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
+                     Ids = x.Id,
+                     Screen_sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
                      Url = x.Url,
                      Screen_cat_id = x.ScreenCatId,
-                     Cat_title = lang == Localization.Arabic ? x.ScreenCat.screenCat.Screen_main_title_ar : x.ScreenCat.screenCat.Screen_main_title_en,
-                     Main_id = x.ScreenCatId,
-                     Main_title = lang == Localization.Arabic ? x.ScreenCat.Screen_cat_title_ar : x.ScreenCat.Screen_cat_title_en,
-                     Main_image = string.Concat(ReadRootPath.SettingImagesPath, x.ScreenCat.Screen_main_cat_image)
+                     Screen_sub_image= string.Concat(ReadRootPath.SettingImagesPath, x.ScreenCat.StScreenSub.Select(y => y.Screen_sub_image).ToList())
                  }, orderBy: x =>
                    x.OrderByDescending(x => x.Id))).ToList()
         };

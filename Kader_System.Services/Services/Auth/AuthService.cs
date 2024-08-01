@@ -622,7 +622,7 @@ public class AuthService : IAuthService
 
     }
 
-    public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int titleId, IEnumerable<AssignPermissionRequest> model)
+    public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int titleId, IEnumerable<Permissions> model)
     {
         if (titleId == 0)
         {
@@ -636,8 +636,8 @@ public class AuthService : IAuthService
         var userPermissions = model.Select(x => new UserPermission
         {
             UserId = id,
-            Permission = string.Join(',', x.Permission),
-            SubScreenId = x.SubScreenId,
+            Permission = string.Join(',', x.TitlePermssion),
+            SubScreenId = x.SubId,
             TitleId = titleId
         }).ToList();
 
@@ -646,14 +646,14 @@ public class AuthService : IAuthService
         {
             var titlePermission = await _unitOfWork.TitlePermissionRepository
                 .GetSpecificSelectAsync(x =>
-                x.TitleId == titleId && x.SubScreenId == assignedPermission.SubScreenId, x => x);
+                x.TitleId == titleId && x.SubScreenId == assignedPermission.SubId, x => x);
 
             if (titlePermission.Any())
             {
                 var listUpdatedPer = titlePermission.Select(x => new TitlePermission
                 {
                     Id=x.Id,
-                    Permissions = string.Join(',', assignedPermission.Permission),
+                    Permissions = string.Join(',', assignedPermission.SubId),
                     SubScreenId = x.SubScreenId,
                     TitleId = x.TitleId
                 });
@@ -662,21 +662,21 @@ public class AuthService : IAuthService
             else
             {
                 // Check if the SubScreenId exists in the st_screens_subs table
-                var subScreenExists = await _unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubScreenId);
+                var subScreenExists = await _unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubId);
 
                 if (subScreenExists)
                 {
                     await _unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
                     {
                         TitleId = titleId,
-                        SubScreenId = assignedPermission.SubScreenId,
-                        Permissions = string.Join(',', assignedPermission.Permission)
+                        SubScreenId = assignedPermission.SubId,
+                        Permissions = string.Join(',', assignedPermission.TitlePermssion)
                     });
                 }
                 else
                 {
                     // Log the invalid SubScreenId or handle accordingly
-                    Console.WriteLine("Invalid SubScreenId: " + assignedPermission.SubScreenId);
+                    Console.WriteLine("Invalid SubScreenId: " + assignedPermission.SubId);
                     continue;
                 }
             }
@@ -694,13 +694,13 @@ public class AuthService : IAuthService
         };
     }
 
-    private async Task ProcessUserPermissions(string userId, int titleId, IEnumerable<AssignPermissionRequest> model, bool all)
+    private async Task ProcessUserPermissions(string userId, int titleId, IEnumerable<Permissions> model, bool all)
     {
         int userCounter = 0;
         foreach (var assignedPermission in model)
         {
             var userPermissionQuery = await _unitOfWork.UserPermssionRepositroy
-                .GetSpecificSelectAsync(x => x.TitleId == titleId && x.SubScreenId == assignedPermission.SubScreenId, x => x);
+                .GetSpecificSelectAsync(x => x.TitleId == titleId && x.SubScreenId == assignedPermission.SubId, x => x);
 
             var userPermission = all ? userPermissionQuery : userPermissionQuery.Where(x => x.UserId == userId);
 
@@ -710,7 +710,7 @@ public class AuthService : IAuthService
                 {
                     Id=x.Id,
                     UserId=x.UserId,
-                    Permission = string.Join(',', assignedPermission.Permission),
+                    Permission = string.Join(',', assignedPermission.TitlePermssion),
                     SubScreenId = x.SubScreenId,
                     TitleId = x.TitleId
                 });
@@ -719,7 +719,7 @@ public class AuthService : IAuthService
             else
             {
                 // Check if the SubScreenId exists in the st_screens_subs table
-                var subScreenExists = await _unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubScreenId);
+                var subScreenExists = await _unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubId);
 
                 if (subScreenExists)
                 {
@@ -729,14 +729,14 @@ public class AuthService : IAuthService
                         UserId=userId.ToString(),
                        
                         TitleId = titleId,
-                        SubScreenId = assignedPermission.SubScreenId,
-                        Permission = string.Join(',', assignedPermission.Permission)
+                        SubScreenId = assignedPermission.SubId,
+                        Permission = string.Join(',', assignedPermission.TitlePermssion)
                     });
                 }
                 else
                 {
                     // Log the invalid SubScreenId or handle accordingly
-                    Console.WriteLine("Invalid SubScreenId: " + assignedPermission.SubScreenId);
+                    Console.WriteLine("Invalid SubScreenId: " + assignedPermission.SubId);
                     continue;
                 }
             }

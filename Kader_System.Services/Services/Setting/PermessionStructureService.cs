@@ -13,7 +13,7 @@ namespace Kader_System.Services.Services.Setting
     {
         public async Task<Response<DTOUserPermessionsForUser>> GetAllPermessionStructureForUser(string lang)
         {
-            var actions = _context.Actions.AsNoTracking(); 
+            var actions = _context.Actions.AsNoTracking();
 
             var per = await (from q in _context.ScreenActions.AsNoTracking()
                              join s in _context.SubMainScreens on q.ScreenId equals s.Id
@@ -30,6 +30,10 @@ namespace Kader_System.Services.Services.Setting
                                  screen_code = s.ScreenCode,
                                  actions = actions.Select(x => x.Id).ToArray(), // This part remains unchanged
                              }).ToListAsync();
+     
+    
+
+    
 
             // Perform the dictionary creation on the client side
             var result = per.Select(x => new DTOUserPermessionsForUser
@@ -95,4 +99,5 @@ namespace Kader_System.Services.Services.Setting
             };
         }
     }
+
 }
