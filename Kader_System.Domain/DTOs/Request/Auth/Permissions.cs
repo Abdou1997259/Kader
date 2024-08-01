@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Kader_System.Domain.DTOs.Request.Auth
 {
-    public class AssignPermissionRequest
+    public class Permissions
     {
-        public List<int> Permission { get; set; }   
-        public int SubScreenId { get;set; }
+        public List<int> TitlePermssion { get; set; }   
+        public int SubId { get;set; }
     }
 }
