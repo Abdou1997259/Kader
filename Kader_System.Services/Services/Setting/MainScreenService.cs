@@ -236,42 +236,43 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<Response<IEnumerable<MainScreenWithCatSubScreens>>> GetMainScreensWithRelatedDataAsync(string lang
+    public async Task<Response<GetAllStMainScreen>> GetMainScreensWithRelatedDataAsync(string lang
         )
     {
+        var mainScreens = await context.MainScreenCategories.
+            Include(ms => ms.CategoryScreen).
+            ThenInclude(cs => cs.StScreenSub).
+            ToListAsync();
 
-
-
-
-
-
-        var result = (await unitOfWork.MainScreens.GetSpecificSelectAsync(x=>true, includeProperties: $"{nameof(StMainScreenCat.Id)}",
-
-
-                select: x => new MainScreenWithCatSubScreens
-                {
-                    Id = x.Id,
-                    Screen_main_title_ar = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en,
-                }, orderBy: x =>
-                    x.OrderByDescending(x => x.Id))).ToList();
-         
-          
-        
-
-
-        return new()
+        var ChildScreens = mainScreens.Select(ms => new GetAllStMainScreen
         {
-            Data = result,
-            Check = true
+            Screen_main_title = lang == "en" ?  ms.Screen_main_title_en  :  ms.Screen_main_title_ar,
+            Screen_main_image = ms.Screen_main_image,
+            CategoryScreen = ms.CategoryScreen.Select(x => new GetAllStMainScreenCat
+            {
+                Ids = ms.CategoryScreen.Select(x => x.Id).ToList(),
+                Screen_cat_title = ms.CategoryScreen.Select(x => lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar).ToList(),
+                Screen_main_cat_image = ms.CategoryScreen.Select(x => x.Screen_main_cat_image).ToList(),
+                StScreenSub = x.StScreenSub.Select(k => new GetAllStScreenSub
+                {
+                    Ids = k.ScreenCat.StScreenSub.Select(x => x.Id).ToList(),
+                    Screen_sub_title = k.ScreenCat.StScreenSub.Select(y => lang == "en" ? y.Screen_sub_title_en : y.Screen_sub_title_ar).ToList(),
+                    Url = k.ScreenCat.StScreenSub.Select(y => y.Url).ToList(),
+                    Screen_sub_image = k.ScreenCat.StScreenSub.Select(y => y.Screen_sub_image).ToList(),
+                    ScreenCode = k.ScreenCat.StScreenSub.Select(y => y.ScreenCode).ToList(),
+
+                }).ToList(),
+            }).ToList()
+        }).ToList();
+
+
+        return new Response<GetAllStMainScreen>()
+        {
+            Check = true,
+            DataList = ChildScreens,
+            Error = "",
+            Msg = "",
         };
-
-        // return await _dbContext.MainScreenCategories
-        //.Include(ms => ms.CategoryScreen)
-        //    .ThenInclude(cs => cs.StScreenSub)
-        //.ToListAsync();
-
-
-
     }
 
    

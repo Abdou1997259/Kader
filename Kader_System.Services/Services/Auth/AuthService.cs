@@ -1088,7 +1088,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
             cop = await _unitOfWork.Companies.GetByIdAsync(int.Parse(user.GetCurrentCompany()));
         }
 
-        var screens =await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
+        var screens = await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
         var perm = await _permissionservice.GetAllUserPermession(user.GetUserId(),lang);
         var jwtSecurityToken =await  CreateJwtToken(await _userManager.FindByIdAsync(user.GetUserId()));   
       
@@ -1109,7 +1109,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
                Years=2023,
                CurrentCompanyName= Localization.Arabic == lang ? cop.NameAr : cop.NameEn,
                Mypermissions=perm.DataList,
-               Screens= screens.Data
+               Screens = screens.Data
 
 
            }

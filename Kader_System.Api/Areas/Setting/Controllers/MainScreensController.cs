@@ -37,42 +37,8 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     public async Task<IActionResult> GetMainScreensWithRelatedData([FromQuery] StGetAllFiltrationsForMainScreenRequest model)
     {
 
-        var mainScreens = await _dbcontext.MainScreenCategories
-        .Include(ms => ms.CategoryScreen)
-            .ThenInclude(cs => cs.StScreenSub)
-        .ToListAsync();
-
-        if (mainScreens == null)
-        {
-            return NotFound();
-        }
-
-
-        var ChildScreens = mainScreens.Select(ms => new GetAllStMainScreen
-        {
-            Screen_main_title = ms.Screen_main_title_ar,
-            //Screen_main_title_en = ms.Screen_main_title_en,
-            Screen_main_image = ms.Screen_main_image,
-            CategoryScreen = ms.CategoryScreen.Select(x => new GetAllStMainScreenCat
-            {
-                Ids = ms.CategoryScreen.Select(x => x.Id).ToList(),
-                Screen_cat_title = ms.CategoryScreen.Select(x => x.Screen_cat_title_ar).ToList(),
-                Screen_main_cat_image = ms.CategoryScreen.Select(x => x.Screen_main_cat_image).ToList(),
-                //Screen_cat_title_en = ms.CategoryScreen.Select(x => x.Screen_cat_title_en).ToList(),
-                StScreenSub = x.StScreenSub.Select(k => new GetAllStScreenSub
-                {
-                    Ids = k.ScreenCat.StScreenSub.Select(x => x.Id).ToList(),
-                    Screen_sub_title = k.ScreenCat.StScreenSub.Select(y => y.Screen_sub_title_ar).ToList(),
-                    Url = k.ScreenCat.StScreenSub.Select(y => y.Url).ToList(),
-                    Screen_sub_image = k.ScreenCat.StScreenSub.Select(y => y.Screen_sub_image).ToList(),
-                    ScreenCode = k.ScreenCat.StScreenSub.Select(y => y.ScreenCode).ToList(),
-
-                }).ToList(),
-            }).ToList()
-        });
-
-
-        return Ok(ChildScreens);
+        var result = await _mainScreenRepository.GetMainScreensWithRelatedDataAsync(requestService.GetRequestHeaderLanguage);
+        return Ok(result);
     }
 
 
