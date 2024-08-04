@@ -26,7 +26,8 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
     public async Task<IActionResult> GetSubMainScreenByIdAsync([FromQuery] int id)
     {
 
-        var response = await service.GetSubMainScreenByIdAsync(id);
+
+        var response = await service.GetSubMainScreenByIdAsync(id, headerService.GetRequestHeaderLanguage);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
