@@ -48,4 +48,13 @@
     void RemoveRange(IEnumerable<T> entities);
     Task<bool> ExecuteDeleteAsync(Expression<Func<T, bool>> filter);
     void UpdateRange(IEnumerable<T> entities);
+    /// <summary>
+    /// This extension  method to make soft delete for any prop name  then save changes 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="_context"></param>
+    /// <param name="_entity"></param>
+    /// <param name="_softDeleteProperty"></param>
+    /// <returns>number of rows affected</returns>
+    public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted",bool IsDeleted = true);
 }

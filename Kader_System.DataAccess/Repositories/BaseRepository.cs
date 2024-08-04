@@ -248,4 +248,10 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
                 query = query.Include(includeProperty);
         return query.ToListAsync();
     }
+
+    public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted", bool IsDeleted = true)
+    {
+        var result = context.SoftDeleteAsync(_entity, _softDeleteProperty,IsDeleted);
+        return result;
+    }
 }
