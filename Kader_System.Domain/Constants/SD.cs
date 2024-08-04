@@ -183,6 +183,7 @@ public static class SD
             public const string SetNewPasswordToSuperAdmin = "SetNewPasswordToSuperAdmin/{newPassword}";
             public const string GetMyProfile = "getMyProfile";
             public const string UpdateTitle = "UpdateTitle/{title}";
+            public const string UpdateCompany = "UpdateCompany/{company}";
             public const string GetUserById = "GetUserById/{id}";
             public const string RestoreUser = "RestoreUser/{id}";
             public const string GetListOfUser = "GetListOfUsers";
@@ -588,6 +589,7 @@ public static class SD
         public const string Used = "Used";
         public const string CannotBeFound = "CannotBeFound";
         public const string UserInTitle = "UserInTitle";
+        public const string UserInCompany = "UserInCompany";
         public const string MangerAlready = "MangerAlready";
         public const string Restored = "Restored";
         public const string Departments = "Departments";

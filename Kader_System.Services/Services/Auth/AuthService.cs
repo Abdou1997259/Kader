@@ -1152,8 +1152,11 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
             SubScreenId = titlepermissions.SubScreenId,
             Permission = titlepermissions.Permissions
         };
-        await _unitOfWork.UserPermssionRepositroy.AddAsync(userpermission);
 
+        user.CurrentTitleId = title;
+         _unitOfWork.Users.Update(user);
+        await _unitOfWork.UserPermssionRepositroy.AddAsync(userpermission);
+        await _unitOfWork.CompleteAsync();
         return new()
         {
             Check = true,
@@ -1161,6 +1164,37 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         };
 
        
+    }
+    public async Task<Response<string>> ChangeCompany(int company)
+    {
+        var userId = (_accessor!.HttpContext!.User as ClaimsPrincipal).GetUserId();
+        var user = await _userManager.FindByIdAsync(userId);
+        if (!user.CompanyId.Splitter().Contains(company))
+        {
+            var msg = _sharLocalizer[Localization.UserInCompany];
+            return new()
+            {
+                Msg = msg,
+                Data = null,
+                Check = false
+            };
+        }
+      
+
+  
+   
+        user.CurrentCompanyId=company;
+        _unitOfWork.Users.Update(user);
+        await _unitOfWork.CompleteAsync();
+     
+
+        return new()
+        {
+            Check = true,
+            Data = "Updated"
+        };
+
+
     }
 
     #endregion
