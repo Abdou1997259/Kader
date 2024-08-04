@@ -51,9 +51,9 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
     #region Update
 
     [HttpPut(ApiRoutes.MainScreenCategory.UpdateMainScreenCategory)]
-    public async Task<IActionResult> UpdateServiceAsync([FromRoute] int id, [FromForm] StUpdateMainScreenCategoryRequest model)
+    public async Task<IActionResult> UpdateServiceAsync([FromRoute] int id, [FromForm] StUpdateMainScreenCategoryRequest model,string lang)
     {
-        var response = await service.UpdateMainScreenCategoryAsync(id, model);
+        var response = await service.UpdateMainScreenCategoryAsync(id, model,lang);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

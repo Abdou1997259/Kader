@@ -11,5 +11,6 @@ public class Response<T> where T : class
     public dynamic DynamicData { get; set; } = default!;
     public string Error { get; set; } = string.Empty;
     public object LookUps { get; set; } = null;
+    public object LookUpsScreen { get; set; } = null;
 }
 
