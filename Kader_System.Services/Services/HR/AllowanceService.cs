@@ -215,10 +215,10 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
                 Msg = resultMsg
             };
         }
-
-        obj.IsDeleted = false;
-        _unitOfWork.Allowances.Update(obj);
-        await _unitOfWork.CompleteAsync();
+        await _unitOfWork.Allowances.SoftDeleteAsync(obj, "IsDeleted", false);
+        //obj.IsDeleted = false;
+        //_unitOfWork.Allowances.Update(obj);
+        //await _unitOfWork.CompleteAsync();
         return new()
         {
             Check = true,

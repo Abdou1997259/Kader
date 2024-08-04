@@ -48,4 +48,5 @@
     void RemoveRange(IEnumerable<T> entities);
     Task<bool> ExecuteDeleteAsync(Expression<Func<T, bool>> filter);
     void UpdateRange(IEnumerable<T> entities);
+    public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted",bool IsDeleted = true);
 }
