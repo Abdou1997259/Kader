@@ -8,11 +8,16 @@ namespace Kader_System.Domain.DTOs.Request.Setting
 {
     public class GetAllStScreenSub
     {
-        public List<int> Ids { get; set; }
-         public required List<string> Screen_sub_title { get; set; }
-        public List<string>? Url { get; set; }
-        public List<string> ScreenCode { get; set; }
-        public List<string>? Screen_sub_image { get; set; }
+        public int Id{ get; set; }
+        public int Screen_CatId { get; set; }
+        public int Screen_MainId { get; set; }
+  public string Main_title { get; set; }
+
+        public required string Screen_sub_title { get; set; }
+        public string? Url { get; set; }
+        public string ScreenCode { get; set; }
+        public string? Screen_sub_image { get; set; }
+        public string ? Actions { get; set; }   
  
 
 
