@@ -1,4 +1,6 @@
-﻿using Kader_System.Domain.DTOs.Request.Trans;
+﻿using Kader_System.Domain.DTOs.Request.Setting;
+using Kader_System.Domain.DTOs.Request.Trans;
+using Kader_System.Domain.DTOs.Response.HR;
 using Kader_System.Domain.DTOs.Response.Setting;
 using System;
 using System.Collections.Generic;
@@ -30,7 +32,7 @@ namespace Kader_System.Domain.DTOs.Response.Auth
         public int CurrentYear { get; set; }
         public int CurrentTitles { get; set; }    
         public List<DTOUserPermessionsForUser> Mypermissions {  get; set; }
-        public IEnumerable<MainScreenWithCatSubScreens> Screens { get;set; }
+        public List<GetAllStMainScreen> Screens { get;set; }
 
 
 
