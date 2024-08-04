@@ -31,5 +31,6 @@ public interface IAuthService
 
     Task<Response<GetMyProfileResponse>> GetMyProfile(string lang);
     Task<Response<string>> ChangeTitle(int title);
+    Task<Response<string>> ChangeCompany(int company);
 
 }

@@ -251,6 +251,17 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
+    [HttpPut(ApiRoutes.User.UpdateCompany)]
+    public async Task<IActionResult> UpdateCompany(int company)
+    {
+        var response = await _service.ChangeCompany(company);
+        if (response.Check)
+            return Ok(response);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    }
+
     public class CompanyContractModel
     {
         // Other properties...
