@@ -21,7 +21,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
                    JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
                    IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
                    IFileServer fileServer,
-                   RoleManager<ApplicationRole> roleManager,
+                   RoleManager<ApplicationRole> roleManager
 
 
                 ) : IAuthService
@@ -469,7 +469,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
             new Claim(RequestClaims.FullName,user.FullName),
             new Claim(RequestClaims.Titles,user.TitleId),
             new Claim(RequestClaims.Email,user.Email),
-            new Claim(RequestClaims.Image,user.ImagePath),
+            new Claim(RequestClaims.Image,user.ImagePath ?? " "),
             new Claim(RequestClaims.CurrentCompany,user.CurrentCompanyId.ToString()),
             new Claim(RequestClaims.CurrentTitle,user.CurrentTitleId.ToString())
         }
@@ -1124,6 +1124,43 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
             Check = true,
             Data = obj,
         };
+    }
+
+    public async Task<Response<string>> ChangeTitle(int title)
+    {
+        var userId =(_accessor!.HttpContext!.User as ClaimsPrincipal).GetUserId();
+        var user =await _userManager.FindByIdAsync(userId);
+        if (!user.TitleId.Splitter().Contains(title))
+        {
+            var msg = _sharLocalizer[Localization.UserInTitle];
+            return new()
+            {
+                Msg = msg,
+                Data = null,
+                Check = false
+            };
+        }
+        var oldpermissions = await _unitOfWork.UserPermssionRepositroy.GetSpecificSelectAsync(x => x.UserId == userId, x => x);
+      
+        _unitOfWork.UserPermssionRepositroy.RemoveRange(oldpermissions);
+        var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetByIdAsync(title);
+        var userpermission = new UserPermission
+        {
+
+            UserId = user.Id,
+            TitleId = titlepermissions.TitleId,
+            SubScreenId = titlepermissions.SubScreenId,
+            Permission = titlepermissions.Permissions
+        };
+        await _unitOfWork.UserPermssionRepositroy.AddAsync(userpermission);
+
+        return new()
+        {
+            Check = true,
+            Data = "Updated"
+        };
+
+       
     }
 
     #endregion
