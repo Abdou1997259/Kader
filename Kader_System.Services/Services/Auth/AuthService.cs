@@ -15,35 +15,25 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Auth;
 
-public class AuthService : IAuthService
+public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissionsevice, IMapper mapper, UserManager<ApplicationUser> userManager,
+                   JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
+                   IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
+                   IFileServer fileServer,
+                   RoleManager<ApplicationRole> roleManager,
+
+                ) : IAuthService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly JwtSettings _jwt;
-    private readonly ILogger<AuthService> _logger;
-    private readonly IStringLocalizer<SharedResource> _sharLocalizer;
-    private readonly IHttpContextAccessor _accessor;
-    private readonly IFileServer _fileServer;
-    public AuthService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager,
-                       JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
-                       IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
-                       IFileServer fileServer,
-                       RoleManager<ApplicationRole> roleManager)
-    {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-        _userManager = userManager;
-        _jwt = jwt;
-        _sharLocalizer = sharLocalizer;
-        _logger = logger;
-        _accessor = accessor;
-        _fileServer=fileServer;
-        _signInManager = signInManager;
-        _roleManager = roleManager;
-    }
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IMapper _mapper = mapper;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
+    private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+    private readonly JwtSettings _jwt = jwt;
+    private readonly ILogger<AuthService> _logger = logger;
+    private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
+    private readonly IHttpContextAccessor _accessor = accessor;
+    private readonly IFileServer _fileServer = fileServer;
+    private readonly IUserPermessionService _permissionservice = premissionsevice;
 
     #region Authentication
 
@@ -1060,6 +1050,56 @@ public class AuthService : IAuthService
             Check = true,
             Data = _sharLocalizer[Localization.Restored],
             Msg = _sharLocalizer[Localization.Restored]
+        };
+    }
+
+    public async Task<Response<GetMyProfileResponse>> GetMyProfile(string lang)
+    {
+      var user=   _accessor!.HttpContext!.User as ClaimsPrincipal;
+
+        var companies = await _unitOfWork.Companies.GetSpecificSelectAsync(x => user.GetCompaines().Splitter().Contains(x.Id), x => x);
+        var titles = await _unitOfWork.Titles.GetSpecificSelectAsync(x => user.GetTitles().Splitter().Contains(x.Id), x => x);
+    
+        Kader_System.Domain.Models.Title title = null;
+        HrCompany cop = null;
+        if (!string.IsNullOrEmpty(user.GetCurrentTitle()))
+        {
+             title = await _unitOfWork.Titles.GetByIdAsync(int.Parse(user.GetCurrentTitle()));
+        }
+        if (!string.IsNullOrEmpty(user.GetCurrentCompany()))
+        {
+            cop = await _unitOfWork.Companies.GetByIdAsync(int.Parse(user.GetCurrentCompany()));
+        }
+
+      
+        var perm = await _permissionservice.GetAllUserPermession(user.GetUserId(),lang) ?? null;
+        var jwtSecurityToken =await  CreateJwtToken(await _userManager.FindByIdAsync(user.GetUserId()));   
+      
+       var obj = new GetMyProfileResponse()
+       {
+           ApiToken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+           Email = user?.GetEmalil() ?? string.Empty,
+           FullName = user?.GetFullName() ?? string.Empty,
+           Title = Localization.Arabic == lang ? title?.TitleNameAr ?? string.Empty : title?.TitleNameEn ?? string.Empty,
+           Mobile = user?.GetMobile() ?? string.Empty,
+           Image = user?.GetImage() ?? string.Empty,
+           user = new Domain.DTOs.Response.Auth.User
+           {
+               CurrentTitles = int.TryParse(user?.GetCurrentTitle(), out var currentTitle) ? currentTitle : default,
+               CurrentCompany = int.TryParse(user?.GetCurrentCompany(), out var currentCompany) ? currentCompany : default,
+               Companys = await companies?.AsQueryable().ToDynamicLookUpAsync("Id", "CompnayName"),
+               CurrentYear = 2033,
+               Years = 2023,
+               CurrentCompanyName = Localization.Arabic == lang ? cop?.NameAr ?? string.Empty : cop?.NameEn ?? string.Empty,
+               Mypermissions = perm?.DataList,
+               //Screens = screens?.Data ?? new List<Screen>() // Assuming you want to handle null screens as well
+           }
+
+       };
+        return new Response<GetMyProfileResponse>
+        {
+            Check = true,
+            Data = obj,
         };
     }
 

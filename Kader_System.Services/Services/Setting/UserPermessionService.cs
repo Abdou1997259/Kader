@@ -9,15 +9,16 @@ namespace Kader_System.Services.Services.Setting
     {
         public async Task<Response<DTOUserPermessions>> GetAllUserPermession(string userId, string lang)
         {
-            var permStruct = (await permession.GetAllPermessionStructure(lang)).DataList;
+            var permStruct = (await permession.GetAllPermessionStructureForUser(lang))?.DataList;
             var userPermessions = await _context.UserPermissions
-                                                .Where(x => x.UserId == userId)
-                                                .FirstOrDefaultAsync();
+                                                 .Where(x => x.UserId == userId)
+                                                 .FirstOrDefaultAsync();
 
-            var userPermessionIds = userPermessions.Permission
-                                                   .Split(',')
-                                                   .Select(int.Parse)
-                                                   .ToArray();
+            var userPermessionIds = userPermessions?.Permission?
+                                                     .Split(',')
+                                                     .Select(int.Parse)
+                                                     .ToArray()
+                                           ?? Array.Empty<int>();
 
             var actionNames = await GetActionNamesAsync(lang);
 
@@ -41,6 +42,8 @@ namespace Kader_System.Services.Services.Setting
                 DataList = permStruct,
                 Msg = ""
             };
+
+
         }
         private async Task<Dictionary<int, string>> GetActionNamesAsync(string lang)
         {
@@ -49,5 +52,6 @@ namespace Kader_System.Services.Services.Setting
                                         .ToListAsync();
             return actions.ToDictionary(a => a.Id, a => lang == "ar" ?  a.Name :a.NameInEnglish);
         }
+
     }
 }
