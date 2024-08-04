@@ -187,7 +187,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             .ToDynamicLookUpAsync("Id", lang == "ar" ? "Screen_main_title_ar" : "Screen_main_title_en");
 
         var lookupCatScreen = await _context.MainScreens.AsQueryable()
-           .ToDynamicLookUpAsync("Id", lang == "ar" ? "Screen_cat_title_en" : "Screen_cat_title_en");
+           .ToDynamicLookUpAsync("Id", lang == "ar" ? "Screen_cat_title_en" : "Screen_cat_title_en", "Screen_main_cat_image");
 
 
 
@@ -201,6 +201,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             var fileObj = ManageFilesHelper.UploadFile(model.Screen_main_cat_image, path);
             //obj.Screen_main_image = fileObj.FileName;
             //obj.ImageExtension= fileObj.FileExtension;
+            obj.Screen_main_cat_image = path;
         }
 
         obj.Screen_cat_title_ar = model.Screen_cat_title_ar;
