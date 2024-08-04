@@ -1094,33 +1094,44 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
 
         var screens = await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
         var perm = await _permissionservice.GetAllUserPermession(user.GetUserId(),lang);
-        var jwtSecurityToken =await  CreateJwtToken(await _userManager.FindByIdAsync(user.GetUserId()));   
-      
+        var jwtSecurityToken =await  CreateJwtToken(await _userManager.FindByIdAsync(user.GetUserId()));
 
-       var obj = new GetMyProfileResponse()
-       {
+        var email = user?.GetEmalil() ?? string.Empty;
+        var fullName = user?.GetFullName() ?? string.Empty;
+        var title2 = Localization.Arabic == lang ? title?.TitleNameAr ?? string.Empty : title?.TitleNameEn ?? string.Empty;
+        var mobile = user?.GetMobile() ?? string.Empty;
+        var image = user?.GetImage() ?? string.Empty;
+        var currentTitles = int.TryParse(user?.GetCurrentTitle(), out var titlesresult) ? titlesresult : 0;
+        var currentCompany = int.TryParse(user?.GetCurrentCompany(), out var company) ? company : 0;
+        var currentCompanyName = Localization.Arabic == lang ? cop?.NameAr ?? string.Empty : cop?.NameEn ?? string.Empty;
+        var myPermissions = perm?.DataList;
+        var screensResult = screens?.DataList;
+        var aptoken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
-           ApiToken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
-           Email = user?.GetEmalil() ?? string.Empty,
-           FullName = user?.GetFullName() ?? string.Empty,
-           Title = Localization.Arabic == lang ? title?.TitleNameAr ?? string.Empty : title?.TitleNameEn ?? string.Empty,
-           Mobile = user?.GetMobile() ?? string.Empty,
-           Image = user?.GetImage() ?? string.Empty,
-           user = new Domain.DTOs.Response.Auth.User
-           {
-               CurrentTitles = int.Parse(user.GetCurrentTitle()),
-               CurrentCompany = int.Parse(user.GetCurrentCompany()),
-               Companys = await companies.AsQueryable().ToDynamicLookUpAsync("Id", "CompnayName"),
-               CurrentYear=2033,
-               Years=2023,
-               CurrentCompanyName= Localization.Arabic == lang ? cop.NameAr : cop.NameEn,
-               Mypermissions=perm.DataList,
-               Screens= screens.DataList
+        // Fetch companies asynchronously
+        var companiesList = await companies.AsQueryable().ToDynamicLookUpAsync("Id", "CompnayName");
 
+        var obj = new GetMyProfileResponse
+        {
+            ApiToken = aptoken,
+            Email = email,
+            FullName = fullName,
+            Title = title2,
+            Mobile = mobile,
+            Image = image,
+            user = new Domain.DTOs.Response.Auth.User
+            {
+                CurrentTitles = currentTitles,
+                CurrentCompany = currentCompany,
+                Companys = companiesList,
+                CurrentYear = 2033,
+                Years = 2023,
+                CurrentCompanyName = currentCompanyName,
+                Mypermissions = myPermissions,
+                Screens = screensResult
+            }
+        };
 
-           }
-
-       };
         return new Response<GetMyProfileResponse>
         {
             Check = true,
