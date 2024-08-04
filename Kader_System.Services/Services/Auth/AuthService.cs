@@ -8,6 +8,7 @@ using Kader_System.Domain.Models.Setting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Cryptography.X509Certificates;
@@ -16,35 +17,25 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Auth;
 
-public class AuthService : IAuthService
+public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissionsevice, IMapper mapper, UserManager<ApplicationUser> userManager,
+                   JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
+                   IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
+                   IFileServer fileServer,
+                   RoleManager<ApplicationRole> roleManager,
+                   IMainScreenService mainScreenService) : IAuthService
 {
-    private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly JwtSettings _jwt;
-    private readonly ILogger<AuthService> _logger;
-    private readonly IStringLocalizer<SharedResource> _sharLocalizer;
-    private readonly IHttpContextAccessor _accessor;
-    private readonly IFileServer _fileServer;
-    public AuthService(IUnitOfWork unitOfWork, IMapper mapper, UserManager<ApplicationUser> userManager,
-                       JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
-                       IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
-                       IFileServer fileServer,
-                       RoleManager<ApplicationRole> roleManager)
-    {
-        _unitOfWork = unitOfWork;
-        _mapper = mapper;
-        _userManager = userManager;
-        _jwt = jwt;
-        _sharLocalizer = sharLocalizer;
-        _logger = logger;
-        _accessor = accessor;
-        _fileServer=fileServer;
-        _signInManager = signInManager;
-        _roleManager = roleManager;
-    }
+    private readonly IUnitOfWork _unitOfWork = unitOfWork;
+    private readonly IMapper _mapper = mapper;
+    private readonly UserManager<ApplicationUser> _userManager = userManager;
+    private readonly RoleManager<ApplicationRole> _roleManager = roleManager;
+    private readonly SignInManager<ApplicationUser> _signInManager = signInManager;
+    private readonly JwtSettings _jwt = jwt;
+    private readonly ILogger<AuthService> _logger = logger;
+    private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
+    private readonly IHttpContextAccessor _accessor = accessor;
+    private readonly IFileServer _fileServer = fileServer;
+    private readonly IUserPermessionService _permissionservice = premissionsevice;
+    private readonly IMainScreenService _mainScreenService = mainScreenService;
 
     #region Authentication
 
@@ -787,6 +778,8 @@ public class AuthService : IAuthService
             {
                 x.Id,
                 x.CompanyId,
+                x.CurrentTitleId,
+                x.CurrentCompanyId,
                 x.FinancialYear,
                 x.Email,
                 x.JobId,
@@ -802,7 +795,7 @@ public class AuthService : IAuthService
             Id=x.Id,
             CompanyName = Localization.Arabic == lang
                 ? companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameAr
-                : companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId )?.NameEn,
+                : companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameEn,
             FinancialYear = x.FinancialYear,
             Email = x.Email,
             JobName = Localization.Arabic == lang
@@ -875,9 +868,9 @@ public class AuthService : IAuthService
         var result = users.Select(x => new ListOfUsersResponse
         {
 
-            CompanyName = Localization.Arabic == lang
-                ? companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameAr
-                : companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameEn,
+            //CompanyName = Localization.Arabic == lang
+            //    ? companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameAr
+            //    : companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameEn,
             FinancialYear = x.FinancialYear,
             Email = x.Email,
             JobName = Localization.Arabic == lang
@@ -1074,6 +1067,58 @@ public class AuthService : IAuthService
             Check = true,
             Data = _sharLocalizer[Localization.Restored],
             Msg = _sharLocalizer[Localization.Restored]
+        };
+    }
+
+    public async Task<Response<GetMyProfileResponse>> GetMyProfile(string lang)
+    {
+      var user=   _accessor!.HttpContext!.User as ClaimsPrincipal;
+
+        var companies = await _unitOfWork.Companies.GetSpecificSelectAsync(x => user.GetCompaines().Splitter().Contains(x.Id), x => x);
+        var titles = await _unitOfWork.Titles.GetSpecificSelectAsync(x => user.GetTitles().Splitter().Contains(x.Id), x => x);
+    
+        Kader_System.Domain.Models.Title title = null;
+        HrCompany cop = null;
+        if (!string.IsNullOrEmpty(user.GetCurrentTitle()))
+        {
+             title = await _unitOfWork.Titles.GetByIdAsync(int.Parse(user.GetCurrentTitle()));
+        }
+        if (!string.IsNullOrEmpty(user.GetCurrentCompany()))
+        {
+            cop = await _unitOfWork.Companies.GetByIdAsync(int.Parse(user.GetCurrentCompany()));
+        }
+
+        var screens =await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
+        var perm = await _permissionservice.GetAllUserPermession(user.GetUserId(),lang);
+        var jwtSecurityToken =await  CreateJwtToken(await _userManager.FindByIdAsync(user.GetUserId()));   
+      
+       var obj = new GetMyProfileResponse()
+       {
+           ApiToken = "Bearer" + " " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+           Email = user.GetEmalil(),
+           FullName = user.GetFullName(),
+           Title = Localization.Arabic == lang ? title.TitleNameAr : title.TitleNameEn,
+           Mobile = user.GetMobile(),
+           Image = user.GetImage(),
+           user = new Domain.DTOs.Response.Auth.User
+           {
+               CurrentTitles = int.Parse(user.GetCurrentTitle()),
+               CurrentCompany = int.Parse(user.GetCurrentCompany()),
+               Companys = await companies.AsQueryable().ToDynamicLookUpAsync("Id", "CompnayName"),
+               CurrentYear=2033,
+               Years=2023,
+               CurrentCompanyName= Localization.Arabic == lang ? cop.NameAr : cop.NameEn,
+               Mypermissions=perm.DataList,
+               Screens= screens.Data
+
+
+           }
+
+       };
+        return new Response<GetMyProfileResponse>
+        {
+            Check = true,
+            Data = obj,
         };
     }
 

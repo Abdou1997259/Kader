@@ -4,7 +4,23 @@ public static class ClaimsPrincipalExtensions
 {
     public static string GetUserId(this ClaimsPrincipal principal) =>
         principal.FindFirstValue(RequestClaims.UserId)!;
+    public static string GetCurrentCompany(this ClaimsPrincipal principal) =>
+    principal.FindFirstValue(RequestClaims.CurrentCompany)!;
 
+    public static string GetCompaines(this ClaimsPrincipal principal) =>
+  principal.FindFirstValue(RequestClaims.Company)!;
+    public static string GetEmalil(this ClaimsPrincipal principal) =>
+principal.FindFirstValue(RequestClaims.Email)!;
+    public static string GetMobile(this ClaimsPrincipal principal) =>
+principal.FindFirstValue(RequestClaims.Mobile)!;
+    public static string GetTitles(this ClaimsPrincipal principal) =>
+principal.FindFirstValue(RequestClaims.Titles)!;
+    public static string GetImage(this ClaimsPrincipal principal) =>
+principal.FindFirstValue(RequestClaims.Image)!;
+    public static string GetFullName(this ClaimsPrincipal principal) =>
+principal.FindFirstValue(RequestClaims.FullName)!;
+    public static string GetCurrentTitle(this ClaimsPrincipal principal) =>
+principal.FindFirstValue(RequestClaims.CurrentTitle)!;
     public static string GetRoleId(this ClaimsPrincipal principal) =>
         principal.FindFirstValue(ClaimTypes.Role)!;
 

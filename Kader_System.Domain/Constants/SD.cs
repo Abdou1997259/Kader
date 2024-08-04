@@ -181,12 +181,13 @@ public static class SD
             public const string DeleteUser = "DeleteUser/{id}";
             public const string SetNewPasswordToSpecificUser = "SetNewPasswordToSpecificUser";
             public const string SetNewPasswordToSuperAdmin = "SetNewPasswordToSuperAdmin/{newPassword}";
-            public const string GetMyProfile = "getMyProfile/{userId}";
+            public const string GetMyProfile = "getMyProfile";
 
             public const string GetUserById = "GetUserById/{id}";
             public const string RestoreUser = "RestoreUser/{id}";
             public const string GetListOfUser = "GetListOfUsers";
             public const string GetLookups = "GetLookups";
+   
 
         }
 

@@ -36,6 +36,7 @@ public static class ModelBuilderExtensions
             {
                 Id = SuperAdmin.Id,
                 UserName = "admin",
+              
                 NormalizedUserName = "ADMIN",
                 Email = "mohammed88@gmail.com",
                 FullName = "Mohamed abdou",
@@ -44,7 +45,8 @@ public static class ModelBuilderExtensions
                 PhoneNumber = "1202200",
                 FinancialYear = 2013,
                 CurrentCompanyId = 3,
-
+                CurrentTitleId=1,
+                CompanyId="1",
                 NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                 EmailConfirmed = true,
                 IsActive = true,

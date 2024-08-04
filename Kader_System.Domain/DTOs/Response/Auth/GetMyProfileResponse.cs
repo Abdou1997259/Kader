@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.DTOs.Response.Setting;
+﻿using Kader_System.Domain.DTOs.Request.Trans;
+using Kader_System.Domain.DTOs.Response.Setting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,20 +17,20 @@ namespace Kader_System.Domain.DTOs.Response.Auth
         public string Email { get; set; }
         public string Mobile { get; set; }
         public string Image { get; set; }
-        public List<string>  Titles { get; set; }
+        public string  Title{ get; set; }
         public User user { get; set; }
 
     }
     public class User
     {
-        public int Companys { get; set; }
+        public dynamic Companys { get; set; }
         public int Years { get; set; }
         public int CurrentCompany { get; set; }
         public string CurrentCompanyName { get; set; }  
         public int CurrentYear { get; set; }
         public int CurrentTitles { get; set; }    
-        public List<DTOUserPermessionsForPofile> Mypermissions {  get; set; }
-        public List<GetMainScreensWithRelatedDataResponse> Screens { get;set; }
+        public List<DTOUserPermessionsForUser> Mypermissions {  get; set; }
+        public IEnumerable<MainScreenWithCatSubScreens> Screens { get;set; }
 
 
 
