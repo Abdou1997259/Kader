@@ -25,7 +25,7 @@ namespace Kader_System.Domain.DTOs.Response.Auth
     }
     public class User
     {
-        public dynamic Companys { get; set; }
+        public List<Companys >Companys { get; set; }
         public int Years { get; set; }
         public int CurrentCompany { get; set; }
         public string CurrentCompanyName { get; set; }  
@@ -44,6 +44,10 @@ namespace Kader_System.Domain.DTOs.Response.Auth
     
     
     }
+    public class Companys
+    {
+        public int id { get; set; }
+        public string name { get; set; }
 
-
+    }
 }

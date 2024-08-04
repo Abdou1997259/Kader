@@ -115,7 +115,7 @@ public static class ModelBuilderExtensions
 modelBuilder.Entity<StScreenSub>().HasData(
 
 new StScreenSub { Id = 1, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الرئيسية", Screen_sub_title_en = "Main Screen", Url = "/main/screen_main", ScreenCode="01001"},
-new StScreenSub { Id = 2, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الفرعية", Screen_sub_title_en = "Sub Screen", Url = "/main/screen_sub", ScreenCode = "01001" },
+
 new StScreenSub { Id = 3, ScreenCatId = 1, Screen_sub_title_ar = "المسئوليات", Screen_sub_title_en = "Titles", Url = "/main/title", ScreenCode = "01001" },
 new StScreenSub { Id = 4, ScreenCatId = 1, Screen_sub_title_ar = "مستخدمين", Screen_sub_title_en = "Users", Url = "/main/user", ScreenCode = "01001" },
 new StScreenSub { Id = 5, ScreenCatId = 1, Screen_sub_title_ar = "صلاحيات المستخدمين", Screen_sub_title_en = "Users Privilige", Url = "/main/user_permission", ScreenCode = "01001" },
@@ -140,8 +140,8 @@ new StScreenSub { Id = 23, ScreenCatId = 4, Screen_sub_title_ar = "البدلا�
 new StScreenSub { Id = 24, ScreenCatId = 4, Screen_sub_title_ar = "العهد العينية", Screen_sub_title_en = "Deductions", Url = "/transactions/covenant_transaction", ScreenCode = "01001" },
 new StScreenSub { Id = 25, ScreenCatId = 4, Screen_sub_title_ar = "حساب الرواتب", Screen_sub_title_en = "Benefits", Url = "/transactions/salary_calculator_transaction", ScreenCode = "01001" },
 new StScreenSub { Id = 26, ScreenCatId = 4, Screen_sub_title_ar = "الصرف", Screen_sub_title_en = "Contracts", Url = "/transactions/disbursement_transaction", ScreenCode = "01001" },
-new StScreenSub { Id = 27, ScreenCatId = 4, Screen_sub_title_ar = "زيادة المرتبات", Screen_sub_title_en = "Print Devices", Url = "/transactions/salary_increase", ScreenCode = "01001" }
-
+new StScreenSub { Id = 27, ScreenCatId = 4, Screen_sub_title_ar = "زيادة المرتبات", Screen_sub_title_en = "Print Devices", Url = "/transactions/salary_increase", ScreenCode = "01001" },
+new StScreenSub { Id = 28, ScreenCatId = 1, Screen_sub_title_ar = "الشاشات", Screen_sub_title_en = "screens", Url = "/main/screen_sub", ScreenCode = "01001" }
 
 
 

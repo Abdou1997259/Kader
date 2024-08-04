@@ -1,3 +1,4 @@
+using Kader_System.Api.Helpers;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.Interfaces;
@@ -19,6 +20,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Insert
         [HttpPost(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.CreateLeavePermessionasRequests)]
+        [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateLeavePermessionasRequests([FromForm] DTOCreateLeavePermissionRequest model)
         {
                 var response = await service.AddNewLeavePermissionRequest(model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
@@ -32,6 +34,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Read
         [HttpGet(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.GetAllLeavePermessionasRequests)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetAllLeavePermessionasRequests([FromQuery] GetAllFilltrationForEmployeeRequests model)
         {
 
@@ -46,6 +49,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.UpdateLeavePermessionasRequests)]
+        [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateLeavePermessionasRequests([FromRoute] int id,[FromForm] DTOCreateLeavePermissionRequest model)
         {
             var response = await service.UpdateLeavePermissionRequest(id,model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
@@ -59,6 +63,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Delete
         [HttpDelete(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.DeleteLeavePermessionasRequests)]
+        [Permission(Permission.Delete, 19)]
         public async Task<IActionResult> DeleteLeavePermessionasRequests(int id)
         {
             var full_path = Path.Combine(_hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest);

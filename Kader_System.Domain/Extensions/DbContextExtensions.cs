@@ -25,7 +25,7 @@ namespace Kader_System.Domain.Extensions
 
             if (idProperty != null && nameProperty != null)
             {
-                var results = await queryable.ToListAsync();
+                var results = await  queryable.ToListAsync();
                 var dynamicList = new List<dynamic>();
 
                 foreach (var item in results)

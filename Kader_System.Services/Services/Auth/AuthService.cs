@@ -174,8 +174,8 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
        obj.TitleId=model.title_id.Concater();
         obj.JobId = model.job_title;
         obj.IsActive = model.is_active;
-        obj.CurrentTitleId = model.current_title;
-        obj.CurrentCompanyId = model.current_company;
+        obj.CurrentTitleId = model.current_title ?? 1;
+        obj.CurrentCompanyId = model.current_company ?? 3;
         _unitOfWork.Users.Update(obj);
       await  _unitOfWork.CompleteAsync();
 
@@ -559,8 +559,8 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         user.JobId = model.job_title;
         user.UserName = model.user_name;
         user.Add_date = new DateTime().NowEg();
-        user.CurrentCompanyId = model.current_company;
-        user.CurrentTitleId = model.current_title;
+        user.CurrentCompanyId = model?.current_company?? 3;
+        user.CurrentTitleId = model?.current_title ?? 1;
         user.Added_by = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
         // Set additional user properties if needed
         user.Id = Guid.NewGuid().ToString();
@@ -572,7 +572,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
       
 
        
-       var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetByIdAsync(model.current_title);
+       var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetByIdAsync(model.current_title ?? 1);
        var userpermission = new UserPermission
         {
 
@@ -1078,7 +1078,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
     {
       var user=   _accessor!.HttpContext!.User as ClaimsPrincipal;
 
-        var companies = await _unitOfWork.Companies.GetSpecificSelectAsync(x => user.GetCompaines().Splitter().Contains(x.Id), x => x);
+        var companies = await _unitOfWork.Companies.GetSpecificSelectAsQuerableAsync(x => user.GetCompaines().Splitter().Contains(x.Id), x => x);
         var titles = await _unitOfWork.Titles.GetSpecificSelectAsync(x => user.GetTitles().Splitter().Contains(x.Id), x => x);
     
         Kader_System.Domain.Models.Title title = null;
@@ -1089,7 +1089,8 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         }
         if (!string.IsNullOrEmpty(user.GetCurrentCompany()))
         {
-            cop = await _unitOfWork.Companies.GetByIdAsync(int.Parse(user.GetCurrentCompany()));
+            var userComapny = int.Parse(user.GetCurrentCompany());
+            cop = await _unitOfWork.Companies.GetByIdAsync(userComapny);
         }
 
         var screens = await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
@@ -1109,8 +1110,13 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         var aptoken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
         // Fetch companies asynchronously
-        var companiesList = await companies.AsQueryable().ToDynamicLookUpAsync("Id", "CompnayName");
+        var companiesList = ( companies).Select(x => new Companys
+        {
 
+            id = x.Id,
+            name = Localization.Arabic == lang ? x.NameAr : x.NameEn
+        }
+        ).ToList();
         var obj = new GetMyProfileResponse
         {
             ApiToken = aptoken,

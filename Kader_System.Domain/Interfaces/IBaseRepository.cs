@@ -9,6 +9,13 @@
         string includeProperties = null!,
         int? skip = null,
         int? take = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!) where TType : class;   
+      Task<IQueryable<TType>> GetSpecificSelectAsQuerableAsync<TType>(
+        Expression<Func<T, bool>> filter,
+        Expression<Func<T, TType>> select,
+        string includeProperties = null!,
+        int? skip = null,
+        int? take = null,
         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!) where TType : class;
 
     Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter = null!,
@@ -26,6 +33,7 @@
         Expression<Func<T, bool>> filter = null!,
         string includeProperties = null!
     );
+
 
     Task<IEnumerable<TResult>> GetGrouped<TKey, TResult>(
         Expression<Func<T, TKey>> groupingKey,

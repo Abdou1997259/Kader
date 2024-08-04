@@ -219,7 +219,8 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
 
     }
-    [HttpPost(ApiRoutes.User.AssginPermssionToUser)]
+    [HttpPut(ApiRoutes.User.AssginPermssionToUser)]
+    [Permission(Permission.Edit, 4)]
     public async Task<IActionResult> GetUserLookups([FromRoute] string id,[FromBody]  IEnumerable<Kader_System.Domain.DTOs.Request.Auth.Permissions> model, [FromQuery] bool all = false, 
         [FromQuery] int titleId = 1)
     {
@@ -232,6 +233,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
 
     }
     [HttpGet(ApiRoutes.User.GetMyProfile)]
+    [Permission(Permission.View, 4)]
     public async Task<IActionResult> GetMyProfile()
     {
         var response = await _service.GetMyProfile( requestService.GetRequestHeaderLanguage);
@@ -242,6 +244,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPut(ApiRoutes.User.UpdateTitle)]
+    [Permission(Permission.Edit, 4)]
     public async Task<IActionResult> UpdateTitle(int title)
     {
         var response = await _service.ChangeTitle(title);
@@ -252,6 +255,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPut(ApiRoutes.User.UpdateCompany)]
+    [Permission(Permission.Edit, 4)]
     public async Task<IActionResult> UpdateCompany(int company)
     {
         var response = await _service.ChangeCompany(company);
