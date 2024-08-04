@@ -21,7 +21,8 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
                    JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
                    IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
                    IFileServer fileServer,
-                   RoleManager<ApplicationRole> roleManager
+                   RoleManager<ApplicationRole> roleManager,
+                   IMainScreenService mainScreenService
 
 
                 ) : IAuthService
@@ -38,7 +39,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
     private readonly IHttpContextAccessor _accessor = accessor;
     private readonly IFileServer _fileServer = fileServer;
     private readonly IUserPermessionService _permissionservice = premissionsevice;
-
+    private readonly IMainScreenService _mainScreenService = mainScreenService;
 
     #region Authentication
 
@@ -1095,6 +1096,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         var perm = await _permissionservice.GetAllUserPermession(user.GetUserId(),lang);
         var jwtSecurityToken =await  CreateJwtToken(await _userManager.FindByIdAsync(user.GetUserId()));   
       
+
        var obj = new GetMyProfileResponse()
        {
 
@@ -1113,7 +1115,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
                Years=2023,
                CurrentCompanyName= Localization.Arabic == lang ? cop.NameAr : cop.NameEn,
                Mypermissions=perm.DataList,
-               Screens= screens.Data
+               Screens= screens.DataList
 
 
            }
