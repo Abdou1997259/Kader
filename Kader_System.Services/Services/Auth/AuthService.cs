@@ -1134,7 +1134,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         {
             var msg = _sharLocalizer[Localization.UserInTitle];
             return new()
-            {
+            {  
                 Msg = msg,
                 Data = null,
                 Check = false
