@@ -207,4 +207,7 @@
   <data name="Updated" xml:space="preserve">
     <value>تم التحديث بنجاح</value>
   </data>
+  <data name="UserInTitle" xml:space="preserve">
+    <value>لاتوجد هذا المسئولية في المتسخدم خاصتك</value>
+  </data>
 </root>

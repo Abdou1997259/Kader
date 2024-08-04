@@ -30,5 +30,6 @@ public interface IAuthService
     Task<Response<string>> AssignPermissionForUser(string id, bool all, int titleId, IEnumerable<Permissions> model);
 
     Task<Response<GetMyProfileResponse>> GetMyProfile(string lang);
+    Task<Response<string>> ChangeTitle(int title);
 
 }
