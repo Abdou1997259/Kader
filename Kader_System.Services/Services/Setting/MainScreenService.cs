@@ -236,62 +236,28 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<Response<GetMainScreensWithRelatedDataResponse>> GetMainScreensWithRelatedDataAsync(string lang,
-        StGetAllFiltrationsForMainScreenRequest model, string host)
+    public async Task<Response<IEnumerable<MainScreenWithCatSubScreens>>> GetMainScreensWithRelatedDataAsync(string lang
+        )
     {
 
 
-        Expression<Func<StMainScreen, bool>> filter = x => x.IsDeleted == model.IsDeleted;
-        var totalRecords = await unitOfWork.MainScreens.CountAsync(filter: filter);
-        int page = 1;
-        int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
-        if (model.PageNumber < 1)
-            page = 1;
-        else
-            page = model.PageNumber;
-        var pageLinks = Enumerable.Range(1, totalPages)
-            .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
-            .ToList();
-        var result = new GetMainScreensWithRelatedDataResponse
-        {
-            TotalRecords = totalRecords,
 
-            Items = (await unitOfWork.MainScreens.GetSpecificSelectAsync(filter: filter, includeProperties: $"{nameof(StMainScreenCat.Id)}",
-                take: model.PageSize,
-                skip: (model.PageNumber - 1) * model.PageSize,
+
+
+
+        var result = (await unitOfWork.MainScreens.GetSpecificSelectAsync(x=>true, includeProperties: $"{nameof(StMainScreenCat.Id)}",
+
+
                 select: x => new MainScreenWithCatSubScreens
                 {
                     Id = x.Id,
-                    Screen_main_title_ar = lang == Localization.Arabic ? x.Screen_main_title_ar: x.Screen_main_title_en,
+                    Screen_main_title_ar = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en,
                 }, orderBy: x =>
-                    x.OrderByDescending(x => x.Id))).ToList(),
-            CurrentPage = model.PageNumber,
-            FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
-            From = (page - 1) * model.PageSize + 1,
-            To = Math.Min(page * model.PageSize, totalRecords),
-            LastPage = totalPages,
-            LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
-            PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
-            NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
-            Path = host,
-            PerPage = model.PageSize,
-            Links = pageLinks
-        };
+                    x.OrderByDescending(x => x.Id))).ToList();
+         
+          
+        
 
-        if (result.TotalRecords is 0)
-        {
-            string resultMsg = sharLocalizer[Localization.NotFoundData];
-
-            return new()
-            {
-                Data = new()
-                {
-                    Items = []
-                },
-                Error = resultMsg,
-                Msg = resultMsg
-            };
-        }
 
         return new()
         {

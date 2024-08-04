@@ -85,6 +85,14 @@ public static class SD
         public const string DomainRestricted = "DomainRestricted";
         public const string Company = "CompanyId";
         public const string UserId = "uid";
+        public const string Titles = "Titles";
+        public const string Mobile = "Mobile";
+        public const string Image="Image";  
+        public const string Email="Email";
+        public const string FullName = "FullName";
+        public const string CurrentCompany = "CurrentCompany";
+        public const string CurrentTitle = "CurrentTitle";
+
     }
     public static class Shared
     {
@@ -173,12 +181,13 @@ public static class SD
             public const string DeleteUser = "DeleteUser/{id}";
             public const string SetNewPasswordToSpecificUser = "SetNewPasswordToSpecificUser";
             public const string SetNewPasswordToSuperAdmin = "SetNewPasswordToSuperAdmin/{newPassword}";
-            public const string GetMyProfile = "getMyProfile/{userId}";
+            public const string GetMyProfile = "getMyProfile";
 
             public const string GetUserById = "GetUserById/{id}";
             public const string RestoreUser = "RestoreUser/{id}";
             public const string GetListOfUser = "GetListOfUsers";
             public const string GetLookups = "GetLookups";
+   
 
         }
 
@@ -536,7 +545,8 @@ public static class SD
         }
         public class PermessionStruct
         {
-            public const string GetAllPermessions = "PermessionStruct/getAllPermessions";
+            public const string GetAllPermessionsForUser = "PermessionStruct/getAllPermessionsForUser";
+            public const string GetAllPermessionsForProfile = "PermessionStruct/getAllPermessionsForProfile";
         }
         public class UserPermession
         {

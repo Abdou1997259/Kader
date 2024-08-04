@@ -7,7 +7,7 @@ namespace Kader_System.Domain.DTOs.Response.Trans
         public int Id { get; set; }
         public string Name { get; set; }
         
-        public   List<DTOUserPermessions>  all_permissions { get; set; }
+        public   List<DTOUserPermessionsForUser>  all_permissions { get; set; }
     }
 
     public class GetTitlePermissionResponse

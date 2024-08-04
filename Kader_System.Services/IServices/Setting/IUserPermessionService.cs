@@ -8,6 +8,6 @@ namespace Kader_System.Services.IServices.Setting
 {
     public interface IUserPermessionService
     {
-        public  Task<Response<DTOUserPermessions>> GetAllUserPermession(string userId,string lang);
+        public  Task<Response<DTOUserPermessionsForUser>> GetAllUserPermession(string userId,string lang);
     }
 }

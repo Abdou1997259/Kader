@@ -20,11 +20,14 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         private readonly IPermessionStructureService _permessionStructure = permessionStructure;
 
         #region Retrieve
-        [HttpGet(ApiRoutes.PermessionStruct.GetAllPermessions)]
-        public async Task<IActionResult> GetAllPermessions() =>
-            Ok(await _permessionStructure.GetAllPermessionStructure(requestService.GetRequestHeaderLanguage));
+        [HttpGet(ApiRoutes.PermessionStruct.GetAllPermessionsForUser)]
+        public async Task<IActionResult> GetAllPermessionsForUser() =>
+            Ok(await _permessionStructure.GetAllPermessionStructureForUser(requestService.GetRequestHeaderLanguage));
 
 
+        [HttpGet(ApiRoutes.PermessionStruct.GetAllPermessionsForProfile)]
+        public async Task<IActionResult> GetAllPermessionsForProfile() =>
+             Ok(await _permessionStructure.GetAllPermessionStructureForProfile(requestService.GetRequestHeaderLanguage));
 
         #endregion
     }

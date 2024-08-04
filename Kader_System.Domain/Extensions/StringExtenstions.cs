@@ -1,15 +1,11 @@
-﻿using Microsoft.CodeAnalysis.CSharp.Syntax;
+﻿
 
-namespace Kader_System.Api.Helpers
+ namespace Kader_System.Domain.Extensions
 {
     public static class StringExtenstions
     {
 
-        public static Permission CastToPerssmison(this int str)
-        {
-            var permission=(Permission)Enum.Parse(typeof(Permission),str.ToString());
-            return permission;
-        }
+       
         public static List<int> Splitter(this string str)
         {
             if (string.IsNullOrWhiteSpace(str))
