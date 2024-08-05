@@ -9,8 +9,8 @@ namespace Kader_System.Domain.DTOs.Request.Setting
     public class GetAllStMainScreen
     {
         public int Id { get; set; }
-        public required string Screen_main_title { get; set; }
-        public required string? Screen_main_image { get; set; }
-        public List<GetAllStMainScreenCat> CategoryScreen { get; set; }
+        public required string main_title { get; set; }
+        public required string? main_image { get; set; }
+        public List<GetAllStMainScreenCat> cats { get; set; }
     }
 }
