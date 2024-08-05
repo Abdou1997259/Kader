@@ -236,42 +236,86 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<Response<IEnumerable<MainScreenWithCatSubScreens>>> GetMainScreensWithRelatedDataAsync(string lang
+    public async Task<Response<GetAllStMainScreen>> GetMainScreensWithRelatedDataAsync(string lang
         )
     {
+        var mainScreens = await context.MainScreenCategories.
+            Include(ms => ms.CategoryScreen).
+            ThenInclude(cs => cs.StScreenSub).
+            ToListAsync();
+
+        var subs =await _unitOfWork.SubMainScreenActions.GetAllAsync();
+        var permision = await _unitOfWork.TitlePermissionRepository.GetAllAsync();
+        var mains = await _unitOfWork.MainScreens.GetAllAsync() ;
 
 
 
-
-
-
-        var result = (await unitOfWork.MainScreens.GetSpecificSelectAsync(x=>true, includeProperties: $"{nameof(StMainScreenCat.Id)}",
-
-
-                select: x => new MainScreenWithCatSubScreens
-                {
-                    Id = x.Id,
-                    Screen_main_title_ar = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en,
-                }, orderBy: x =>
-                    x.OrderByDescending(x => x.Id))).ToList();
-         
-          
-        
-
-
-        return new()
+        var ChildScreens = mainScreens.Select(ms => new GetAllStMainScreen
         {
-            Data = result,
-            Check = true
+
+            Screen_main_title = lang == "en" ? ms.Screen_main_title_en : ms.Screen_main_title_ar,
+            Screen_main_image = ms.Screen_main_image,
+            CategoryScreen = ms.CategoryScreen.Select(x => new GetAllStMainScreenCat
+            {
+                Id = x.Id,
+                Screen_cat_title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
+                Screen_main_cat_image = x.Screen_main_cat_image,
+                StScreenSub = x.StScreenSub.Select(k => new GetAllStScreenSub
+                {
+                    Sub_Id = k.Id,
+                    Screen_CatId = k.ScreenCatId,
+                    Cat_Title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_en,
+                    Main_title = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Name).FirstOrDefault(),
+                    Screen_MainId = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Id).FirstOrDefault(),
+                    Screen_sub_title = lang == "en" ? k.Screen_sub_title_en : k.Screen_sub_title_ar,
+                    Url = k.Url,
+                    Screen_sub_image = k.Screen_sub_image,
+                    ScreenCode = k.ScreenCode,
+                    Actions = subs.Where(x => x.ScreenSubId == k.Id).Select(x => x.ActionId).ToList().Concater(),
+                    Permissions = permision.Where(x => x.SubScreenId == k.Id).Select(p => p.Id).ToList().Concater()
+                }).ToList()
+            }).ToList()
+        }).ToList();
+
+        foreach (var mainScreen in ChildScreens)
+        {
+            Console.WriteLine($"Main Screen Title: {mainScreen.Screen_main_title}");
+            Console.WriteLine($"Main Screen Image: {mainScreen.Screen_main_image}");
+
+            foreach (var categoryScreen in mainScreen.CategoryScreen)
+            {
+                Console.WriteLine($"Category ID: {categoryScreen.Id}");
+                Console.WriteLine($"Category Screen Title: {categoryScreen.Screen_cat_title}");
+                Console.WriteLine($"Category Main Image: {categoryScreen.Screen_main_cat_image}");
+
+                foreach (var screenSub in categoryScreen.StScreenSub)
+                {
+                    Console.WriteLine($"Screen Sub ID: {screenSub.Sub_Id}");
+                    Console.WriteLine($"Screen Sub Title: {screenSub.Screen_sub_title}");
+                    Console.WriteLine($"Screen Screen_CatId {screenSub.Screen_CatId}");
+                    Console.WriteLine($"Screen Main Title: {screenSub.Main_title}");
+                    Console.WriteLine($"Category Screen Title: {categoryScreen.Screen_cat_title}");
+                    Console.WriteLine($"Actions: {screenSub.Actions}");
+                    Console.WriteLine($"URL: {screenSub.Url}");
+                    Console.WriteLine($"Screen Sub Image: {screenSub.Screen_sub_image}");
+                    Console.WriteLine($"Screen Code: {screenSub.ScreenCode}");
+                    Console.WriteLine();
+                }
+            }
+        }
+
+
+      
+
+
+
+        return new Response<GetAllStMainScreen>()
+        {
+            Check = true,
+            DataList = ChildScreens,
+            Error = "",
+            Msg = "",
         };
-
-        // return await _dbContext.MainScreenCategories
-        //.Include(ms => ms.CategoryScreen)
-        //    .ThenInclude(cs => cs.StScreenSub)
-        //.ToListAsync();
-
-
-
     }
 
    

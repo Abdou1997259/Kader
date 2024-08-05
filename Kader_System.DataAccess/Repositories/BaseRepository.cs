@@ -12,6 +12,7 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     {
         return await dbSet.AsNoTracking().FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id);
     }
+
     public async Task<IEnumerable<TType>> GetSpecificSelectAsync<TType>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, TType>> select,
@@ -46,6 +47,41 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
             query = query.Take(take.Value);
 
         return await query.Select(select).ToListAsync();
+    }
+    public async Task<IQueryable<TType>> GetSpecificSelectAsQuerableAsync<TType>(
+        Expression<Func<T, bool>> filter,
+        Expression<Func<T, TType>> select,
+        string includeProperties = null!,
+        int? skip = null,
+        int? take = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!
+       ) where TType : class
+    {
+
+
+        IQueryable<T> query = dbSet.AsNoTracking();
+
+        if (includeProperties != null)
+        {
+            query.AsSplitQuery();
+            foreach (var includeProperty in includeProperties.Split(new char[] { ',' },
+                StringSplitOptions.RemoveEmptyEntries))
+                query = query.Include(includeProperty).IgnoreQueryFilters();
+        }
+
+
+
+        if (filter != null)
+            query = query.Where(filter);
+        if (orderBy != null)
+            query = orderBy(query);
+
+        if (skip.HasValue)
+            query = query.Skip(skip.Value);
+        if (take.HasValue)
+            query = query.Take(take.Value);
+
+        return  query.Select(select);
     }
 
 
@@ -247,5 +283,11 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
                 StringSplitOptions.RemoveEmptyEntries))
                 query = query.Include(includeProperty);
         return query.ToListAsync();
+    }
+
+    public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted", bool IsDeleted = true)
+    {
+        var result = context.SoftDeleteAsync(_entity, _softDeleteProperty,IsDeleted);
+        return result;
     }
 }

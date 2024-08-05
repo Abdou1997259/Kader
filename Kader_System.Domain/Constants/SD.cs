@@ -564,6 +564,7 @@ public static class SD
         public const string Arabic = "ar";
         public const string English = "en";
         public const string IsExist = "IsExist";
+        public const string ScreenInAction = "ScreenInAction";
         public const string Project = "Project";
         public const string Task = "Task";
         public const string SalaryMoreThanInstallment = "SalaryMoreThanInstallment";

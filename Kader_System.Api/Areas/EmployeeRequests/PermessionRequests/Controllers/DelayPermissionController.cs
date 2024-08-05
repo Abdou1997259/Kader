@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.DTOs.Request.EmployeesRequests;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
@@ -20,12 +21,14 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Retrieve
         [HttpGet(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.GetAllDelayPermissionRequests)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetAllSalaryIncreaseRequests([FromQuery] GetAlFilterationDelayPermissionReuquest model) =>
             Ok(await delayPermission.GetAllDelayPermissionRequsts(model, requestService.GetCurrentHost));
 
 
 
         [HttpGet(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.GetDelayPermissionRequestsById)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetDelayPermissionRequestsById(int id)
         {
             var response = await delayPermission.GetById(id);
@@ -39,6 +42,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Insert
         [HttpPost(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.CreateDelayPermissionRequests)]
+        [Permission(Permission.Add, 19)]
         public async Task<IActionResult> AddNewDelayPermissionRequest([FromForm] DTODelayPermissionRequest model)
         {
             var response = await delayPermission.AddNewDelayPermissionRequest(model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
@@ -65,6 +69,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         //#endregion
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.UpdateDelayPermissionRequests)]
+        [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateDelayPermissionRequest([FromRoute] int id, [FromForm] DTODelayPermissionRequest model)
         {
             var response = await delayPermission.UpdateDelayPermissionRequest(id,model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
@@ -78,6 +83,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Delete
         [HttpDelete(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.DeleteDelayPermissionRequests)]
+        [Permission(Permission.Delete, 19)]
         public async Task<IActionResult> DeleteDelayPermissionRequests(int id)
         {
             var full_path = Path.Combine(_hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest);

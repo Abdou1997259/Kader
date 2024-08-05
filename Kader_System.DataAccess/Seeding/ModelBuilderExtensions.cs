@@ -113,6 +113,7 @@ public static class ModelBuilderExtensions
          
 modelBuilder.Entity<StScreenSub>().HasData(
 
+
 new StScreenSub { Id = 1, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الرئيسية", Screen_sub_title_en = "Main Screen", Url = "/main/screen_main", ScreenCode = "01001" },
 new StScreenSub { Id = 2, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الفرعية", Screen_sub_title_en = "Sub Cat", Url = "/main/screen_cat", ScreenCode = "01001" },
 new StScreenSub { Id = 3, ScreenCatId = 1, Screen_sub_title_ar = "الشاشات", Screen_sub_title_en = "Screen Sub", Url = "/main/screen_sub", ScreenCode = "01001" },
@@ -149,6 +150,8 @@ new StScreenSub { Id = 28, ScreenCatId = 4, Screen_sub_title_ar = "زيادة ا
 new StScreenSub { Id = 29, ScreenCatId = 4, Screen_sub_title_ar = "العهد العينية", Screen_sub_title_en = "Covenants", Url = "/transactions/covenant_transaction", ScreenCode = "01001" },
 
 new StScreenSub { Id = 30, ScreenCatId = 2, Screen_sub_title_ar = "الدوام", Screen_sub_title_en = "Shifts", Url = "/codes/shift", ScreenCode = "01001" }
+
+
 
 
 
@@ -429,6 +432,15 @@ new StScreenSub { Id = 30, ScreenCatId = 2, Screen_sub_title_ar = "الدوام"
 
 
 
+
+        modelBuilder.Entity<StSubMainScreenAction>()
+                 .HasData(
+                    new StSubMainScreenAction() { Id = 1, ScreenSubId = 4, ActionId = 1 },
+                    new StSubMainScreenAction() { Id = 2, ScreenSubId = 1, ActionId = 3 },
+                    new StSubMainScreenAction() { Id = 4, ScreenSubId = 4, ActionId = 2 },
+                    new StSubMainScreenAction() { Id = 5, ScreenSubId = 1, ActionId = 1 },
+                    new StSubMainScreenAction() { Id = 9, ScreenSubId = 2, ActionId = 2 }
+                 );
 
 
 

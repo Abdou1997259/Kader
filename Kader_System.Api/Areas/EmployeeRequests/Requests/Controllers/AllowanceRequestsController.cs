@@ -1,3 +1,4 @@
+using Kader_System.Api.Helpers;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Interfaces;
@@ -22,10 +23,12 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Retrieve
 
         [HttpGet(ApiRoutes.EmployeeRequests.AllowanceRequests.GetAllowanceRequests)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> Get([FromQuery] GetAllFilterationAllowanceRequest  model) =>
             Ok(await service.GetAllowanceRequest(model, requestService.GetCurrentHost));
 
         [HttpGet(ApiRoutes.EmployeeRequests.AllowanceRequests.GetAllowanceRequestById)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetById(int id)
         {
             var response = await service.GetById(id);
@@ -39,6 +42,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #region Insert
         [HttpPost(ApiRoutes.EmployeeRequests.AllowanceRequests.CreateAllowanceRequests)]
+        [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateAllowanceRequests([FromForm] DTOAllowanceRequest model)
         {
             var response = await service.AddNewAllowanceRequest(model, _hostEnvironment.WebRootPath, requestService.client_id,
@@ -53,6 +57,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.AllowanceRequests.UpdateAllowanceRequests)]
+        [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateAllowanceRequests([FromQuery] int id, [FromForm] DTOAllowanceRequest model)
         {
             var response = await service.UpdateAllowanceRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
@@ -68,6 +73,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.EmployeeRequests.AllowanceRequests.DeleteAllowanceRequests)]
+        [Permission(Permission.Delete, 19)]
         public async Task<IActionResult> DeleteSalaryIncreaseRequest(int id)
         {
             var response = await service.DeleteAllowanceRequest(id);

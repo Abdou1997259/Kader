@@ -1,4 +1,6 @@
-﻿using Kader_System.Domain.DTOs.Request.Trans;
+﻿using Kader_System.Domain.DTOs.Request.Setting;
+using Kader_System.Domain.DTOs.Request.Trans;
+using Kader_System.Domain.DTOs.Response.HR;
 using Kader_System.Domain.DTOs.Response.Setting;
 using System;
 using System.Collections.Generic;
@@ -23,14 +25,14 @@ namespace Kader_System.Domain.DTOs.Response.Auth
     }
     public class User
     {
-        public dynamic Companys { get; set; }
+        public List<Companys >Companys { get; set; }
         public int Years { get; set; }
         public int CurrentCompany { get; set; }
         public string CurrentCompanyName { get; set; }  
         public int CurrentYear { get; set; }
         public int CurrentTitles { get; set; }    
         public List<DTOUserPermessionsForUser> Mypermissions {  get; set; }
-        public IEnumerable<MainScreenWithCatSubScreens> Screens { get;set; }
+        public List<GetAllStMainScreen> Screens { get;set; }
 
 
 
@@ -42,6 +44,10 @@ namespace Kader_System.Domain.DTOs.Response.Auth
     
     
     }
+    public class Companys
+    {
+        public int id { get; set; }
+        public string name { get; set; }
 
-
+    }
 }

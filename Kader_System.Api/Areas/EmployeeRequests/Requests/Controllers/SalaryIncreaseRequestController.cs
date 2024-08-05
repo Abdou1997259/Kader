@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
@@ -21,12 +22,14 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #region Retrieve
         [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.GetAllSalaryIncreaseRequests)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetAllSalaryIncreaseRequests([FromQuery] GetAlFilterationForSalaryIncreaseRequest model) =>
             Ok(await increaseRequestService.GetAllSalaryIncreaseRequest(model, requestService.GetCurrentHost));
 
 
 
         [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.GetSalaryIncreaseId)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetSalaryIncreaseId(int id)
         {
             var response = await increaseRequestService.GetById(id);
@@ -40,7 +43,8 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #region Insert
         [HttpPost(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.CreateSalaryIncreaseRequests)]
-       public async Task<IActionResult> SalaryIncreaseRequest([FromForm] DTOSalaryIncreaseRequest model)
+        [Permission(Permission.Add, 19)]
+        public async Task<IActionResult> SalaryIncreaseRequest([FromForm] DTOSalaryIncreaseRequest model)
         {
             if (string.IsNullOrEmpty(requestService.client_id))
                 return Unauthorized("client_id is empty");
@@ -56,6 +60,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.UpdateIncreaseSalary)]
+        [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateIncreaseSalary([FromQuery]int id ,[FromForm] DTOSalaryIncreaseRequest model)
         {
             var response = await increaseRequestService.UpdateSalaryIncreaseRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
@@ -71,6 +76,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.DeleteSalaryIncreaseRequest)]
+        [Permission(Permission.Delete, 19)]
         public async Task<IActionResult> DeleteSalaryIncreaseRequest(int id)
         {
             var response = await increaseRequestService.DeleteSalaryIncreaseRequest(id);
