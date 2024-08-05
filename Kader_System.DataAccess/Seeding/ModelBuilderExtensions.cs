@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Abstractions;
 using static Kader_System.Domain.Constants.SD.ApiRoutes;
-
 namespace Kader_System.DataAccess.Seeding;
 
 public static class ModelBuilderExtensions
@@ -159,6 +158,163 @@ new StScreenSub { Id = 30, ScreenCatId = 2, Screen_sub_title_ar = "الدوام"
      );
 
 
+
+
+
+        modelBuilder.Entity<StSubMainScreenAction>().HasData(
+    new StSubMainScreenAction { Id = 1, ActionId = 1, ScreenSubId = 1 },
+    new StSubMainScreenAction { Id = 2, ActionId = 2, ScreenSubId = 1 },
+    new StSubMainScreenAction { Id = 3, ActionId = 3, ScreenSubId = 1 },
+    new StSubMainScreenAction { Id = 4, ActionId = 4, ScreenSubId = 1 },
+    new StSubMainScreenAction { Id = 5, ActionId = 5, ScreenSubId = 1 },
+    new StSubMainScreenAction { Id = 6, ActionId = 1, ScreenSubId = 2 },
+    new StSubMainScreenAction { Id = 7, ActionId = 2, ScreenSubId = 2 },
+    new StSubMainScreenAction { Id = 8, ActionId = 3, ScreenSubId = 2 },
+    new StSubMainScreenAction { Id = 9, ActionId = 4, ScreenSubId = 2 },
+    new StSubMainScreenAction { Id = 10, ActionId = 5, ScreenSubId = 2 },
+    new StSubMainScreenAction { Id = 11, ActionId = 1, ScreenSubId = 3 },
+    new StSubMainScreenAction { Id = 12, ActionId = 2, ScreenSubId = 3 },
+    new StSubMainScreenAction { Id = 13, ActionId = 3, ScreenSubId = 3 },
+    new StSubMainScreenAction { Id = 14, ActionId = 4, ScreenSubId = 3 },
+    new StSubMainScreenAction { Id = 15, ActionId = 5, ScreenSubId = 3 },
+    new StSubMainScreenAction { Id = 16, ActionId = 1, ScreenSubId = 4 },
+    new StSubMainScreenAction { Id = 17, ActionId = 2, ScreenSubId = 4 },
+    new StSubMainScreenAction { Id = 18, ActionId = 3, ScreenSubId = 4 },
+    new StSubMainScreenAction { Id = 19, ActionId = 4, ScreenSubId = 4 },
+    new StSubMainScreenAction { Id = 20, ActionId = 5, ScreenSubId = 4 },
+    new StSubMainScreenAction { Id = 21, ActionId = 1, ScreenSubId = 5 },
+    new StSubMainScreenAction { Id = 22, ActionId = 2, ScreenSubId = 5 },
+    new StSubMainScreenAction { Id = 23, ActionId = 3, ScreenSubId = 5 },
+    new StSubMainScreenAction { Id = 24, ActionId = 4, ScreenSubId = 5 },
+    new StSubMainScreenAction { Id = 25, ActionId = 5, ScreenSubId = 5 },
+    new StSubMainScreenAction { Id = 26, ActionId = 1, ScreenSubId = 6 },
+    new StSubMainScreenAction { Id = 27, ActionId = 2, ScreenSubId = 6 },
+    new StSubMainScreenAction { Id = 28, ActionId = 3, ScreenSubId = 6 },
+    new StSubMainScreenAction { Id = 29, ActionId = 4, ScreenSubId = 6 },
+    new StSubMainScreenAction { Id = 30, ActionId = 5, ScreenSubId = 6 },
+    new StSubMainScreenAction { Id = 31, ActionId = 1, ScreenSubId = 7 },
+    new StSubMainScreenAction { Id = 32, ActionId = 2, ScreenSubId = 7 },
+    new StSubMainScreenAction { Id = 33, ActionId = 3, ScreenSubId = 7 },
+    new StSubMainScreenAction { Id = 34, ActionId = 4, ScreenSubId = 7 },
+    new StSubMainScreenAction { Id = 35, ActionId = 5, ScreenSubId = 7 },
+    new StSubMainScreenAction { Id = 36, ActionId = 1, ScreenSubId = 8 },
+    new StSubMainScreenAction { Id = 37, ActionId = 2, ScreenSubId = 8 },
+    new StSubMainScreenAction { Id = 38, ActionId = 3, ScreenSubId = 8 },
+    new StSubMainScreenAction { Id = 39, ActionId = 4, ScreenSubId = 8 },
+    new StSubMainScreenAction { Id = 40, ActionId = 5, ScreenSubId = 8 },
+    new StSubMainScreenAction { Id = 41, ActionId = 1, ScreenSubId = 9 },
+    new StSubMainScreenAction { Id = 42, ActionId = 2, ScreenSubId = 9 },
+    new StSubMainScreenAction { Id = 43, ActionId = 3, ScreenSubId = 9 },
+    new StSubMainScreenAction { Id = 44, ActionId = 4, ScreenSubId = 9 },
+    new StSubMainScreenAction { Id = 45, ActionId = 5, ScreenSubId = 9 },
+    new StSubMainScreenAction { Id = 46, ActionId = 1, ScreenSubId = 10 },
+    new StSubMainScreenAction { Id = 47, ActionId = 2, ScreenSubId = 10 },
+    new StSubMainScreenAction { Id = 48, ActionId = 3, ScreenSubId = 10 },
+    new StSubMainScreenAction { Id = 49, ActionId = 4, ScreenSubId = 10 },
+    new StSubMainScreenAction { Id = 50, ActionId = 5, ScreenSubId = 10 },
+    new StSubMainScreenAction { Id = 51, ActionId = 1, ScreenSubId = 11 },
+    new StSubMainScreenAction { Id = 52, ActionId = 2, ScreenSubId = 11 },
+    new StSubMainScreenAction { Id = 53, ActionId = 3, ScreenSubId = 11 },
+    new StSubMainScreenAction { Id = 54, ActionId = 4, ScreenSubId = 11 },
+    new StSubMainScreenAction { Id = 55, ActionId = 5, ScreenSubId = 11 },
+    new StSubMainScreenAction { Id = 56, ActionId = 1, ScreenSubId = 12 },
+    new StSubMainScreenAction { Id = 57, ActionId = 2, ScreenSubId = 12 },
+    new StSubMainScreenAction { Id = 58, ActionId = 3, ScreenSubId = 12 },
+    new StSubMainScreenAction { Id = 59, ActionId = 4, ScreenSubId = 12 },
+    new StSubMainScreenAction { Id = 60, ActionId = 5, ScreenSubId = 12 },
+    new StSubMainScreenAction { Id = 61, ActionId = 1, ScreenSubId = 13 },
+    new StSubMainScreenAction { Id = 62, ActionId = 2, ScreenSubId = 13 },
+    new StSubMainScreenAction { Id = 63, ActionId = 3, ScreenSubId = 13 },
+    new StSubMainScreenAction { Id = 64, ActionId = 4, ScreenSubId = 13 },
+    new StSubMainScreenAction { Id = 65, ActionId = 5, ScreenSubId = 13 },
+    new StSubMainScreenAction { Id = 66, ActionId = 1, ScreenSubId = 14 },
+    new StSubMainScreenAction { Id = 67, ActionId = 2, ScreenSubId = 14 },
+    new StSubMainScreenAction { Id = 68, ActionId = 3, ScreenSubId = 14 },
+    new StSubMainScreenAction { Id = 69, ActionId = 4, ScreenSubId = 14 },
+    new StSubMainScreenAction { Id = 70, ActionId = 5, ScreenSubId = 14 },
+    new StSubMainScreenAction { Id = 71, ActionId = 1, ScreenSubId = 15 },
+    new StSubMainScreenAction { Id = 72, ActionId = 2, ScreenSubId = 15 },
+    new StSubMainScreenAction { Id = 73, ActionId = 3, ScreenSubId = 15 },
+    new StSubMainScreenAction { Id = 74, ActionId = 4, ScreenSubId = 15 },
+    new StSubMainScreenAction { Id = 75, ActionId = 5, ScreenSubId = 15 },
+    new StSubMainScreenAction { Id = 76, ActionId = 1, ScreenSubId = 16 },
+    new StSubMainScreenAction { Id = 77, ActionId = 2, ScreenSubId = 16 },
+    new StSubMainScreenAction { Id = 78, ActionId = 3, ScreenSubId = 16 },
+    new StSubMainScreenAction { Id = 79, ActionId = 4, ScreenSubId = 16 },
+    new StSubMainScreenAction { Id = 80, ActionId = 5, ScreenSubId = 16 },
+    new StSubMainScreenAction { Id = 81, ActionId = 1, ScreenSubId = 17 },
+    new StSubMainScreenAction { Id = 82, ActionId = 2, ScreenSubId = 17 },
+    new StSubMainScreenAction { Id = 83, ActionId = 3, ScreenSubId = 17 },
+    new StSubMainScreenAction { Id = 84, ActionId = 4, ScreenSubId = 17 },
+    new StSubMainScreenAction { Id = 85, ActionId = 5, ScreenSubId = 17 },
+    new StSubMainScreenAction { Id = 86, ActionId = 1, ScreenSubId = 18 },
+    new StSubMainScreenAction { Id = 87, ActionId = 2, ScreenSubId = 18 },
+    new StSubMainScreenAction { Id = 88, ActionId = 3, ScreenSubId = 18 },
+    new StSubMainScreenAction { Id = 89, ActionId = 4, ScreenSubId = 18 },
+    new StSubMainScreenAction { Id = 90, ActionId = 5, ScreenSubId = 18 },
+    new StSubMainScreenAction { Id = 91, ActionId = 1, ScreenSubId = 19 },
+    new StSubMainScreenAction { Id = 92, ActionId = 2, ScreenSubId = 19 },
+    new StSubMainScreenAction { Id = 93, ActionId = 3, ScreenSubId = 19 },
+    new StSubMainScreenAction { Id = 94, ActionId = 4, ScreenSubId = 19 },
+    new StSubMainScreenAction { Id = 95, ActionId = 5, ScreenSubId = 19 },
+    new StSubMainScreenAction { Id = 96, ActionId = 1, ScreenSubId = 20 },
+    new StSubMainScreenAction { Id = 97, ActionId = 2, ScreenSubId = 20 },
+    new StSubMainScreenAction { Id = 98, ActionId = 3, ScreenSubId = 20 },
+    new StSubMainScreenAction { Id = 99, ActionId = 4, ScreenSubId = 20 },
+    new StSubMainScreenAction { Id = 100, ActionId = 5, ScreenSubId = 20 },
+    new StSubMainScreenAction { Id = 101, ActionId = 1, ScreenSubId = 21 },
+    new StSubMainScreenAction { Id = 102, ActionId = 2, ScreenSubId = 21 },
+    new StSubMainScreenAction { Id = 103, ActionId = 3, ScreenSubId = 21 },
+    new StSubMainScreenAction { Id = 104, ActionId = 4, ScreenSubId = 21 },
+    new StSubMainScreenAction { Id = 105, ActionId = 5, ScreenSubId = 21 },
+    new StSubMainScreenAction { Id = 106, ActionId = 1, ScreenSubId = 22 },
+    new StSubMainScreenAction { Id = 107, ActionId = 2, ScreenSubId = 22 },
+    new StSubMainScreenAction { Id = 108, ActionId = 3, ScreenSubId = 22 },
+    new StSubMainScreenAction { Id = 109, ActionId = 4, ScreenSubId = 22 },
+    new StSubMainScreenAction { Id = 110, ActionId = 5, ScreenSubId = 22 },
+    new StSubMainScreenAction { Id = 111, ActionId = 1, ScreenSubId = 23 },
+    new StSubMainScreenAction { Id = 112, ActionId = 2, ScreenSubId = 23 },
+    new StSubMainScreenAction { Id = 113, ActionId = 3, ScreenSubId = 23 },
+    new StSubMainScreenAction { Id = 114, ActionId = 4, ScreenSubId = 23 },
+    new StSubMainScreenAction { Id = 115, ActionId = 5, ScreenSubId = 23 },
+    new StSubMainScreenAction { Id = 116, ActionId = 1, ScreenSubId = 24 },
+    new StSubMainScreenAction { Id = 117, ActionId = 2, ScreenSubId = 24 },
+    new StSubMainScreenAction { Id = 118, ActionId = 3, ScreenSubId = 24 },
+    new StSubMainScreenAction { Id = 119, ActionId = 4, ScreenSubId = 24 },
+    new StSubMainScreenAction { Id = 120, ActionId = 5, ScreenSubId = 24 },
+    new StSubMainScreenAction { Id = 121, ActionId = 1, ScreenSubId = 25 },
+    new StSubMainScreenAction { Id = 122, ActionId = 2, ScreenSubId = 25 },
+    new StSubMainScreenAction { Id = 123, ActionId = 3, ScreenSubId = 25 },
+    new StSubMainScreenAction { Id = 124, ActionId = 4, ScreenSubId = 25 },
+    new StSubMainScreenAction { Id = 125, ActionId = 5, ScreenSubId = 25 },
+    new StSubMainScreenAction { Id = 126, ActionId = 1, ScreenSubId = 26 },
+    new StSubMainScreenAction { Id = 127, ActionId = 2, ScreenSubId = 26 },
+    new StSubMainScreenAction { Id = 128, ActionId = 3, ScreenSubId = 26 },
+    new StSubMainScreenAction { Id = 129, ActionId = 4, ScreenSubId = 26 },
+    new StSubMainScreenAction { Id = 130, ActionId = 5, ScreenSubId = 26 },
+    new StSubMainScreenAction { Id = 131, ActionId = 1, ScreenSubId = 27 },
+    new StSubMainScreenAction { Id = 132, ActionId = 2, ScreenSubId = 27 },
+    new StSubMainScreenAction { Id = 133, ActionId = 3, ScreenSubId = 27 },
+    new StSubMainScreenAction { Id = 134, ActionId = 4, ScreenSubId = 27 },
+    new StSubMainScreenAction { Id = 135, ActionId = 5, ScreenSubId = 27 },
+    new StSubMainScreenAction { Id = 136, ActionId = 1, ScreenSubId = 28 },
+    new StSubMainScreenAction { Id = 137, ActionId = 2, ScreenSubId = 28 },
+    new StSubMainScreenAction { Id = 138, ActionId = 3, ScreenSubId = 28 },
+    new StSubMainScreenAction { Id = 139, ActionId = 4, ScreenSubId = 28 },
+    new StSubMainScreenAction { Id = 140, ActionId = 5, ScreenSubId = 28 },
+    new StSubMainScreenAction { Id = 141, ActionId = 1, ScreenSubId = 29 },
+    new StSubMainScreenAction { Id = 142, ActionId = 2, ScreenSubId = 29 },
+    new StSubMainScreenAction { Id = 143, ActionId = 3, ScreenSubId = 29 },
+    new StSubMainScreenAction { Id = 144, ActionId = 4, ScreenSubId = 29 },
+    new StSubMainScreenAction { Id = 145, ActionId = 5, ScreenSubId = 29 },
+    new StSubMainScreenAction { Id = 146, ActionId = 1, ScreenSubId = 30 },
+    new StSubMainScreenAction { Id = 147, ActionId = 2, ScreenSubId = 30 },
+    new StSubMainScreenAction { Id = 148, ActionId = 3, ScreenSubId = 30 },
+    new StSubMainScreenAction { Id = 149, ActionId = 4, ScreenSubId = 30 },
+    new StSubMainScreenAction { Id = 150, ActionId = 5, ScreenSubId = 30 }
+);
+
+
         modelBuilder.Entity<Kader_System.Domain.Models.Title>().HasData(
                   new Kader_System.Domain.Models.Title { Id = 1, TitleNameAr = "مدير عام", TitleNameEn = "maanger" }
 
@@ -270,21 +426,12 @@ new StScreenSub { Id = 30, ScreenCatId = 2, Screen_sub_title_ar = "الدوام"
             );
 
 
-        modelBuilder.Entity<StScreenAction>()
-                 .HasData(
-                    new StScreenAction() { Id = 1, ScreenId = 1, ActionId = 1 },
-                    new StScreenAction() { Id = 2, ScreenId = 1, ActionId = 2 },
-                    new StScreenAction() { Id = 3, ScreenId = 1, ActionId = 3 },
-                    new StScreenAction() { Id = 4, ScreenId = 1, ActionId = 4 },
-                    new StScreenAction() { Id = 5, ScreenId = 2, ActionId = 1 },
-                    new StScreenAction() { Id = 6, ScreenId = 2, ActionId = 2 },
-                    new StScreenAction() { Id = 7, ScreenId = 2, ActionId = 3 },
-                    new StScreenAction() { Id = 8, ScreenId = 3, ActionId = 1 },
-                    new StScreenAction() { Id = 9, ScreenId = 3, ActionId = 2 },
-                    new StScreenAction() { Id = 10, ScreenId = 3, ActionId = 2 }
+        modelBuilder.Entity<Kader_System.Domain.Models.Setting.UserPermission>().HasData(
+
+            new UserPermession { });
 
 
-                 );
+
 
         modelBuilder.Entity<StSubMainScreenAction>()
                  .HasData(
