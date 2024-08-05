@@ -27,7 +27,7 @@ public interface IAuthService
 
     Task<Response<string>> DeleteUser(string id);
     Task<Response<string>> RestoreUser(string id);
-    Task<Response<string>> AssignPermissionForUser(string id, bool all, int titleId, IEnumerable<Permissions> model);
+    Task<Response<string>> AssignPermissionForUser(string id, bool all, int titleId, IEnumerable<Permissions> model,string lang);
 
     Task<Response<GetMyProfileResponse>> GetMyProfile(string lang);
     Task<Response<string>> ChangeTitle(int title);

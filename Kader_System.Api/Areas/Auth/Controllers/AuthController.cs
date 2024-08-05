@@ -224,7 +224,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     public async Task<IActionResult> GetUserLookups([FromRoute] string id,[FromBody]  IEnumerable<Kader_System.Domain.DTOs.Request.Auth.Permissions> model, [FromQuery] bool all = false, 
         [FromQuery] int titleId = 1)
     {
-        var response = await _service.AssignPermissionForUser(id,all,titleId,model);
+        var response = await _service.AssignPermissionForUser(id,all,titleId,model,requestService.GetRequestHeaderLanguage);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

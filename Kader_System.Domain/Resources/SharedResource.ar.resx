@@ -201,6 +201,9 @@
   <data name="SalaryMoreThanInstallment" xml:space="preserve">
     <value>الراتب اكثر من قيمة القست </value>
   </data>
+  <data name="ScreenInAction" xml:space="preserve">
+    <value>هذه الشاشة لاتحتوي علي صلاحيات </value>
+  </data>
   <data name="SubMainScreen" xml:space="preserve">
     <value>الشاشة الفرعية</value>
   </data>

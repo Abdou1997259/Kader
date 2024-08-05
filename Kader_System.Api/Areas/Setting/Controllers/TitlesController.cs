@@ -87,7 +87,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
             [FromRoute] int id, [FromBody] UpdateTitleRequest model
            )
         {
-            var respone = await titleService.UpdateTitleAsync(id, model);
+            var respone = await titleService.UpdateTitleAsync(id, model,requestService.GetRequestHeaderLanguage);
 
             if (respone.Check == true)
                 return Ok(respone);

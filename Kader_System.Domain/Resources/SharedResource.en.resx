@@ -201,6 +201,9 @@
   <data name="SalaryMoreThanInstallment" xml:space="preserve">
     <value>Salary More Than Installment</value>
   </data>
+  <data name="ScreenInAction" xml:space="preserve">
+    <value>This Screen Does'nt Have This Permssion</value>
+  </data>
   <data name="SubMainScreen" xml:space="preserve">
     <value>Sub main screen</value>
   </data>
