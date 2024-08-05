@@ -20,11 +20,9 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         private readonly IUserPermessionService _userPermession = userPermession;
 
         #region Retrieve
-        [HttpGet(ApiRoutes.UserPermession.GetAllUserPermessions)]
-        public async Task<IActionResult> GetAllUserPermessions([FromRoute] string userId) =>
-            Ok(await _userPermession.GetAllUserPermession(userId,requestService.GetRequestHeaderLanguage));
-
-
+        [HttpGet(ApiRoutes.UserPermession.GetUserPermissionsBySubScreen)]
+        public async Task<IActionResult> GetUserPermissionsBySubScreen([FromRoute] string userId) =>
+               Ok(await _userPermession.GetUserPermissionsBySubScreen(userId, requestService.GetRequestHeaderLanguage));
 
         #endregion
     }

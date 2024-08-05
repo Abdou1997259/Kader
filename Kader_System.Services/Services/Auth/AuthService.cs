@@ -18,7 +18,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Auth;
 
-public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissionsevice, IMapper mapper, UserManager<ApplicationUser> userManager,
+public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService premissionsevice, IMapper mapper, UserManager<ApplicationUser> userManager,
                    JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
                    IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
                    IFileServer fileServer,
@@ -39,7 +39,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IHttpContextAccessor _accessor = accessor;
     private readonly IFileServer _fileServer = fileServer;
-    private readonly IUserPermessionService _permissionservice = premissionsevice;
+    private readonly IPermessionStructureService _permissionservice = premissionsevice;
     private readonly IMainScreenService _mainScreenService = mainScreenService;
 
     #region Authentication
@@ -1139,7 +1139,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         }
 
         var screens = await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
-        var perm = await _permissionservice.GetAllUserPermession(user.GetUserId(),lang);
+        var perm = await _permissionservice.GetPermissionsBySubScreen(lang);
         var jwtSecurityToken =await  CreateJwtToken(await _userManager.FindByIdAsync(user.GetUserId()));
 
         var email = user?.GetEmalil() ?? string.Empty;
@@ -1150,7 +1150,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         var currentTitles = int.TryParse(user?.GetCurrentTitle(), out var titlesresult) ? titlesresult : 0;
         var currentCompany = int.TryParse(user?.GetCurrentCompany(), out var company) ? company : 0;
         var currentCompanyName = Localization.Arabic == lang ? cop?.NameAr ?? string.Empty : cop?.NameEn ?? string.Empty;
-        var myPermissions = perm?.DataList;
+        var myPermissions = perm?.DynamicData;
         var screensResult = screens?.DataList;
         var aptoken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
