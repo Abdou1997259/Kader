@@ -245,6 +245,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             ToListAsync();
 
         var subs =await _unitOfWork.SubMainScreenActions.GetAllAsync();
+        var permision = await _unitOfWork.TitlePermissionRepository.GetAllAsync();
         var mains = await _unitOfWork.MainScreens.GetAllAsync() ;
 
 
@@ -253,7 +254,6 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         {
 
             Screen_main_title = lang == "en" ? ms.Screen_main_title_en : ms.Screen_main_title_ar,
-
             Screen_main_image = ms.Screen_main_image,
             CategoryScreen = ms.CategoryScreen.Select(x => new GetAllStMainScreenCat
             {
@@ -262,15 +262,17 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                 Screen_main_cat_image = x.Screen_main_cat_image,
                 StScreenSub = x.StScreenSub.Select(k => new GetAllStScreenSub
                 {
-                    Id = k.Id,
+                    Sub_Id = k.Id,
                     Screen_CatId = k.ScreenCatId,
+                    Cat_Title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_en,
                     Main_title = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Name).FirstOrDefault(),
                     Screen_MainId = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Id).FirstOrDefault(),
                     Screen_sub_title = lang == "en" ? k.Screen_sub_title_en : k.Screen_sub_title_ar,
                     Url = k.Url,
                     Screen_sub_image = k.Screen_sub_image,
                     ScreenCode = k.ScreenCode,
-                    Actions = subs.Where(x => x.ScreenSubId == k.Id).Select(x => x.ActionId).ToList().Concater()
+                    Actions = subs.Where(x => x.ScreenSubId == k.Id).Select(x => x.ActionId).ToList().Concater(),
+                    Permissions = permision.Where(x => x.SubScreenId == k.Id).Select(p => p.Id).ToList().Concater()
                 }).ToList()
             }).ToList()
         }).ToList();
@@ -288,11 +290,11 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
                 foreach (var screenSub in categoryScreen.StScreenSub)
                 {
-                    Console.WriteLine($"Screen Sub ID: {screenSub.Id}");
+                    Console.WriteLine($"Screen Sub ID: {screenSub.Sub_Id}");
                     Console.WriteLine($"Screen Sub Title: {screenSub.Screen_sub_title}");
                     Console.WriteLine($"Screen Screen_CatId {screenSub.Screen_CatId}");
                     Console.WriteLine($"Screen Main Title: {screenSub.Main_title}");
-                    //Console.WriteLine($"Screen Main ID: {screenSub.MainScreenId}");
+                    Console.WriteLine($"Category Screen Title: {categoryScreen.Screen_cat_title}");
                     Console.WriteLine($"Actions: {screenSub.Actions}");
                     Console.WriteLine($"URL: {screenSub.Url}");
                     Console.WriteLine($"Screen Sub Image: {screenSub.Screen_sub_image}");
