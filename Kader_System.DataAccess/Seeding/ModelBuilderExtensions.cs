@@ -278,6 +278,15 @@ new StScreenSub { Id = 28, ScreenCatId = 1, Screen_sub_title_ar = "الشاشا�
 
                  );
 
+        modelBuilder.Entity<StSubMainScreenAction>()
+                 .HasData(
+                    new StSubMainScreenAction() { Id = 1, ScreenSubId = 4, ActionId = 1 },
+                    new StSubMainScreenAction() { Id = 2, ScreenSubId = 1, ActionId = 3 },
+                    new StSubMainScreenAction() { Id = 4, ScreenSubId = 4, ActionId = 2 },
+                    new StSubMainScreenAction() { Id = 5, ScreenSubId = 1, ActionId = 1 },
+                    new StSubMainScreenAction() { Id = 9, ScreenSubId = 2, ActionId = 2 }
+                 );
+
 
 
 
