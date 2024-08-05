@@ -3,6 +3,7 @@
 using Kader_System.DataAccess.Repositories;
 using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Setting
 {
@@ -170,7 +171,17 @@ namespace Kader_System.Services.Services.Setting
             //}
 
 
-            await AssginTitlePermssion(id, model.Permssions,lang);
+           var result= await AssginTitlePermssion(id, model.Permssions,lang);
+            if (result.Check == false) {
+                return new()
+                {
+                    Msg = result.Msg,
+                    Check = false,
+                    Data = null
+                };
+
+
+            }
             unitOfWork.Titles.Update(title);
             //var listOfTitlePermssion = pers.Select(x => new TitlePermission
             //{
@@ -238,12 +249,12 @@ namespace Kader_System.Services.Services.Setting
 
         private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model,string lang)
         {
-            var subMainScreenActions = await unitOfWork.ScreenActions.GetAllAsync();
+            var subMainScreenActions = await unitOfWork.SubMainScreenActions.GetAllAsync();
             foreach (var sub in model)
             {
                 // Get ActionIds for the current SubId
                 var actionIdsForSubId = subMainScreenActions
-                    .Where(x => x.ScreenId == sub.SubId)
+                    .Where(x => x.ScreenSubId == sub.SubId)
                     .Select(x => x.ActionId)
                     .Distinct()
                     .ToList();
@@ -278,14 +289,14 @@ namespace Kader_System.Services.Services.Setting
 
                 }
             }
-            List<TitlePermission> AddedPer = null;
+            List<TitlePermission> AddedPer = new List<TitlePermission>();
             foreach (var AssginedPermssion in model)
             {
                 var titlePermission = await unitOfWork.TitlePermissionRepository
                     .GetSpecificSelectAsync(x => x.TitleId == id && x.SubScreenId == AssginedPermssion.SubId, x => x);
                 IEnumerable<TitlePermission> listUpdatedper = null;
 
-                if (titlePermission != null)
+                if (titlePermission.Count()!=0)
                 {
 
                     listUpdatedper = titlePermission.Select(x => new TitlePermission
@@ -305,6 +316,7 @@ namespace Kader_System.Services.Services.Setting
                     {
                         TitleId = id,
                         SubScreenId = AssginedPermssion.SubId,
+                       
                         Permissions = string.Join(',', AssginedPermssion.TitlePermssion)
                     });
 
