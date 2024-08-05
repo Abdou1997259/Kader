@@ -1,3 +1,4 @@
+using Kader_System.Api.Helpers;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
@@ -19,13 +20,16 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Retrieve
 
         [HttpGet(ApiRoutes.EmployeeRequests.ContractTerminationRequest.ListOContractTerminationRequest)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> ListOfLoanRequestsAsync() =>
             Ok(await service.ListOfContractTerminationRequest());
 
         [HttpGet(ApiRoutes.EmployeeRequests.ContractTerminationRequest.GetAllContractTerminationRequest)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetAllLoanRequestsAsync([FromQuery] GetFilterationContractTerminationRequest model) =>
             Ok(await service.GetAllContractTerminationRequest(model, requestService.GetCurrentHost));
         [HttpGet(ApiRoutes.EmployeeRequests.ContractTerminationRequest.GetContractTerminationRequestsById)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetLoanRequestByIdAsync(int id)
         {
             var response = await service.GetById(id);
@@ -41,6 +45,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Insert
 
         [HttpPost(ApiRoutes.EmployeeRequests.ContractTerminationRequest.CreateContractTerminationRequest)]
+        [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateLoanRequestAsync([FromForm] DTOContractTerminationRequest model)
         {
             var response = await service.AddNewContractTerminationRequest(model, hostEnvironment.WebRootPath, requestService.client_id,
@@ -58,6 +63,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.EmployeeRequests.ContractTerminationRequest.UpdateContractTerminationRequest)]
+        [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateLoanRequestAsync([FromRoute] int id, [FromForm] DTOContractTerminationRequest model)
         {
             var response = await service.UpdateContractTerminationRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
@@ -76,6 +82,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.EmployeeRequests.ContractTerminationRequest.DeleteContractTerminationRequest)]
+        [Permission(Permission.Delete, 19)]
         public async Task<IActionResult> DeleteAllowanceAsync(int id)
         {
             var full_path = Path.Combine(hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest);

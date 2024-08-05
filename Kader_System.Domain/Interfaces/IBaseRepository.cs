@@ -9,6 +9,13 @@
         string includeProperties = null!,
         int? skip = null,
         int? take = null,
+        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!) where TType : class;   
+      Task<IQueryable<TType>> GetSpecificSelectAsQuerableAsync<TType>(
+        Expression<Func<T, bool>> filter,
+        Expression<Func<T, TType>> select,
+        string includeProperties = null!,
+        int? skip = null,
+        int? take = null,
         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!) where TType : class;
 
     Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter = null!,
@@ -26,6 +33,7 @@
         Expression<Func<T, bool>> filter = null!,
         string includeProperties = null!
     );
+
 
     Task<IEnumerable<TResult>> GetGrouped<TKey, TResult>(
         Expression<Func<T, TKey>> groupingKey,
@@ -48,4 +56,13 @@
     void RemoveRange(IEnumerable<T> entities);
     Task<bool> ExecuteDeleteAsync(Expression<Func<T, bool>> filter);
     void UpdateRange(IEnumerable<T> entities);
+    /// <summary>
+    /// This extension  method to make soft delete for any prop name  then save changes 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="_context"></param>
+    /// <param name="_entity"></param>
+    /// <param name="_softDeleteProperty"></param>
+    /// <returns>number of rows affected</returns>
+    public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted",bool IsDeleted = true);
 }

@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
@@ -17,13 +18,16 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Retrieve
 
         [HttpGet(ApiRoutes.EmployeeRequests.ResignationRequests.ListOfResignationRequests)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> ListOfResignationRequestsAsync() =>
             Ok(await service.ListOfResignationRequest());
 
         [HttpGet(ApiRoutes.EmployeeRequests.ResignationRequests.GetAllResignationRequests)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetAllResignationRequestsAsync([FromQuery] GetFillterationResignationRequest model) =>
             Ok(await service.GetAllResignationRequest(model, requestService.GetCurrentHost));
         [HttpGet(ApiRoutes.EmployeeRequests.ResignationRequests.GetResignationRequestsById)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetResignationRequestByIdAsync(int id)
         {
             var response = await service.GetById(id);
@@ -39,6 +43,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Insert
 
         [HttpPost(ApiRoutes.EmployeeRequests.ResignationRequests.CreateResignationRequests)]
+        [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateResignationRequestAsync([FromForm] DTOResignationRequest model)
         {
             var response = await service.AddNewResignationRequest(model, hostEnvironment.WebRootPath, requestService.client_id,
@@ -56,6 +61,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.EmployeeRequests.ResignationRequests.UpdateResignationRequests)]
+        [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateResignationRequestAsync([FromRoute] int id, [FromForm] DTOResignationRequest model)
         {
             var response = await service.UpdateResignationRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
@@ -74,6 +80,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.EmployeeRequests.ResignationRequests.DeleteResignationRequests)]
+        [Permission(Permission.Delete, 19)]
         public async Task<IActionResult> DeleteResignationAsync(int id)
         {
             var response = await service.DeleteResignationRequest(id);

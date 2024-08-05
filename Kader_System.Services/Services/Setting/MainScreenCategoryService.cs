@@ -1,10 +1,14 @@
-﻿namespace Kader_System.Services.Services.Setting;
+﻿using Kader_System.DataAccesss.DbContext;
+using Microsoft.EntityFrameworkCore;
 
-public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : IMainScreenCategoryService
+namespace Kader_System.Services.Services.Setting;
+
+public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : IMainScreenCategoryService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
+    private readonly KaderDbContext _context = context;
 
     #region Main screen category
 
@@ -142,6 +146,8 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
             };
         }
 
+       
+
         return new()
         {
             Data = new()
@@ -153,9 +159,11 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
             },
             Check = true
         };
+
+        
     }
 
-    public async Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model)
+    public async Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model,string lang)
     {
         var obj = await _unitOfWork.MainScreenCategories.GetByIdAsync(id);
 
@@ -172,6 +180,18 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
             };
         }
 
+        var lookupActionScreen = await _context.Actions.AsQueryable()
+            .ToDynamicLookUpAsync("Id", lang == "ar" ? "Name" : "NameInEnglish");
+
+        var lookupMainScreen = await _context.MainScreenCategories.AsQueryable()
+            .ToDynamicLookUpAsync("Id", lang == "ar" ? "Screen_main_title_ar" : "Screen_main_title_en");
+
+        var lookupCatScreen = await _context.MainScreens.AsQueryable()
+           .ToDynamicLookUpAsync("Id", lang == "ar" ? "Screen_cat_title_en" : "Screen_cat_title_en", "Screen_main_cat_image");
+
+
+
+
         if (model.Screen_main_cat_image is not null)
         {
             string path = GoRootPath.SettingImagesPath;
@@ -181,6 +201,7 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
             var fileObj = ManageFilesHelper.UploadFile(model.Screen_main_cat_image, path);
             //obj.Screen_main_image = fileObj.FileName;
             //obj.ImageExtension= fileObj.FileExtension;
+            obj.Screen_main_cat_image = path;
         }
 
         obj.Screen_cat_title_ar = model.Screen_cat_title_ar;
@@ -193,7 +214,9 @@ public class MainScreenCategoryService(IUnitOfWork unitOfWork, IStringLocalizer<
         {
             Check = true,
             Data = model,
-            Msg = _sharLocalizer[Localization.Updated]
+            Msg = _sharLocalizer[Localization.Updated],
+            LookUps = lookupActionScreen,
+            LookUpsScreen = lookupMainScreen.Concat(lookupCatScreen).ToList()
         };
     }
 

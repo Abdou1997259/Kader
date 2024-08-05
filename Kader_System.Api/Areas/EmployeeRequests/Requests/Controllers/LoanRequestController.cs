@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
@@ -18,13 +19,16 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Retrieve
 
         [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.ListOfLoanRequests)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> ListOfLoanRequestsAsync() =>
             Ok(await service.ListOfLoanRequest());
 
         [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetAllLoanRequests)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetAllLoanRequests([FromQuery] GetFilterationLoanRequest model) =>
             Ok(await service.GetAllLoanRequest( model, requestService.GetCurrentHost));
         [HttpGet(ApiRoutes.EmployeeRequests.LoanRequests.GetLoanRequestsById)]
+        [Permission(Permission.View, 19)]
         public async Task<IActionResult> GetLoanRequestById(int id)
         {
             var response = await service.GetById(id);
@@ -40,6 +44,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Insert
 
         [HttpPost(ApiRoutes.EmployeeRequests.LoanRequests.CreateLoanRequests)]
+        [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateLoanRequestAsync([FromForm] DTOLoanRequest model)
         {
             var response = await service.AddNewLoanRequest(model,hostEnvironment.WebRootPath,requestService.client_id,
@@ -57,6 +62,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.EmployeeRequests.LoanRequests.UpdateLoanRequests)]
+        [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateLoanRequestAsync([FromRoute] int id, [FromForm] DTOLoanRequest model)
         {
             var response = await service.UpdateLoanRequest(id, model,hostEnvironment.WebRootPath,requestService.client_id,
@@ -75,6 +81,8 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.EmployeeRequests.LoanRequests.DeleteLoanRequests)]
+
+        [Permission(Permission.Delete, 19)]
         public async Task<IActionResult> DeleteLoanRequests(int id)
         {
             var full_path = Path.Combine(hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest);
