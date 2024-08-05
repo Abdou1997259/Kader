@@ -7,41 +7,41 @@ namespace Kader_System.Services.Services.Setting
 {
     public class TitlePermessionService(KaderDbContext _context, IPermessionStructureService permession) : ITitlePermessionService
     {
-        public async Task<Response<DTOUserPermessionsForUser>> GetAllTitlePermession(int titleId, string lang)
-        {
-            var permStruct = (await permession.GetAllPermessionStructureForUser(lang)).DataList;
-            var titlePermessions = await _context.TitlePermissions
-                                                .Where(x => x.TitleId == titleId)
-                                                .FirstOrDefaultAsync();
+        //public async Task<Response<DTOUserPermessionsForUser>> GetAllTitlePermession(int titleId, string lang)
+        //{
+        //    var permStruct = (await permession.GetPermissionsBySubScreen(lang)).DataList;
+        //    var titlePermessions = await _context.TitlePermissions
+        //                                        .Where(x => x.TitleId == titleId)
+        //                                        .FirstOrDefaultAsync();
 
-            var titlePermessionsIds = titlePermessions.Permissions
-                                                   .Split(',')
-                                                   .Select(int.Parse)
-                                                   .ToArray();
+        //    var titlePermessionsIds = titlePermessions.Permissions
+        //                                           .Split(',')
+        //                                           .Select(int.Parse)
+        //                                           .ToArray();
 
-            var actionNames = await GetActionNamesAsync(lang);
+        //    var actionNames = await GetActionNamesAsync(lang);
 
-            foreach (var perm in permStruct)
-            {
-                var permissionsDict = new Dictionary<string, bool>();
+        //    foreach (var perm in permStruct)
+        //    {
+        //        var permissionsDict = new Dictionary<string, bool>();
 
-                foreach (var actionId in perm.actions)
-                {
-                    if (actionNames.TryGetValue(actionId, out var actionName))
-                    {
-                        permissionsDict[actionName] = titlePermessionsIds.Contains(actionId);
-                    }
-                }
-                perm.permissions = permissionsDict;
-            }
+        //        foreach (var actionId in perm.Values)
+        //        {
+        //            if (actionNames.TryGetValue(actionId.ac, out var actionName))
+        //            {
+        //                permissionsDict[actionName] = titlePermessionsIds.Contains(actionId);
+        //            }
+        //        }
+        //        perm.permissions = permissionsDict;
+        //    }
 
-            return new Response<DTOUserPermessionsForUser>()
-            {
-                Check = true,
-                DataList = permStruct,
-                Msg = ""
-            };
-        }
+        //    return new Response<DTOUserPermessionsForUser>()
+        //    {
+        //        Check = true,
+        //        DataList = permStruct,
+        //        Msg = ""
+        //    };
+        //}
         private async Task<Dictionary<int, string>> GetActionNamesAsync(string lang)
         {
             var actions = await _context.Actions

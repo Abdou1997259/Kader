@@ -228,7 +228,7 @@ namespace Kader_System.Services.Services.Setting
                 {
                    Id = id,
                     Name = Localization.Arabic == lang ? title.TitleNameAr : title.TitleNameEn,
-                    all_permissions = (await permessionService.GetAllTitlePermession(id, lang)).DataList,
+                    //all_permissions = (await permessionService.GetAllTitlePermession(id, lang)).DataList,
 
 
                 }

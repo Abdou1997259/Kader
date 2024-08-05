@@ -546,12 +546,12 @@ public static class SD
         }
         public class PermessionStruct
         {
-            public const string GetAllPermessionsForUser = "PermessionStruct/getAllPermessionsForUser";
-            public const string GetAllPermessionsForProfile = "PermessionStruct/getAllPermessionsForProfile";
+            public const string GetPermissionsBySubScreen = "PermessionStruct/GetPermissionsBySubScreen";
         }
         public class UserPermession
         {
             public const string GetAllUserPermessions = "userPermession/getAllUserPermessions/{userId}";
+            public const string GetUserPermissionsBySubScreen = "userPermession/GetUserPermissionsBySubScreen/{userId}";
         }
         public class TitlePermession
         {
