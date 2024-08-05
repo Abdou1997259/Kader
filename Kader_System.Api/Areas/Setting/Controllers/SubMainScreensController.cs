@@ -1,4 +1,5 @@
 ﻿using Kader_System.Services.IServices.HTTP;
+using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
@@ -7,10 +8,13 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 //[Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
-public class SubSubMainScreensController(ISubMainScreenService service, IRequestService headerService) : ControllerBase
+public class SubSubMainScreensController(ISubMainScreenService service, IRequestService headerService, IWebHostEnvironment hostEnvironment) : ControllerBase
 {
     private readonly IRequestService headerService = headerService;
     private readonly ISubMainScreenService service = service;
+    private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment;
+
+
     #region Retrieve
 
     [HttpGet(ApiRoutes.SubMainScreen.ListOfSubMainScreens)]
@@ -42,7 +46,7 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
     [HttpPost(ApiRoutes.SubMainScreen.CreateSubMainScreen)]
     public async Task<IActionResult> CreateSubMainScreenAsync([FromForm] StCreateSubMainScreenRequest model)
     {
-        var response = await service.CreateSubMainScreenAsync(model);
+        var response = await service.CreateSubMainScreenAsync(model, _hostEnvironment.WebRootPath, headerService.client_id, Modules.Setting);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

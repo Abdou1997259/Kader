@@ -1,14 +1,19 @@
-﻿using Kader_System.DataAccesss.DbContext;
+﻿using Kader_System.DataAccess.Repositories;
+using Kader_System.DataAccesss.DbContext;
 using Kader_System.Domain.Dtos.Response;
+using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
+using System.Net;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository) : ISubMainScreenService
+public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository,IFileServer fileServer) : ISubMainScreenService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
     private readonly ILoggingRepository _loggingRepository = loggingRepository;
+    private readonly IFileServer _fileServer = fileServer;
+
 
     #region Sub main screen
 
@@ -87,12 +92,15 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         };
     }
 
-    public async Task<Response<StCreateSubMainScreenRequest>> CreateSubMainScreenAsync(StCreateSubMainScreenRequest model)
+    public async Task<Response<StCreateSubMainScreenRequest>> CreateSubMainScreenAsync(StCreateSubMainScreenRequest model, string root, string clientName, string moduleName)
     {
+        var newRequest = _mapper.Map<StScreenSub>(model);
         bool exists = false;
         exists = await _unitOfWork.SubMainScreens.ExistAsync(x => x.Screen_sub_title_ar.Trim() == model.Screen_sub_title_ar
         || x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim());
-
+        newRequest.Screen_sub_image = (model.Screen_sub_image == null || model.Screen_sub_image.Length == 0) ? null :
+              await _fileServer.UploadFile(root, clientName, moduleName, model.Screen_sub_image);
+        await _unitOfWork.SubMainScreens.AddAsync(newRequest);
 
         if (exists)
         {
@@ -113,6 +121,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             ScreenCatId = model.Screen_main_id,
             Url = model.Url,
             //Name = model.Name,
+            ScreenCode = model.ScreenCode,
             ListOfActions = model.Actions.Select(ob => new StSubMainScreenAction
             {
                 ActionId = ob,
@@ -278,6 +287,11 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
     }
 
     public Task<Response<GetAllSubScreenInfo>> GetAllInfo(string lang)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Response<StCreateSubMainScreenRequest>> CreateSubMainScreenAsync(StCreateSubMainScreenRequest model)
     {
         throw new NotImplementedException();
     }

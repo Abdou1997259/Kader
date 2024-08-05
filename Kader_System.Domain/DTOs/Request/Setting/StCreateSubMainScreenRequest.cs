@@ -10,7 +10,11 @@ public class StCreateSubMainScreenRequest
 
     [Display(Name = Annotations.Name), Required(ErrorMessage = Annotations.FieldIsRequired)]
     public required string Name { get; set; }
+    public string ScreenCode { get; set; }
+
     public int Screen_main_id { get; set; }
-    public required string Url { get; set; } 
-    public List<int> Actions { get; set; } = [];
+    public required string Url { get; set; }
+    public IFormFile? Screen_sub_image { get; set; }
+
+    public List<int>? Actions { get; set; } = [];
 }
