@@ -20,9 +20,9 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         private readonly ITitlePermessionService _titlePermession = titlePermession;
 
         #region Retrieve
-        //[HttpGet(ApiRoutes.TitlePermession.GetAllTitlePermessions)]
-        //public async Task<IActionResult> GetAllTitlePermessions([FromRoute] int titleId) =>
-        //    Ok(await _titlePermession.GetAllTitlePermession(titleId, requestService.GetRequestHeaderLanguage));
+        [HttpGet(ApiRoutes.TitlePermession.GetAllTitlePermessions)]
+        public async Task<IActionResult> GetAllTitlePermessions([FromRoute] int titleId) =>
+            Ok(await _titlePermession.GetTitlePermissionsBySubScreen(titleId, requestService.GetRequestHeaderLanguage));
 
 
 
