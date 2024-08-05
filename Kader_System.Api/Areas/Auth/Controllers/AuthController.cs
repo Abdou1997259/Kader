@@ -91,7 +91,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPost(ApiRoutes.User.AddUser)]
-    [Permission(Permission.Add, 4)]
+    [Permission(Permission.Add, 5)]
 
     public async Task<IActionResult> CreatUser(CreateUserRequest model)
     {
@@ -103,7 +103,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPut(ApiRoutes.User.UpdateUser)]
-    [Permission(Permission.Edit, 4)]
+    [Permission(Permission.Edit, 5)]
     public async Task<IActionResult> UpdateUserAsync([FromRoute]
     string id, [FromForm] UpdateUserRequest  model)
 
@@ -152,7 +152,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpDelete(ApiRoutes.User.DeleteUser)]
-    [Permission(Permission.Delete, 4)]
+    [Permission(Permission.Delete, 5)]
     public async Task<IActionResult> DeleteUser(string id)
     {
         var response = await _service.DeleteUser(id );
@@ -163,7 +163,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPut(ApiRoutes.User.RestoreUser)]
-    [Permission(Permission.Edit, 4)]
+    [Permission(Permission.Edit, 5)]
     public async Task<IActionResult> RestoreUser(string id)
     {
         var response = await _service.RestoreUser(id);
@@ -174,7 +174,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpGet(ApiRoutes.User.GetAllUsers)]
-    [Permission(Permission.View, 4)]
+    [Permission(Permission.View, 5)]
     public async Task<IActionResult> GetAllUsers([FromQuery] FilterationUsersRequest filterationUsersRequest)
     {
         var response = await _service.GetAllUsers(filterationUsersRequest,requestService.GetCurrentHost,requestService.GetRequestHeaderLanguage);
@@ -185,7 +185,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpGet(ApiRoutes.User.GetUserById)]
-    [Permission(Permission.View, 4)]
+    [Permission(Permission.View, 5)]
     public async Task<IActionResult> GetUsersById(string id)
     {
         var response = await _service.GetUserById(id, requestService.GetRequestHeaderLanguage);
@@ -196,7 +196,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpGet(ApiRoutes.User.GetListOfUser)]
-    [Permission(Permission.View, 4)]
+    [Permission(Permission.View, 5)]
     public async Task<IActionResult> GetListOfUsers()
     {
         var response = await _service.ListListOfUsers( requestService.GetRequestHeaderLanguage);
@@ -220,6 +220,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
 
     }
     [HttpPost(ApiRoutes.User.AssginPermssionToUser)]
+    [Permission(Permission.Edit, 5)]
     public async Task<IActionResult> GetUserLookups([FromRoute] string id,[FromBody]  IEnumerable<Kader_System.Domain.DTOs.Request.Auth.Permissions> model, [FromQuery] bool all = false, 
         [FromQuery] int titleId = 1)
     {
@@ -232,6 +233,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
 
     }
     [HttpGet(ApiRoutes.User.GetMyProfile)]
+    [Permission(Permission.View, 5)]
     public async Task<IActionResult> GetMyProfile()
     {
         var response = await _service.GetMyProfile( requestService.GetRequestHeaderLanguage);
@@ -242,6 +244,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPut(ApiRoutes.User.UpdateTitle)]
+    [Permission(Permission.Edit, 5)]
     public async Task<IActionResult> UpdateTitle(int title)
     {
         var response = await _service.ChangeTitle(title);
@@ -252,6 +255,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPut(ApiRoutes.User.UpdateCompany)]
+    [Permission(Permission.Edit, 5)]
     public async Task<IActionResult> UpdateCompany(int company)
     {
         var response = await _service.ChangeCompany(company);

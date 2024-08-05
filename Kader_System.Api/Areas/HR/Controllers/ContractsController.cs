@@ -13,23 +13,23 @@ namespace Kader_System.Api.Areas.HR.Controllers
         private readonly IRequestService requestService = requestService;
 
         [HttpGet(ApiRoutes.Contract.ListOfContracts)]
-        [Permission(Permission.View ,16)]
+        [Permission(Permission.View ,17)]
         public async Task<IActionResult> GetListOfContracts() =>
             Ok(await contractService.ListOfContractsAsync(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.Contract.GetAllContracts)]
-        [Permission(Permission.View, 16)]
+        [Permission(Permission.View, 17)]
         public async Task<IActionResult> GetAllAsync([FromQuery] GetAlFilterationForContractRequest request) =>
             Ok(await contractService.GetAllContractAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetCurrentHost));
 
         [HttpGet(ApiRoutes.Contract.GetAllEndContracts)]
-        [Permission(Permission.View, 16)]
+        [Permission(Permission.View, 17)]
         public async Task<IActionResult> GetAllEndContracts([FromQuery] GetAlFilterationForContractRequest request) =>
             Ok(await contractService.GetAllEndContractsAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetCurrentHost));
 
 
         [HttpGet(ApiRoutes.Contract.GetContractById)]
-        [Permission(Permission.View, 16)]
+        [Permission(Permission.View, 17)]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var response = await contractService.GetContractByIdAsync(id,requestService.GetRequestHeaderLanguage);
@@ -53,7 +53,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Create
 
         [HttpPost(ApiRoutes.Contract.CreateContract)]
-        [Permission(Permission.Add, 16)]
+        [Permission(Permission.Add, 17)]
         public async Task<IActionResult> CreateAsync([FromForm] CreateContractRequest request)
         {
             if (ModelState.IsValid)
@@ -72,7 +72,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.Contract.UpdateContract)]
-        [Permission(Permission.Edit, 16)]
+        [Permission(Permission.Edit, 17)]
         public async Task<IActionResult> UpdateAsync([FromRoute] int id,
             [FromBody] CreateContractRequest request)
         {
@@ -102,7 +102,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.Contract.DeleteContract)]
-        [Permission(Permission.Delete, 16)]
+        [Permission(Permission.Delete, 17)]
         public async Task<IActionResult> DeleteAsync([FromRoute]int id)
         {
             var response= await contractService.DeleteContractAsync(id);

@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.HTTP;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Trans;
 using Kader_System.Services.Services.HR;
 using Microsoft.AspNetCore.Http;
@@ -15,13 +16,16 @@ namespace Kader_System.Api.Areas.Trans
     {
         private readonly IRequestService requestService = requestService;
         [HttpGet(ApiRoutes.TransDeduction.ListOfTransDeductions)]
+        [Permission(Helpers.Permission.View, 21)]
         public async Task<IActionResult> ListOfTransDeductions() =>
             Ok(await service.ListOfTransDeductionsAsync(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransDeduction.GetTransDeductions)]
+        [Permission(Helpers.Permission.View, 21)]
         public async Task<IActionResult> GetAllTransDeductions([FromQuery] GetAllFilterationForTransDeductionRequest request) =>
             Ok(await service.GetAllTransDeductionsAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetRequestHeaderLanguage));
         [HttpGet(ApiRoutes.TransDeduction.GetTransDeductionById)]
+        [Permission(Helpers.Permission.View, 21)]
         public async Task<IActionResult> GetTransDeductionById(int id)
         {
             var response =await service.GetTransDeductionByIdAsync(id,requestService.GetRequestHeaderLanguage);
@@ -43,6 +47,7 @@ namespace Kader_System.Api.Areas.Trans
         }
 
         [HttpGet(ApiRoutes.TransDeduction.GetLookUps)]
+        [Permission(Helpers.Permission.View, 21)]
         public async Task<IActionResult> GetLookUpsAsync()
         {
             var response =await service.GetDeductionsLookUpsData(requestService.GetRequestHeaderLanguage);
@@ -53,6 +58,8 @@ namespace Kader_System.Api.Areas.Trans
         }
 
         [HttpPost(ApiRoutes.TransDeduction.CreateTransDeduction)]
+
+        [Permission(Helpers.Permission.Add, 21)]
         public async Task<IActionResult> CreateTransDeduction([FromBody] CreateTransDeductionRequest request)
         {
             if (ModelState.IsValid)
@@ -71,6 +78,7 @@ namespace Kader_System.Api.Areas.Trans
         }
 
         [HttpPut(ApiRoutes.TransDeduction.UpdateTransDeduction)]
+        [Permission(Helpers.Permission.Edit, 21)]
         public async Task<IActionResult> UpdateTransDeduction([FromRoute] int id, [FromBody] CreateTransDeductionRequest request)
         {
             if (ModelState.IsValid)
@@ -89,6 +97,7 @@ namespace Kader_System.Api.Areas.Trans
         }
 
         [HttpPut(ApiRoutes.TransDeduction.RestoreTransDeduction)]
+        [Permission(Helpers.Permission.Edit, 21)]
         public async Task<IActionResult> RestoreTransDeduction([FromRoute] int id)
         {
 
@@ -101,6 +110,7 @@ namespace Kader_System.Api.Areas.Trans
         }
 
         [HttpDelete(ApiRoutes.TransDeduction.DeleteTransDeduction)]
+        [Permission(Helpers.Permission.Delete, 21)]
         public async Task<IActionResult> DeleteTransDeduction([FromRoute] int id)
         {
 

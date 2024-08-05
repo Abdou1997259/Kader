@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.HTTP;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.HR.Controllers
 {
@@ -7,6 +8,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiController]
     //[Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
+
     public class FingerPrintDeviceController(IFingerPrintDeviceService fingerPrintDeviceService,ICompanyService companyService, IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
@@ -14,15 +16,19 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Get Methods
 
         [HttpGet(ApiRoutes.FingerPrint.ListOfFingerPrintDevices)]
+        [Permission(Permission.View, 18)]
         public async Task<IActionResult> ListOfDevices()
             => Ok(await fingerPrintDeviceService.GetFingerPrintDevicesAsync(requestService.GetRequestHeaderLanguage));
         [HttpGet(ApiRoutes.FingerPrint.GetAllFingerPrintDevices)]
+        [Permission(Permission.View, 18)]
         public async Task<IActionResult> ListOfDevices([FromQuery]GetAllFingerPrintDevicesFilterrationRequest request)
             => Ok(await fingerPrintDeviceService.GetAllFingerPrintDevicesAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetCurrentHost));
         [HttpGet(ApiRoutes.FingerPrint.GetLookups)]
+        [Permission(Permission.View, 18)]
         public async Task<IActionResult> GetLookUps()
             => Ok(await fingerPrintDeviceService.GetFingerPrintsLookUpsData(requestService.GetRequestHeaderLanguage));
         [HttpGet(ApiRoutes.FingerPrint.GetFingerPrintDeviceById)]
+        [Permission(Permission.View, 18)]
         public async Task<IActionResult> GetFingerPrintDeviceById(int id)
         {
             var response = await fingerPrintDeviceService.GetFingerPrintDeviceByIdAsync(id);
@@ -43,6 +49,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Post Method
 
         [HttpPost(ApiRoutes.FingerPrint.CreateFingerPrintDevice)]
+        [Permission(Permission.Add, 18)]
         public async Task<IActionResult> CreateDevice([FromBody] CreateFingerPrintDeviceRequest request)
         {
             if (ModelState.IsValid)
@@ -66,6 +73,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Put Methods
 
         [HttpPut(ApiRoutes.FingerPrint.UpdateFingerPrintDevice)]
+        [Permission(Permission.Edit, 18)]
         public async Task<IActionResult> UpdateDeviceTask([FromRoute] int id,
             [FromBody] CreateFingerPrintDeviceRequest request)
         {
@@ -78,6 +86,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         }
 
         [HttpPut(ApiRoutes.FingerPrint.RestoreFingerPrint)]
+        [Permission(Permission.Edit, 18)]
         public async Task<IActionResult> RestoreFingerPrint([FromRoute] int id)
         {
             var response = await fingerPrintDeviceService.RestoreFingerPrintAsync(id);
@@ -93,6 +102,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Delete Methods
 
         [HttpDelete(ApiRoutes.FingerPrint.DeleteFingerPrintDevice)]
+        [Permission(Permission.Delete, 18)]
         public async Task<IActionResult> DeleteDevice([FromRoute]int id)
         {
             var response = await fingerPrintDeviceService.DeleteFingerPrintAsync(id);
