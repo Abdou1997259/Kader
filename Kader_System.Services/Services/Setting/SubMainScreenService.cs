@@ -118,7 +118,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         {
             Screen_sub_title_en = model.Screen_sub_title_en,
             Screen_sub_title_ar = model.Screen_sub_title_ar,
-            ScreenCatId = model.Screen_main_id,
+            ScreenCatId = model.ScreenCatId,
             Url = model.Url,
             //Name = model.Name,
             ScreenCode = model.ScreenCode,
@@ -291,10 +291,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         throw new NotImplementedException();
     }
 
-    public Task<Response<StCreateSubMainScreenRequest>> CreateSubMainScreenAsync(StCreateSubMainScreenRequest model)
-    {
-        throw new NotImplementedException();
-    }
+    
 
     #endregion
 }

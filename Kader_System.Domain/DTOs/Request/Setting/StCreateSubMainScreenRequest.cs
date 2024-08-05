@@ -12,7 +12,7 @@ public class StCreateSubMainScreenRequest
     public required string Name { get; set; }
     public string ScreenCode { get; set; }
 
-    public int Screen_main_id { get; set; }
+    public int ScreenCatId { get; set; }
     public required string Url { get; set; }
     public IFormFile? Screen_sub_image { get; set; }
 
