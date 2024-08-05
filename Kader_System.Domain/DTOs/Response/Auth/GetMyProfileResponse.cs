@@ -31,7 +31,7 @@ namespace Kader_System.Domain.DTOs.Response.Auth
         public string CurrentCompanyName { get; set; }  
         public int CurrentYear { get; set; }
         public int CurrentTitles { get; set; }    
-        public List<DTOUserPermessionsForUser> Mypermissions {  get; set; }
+        public dynamic Mypermissions {  get; set; }
         public List<GetAllStMainScreen> Screens { get;set; }
 
 
