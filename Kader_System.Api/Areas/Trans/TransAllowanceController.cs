@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.HTTP;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Trans;
 
 namespace Kader_System.Api.Areas.Trans
@@ -13,14 +14,17 @@ namespace Kader_System.Api.Areas.Trans
         private readonly IRequestService requestService = requestService;
         #region Get
         [HttpGet(ApiRoutes.TransAllowance.ListOfTransAllowances)]
+        [Permission(Helpers.Permission.View, 24)]
         public async Task<IActionResult> ListOfTransAllowance() =>
             Ok(await service.ListOfTransAllowancesAsync(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransAllowance.GetAllTransAllowances)]
+        [Permission(Helpers.Permission.View, 24)]
         public async Task<IActionResult> GetAllTransAllowances([FromQuery] GetAllFilterationAllowanceRequest model) =>
             Ok(await service.GetAllTransAllowancesAsync(requestService.GetRequestHeaderLanguage,model, requestService.GetCurrentHost));
 
         [HttpGet(ApiRoutes.TransAllowance.GetTransAllowanceById)]
+        [Permission(Helpers.Permission.View, 24)]
         public async Task<IActionResult> GetTransAllowanceById([FromRoute]int id)
         {
             var response = await service.GetTransAllowanceByIdAsync(id,requestService.GetRequestHeaderLanguage);
@@ -37,6 +41,7 @@ namespace Kader_System.Api.Areas.Trans
         }
 
         [HttpGet(ApiRoutes.TransAllowance.GetLookupsTransAllowances)]
+        [Permission(Helpers.Permission.View, 24)]
         public async Task<IActionResult> GetLookupsTransAllowances()
         {
             var response = await service.GetAllowancesLookUpsData(requestService.GetRequestHeaderLanguage);
@@ -51,6 +56,7 @@ namespace Kader_System.Api.Areas.Trans
         #region Post
 
         [HttpPost(ApiRoutes.TransAllowance.CreateTransAllowance)]
+        [Permission(Helpers.Permission.Add, 24)]
         public async Task<IActionResult> CreateTransAllowance([FromBody] CreateTransAllowanceRequest request)
         {
             if (ModelState.IsValid)
@@ -72,7 +78,9 @@ namespace Kader_System.Api.Areas.Trans
         #endregion
 
         #region Put
+
         [HttpPut(ApiRoutes.TransAllowance.UpdateTransAllowance)]
+        [Permission(Helpers.Permission.Edit, 24)]
         public async Task<IActionResult> UpdateTransAllowance([FromRoute]int id,[FromBody]CreateTransAllowanceRequest request)
         {
             if (ModelState.IsValid)
@@ -91,6 +99,7 @@ namespace Kader_System.Api.Areas.Trans
         }
 
         [HttpPut(ApiRoutes.TransAllowance.RestoreTransAllowance)]
+        [Permission(Helpers.Permission.Edit, 24)]
         public async Task<IActionResult> RestoreTransAllowance([FromRoute] int id)
         {
        
@@ -106,6 +115,7 @@ namespace Kader_System.Api.Areas.Trans
         #region Delete
 
         [HttpDelete(ApiRoutes.TransAllowance.DeleteTransAllowance)]
+        [Permission(Helpers.Permission.Delete, 24)]
         public async Task<IActionResult> DeleteTransAllowance(int id)
         {
             var response = await service.DeleteTransAllowanceAsync(id);

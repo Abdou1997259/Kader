@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.HTTP;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Trans;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,18 +17,23 @@ namespace Kader_System.Api.Areas.Trans
 
         private readonly IRequestService requestService = requestService;
         [HttpGet(ApiRoutes.TransVacation.ListOfTransVacations)]
+
+        [Permission(Helpers.Permission.View, 25)]
         public async Task<IActionResult> ListOfTransVacations() =>
             Ok(await service.ListOfTransVacationsAsync(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransVacation.GetTransVacations)]
+        [Permission(Helpers.Permission.View, 25)]
         public async Task<IActionResult> GetAllTransVacations([FromQuery] GetAllFilterationForTransVacationRequest request) =>
             Ok(await service.GetAllTransVacationsAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransVacation.GetTransVacationsLookUps)]
+        [Permission(Helpers.Permission.View, 25)]
         public async Task<IActionResult> GetTransVacationLookUpsData() =>
             Ok(await service.GetTransVacationLookUpsData(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.TransVacation.GetTransVacationById)]
+        [Permission(Helpers.Permission.View, 25)]
         public async Task<IActionResult> GetTransVacationById([FromRoute] int id)
         {
             var response = await service.GetTransVacationByIdAsync(id, requestService.GetRequestHeaderLanguage);
@@ -48,6 +54,7 @@ namespace Kader_System.Api.Areas.Trans
         #region Create
 
         [HttpPost(ApiRoutes.TransVacation.CreateTransVacation)]
+        [Permission(Helpers.Permission.Add, 25)]
         public async Task<IActionResult> CreateTransVacation([FromBody] CreateTransVacationRequest request)
         {
             if (ModelState.IsValid)
@@ -68,6 +75,7 @@ namespace Kader_System.Api.Areas.Trans
 
         #region Update
         [HttpPut(ApiRoutes.TransVacation.UpdateTransVacation)]
+        [Permission(Helpers.Permission.Edit, 25)]
         public async Task<IActionResult> UpdateTransVacation([FromRoute] int id, [FromBody] CreateTransVacationRequest request)
         {
             if (ModelState.IsValid)
@@ -86,6 +94,7 @@ namespace Kader_System.Api.Areas.Trans
         }
 
         [HttpPut(ApiRoutes.TransVacation.RestoreTransVacation)]
+        [Permission(Helpers.Permission.Edit, 25)]
         public async Task<IActionResult> RestoreTransVacation([FromRoute] int id)
         {
 
@@ -101,6 +110,7 @@ namespace Kader_System.Api.Areas.Trans
         #region Delete
 
         [HttpDelete(ApiRoutes.TransVacation.DeleteTransVacation)]
+        [Permission(Helpers.Permission.Delete, 25)]
         public async Task<IActionResult> DeleteTransVacation(int id)
         {
             var response = await service.DeleteTransVacationAsync(id);

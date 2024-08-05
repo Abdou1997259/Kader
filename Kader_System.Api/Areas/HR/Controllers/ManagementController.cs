@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.HTTP;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.HR.Controllers
 {
@@ -13,14 +14,17 @@ namespace Kader_System.Api.Areas.HR.Controllers
         private readonly IStructureMangement _structure = structure;
         #region Retrieve
         [HttpGet(ApiRoutes.Management.ListOfManagements)]
+        [Permission(Permission.View, 11)]
         public async Task<IActionResult> List()
             => Ok(await service.ListOfManagementsAsync(requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.Management.GetAllManagements)]
+        [Permission(Permission.View, 11)]
         public async Task<IActionResult> GetAll([FromQuery] HrGetAllFiltrationsFoManagementsRequest model)
             => Ok(await service.GetAllManagementsAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
         [HttpGet(ApiRoutes.Management.GetManagementById)]
+        [Permission(Permission.View, 11)]
         public async Task<IActionResult> GetById(int id)
         {
             var response = await service.GetManagementByIdAsync(id, requestService.GetRequestHeaderLanguage);
@@ -32,6 +36,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         }
 
         [HttpGet(ApiRoutes.Management.GetStructure)]
+        [Permission(Permission.View, 11)]
         public async Task<IActionResult> GetStructure(int companyid)
         {
             var response = await _structure.GetStructureMangementAsync(companyid, requestService.GetRequestHeaderLanguage);
@@ -49,6 +54,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Create
 
         [HttpPost(ApiRoutes.Management.CreateManagement)]
+        [Permission(Permission.Add, 11)]
         public async Task<IActionResult> CreateManagement(CreateManagementRequest request)
         {
             if (ModelState.IsValid)
@@ -68,6 +74,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
         #region Update
         [HttpPut(ApiRoutes.Management.UpdateManagement)]
+        [Permission(Permission.Edit, 11)]
         public async Task<IActionResult> UpdateManagement(int id, CreateManagementRequest request)
         {
             if (ModelState.IsValid)
@@ -88,6 +95,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
         #region Delete
         [HttpDelete(ApiRoutes.Management.DeleteManagement)]
+        [Permission(Permission.Delete, 11)]
         public async Task<IActionResult> DeleteManagement(int id)
         {
             var response = await service.DeleteManagementAsync(id);

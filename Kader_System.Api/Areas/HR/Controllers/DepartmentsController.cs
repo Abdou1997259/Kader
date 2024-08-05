@@ -17,16 +17,19 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
 
         [HttpGet(ApiRoutes.Department.ListOfDepartments)]
+        [Permission(Permission.View, 11)]
         public async Task<IActionResult> ListOfDepartments()
             => Ok(await service.ListOfDepartmentsAsync(requestService.GetRequestHeaderLanguage));
 
 
         [HttpGet(ApiRoutes.Department.GetAllDepartments)]
+        [Permission(Permission.View, 11)]
 
         public async Task<IActionResult> GetAll([FromQuery]GetAllFiltrationsForDepartmentsRequest filter)
             => Ok(await service.GetAllDepartmentsAsync(requestService.GetRequestHeaderLanguage, filter, requestService.GetCurrentHost));
 
         [HttpGet(ApiRoutes.Department.GetDepartmentById)]
+        [Permission(Permission.View, 11)]
         public async Task<IActionResult> GetById(int id)
         {
             var response = await service.GetDepartmentByIdAsync(id, requestService.GetRequestHeaderLanguage);
@@ -42,6 +45,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Create
 
         [HttpPost(ApiRoutes.Department.CreateDepartment)]
+        [Permission(Permission.Add, 11)]
         public async Task<IActionResult> Create(CreateDepartmentRequest request)
         {
             if (ModelState.IsValid)
@@ -61,6 +65,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.Department.UpdateDepartment)]
+        [Permission(Permission.Edit, 11)]
         public async Task<IActionResult> UpdateTask(int id,CreateDepartmentRequest request)
         {
             if (ModelState.IsValid)
@@ -73,6 +78,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
             return BadRequest(request);
         }
         [HttpPut(ApiRoutes.Department.AddEmp)]
+        [Permission(Permission.Add, 11)]
         public async Task<IActionResult> AddEmployee( int id,AddEmpolyeeToDepartmentRequest model)
         {
             if (ModelState.IsValid)
@@ -92,6 +98,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.Department.DeleteDepartment)]
+        [Permission(Permission.Delete, 11)]
         public async Task<IActionResult> Delete(int id)
         {
             var result=await service.DeleteDepartmentAsync(id);

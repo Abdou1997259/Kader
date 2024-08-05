@@ -17,18 +17,18 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     #region Retreive
 
     [HttpGet(ApiRoutes.Company.ListOfCompanies)]
-    [Permission(Permission.View, 7)]
+    [Permission(Permission.View, 8)]
     public async Task<IActionResult> ListOfCompaniesAsync() =>
         Ok(await service.ListOfCompaniesAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.Company.GetAllCompanies)]
-    [Permission(Permission.View, 7)]
+    [Permission(Permission.View, 8)]
 
     public async Task<IActionResult> GetAllCompaniesAsync([FromQuery] HrGetAllFiltrationsForCompaniesRequest model) =>
         Ok(await service.GetAllCompaniesAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
     [HttpGet(ApiRoutes.Company.GetCompanyById)]
-    [Permission(Permission.View, 7)]
+    [Permission(Permission.View, 8)]
     public async Task<IActionResult> GetCompanyByIdAsync(int id)
     {
         var response = await service.GetCompanyByIdAsync(id,requestService.GetRequestHeaderLanguage);
@@ -45,7 +45,7 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     #region Insert
 
     [HttpPost(ApiRoutes.Company.CreateCompany)]
-    [Permission(Permission.Add, 7)]
+    [Permission(Permission.Add, 8)]
     public async Task<IActionResult> CreateCompanyAsync([FromForm] HrCreateCompanyRequest model)
     {
         var response = await service.CreateCompanyAsync(model);
@@ -61,7 +61,7 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     #region Update
 
     [HttpPut(ApiRoutes.Company.UpdateCompany)]
-    [Permission(Permission.Edit, 7)]
+    [Permission(Permission.Edit, 8)]
     public async Task<IActionResult> UpdateCompanyAsync([FromRoute] int id, [FromForm] HrUpdateCompanyRequest model)
     {
         
@@ -78,7 +78,7 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     #region Restore
 
     [HttpPut(ApiRoutes.Company.RestoreCompany)]
-    [Permission(Permission.Edit ,7)]
+    [Permission(Permission.Edit ,8)]
     public async Task<IActionResult> RestoreCompanyAsync([FromRoute] int id)
     {
         var response = await service.RestoreCompanyAsync(id);
@@ -93,7 +93,7 @@ public class CompaniesController(ICompanyService service, IRequestService reques
 
     #region Delete
     [HttpDelete(ApiRoutes.Company.DeleteCompany)]
-    [Permission(Permission.Delete, 7)]
+    [Permission(Permission.Delete, 8)]
     public async Task<IActionResult> DeleteCompanyAsync(int id)
     {
         var response = await service.DeleteCompanyAsync(id);

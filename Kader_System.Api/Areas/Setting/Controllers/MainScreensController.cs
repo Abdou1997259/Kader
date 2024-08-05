@@ -1,3 +1,4 @@
+using Kader_System.Api.Helpers;
 using Kader_System.DataAccesss.DbContext;
 using Kader_System.Domain.DTOs.Request.Setting;
 using Kader_System.Domain.DTOs.Response.Setting;
@@ -24,16 +25,19 @@ public class MainScreensController(IMainScreenService service, IRequestService r
 
     #region Retrieve
     [HttpGet(ApiRoutes.MainScreen.ListOfMainScreens)]
+    [Permission(Helpers.Permission.View, 1)]
     public async Task<IActionResult> ListOfMainScreensAsync() =>
         Ok(await service.ListOfMainScreensAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.MainScreen.GetAllMainScreens)]
+    [Permission(Helpers.Permission.View, 1)]
     public async Task<IActionResult> GetAllMainScreensAsync([FromQuery] StGetAllFiltrationsForMainScreenRequest model) =>
         Ok(await service.GetAllMainScreensAsync(requestService.GetRequestHeaderLanguage, model));
 
 
 
     [HttpGet(ApiRoutes.MainScreen.GetMainScreensWithRelatedData)]
+    [Permission(Helpers.Permission.View, 1)]
     public async Task<IActionResult> GetMainScreensWithRelatedData([FromQuery] StGetAllFiltrationsForMainScreenRequest model)
     {
 
@@ -43,6 +47,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
 
 
     [HttpGet(ApiRoutes.MainScreen.GetMainScreenById)]
+    [Permission(Helpers.Permission.View, 1)]
     public async Task<IActionResult> GetMainScreenByIdAsync([FromRoute] int id)
     {
         var response = await service.GetMainScreenByIdAsync(id);
@@ -59,6 +64,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     #region Insert
 
     [HttpPost(ApiRoutes.MainScreen.CreateMainScreen)]
+    [Permission(Helpers.Permission.Add, 1)]
     public async Task<IActionResult> CreateMainScreenAsync([FromBody] StCreateMainScreenRequest model)
     {
         var response = await service.CreateMainScreenAsync(model);
@@ -74,6 +80,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     #region Update
 
     [HttpPut(ApiRoutes.MainScreen.UpdateMainScreen)]
+    [Permission(Helpers.Permission.Edit, 1)]
     public async Task<IActionResult> UpdateMainScreenAsync([FromRoute] int id, [FromBody] StUpdateMainScreenRequest model)
     {
         var response = await service.UpdateMainScreenAsync(id, model);
@@ -99,6 +106,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     #region Delete
 
     [HttpDelete(ApiRoutes.MainScreen.DeleteMainScreen)]
+    [Permission(Helpers.Permission.Delete, 1)]
     public async Task<IActionResult> DeleteMainScreenAsync([FromRoute] int id)
     {
         var response = await service.DeleteMainScreenAsync(id);

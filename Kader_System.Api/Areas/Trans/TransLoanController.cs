@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.DTOs.Request.HR.Loan;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.DTOs.Request.HR.Loan;
 using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Trans;
 
@@ -19,15 +20,18 @@ namespace Kader_System.Api.Areas.Trans
 
 
         [HttpGet(ApiRoutes.Loan.ListOfLoans)]
+        [Permission(Helpers.Permission.View, 23)]
         public async Task<IActionResult> ListOfLoans()
             => Ok(await service.ListLoansAsync(requestService.GetRequestHeaderLanguage));
 
 
         [HttpGet(ApiRoutes.Loan.GetAllloans)]
+        [Permission(Helpers.Permission.View, 23)]
         public async Task<IActionResult> GetAll([FromQuery] GetAllFilltrationForLoanRequest filter)
             => Ok(await service.GetAllLoanAsync(requestService.GetRequestHeaderLanguage, filter, requestService.GetRequestHeaderLanguage));
 
         [HttpGet(ApiRoutes.Loan.GetloanById)]
+        [Permission(Helpers.Permission.View, 23)]
         public async Task<IActionResult> GetById(int id)
         {
             var response = await service.GetLoanByIdAsync(id, requestService.GetRequestHeaderLanguage);
@@ -38,6 +42,7 @@ namespace Kader_System.Api.Areas.Trans
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
         [HttpGet(ApiRoutes.Loan.GetLookups)]
+        [Permission(Helpers.Permission.View, 23)]
         public async Task<IActionResult> GetLookUpsAsync()
         {
             var response = await service.GetLookUpsData(requestService.GetRequestHeaderLanguage);
@@ -52,6 +57,7 @@ namespace Kader_System.Api.Areas.Trans
         #region Create
 
         [HttpPost(ApiRoutes.Loan.Createloan)]
+        [Permission(Helpers.Permission.Add, 23)]
         public async Task<IActionResult> Create(CreateLoanRequest request)
         {
             if (ModelState.IsValid)
@@ -71,6 +77,7 @@ namespace Kader_System.Api.Areas.Trans
         #region Update
 
         [HttpPut(ApiRoutes.Loan.Updateloan)]
+        [Permission(Helpers.Permission.Edit, 23)]
         public async Task<IActionResult> UpdateTask(int id, UpdateLoanRequest request)
         {
             if (ModelState.IsValid)
@@ -97,6 +104,7 @@ namespace Kader_System.Api.Areas.Trans
         }
 
         [HttpPut(ApiRoutes.Loan.UpdatePaymentLoan)]
+        [Permission(Helpers.Permission.Edit, 23)]
         public async Task<IActionResult> PayTask([FromBody] PayForLoanDetailsRequest request, int id)
         {
             var result = await service.PayForLoanDetails(request, id);
@@ -110,6 +118,7 @@ namespace Kader_System.Api.Areas.Trans
             return BadRequest(result);
         }
         [HttpPut(ApiRoutes.Loan.UpdateDelayLoan)]
+        [Permission(Helpers.Permission.Edit, 23)]
         public async Task<IActionResult> DelayTask([FromBody] DelayForTransLoanRequest request, int id)
         {
             var result = await service.DelayForLoanDetails(request, id);
@@ -123,6 +132,7 @@ namespace Kader_System.Api.Areas.Trans
             return BadRequest(result);
         }
         [HttpPut(ApiRoutes.Loan.ReInstallment)]
+        [Permission(Helpers.Permission.Edit, 23)]
         public async Task<IActionResult> ReInstallment(ReInstallmentRequest request, int id)
         {
             var result = await service.ReInstallmentAsync(request, id);
@@ -141,6 +151,7 @@ namespace Kader_System.Api.Areas.Trans
         #region Delete
 
         [HttpDelete(ApiRoutes.Loan.Deleteloan)]
+        [Permission(Helpers.Permission.Delete, 23)]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await service.DeleteLoanAsync(id);
