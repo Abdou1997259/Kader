@@ -10,16 +10,16 @@ namespace Kader_System.Domain.DTOs.Request.Setting
     {
         public int Sub_Id{ get; set; }
         public int Screen_CatId { get; set; }
-        public string Cat_Title { get; set; }
-        public int Screen_MainId { get; set; }
-       public string Main_title { get; set; }
+        public string cat_Title { get; set; }
+        public int main_id { get; set; }
+       public string main_title { get; set; }
 
-        public required string Screen_sub_title { get; set; }
-        public string? Url { get; set; }
-        public string ScreenCode { get; set; }
-        public string? Screen_sub_image { get; set; }
-        public string ? Actions { get; set; }   
-        public string ? Permissions { get; set; }   
+        public required string sub_title { get; set; }
+        public string? url { get; set; }
+        public string screen_code { get; set; }
+        public string? sub_image { get; set; }
+        public string ? actions { get; set; }   
+        public string ? permissions { get; set; }   
  
 
 
