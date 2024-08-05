@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.Interfaces.HR;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.Interfaces.HR;
 
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
@@ -11,10 +12,12 @@ public class IncreaseSalaryRequestController(ISalaryIncreaseTypeRepository servi
 {
     #region Retreieve
     [HttpGet(ApiRoutes.SalaryIncreaseType.GetAllSalaryIncreaseTypes)]
+    [Permission(Permission.View, 28)]
     public async Task<IActionResult> GetAllSalaryIncreaseTypes() =>
         Ok(await service.GetAllSalaryIncreaseTypes());
 
     [HttpGet(ApiRoutes.SalaryIncreaseType.GetSalaryIncreaseTypesById)]
+    [Permission(Permission.View, 28)]
     public async Task<IActionResult> GetSalaryIncreaseTypesById(int id)
     {
         var response = await service.GetSalaryIncreaseTypesById(id);
@@ -25,6 +28,7 @@ public class IncreaseSalaryRequestController(ISalaryIncreaseTypeRepository servi
 
     #region Insert
     [HttpPost(ApiRoutes.SalaryIncreaseType.CreateSalaryIncreaseTypes)]
+    [Permission(Permission.Add, 28)]
     public async Task<IActionResult> CreateSalaryIncreaseTypes(HrCreateSalaryIncreaseTypesRequest model)
     {
 

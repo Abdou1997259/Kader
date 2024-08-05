@@ -1,6 +1,9 @@
 ﻿
 
+using Kader_System.DataAccess.Repositories;
 using Kader_System.Domain.DTOs.Request.Auth;
+using Kader_System.Domain.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Setting
 {
@@ -134,7 +137,7 @@ namespace Kader_System.Services.Services.Setting
             };
         }
 
-        public async Task<Response<UpdateTitleRequest>> UpdateTitleAsync(int id, UpdateTitleRequest model)
+        public async Task<Response<UpdateTitleRequest>> UpdateTitleAsync(int id, UpdateTitleRequest model,string lang)
         {
             var title = await unitOfWork.Titles.GetByIdAsync(id);
 
@@ -149,6 +152,7 @@ namespace Kader_System.Services.Services.Setting
                     Msg = resultMsg
                 };
             }
+
 
 
 
@@ -167,7 +171,17 @@ namespace Kader_System.Services.Services.Setting
             //}
 
 
-            await AssginTitlePermssion(id, model.Permssions);
+           var result= await AssginTitlePermssion(id, model.Permssions,lang);
+            if (result.Check == false) {
+                return new()
+                {
+                    Msg = result.Msg,
+                    Check = false,
+                    Data = null
+                };
+
+
+            }
             unitOfWork.Titles.Update(title);
             //var listOfTitlePermssion = pers.Select(x => new TitlePermission
             //{
@@ -214,7 +228,7 @@ namespace Kader_System.Services.Services.Setting
                 {
                    Id = id,
                     Name = Localization.Arabic == lang ? title.TitleNameAr : title.TitleNameEn,
-                    all_permissions = (await permessionService.GetAllTitlePermession(id, lang)).DataList,
+                    //all_permissions = (await permessionService.GetAllTitlePermession(id, lang)).DataList,
 
 
                 }
@@ -233,17 +247,56 @@ namespace Kader_System.Services.Services.Setting
             throw new NotImplementedException();
         }
 
-        private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model)
+        private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model,string lang)
         {
+            var subMainScreenActions = await unitOfWork.SubMainScreenActions.GetAllAsync();
+            foreach (var sub in model)
+            {
+                // Get ActionIds for the current SubId
+                var actionIdsForSubId = subMainScreenActions
+                    .Where(x => x.ScreenSubId == sub.SubId)
+                    .Select(x => x.ActionId)
+                    .Distinct()
+                    .ToList();
 
-            List<TitlePermission> AddedPer = null;
+                // Get TitlePermssion for the current SubId
+                var titlePermissions = sub.TitlePermssion;
+
+                // Check if there is at least one ActionId that is not in the TitlePermssion
+                var missingActionsExist = titlePermissions.Except(actionIdsForSubId);
+
+                // Process the result
+                if (missingActionsExist.Any())
+                {
+                    var permssions = await unitOfWork.ActionsRepo.GetSpecificSelectAsync(x => missingActionsExist.Any(), x => x);
+                    var subscrren = await unitOfWork.SubMainScreens.GetByIdAsync(sub.SubId);
+                    string name = Localization.Arabic == lang ? subscrren.Screen_sub_title_ar : subscrren.Screen_sub_title_en;
+                    string nameofpermissions = "";
+                    foreach (var per in permssions)
+                    {
+                        nameofpermissions += Localization.Arabic == lang ? per.Name + " " : per.NameInEnglish + " ";
+                    }
+                    var msg = $"{name} {sharLocalizer[Localization.ScreenInAction]} {nameofpermissions}";
+                    // Handle the case where at least one ActionId is missing
+                    // Example: Log or perform some action
+                    return new Response<string>()
+                    {
+                        Check = false,
+                        Msg = msg,
+                        Data = null
+
+                    };
+
+                }
+            }
+            List<TitlePermission> AddedPer = new List<TitlePermission>();
             foreach (var AssginedPermssion in model)
             {
                 var titlePermission = await unitOfWork.TitlePermissionRepository
                     .GetSpecificSelectAsync(x => x.TitleId == id && x.SubScreenId == AssginedPermssion.SubId, x => x);
                 IEnumerable<TitlePermission> listUpdatedper = null;
 
-                if (titlePermission != null)
+                if (titlePermission.Count()!=0)
                 {
 
                     listUpdatedper = titlePermission.Select(x => new TitlePermission
@@ -263,6 +316,7 @@ namespace Kader_System.Services.Services.Setting
                     {
                         TitleId = id,
                         SubScreenId = AssginedPermssion.SubId,
+                       
                         Permissions = string.Join(',', AssginedPermssion.TitlePermssion)
                     });
 

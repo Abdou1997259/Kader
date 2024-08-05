@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.Trans;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.Trans;
 
 namespace Kader_System.Api.Areas.Trans
 {
@@ -11,11 +12,13 @@ namespace Kader_System.Api.Areas.Trans
     {
 
         [HttpPost(ApiRoutes.TransSalaryCalculatorEndpoint.Calculate)]
+        [Permission(Helpers.Permission.Edit, 26)]
         public async Task<IActionResult> Calculate([FromBody] CalcluateSalaryModelRequest model)
         {
             return Ok(await service.CalculateSalaryDetailedTrans(model));
         }
         [HttpPost(ApiRoutes.TransSalaryCalculatorEndpoint.DetailedCalculations)]
+        [Permission(Helpers.Permission.View, 26)]
         public async Task<IActionResult> DetailedCalculation([FromBody] CalcluateEmpolyeeFilters model)
         {
             return Ok(await service.GetDetailsOfCalculation(model, GetCurrentRequestLanguage()));
@@ -23,6 +26,7 @@ namespace Kader_System.Api.Areas.Trans
         [HttpGet(ApiRoutes.TransSalaryCalculatorEndpoint.GetLookUps)]
         [ProducesResponseType(typeof(Response<GetLookupsCalculatedSalaries>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [Permission(Helpers.Permission.View, 26)]
         public async Task<IActionResult> GetLookUps()
         {
             var result = await service.GetLookups(GetCurrentRequestLanguage());
@@ -31,6 +35,7 @@ namespace Kader_System.Api.Areas.Trans
             return Ok(result);
         }
         [HttpGet(ApiRoutes.TransSalaryCalculatorEndpoint.GetTransCalculator)]
+        [Permission(Helpers.Permission.View, 26)]
         public async Task<IActionResult> GetAllAsync([FromQuery] GetSalaryCalculatorFilterRequest model)
         {
             var result = await service.GetAllCalculators(model, GetCurrentHost(), GetCurrentRequestLanguage());
@@ -40,6 +45,7 @@ namespace Kader_System.Api.Areas.Trans
             return Ok(result);
         }
         [HttpDelete(ApiRoutes.TransSalaryCalculatorEndpoint.DeleteCalculator)]
+        [Permission(Helpers.Permission.Delete, 26)]
         public async Task<IActionResult> DeleteCalcluator(int Id)
         {
             var result = await service.DeleteCalculator(Id);
@@ -49,6 +55,7 @@ namespace Kader_System.Api.Areas.Trans
             return Ok(result);
         }
         [HttpGet(ApiRoutes.TransSalaryCalculatorEndpoint.GetbyId)]
+        [Permission(Helpers.Permission.View, 26)]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await service.GetById(id, GetCurrentRequestLanguage());

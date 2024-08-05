@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.HTTP;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
@@ -13,15 +14,18 @@ public class QualificationsController(IQualificationService service, IRequestSer
 
     #region Retrieve
     [HttpGet(ApiRoutes.Qualification.ListOfQualifications)]
+    [Permission(Permission.View, 9)]
     public async Task<IActionResult> ListOfQualificationsAsync() =>
         Ok(await service.ListOfQualificationsAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.Qualification.GetAllQualifications)]
+    [Permission(Permission.View, 9)]
     public async Task<IActionResult> GetAllDeductionsAsync([FromQuery] HrGetAllFiltrationsForQualificationsRequest model) =>
         Ok(await service.GetAllQualificationsAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
 
     [HttpGet(ApiRoutes.Qualification.GetQualificationById)]
+    [Permission(Permission.View, 9)]
     public async Task<IActionResult> GetDeductionByIdAsync(int id)
     {
         var response = await service.GetQualificationByIdAsync(id);
@@ -36,6 +40,7 @@ public class QualificationsController(IQualificationService service, IRequestSer
     #region Insert
 
     [HttpPost(ApiRoutes.Qualification.CreateQualification)]
+    [Permission(Permission.Add, 9)]
     public async Task<IActionResult> CreateDeductionAsync(HrCreateQualificationRequest model)
     {
         var response = await service.CreateQualificationAsync(model);
@@ -49,7 +54,7 @@ public class QualificationsController(IQualificationService service, IRequestSer
     #endregion
 
     #region Update
-
+    [Permission(Permission.Edit, 9)]
     [HttpPut(ApiRoutes.Qualification.UpdateQualification)]
     public async Task<IActionResult> UpdateQualificationAsync([FromRoute] int id, HrUpdateQualificationRequest model)
     {
@@ -61,6 +66,7 @@ public class QualificationsController(IQualificationService service, IRequestSer
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPut(ApiRoutes.Qualification.RestoreQualification)]
+    [Permission(Permission.Edit, 9)]
     public async Task<IActionResult> RestoreQualificationAsync([FromRoute] int id)
     {
         var response = await service.RestoreQualificationAsync(id );
@@ -76,6 +82,7 @@ public class QualificationsController(IQualificationService service, IRequestSer
 
     #region Delete
     [HttpDelete(ApiRoutes.Qualification.DeleteQualification)]
+    [Permission(Permission.Delete, 9)]
     public async Task<IActionResult> DeleteDeductionAsync(int id)
     {
         var response = await service.DeleteQualificationAsync(id);

@@ -15,12 +15,12 @@ public class BenefitsController(IBenefitService service, IRequestService request
     #region Retrieve
 
     [HttpGet(ApiRoutes.Benefit.ListOfBenefits)]
-    [Permission(Permission.View, 15)]
+    [Permission(Permission.View, 16)]
     public async Task<IActionResult> ListOfBenefitsAsync() =>
         Ok(await service.ListOfBenefitsAsync(requestService.GetRequestHeaderLanguage));
 
     [HttpGet(ApiRoutes.Benefit.GetAllBenefits)]
-    [Permission(Permission.View, 15)]
+    [Permission(Permission.View, 16)]
     public async Task<IActionResult> GetAllBenefitsAsync([FromQuery] HrGetAllFiltrationsForBenefitsRequest model) =>
         Ok(await service.GetAllBenefitsAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
     [HttpGet(ApiRoutes.Benefit.GetBenefitById)]
@@ -39,7 +39,7 @@ public class BenefitsController(IBenefitService service, IRequestService request
     #region Insert
 
     [HttpPost(ApiRoutes.Benefit.CreateBenefit)]
-    [Permission(Permission.Add, 15)]
+    [Permission(Permission.Add, 16)]
     public async Task<IActionResult> CreateBenefitAsync(HrCreateBenefitRequest model)
     {
         var response = await service.CreateBenefitAsync(model);
@@ -55,7 +55,7 @@ public class BenefitsController(IBenefitService service, IRequestService request
     #region Update
 
     [HttpPut(ApiRoutes.Benefit.UpdateBenefit)]
-    [Permission(Permission.Edit, 15)]
+    [Permission(Permission.Edit, 16)]
     public async Task<IActionResult> UpdateBenefitAsync([FromRoute] int id, HrUpdateBenefitRequest model)
     {
         var response = await service.UpdateBenefitAsync(id, model);
@@ -67,7 +67,7 @@ public class BenefitsController(IBenefitService service, IRequestService request
     }
 
     [HttpPut(ApiRoutes.Benefit.RestoreBenefit)]
-    [Permission(Permission.Edit, 15)]
+    [Permission(Permission.Edit, 16)]
     public async Task<IActionResult> RestoreBenefit([FromRoute] int id)
     {
         var response = await service.RestoreBenefitAsync(id);
@@ -83,7 +83,7 @@ public class BenefitsController(IBenefitService service, IRequestService request
     #region Delete
 
     [HttpDelete(ApiRoutes.Benefit.DeleteBenefit)]
-    [Permission(Permission.Delete, 15)]
+    [Permission(Permission.Delete, 16)]
     public async Task<IActionResult> DeleteAllowanceAsync(int id)
     {
         var response = await service.DeleteBenefitAsync(id);

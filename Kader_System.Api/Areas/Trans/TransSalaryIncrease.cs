@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Kader_System.Api.Helpers;
 using Kader_System.Services.IServices;
 using Kader_System.Services.IServices.HTTP;
 
@@ -17,6 +18,7 @@ namespace Kader_System.Api.Areas.Trans
 
         #region Create
         [HttpPost(ApiRoutes.SalaryIncrease.CreateSalaryIncrease)]
+        [Permission(Helpers.Permission.Add, 28)]
         public async Task<IActionResult> CreateTransVacation([FromForm] CreateTransSalaryIncreaseRequest request)
         {
             var result = await _service.CreateTransSalaryIncreaseAsync(request, requestService.GetRequestHeaderLanguage);
@@ -26,12 +28,14 @@ namespace Kader_System.Api.Areas.Trans
 
         #region Read
         [HttpGet(ApiRoutes.SalaryIncrease.GetAllSalaryIncrease)]
+        [Permission(Helpers.Permission.View, 28)]
         public async Task<IActionResult> GetAllSalaryIncrease(GetAlFilterationForSalaryIncreaseRequest model)
         {
             var result = await _service.GetAllTransSalaryIncreaseAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost);
             return Ok(result);
         }
         [HttpGet(ApiRoutes.SalaryIncrease.GetSalaryIncreaseById)]
+        [Permission(Helpers.Permission.View, 28)]
         public async Task<IActionResult> GetSalaryIncreaseById(int id)
         {
             var result = await _service.GetTransSalaryIncreaseByIdAsync(id, requestService.GetRequestHeaderLanguage);
@@ -41,6 +45,7 @@ namespace Kader_System.Api.Areas.Trans
 
         #region Update
         [HttpPut(ApiRoutes.SalaryIncrease.UpdateSalaryIncrease)]
+        [Permission(Helpers.Permission.Edit, 28)]
         public async Task<IActionResult> UpdateSalaryIncrease(int id, CreateTransSalaryIncreaseRequest model)
         {
             var result = await _service.UpdateTransSalaryIncreaseAsync(id,model);
@@ -50,6 +55,7 @@ namespace Kader_System.Api.Areas.Trans
 
         #region Delete
         [HttpDelete(ApiRoutes.SalaryIncrease.DeleteSalaryIncrease)]
+        [Permission(Helpers.Permission.Delete, 28)]
         public async Task<IActionResult> DeleteSalaryIncrease(int id)
         {
             var result = await _service.DeleteTransSalaryIncreaseAsync(id);

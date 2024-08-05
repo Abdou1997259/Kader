@@ -1,4 +1,5 @@
-﻿using Kader_System.Services.IServices.HTTP;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.HR.Controllers
 {
@@ -14,11 +15,13 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Retreive
 
         [HttpGet(ApiRoutes.Job.ListOfJobs)]
+        [Permission(Permission.View, 9)]
         public async Task<IActionResult> GetAllJobs()
             => Ok(await jobService.ListOfJobsAsync(requestService.GetRequestHeaderLanguage));
 
 
         [HttpGet(ApiRoutes.Job.GetJobById)]
+        [Permission(Permission.View, 9)]
         public async Task<IActionResult> GetJobById(int id)
         {
             var response = await jobService.GetJobByIdAsync(id);
@@ -30,6 +33,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         }
 
         [HttpGet(ApiRoutes.Job.GetAllJobs)]
+        [Permission(Permission.View, 9)]
         public async Task<IActionResult> GetAll([FromQuery] HrGetAllFilterationForJobRequest model)
         {
            
@@ -40,6 +44,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Insert
 
         [HttpPost(ApiRoutes.Job.CreateJob)]
+        [Permission(Permission.Add, 9)]
         public async Task<IActionResult> CreateJob(HrCreateJobRequest model)
         {
             var response = await jobService.CreateJobAsync(model);
@@ -55,6 +60,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.Job.UpdateJob)]
+        [Permission(Permission.Edit, 9)]
         public async Task<IActionResult> UpdateJob([FromRoute] int id, HrUpdateJobRequest model)
         {
             var response =await jobService.UpdateJobAsync(id, model);
@@ -67,6 +73,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
 
         [HttpPut(ApiRoutes.Job.RestoreJob)]
+        [Permission(Permission.Edit, 9)]
         public async Task<IActionResult> RestoreJob([FromRoute] int id)
         {
             var response = await jobService.RestoreJobAsync(id);
@@ -81,6 +88,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.Job.DeleteJob)]
+        [Permission(Permission.Delete, 9)]
         public async Task<IActionResult> DeleteJob(int id)
         {
             var response=await jobService.DeleteJobAsync(id);

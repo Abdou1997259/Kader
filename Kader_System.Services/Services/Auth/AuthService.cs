@@ -7,6 +7,7 @@ using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.Setting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
@@ -17,7 +18,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Auth;
 
-public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissionsevice, IMapper mapper, UserManager<ApplicationUser> userManager,
+public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService premissionsevice, IMapper mapper, UserManager<ApplicationUser> userManager,
                    JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
                    IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
                    IFileServer fileServer,
@@ -38,7 +39,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IHttpContextAccessor _accessor = accessor;
     private readonly IFileServer _fileServer = fileServer;
-    private readonly IUserPermessionService _permissionservice = premissionsevice;
+    private readonly IPermessionStructureService _permissionservice = premissionsevice;
     private readonly IMainScreenService _mainScreenService = mainScreenService;
 
     #region Authentication
@@ -46,7 +47,8 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
     public async Task<Response<AuthLoginUserResponse>> LoginUserAsync(AuthLoginUserRequest model)
     {
         string err = _sharLocalizer[Localization.Error];
-       
+        var normalizedUserName = _userManager.NormalizeName(model.UserName);
+        var usernormalize = await _userManager.Users.SingleOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName);
         var user = await _userManager.FindByNameAsync(model.UserName);
         if (user == null)
             return new()
@@ -60,9 +62,10 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
                 _sharLocalizer[Localization.UserName]),
                 Check = false
             };
-
-        var test = await _signInManager.PasswordSignInAsync(user.UserName!, model.Password, model.RememberMe, false);
-        if (!test.Succeeded)
+        var passwordValid = await _userManager.CheckPasswordAsync(user, model.Password);
+    
+           
+        if (!passwordValid)
             return new()
             {
                 Data = new()
@@ -583,17 +586,19 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
        };
        await  _unitOfWork.UserPermssionRepositroy.AddAsync(userpermission);
 
-        
-     
-      
+
+
+
 
         // Add user to the database
-        await _unitOfWork.Users.AddAsync(user);
-     
+    var result=    await _userManager.CreateAsync(user,model.password);
 
+        if (result.Succeeded)
+        {
+            await _unitOfWork.CompleteAsync();
+        };
      
-        var result = await _unitOfWork.CompleteAsync();
-        if (result <= 0)
+        if (!result.Succeeded)
         {
             var errorMsg = _sharLocalizer[Localization.Error];
             return new Response<CreateUserResponse>
@@ -629,7 +634,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
 
     }
 
-    public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int titleId, IEnumerable<Permissions> model)
+    public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int titleId, IEnumerable<Permissions> model,string lang)
     {
         if (titleId == 0)
         {
@@ -639,8 +644,48 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
                 Data = "",
             };
         }
+        var subMainScreenActions = await _unitOfWork.SubMainScreenActions.GetAllAsync();
+        foreach (var sub in model)
+        {
+            // Get ActionIds for the current SubId
+            var actionIdsForSubId = subMainScreenActions
+                .Where(x => x.ScreenSubId == sub.SubId)
+                .Select(x => x.ActionId)
+                .Distinct()
+                .ToList();
 
-        var userPermissions = model.Select(x => new UserPermission
+            // Get TitlePermssion for the current SubId
+            var titlePermissions = sub.TitlePermssion;
+
+            // Check if there is at least one ActionId that is not in the TitlePermssion
+            var missingActionsExist = titlePermissions.Except(actionIdsForSubId);
+
+            // Process the result
+            if (missingActionsExist.Any())
+            {
+                var permssions = await _unitOfWork.ActionsRepo.GetSpecificSelectAsync(x=>missingActionsExist.Any(u=>u==x.Id),x=>x);
+                var subscrren = await _unitOfWork.SubMainScreens.GetByIdAsync(sub.SubId);
+                string name = Localization.Arabic == lang ? subscrren.Screen_sub_title_ar : subscrren.Screen_sub_title_en;
+                string nameofpermissions = "";
+                foreach(var per in permssions)
+                {
+                    nameofpermissions += Localization.Arabic == lang ? per.Name + " " : per.NameInEnglish + " ";
+                }
+                var msg = $"{name} {_sharLocalizer[Localization.ScreenInAction]} {nameofpermissions}";
+                // Handle the case where at least one ActionId is missing
+                // Example: Log or perform some action
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg=msg,
+                    Data=null
+
+                };
+              
+            }
+        }
+
+            var userPermissions = model.Select(x => new UserPermission
         {
             UserId = id,
             Permission = string.Join(',', x.TitlePermssion),
@@ -1094,7 +1139,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         }
 
         var screens = await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
-        var perm = await _permissionservice.GetAllUserPermession(user.GetUserId(),lang);
+        var perm = await _permissionservice.GetPermissionsBySubScreen(lang);
         var jwtSecurityToken =await  CreateJwtToken(await _userManager.FindByIdAsync(user.GetUserId()));
 
         var email = user?.GetEmalil() ?? string.Empty;
@@ -1105,7 +1150,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         var currentTitles = int.TryParse(user?.GetCurrentTitle(), out var titlesresult) ? titlesresult : 0;
         var currentCompany = int.TryParse(user?.GetCurrentCompany(), out var company) ? company : 0;
         var currentCompanyName = Localization.Arabic == lang ? cop?.NameAr ?? string.Empty : cop?.NameEn ?? string.Empty;
-        var myPermissions = perm?.DataList;
+        var myPermissions = perm?.DynamicData;
         var screensResult = screens?.DataList;
         var aptoken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 

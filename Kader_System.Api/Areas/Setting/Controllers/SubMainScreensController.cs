@@ -1,5 +1,9 @@
+
 ﻿using Kader_System.Services.IServices.HTTP;
 using Microsoft.Extensions.Hosting;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.HTTP;
+
 
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
@@ -44,6 +48,7 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
     #region Insert
 
     [HttpPost(ApiRoutes.SubMainScreen.CreateSubMainScreen)]
+    [Permission(Helpers.Permission.View, 2)]
     public async Task<IActionResult> CreateSubMainScreenAsync([FromForm] StCreateSubMainScreenRequest model)
     {
         var response = await service.CreateSubMainScreenAsync(model, _hostEnvironment.WebRootPath, headerService.client_id, Modules.Setting);
@@ -59,6 +64,7 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
     #region Update
 
     [HttpPut(ApiRoutes.SubMainScreen.UpdateSubMainScreen)]
+    [Permission(Helpers.Permission.Edit, 2)]
     public async Task<IActionResult> UpdateSubMainScreenAsync([FromRoute] int id, [FromForm] StUpdateSubMainScreenRequest model)
     {
         var response = await service.UpdateSubMainScreenAsync(id, model);
@@ -73,6 +79,7 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
 
     #region Delete
     [HttpDelete(ApiRoutes.SubMainScreen.DeleteSubMainScreen)]
+    [Permission(Helpers.Permission.Delete, 2)]
     public async Task<IActionResult> DeleteSubMainScreenAsync([FromRoute] int id)
     {
         var response = await service.DeleteSubMainScreenAsync(id);

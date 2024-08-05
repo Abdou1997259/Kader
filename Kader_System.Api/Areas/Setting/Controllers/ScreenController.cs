@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.DTOs.Request.Setting;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.DTOs.Request.Setting;
 using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.Setting.Controllers
@@ -15,10 +16,12 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Retrieve
 
         [HttpGet(ApiRoutes.Screen.GetAllScreens)]
+        [Permission(Helpers.Permission.View, 2)]
         public async Task<IActionResult> GetAllScreens([FromQuery] GetAllFilterationForScreen model) =>
             Ok(await service.GetAllScreensAsync(requestService.GetRequestHeaderLanguage,requestService.GetCurrentHost ,model));
 
         [HttpGet(ApiRoutes.Screen.GetScreenById)]
+        [Permission(Helpers.Permission.View, 2)]
         public async Task<IActionResult> GetScreenById(int id)
         {
             var response = await service.GetScreenByIdAsync(id,requestService.GetRequestHeaderLanguage);
@@ -33,6 +36,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Insert
 
         [HttpPost(ApiRoutes.Screen.CreateScreen)]
+        [Permission(Helpers.Permission.Add, 2)]
         public async Task<IActionResult> CreateScreen([FromForm] CreateScreenRequest model)
         {
             if (ModelState.IsValid)
@@ -77,6 +81,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.Screen.UpdateScreen)]
+        [Permission(Helpers.Permission.Edit, 2)]
         public async Task<IActionResult> UpdateScreen([FromRoute] int id, [FromForm] CreateScreenRequest model)
         {
             var response = await service.UpdateScreenAsync(id, model);
@@ -101,6 +106,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.Screen.DeleteScreen)]
+        [Permission(Helpers.Permission.Delete, 2)]
         public async Task<IActionResult> DeleteScreen(int id)
         {
             var response = await service.DeleteScreenAsync(id);

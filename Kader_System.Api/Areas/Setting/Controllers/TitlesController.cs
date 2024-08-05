@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.Dtos.Response;
+﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.Dtos.Response;
 using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.DTOs.Request.Setting;
 using Kader_System.Services.IServices.HTTP;
@@ -14,6 +15,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
     [ApiController]
     //[Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
+
     public class TitlesController(ITitleService titleService ,IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
@@ -21,11 +23,13 @@ namespace Kader_System.Api.Areas.Setting.Controllers
 
         #region Retrieve
         [HttpGet(ApiRoutes.Title.GetAllTitles)]
+        [Permission(Helpers.Permission.View, 4)]
         public async Task<IActionResult> GetAllTitles([FromQuery] GetAllFilterrationForTitleRequest model, ITitleService titleService) =>
             Ok(await titleService.GetAllTitlesAsync(requestService.GetRequestHeaderLanguage, model));
 
 
         [HttpGet(ApiRoutes.Title.GetTitleById)]
+        [Permission(Helpers.Permission.View, 4)]
         public async Task<IActionResult> GetTitleById(int id)
         {
             var response = await titleService.GetTitleByIdAsync(id, requestService.GetRequestHeaderLanguage);
@@ -43,6 +47,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Insert
 
         [HttpPost(ApiRoutes.Title.CreateTitle)]
+        [Permission(Helpers.Permission.Add, 4)]
         public async Task<IActionResult> CreateTittle([FromBody] CreateTitleRequest model)
         {
             if (ModelState.IsValid)
@@ -83,11 +88,12 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.Title.UpdateTitle)]
+        [Permission(Helpers.Permission.Edit, 4)]
         public async Task<IActionResult> UpdateTitle(
             [FromRoute] int id, [FromBody] UpdateTitleRequest model
            )
         {
-            var respone = await titleService.UpdateTitleAsync(id, model);
+            var respone = await titleService.UpdateTitleAsync(id, model,requestService.GetRequestHeaderLanguage);
 
             if (respone.Check == true)
                 return Ok(respone);
@@ -96,6 +102,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         }
 
         [HttpPut(ApiRoutes.Title.RestoreTitle)]
+        [Permission(Helpers.Permission.Edit, 4)]
         public async Task<IActionResult> RestoreTitle([FromBody] int id)
         {
             if (Response == null)
@@ -108,6 +115,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
 
         #region Delete 
         [HttpDelete(ApiRoutes.Title.DeleteTitle)]
+        [Permission(Helpers.Permission.Delete, 4)]
         public async Task<IActionResult> DeleteTitle(int id)
         {
             var respone = await titleService.DeleteTitleAsync(id);

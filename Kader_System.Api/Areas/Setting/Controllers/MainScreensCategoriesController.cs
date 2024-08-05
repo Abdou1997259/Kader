@@ -14,6 +14,7 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
 
     #region Retrieve
     [HttpGet(ApiRoutes.MainScreenCategory.ListOfMainScreensCategories)]
+    
     public async Task<IActionResult> ListOfMainScreensCategoriesAsync() =>
         Ok(await service.ListOfMainScreensCategoriesAsync(requestService.GetRequestHeaderLanguage));
 
@@ -36,6 +37,7 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
     #region Insert
 
     [HttpPost(ApiRoutes.MainScreenCategory.CreateMainScreenCategory)]
+    
     public async Task<IActionResult> CreateServiceAsync([FromBody] StCreateMainScreenCategoryRequest model)
     {
         var response = await service.CreateMainScreenCategoryAsync(model);
