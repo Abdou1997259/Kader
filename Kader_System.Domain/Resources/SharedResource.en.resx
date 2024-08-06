@@ -207,6 +207,9 @@
   <data name="SubMainScreen" xml:space="preserve">
     <value>Sub main screen</value>
   </data>
+  <data name="TitlePermisson" xml:space="preserve">
+    <value>Please send the Title</value>
+  </data>
   <data name="Updated" xml:space="preserve">
     <value>Updated successfully</value>
   </data>

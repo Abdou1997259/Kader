@@ -562,7 +562,11 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         user.JobId = model.job_title;
         user.UserName = model.user_name;
         user.Add_date = new DateTime().NowEg();
-        user.CurrentCompanyId = model?.current_company?? 3;
+        var company = user?.CompanyId[0];
+        var title = user?.TitleId[0];
+        model.current_company=company;
+        model.current_title = title;
+        user.CurrentCompanyId = model?.current_company ?? 3;
         user.CurrentTitleId = model?.current_title ?? 1;
         user.Added_by = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
         // Set additional user properties if needed
@@ -634,12 +638,14 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     }
 
-    public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int titleId, IEnumerable<Permissions> model,string lang)
+    public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int? titleId, IEnumerable<Permissions> model,string lang)
     {
-        if (titleId == 0)
+        if (titleId == 0 || titleId ==null )
         {
+            var msg = _sharLocalizer[Localization.TitlePermisson];
             return new Response<string>
             {
+                Msg=msg,
                 Check = false,
                 Data = "",
             };
@@ -690,7 +696,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             UserId = id,
             Permission = string.Join(',', x.TitlePermssion),
             SubScreenId = x.SubId,
-            TitleId = titleId
+            TitleId = titleId?? 0
         }).ToList();
 
         // Process Title Permissions
@@ -720,7 +726,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 {
                     await _unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
                     {
-                        TitleId = titleId,
+                        TitleId = titleId??0,
                         SubScreenId = assignedPermission.SubId,
                         Permissions = string.Join(',', assignedPermission.TitlePermssion)
                     });
@@ -737,7 +743,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         await _unitOfWork.CompleteAsync();
 
         // Process User Permissions
-        await ProcessUserPermissions(id, titleId, model, all);
+        await ProcessUserPermissions(id, titleId??0, model, all);
 
         return new Response<string>
         {
@@ -1131,6 +1137,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var titles = await _unitOfWork.Titles.GetSpecificSelectAsync(x => user.GetTitles().Splitter().Contains(x.Id), x => x);
     
         Kader_System.Domain.Models.Title title = null;
+        var allTitles = await _unitOfWork.Titles.GetAllAsync();
         HrCompany cop = null;
         if (!string.IsNullOrEmpty(user.GetCurrentTitle()))
         {
@@ -1174,6 +1181,11 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             Title = title2,
             Mobile = mobile,
             Image = image,
+            Titles=allTitles.Select(x=>new TitleLookups
+            {
+                Id=x.Id,
+                TitleName=Localization.Arabic==lang? x.TitleNameAr:x.TitleNameEn
+            }),
             user = new Domain.DTOs.Response.Auth.User
             {
                 CurrentTitles = currentTitles,

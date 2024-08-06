@@ -20,6 +20,7 @@ namespace Kader_System.Services.Services.Setting
 
             var finalResult = results.Select(x => new DTOSPGetUserPermissionsBySubScreen
             {
+
                 actions = x.actions,
                 cat_id = x.cat_id,
                 cat_title = x.cat_title,
@@ -37,6 +38,7 @@ namespace Kader_System.Services.Services.Setting
             });
 
             return new Response<DTOSPGetUserPermissionsBySubScreen>()
+
             {
                 Check = true,
                 DynamicData = finalResult,
