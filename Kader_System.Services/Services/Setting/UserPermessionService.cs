@@ -18,6 +18,7 @@ namespace Kader_System.Services.Services.Setting
                 .AsNoTracking()
                 .ToListAsync();
 
+            var userName = await _context.Users.AsNoTracking().Where(x => x.Id == userId).Select(x =>x.UserName).FirstOrDefaultAsync();
             var finalResult = results.Select(x => new DTOSPGetUserPermissionsBySubScreen
             {
 
@@ -37,12 +38,13 @@ namespace Kader_System.Services.Services.Setting
                 url = x.url
             });
 
-            return new Response<DTOSPGetUserPermissionsBySubScreen>()
+            return new ResponseWithUser<DTOSPGetUserPermissionsBySubScreen>
 
             {
                 Check = true,
                 DynamicData = finalResult,
                 Error = "",
+                UserName = userName
             };
         }
 

@@ -167,7 +167,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
         
     }
 
-    public async Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model,string lang, string root, string clientName, string moduleName)
+    public async Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model,string lang,string appPath, string moduleName)
     {
         var obj = await _unitOfWork.MainScreenCategories.GetByIdAsync(id);
 
@@ -176,10 +176,10 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
         _unitOfWork.MainScreenCategories.Update(mappedcatscreen);
 
         obj.Screen_main_cat_image = (model.Screen_main_cat_image == null || model.Screen_main_cat_image.Length == 0) ? null :
-            await _fileServer.UploadFile(root, clientName, moduleName, model.Screen_main_cat_image);
+            await _fileServer.UploadFile(appPath, moduleName, model.Screen_main_cat_image);
 
 
-        var full_path = Path.Combine(root, clientName, moduleName);
+        var full_path = Path.Combine(appPath, moduleName);
         if (model.Screen_main_cat_image != null)
             _fileServer.RemoveFile(full_path, obj.Screen_main_cat_image);
 

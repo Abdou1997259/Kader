@@ -95,7 +95,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string root, string clientName, string moduleName)
+    public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string appPath, string moduleName)
     {
          var mainScreenmap = _mapper.Map<StMainScreen>(model);
 
@@ -112,7 +112,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         }
 
          mainScreenmap.Screen_main_image = (model.Screen_main_image == null || model.Screen_main_image.Length == 0) ? null
-            : await _fileServer.UploadFile(root, clientName, moduleName, model.Screen_main_image);
+            : await _fileServer.UploadFile(appPath, moduleName, model.Screen_main_image);
 
          await _unitOfWork.MainScreens.AddAsync(mainScreenmap);
 
