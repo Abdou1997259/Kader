@@ -1,4 +1,5 @@
 ﻿using Kader_System.Services.IServices.HTTP;
+using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
@@ -8,9 +9,11 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 //[Authorize(Permissions.MainScreenCat.View)]
 [Route("api/v1/")]
 
-public class MainScreensCategoriesController(IMainScreenCategoryService service, IRequestService requestService) : ControllerBase
+public class MainScreensCategoriesController(IMainScreenCategoryService service, IRequestService requestService,IWebHostEnvironment hostEnvironment) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;
+    private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment;
+
 
     #region Retrieve
     [HttpGet(ApiRoutes.MainScreenCategory.ListOfMainScreensCategories)]
@@ -38,7 +41,7 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
 
     [HttpPost(ApiRoutes.MainScreenCategory.CreateMainScreenCategory)]
     
-    public async Task<IActionResult> CreateServiceAsync([FromBody] StCreateMainScreenCategoryRequest model)
+    public async Task<IActionResult> CreateServiceAsync([FromForm] StCreateMainScreenCategoryRequest model)
     {
         var response = await service.CreateMainScreenCategoryAsync(model);
         if (response.Check)
@@ -55,7 +58,7 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
     [HttpPut(ApiRoutes.MainScreenCategory.UpdateMainScreenCategory)]
     public async Task<IActionResult> UpdateServiceAsync([FromRoute] int id, [FromForm] StUpdateMainScreenCategoryRequest model,string lang)
     {
-        var response = await service.UpdateMainScreenCategoryAsync(id, model,lang);
+        var response = await service.UpdateMainScreenCategoryAsync(id, model,lang, _hostEnvironment.WebRootPath, requestService.client_id, Modules.Setting);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

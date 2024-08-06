@@ -5,6 +5,7 @@ using Kader_System.Domain.DTOs.Response.Setting;
 using Kader_System.Domain.Interfaces.Setting;
 using Kader_System.Services.IServices.HTTP;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using System.Linq;
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
@@ -13,12 +14,14 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 //[Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
-public class MainScreensController(IMainScreenService service, IRequestService requestService, KaderDbContext context) : ControllerBase
+public class MainScreensController(IMainScreenService service, IRequestService requestService, KaderDbContext context , IWebHostEnvironment hostEnvironment) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;
 
     private readonly IMainScreenService _mainScreenRepository = service;
     private readonly KaderDbContext _dbcontext = context;
+    private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment;
+
 
 
 
@@ -65,9 +68,9 @@ public class MainScreensController(IMainScreenService service, IRequestService r
 
     [HttpPost(ApiRoutes.MainScreen.CreateMainScreen)]
     [Permission(Helpers.Permission.Add, 1)]
-    public async Task<IActionResult> CreateMainScreenAsync([FromBody] StCreateMainScreenRequest model)
+    public async Task<IActionResult> CreateMainScreenAsync([FromForm] StCreateMainScreenRequest model)
     {
-        var response = await service.CreateMainScreenAsync(model);
+        var response = await service.CreateMainScreenAsync(model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.Setting);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

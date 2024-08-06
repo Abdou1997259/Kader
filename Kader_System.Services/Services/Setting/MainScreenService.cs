@@ -6,11 +6,12 @@ using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper ,KaderDbContext context) : IMainScreenService
+public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper ,KaderDbContext context,IFileServer fileServer) : IMainScreenService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
+    private readonly IFileServer _fileServer = fileServer;
 
     private readonly KaderDbContext _dbContext = context;
 
@@ -94,38 +95,36 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model)
+    public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string root, string clientName, string moduleName)
     {
-        bool exists = false;
-        exists = await _unitOfWork.MainScreens.ExistAsync(x => x.Screen_main_title_ar.Trim() == model.Screen_main_title_ar
-        && x.Screen_main_title_en.Trim() == model.Screen_main_title_en.Trim());
+         var mainScreenmap = _mapper.Map<StMainScreen>(model);
+
+         bool exists = await _unitOfWork.MainScreens.ExistAsync(x => x.Screen_main_title_en.Trim() == model.Screen_main_title_ar);
 
         if (exists)
         {
-            string resultMsg = string.Format(_sharLocalizer[Localization.IsExist],
-                _sharLocalizer[Localization.MainScreen]);
-
-            return new()
+            string resultMsg = string.Format(_sharLocalizer[Localization.IsExist], _sharLocalizer[Localization.MainScreen]);
+            return new Response<StCreateMainScreenRequest>
             {
                 Error = resultMsg,
                 Msg = resultMsg
             };
         }
 
-        await _unitOfWork.MainScreens.AddAsync(new()
-        {
-            Screen_main_title_ar = model.Screen_main_title_ar,
-            Screen_main_title_en = model.Screen_main_title_en,
-            Id = model.Screen_main_id
-        });
-        await _unitOfWork.CompleteAsync();
+         mainScreenmap.Screen_main_image = (model.Screen_main_image == null || model.Screen_main_image.Length == 0) ? null
+            : await _fileServer.UploadFile(root, clientName, moduleName, model.Screen_main_image);
 
-        return new()
+         await _unitOfWork.MainScreens.AddAsync(mainScreenmap);
+
+         await _unitOfWork.CompleteAsync();
+
+         return new Response<StCreateMainScreenRequest>
         {
             Msg = _sharLocalizer[Localization.Done],
             Check = true,
             Data = model
         };
+
     }
 
 
@@ -179,8 +178,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
         obj.Screen_main_title_ar = model.Screen_main_title_ar;
         obj.Screen_main_title_en = model.Screen_main_title_en;
-        obj.Id = model.Screen_main_id;
-
+ 
         _unitOfWork.MainScreens.Update(obj);
         await _unitOfWork.CompleteAsync();
 
