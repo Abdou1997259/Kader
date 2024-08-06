@@ -69,7 +69,9 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
     [Permission(Helpers.Permission.Edit, 2)]
     public async Task<IActionResult> UpdateSubMainScreenAsync([FromRoute] int id, [FromForm] StUpdateSubMainScreenRequest model)
     {
-        var response = await service.UpdateSubMainScreenAsync(id, model,_hostEnvironment.WebRootPath,headerService.client_id,Modules.Setting);
+        var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+        var response = await service.UpdateSubMainScreenAsync(id, model,serverPath,Modules.Setting);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

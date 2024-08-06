@@ -182,7 +182,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
     }
 
    
-    public async Task<Response<StUpdateSubMainScreenRequest>> UpdateSubMainScreenAsync(int id, StUpdateSubMainScreenRequest model, string root, string clientName, string moduleName)
+    public async Task<Response<StUpdateSubMainScreenRequest>> UpdateSubMainScreenAsync(int id, StUpdateSubMainScreenRequest model, string appPath, string moduleName)
     {
   
 
@@ -215,10 +215,10 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             _unitOfWork.SubMainScreens.Update(mappedsubscreen);
  
             obj.Screen_sub_image = (model.Screen_sub_image == null || model.Screen_sub_image.Length == 0) ? null :
-                await _fileServer.UploadFile(root, clientName, moduleName, model.Screen_sub_image);
+                await _fileServer.UploadFile(appPath,moduleName, model.Screen_sub_image);
 
 
-            var full_path = Path.Combine(root, clientName, moduleName);
+            var full_path = Path.Combine(appPath, moduleName);
             if (model.Screen_sub_image != null)
                 _fileServer.RemoveFile(full_path, obj.Screen_sub_image);
 

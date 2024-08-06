@@ -608,7 +608,7 @@ namespace Kader_System.Services.Services.HR
                 obj.Email = model.email;
                 obj.BirthDate = model.birth_date;
                 obj.ChildrenNumber = model.children_number;
-                obj.CompanyId = model.company_id;
+                obj.CompanyId = model.CompanyId;
                 obj.DepartmentId = model.department_id;
                 obj.EmployeeTypeId = model.employee_type_id;
                 obj.VacationId = model.vacation_id;
