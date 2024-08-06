@@ -136,7 +136,7 @@ namespace Kader_System.Services.Services.Setting
             };
         }
 
-        public async Task<Response<UpdateTitleRequest>> UpdateTitleAsync(int id, UpdateTitleRequest model,string lang)
+        public async Task<Response<UpdateTitleRequest>> UpdateTitleAsync(int id, UpdateTitleRequest model,string lang,bool all=false)
         {
             var title = await unitOfWork.Titles.GetByIdAsync(id);
 
@@ -170,7 +170,7 @@ namespace Kader_System.Services.Services.Setting
             //}
 
 
-            await AssginTitlePermssion(id, model.Permssions,lang);
+            await AssginTitlePermssion(id, model.Permssions,lang,all);
             unitOfWork.Titles.Update(title);
             //var listOfTitlePermssion = pers.Select(x => new TitlePermission
             //{
@@ -236,86 +236,59 @@ namespace Kader_System.Services.Services.Setting
             throw new NotImplementedException();
         }
 
-        private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model,string lang)
+        private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model, string lang, bool all=false)
         {
-            var subMainScreenActions = await unitOfWork.ScreenActions.GetAllAsync();
-            foreach (var sub in model)
+
+
+            int userCounter = 0;
+            foreach (var assignedPermission in model)
             {
-                // Get ActionIds for the current SubId
-                var actionIdsForSubId = subMainScreenActions
-                    .Where(x => x.ScreenId == sub.SubId)
-                    .Select(x => x.ActionId)
-                    .Distinct()
-                    .ToList();
+                var userPermissionQuery = await unitOfWork.TitlePermissionRepository
+                    .GetSpecificSelectAsync(x=> x.SubScreenId == assignedPermission.SubId, x => x);
 
-                // Get TitlePermssion for the current SubId
-                var titlePermissions = sub.TitlePermssion;
+                var userPermission = all ? userPermissionQuery : userPermissionQuery.Where(x => x.Id == id);
 
-                // Check if there is at least one ActionId that is not in the TitlePermssion
-                var missingActionsExist = titlePermissions.Except(actionIdsForSubId);
-
-                // Process the result
-                if (missingActionsExist.Any())
+                if (userPermission.Any())
                 {
-                    var permssions = await unitOfWork.ActionsRepo.GetSpecificSelectAsync(x => missingActionsExist.Any(), x => x);
-                    var subscrren = await unitOfWork.SubMainScreens.GetByIdAsync(sub.SubId);
-                    string name = Localization.Arabic == lang ? subscrren.Screen_sub_title_ar : subscrren.Screen_sub_title_en;
-                    string nameofpermissions = "";
-                    foreach (var per in permssions)
+                    var listUpdatedPer = userPermission.Select(x => new TitlePermission
                     {
-                        nameofpermissions += Localization.Arabic == lang ? per.Name + " " : per.NameInEnglish + " ";
-                    }
-                    var msg = $"{name} {sharLocalizer[Localization.ScreenInAction]} {nameofpermissions}";
-                    // Handle the case where at least one ActionId is missing
-                    // Example: Log or perform some action
-                    return new Response<string>()
-                    {
-                        Check = false,
-                        Msg = msg,
-                        Data = null
-
-                    };
-
-                }
-            }
-            List<TitlePermission> AddedPer = null;
-            foreach (var AssginedPermssion in model)
-            {
-                var titlePermission = await unitOfWork.TitlePermissionRepository
-                    .GetSpecificSelectAsync(x => x.TitleId == id && x.SubScreenId == AssginedPermssion.SubId, x => x);
-                IEnumerable<TitlePermission> listUpdatedper = null;
-
-                if (titlePermission != null)
-                {
-
-                    listUpdatedper = titlePermission.Select(x => new TitlePermission
-                    {
-                        Permissions = string.Join(',', AssginedPermssion.TitlePermssion),
-                        ScreenSub = x.ScreenSub,
+                        Id = x.Id,
+                       
+                        Permissions = string.Join(',', assignedPermission.TitlePermssion),
+                        SubScreenId = x.SubScreenId,
                         TitleId = x.TitleId
                     });
-                    unitOfWork.TitlePermissionRepository.UpdateRange(listUpdatedper);
-
-
-
+                    unitOfWork.TitlePermissionRepository.UpdateRange(listUpdatedPer);
                 }
                 else
                 {
-                    AddedPer.Add(new TitlePermission
+                    // Check if the SubScreenId exists in the st_screens_subs table
+                    var subScreenExists = await unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubId);
+
+                    if (subScreenExists)
                     {
-                        TitleId = id,
-                        SubScreenId = AssginedPermssion.SubId,
-                        Permissions = string.Join(',', AssginedPermssion.TitlePermssion)
-                    });
+                        await unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
+                        {
 
 
 
+                           
+                            SubScreenId = assignedPermission.SubId,
+                            Permissions = string.Join(',', assignedPermission.TitlePermssion)
+                        });
+                    }
+                    else
+                    {
+                        // Log the invalid SubScreenId or handle accordingly
+                        Console.WriteLine("Invalid SubScreenId: " + assignedPermission.SubId);
+                        continue;
+                    }
                 }
-
+              
 
 
             }
-            await unitOfWork.TitlePermissionRepository.AddRangeAsync(AddedPer);
+           
             await unitOfWork.CompleteAsync();
             return new()
             {

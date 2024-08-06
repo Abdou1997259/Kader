@@ -21,7 +21,7 @@ namespace Kader_System.Domain.DTOs.Response.Auth
         public string Image { get; set; }
         public string  Title{ get; set; }
         public User user { get; set; }
-
+        public IEnumerable<TitleLookups> Titles { get; set; }  
     }
     public class User
     {

@@ -38,6 +38,7 @@ namespace Kader_System.Services.Services.Setting
                 perm.permissions = permissionsDict;
             }
 
+            
             return new Response<DTOUserPermessionsForUser>()
             {
                 Check = true,

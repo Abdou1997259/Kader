@@ -562,7 +562,11 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         user.JobId = model.job_title;
         user.UserName = model.user_name;
         user.Add_date = new DateTime().NowEg();
-        user.CurrentCompanyId = model?.current_company?? 3;
+        var company = user?.CompanyId[0];
+        var title = user?.TitleId[0];
+        model.current_company=company;
+        model.current_title = title;
+        user.CurrentCompanyId = model?.current_company ?? 3;
         user.CurrentTitleId = model?.current_title ?? 1;
         user.Added_by = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
         // Set additional user properties if needed
@@ -1131,6 +1135,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         var titles = await _unitOfWork.Titles.GetSpecificSelectAsync(x => user.GetTitles().Splitter().Contains(x.Id), x => x);
     
         Kader_System.Domain.Models.Title title = null;
+        var allTitles = await _unitOfWork.Titles.GetAllAsync();
         HrCompany cop = null;
         if (!string.IsNullOrEmpty(user.GetCurrentTitle()))
         {
@@ -1174,6 +1179,11 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
             Title = title2,
             Mobile = mobile,
             Image = image,
+            Titles=allTitles.Select(x=>new TitleLookups
+            {
+                Id=x.Id,
+                TitleName=Localization.Arabic==lang? x.TitleNameAr:x.TitleNameEn
+            }),
             user = new Domain.DTOs.Response.Auth.User
             {
                 CurrentTitles = currentTitles,
