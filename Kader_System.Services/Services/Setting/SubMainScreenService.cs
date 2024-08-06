@@ -1,6 +1,7 @@
 ﻿using Kader_System.DataAccess.Repositories;
 using Kader_System.DataAccesss.DbContext;
 using Kader_System.Domain.Dtos.Response;
+using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using System.Net;
 
@@ -181,9 +182,12 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         };
     }
 
-    public async Task<Response<StUpdateSubMainScreenRequest>> UpdateSubMainScreenAsync(int id, StUpdateSubMainScreenRequest model)
+   
+    public async Task<Response<StUpdateSubMainScreenRequest>> UpdateSubMainScreenAsync(int id, StUpdateSubMainScreenRequest model, string root, string clientName, string moduleName)
     {
-        var obj = await _unitOfWork.SubMainScreens.GetFirstOrDefaultAsync(x => x.Id == id, includeProperties: "ListOfActions");
+  
+
+    var obj = await _unitOfWork.SubMainScreens.GetFirstOrDefaultAsync(x => x.Id == id, includeProperties: "ListOfActions");
 
         if (obj is null)
         {
@@ -208,26 +212,28 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             }
 
 
-            var mapped = _mapper.Map<StScreenSub>(model);
-
-            _unitOfWork.SubMainScreens.Update(mapped);
-
-            await _unitOfWork.SubMainScreenActions.AddRangeAsync(model.Actions.Select(ob => new StSubMainScreenAction
-            {
-                ActionId = ob,
-                ScreenSubId = id
-            }));
+            var mappedsubscreen = _mapper.Map(model, obj);
+            _unitOfWork.SubMainScreens.Update(mappedsubscreen);
+ 
+            obj.Screen_sub_image = (model.Screen_sub_image == null || model.Screen_sub_image.Length == 0) ? null :
+                await _fileServer.UploadFile(root, clientName, moduleName, model.Screen_sub_image);
 
 
-            await _unitOfWork.CompleteAsync();
-            transaction.Commit();
+            var full_path = Path.Combine(root, clientName, moduleName);
+            if (model.Screen_sub_image != null)
+                _fileServer.RemoveFile(full_path, obj.Screen_sub_image);
 
+
+              _unitOfWork.SubMainScreens.Update(obj);
+            var result = await _unitOfWork.CompleteAsync();
             return new()
             {
-                Msg = _sharLocalizer[Localization.Done],
+                Msg = sharLocalizer[Localization.Done],
                 Check = true,
-                Data = model
             };
+ 
+
+          
         }
         catch (Exception ex)
         {
@@ -241,10 +247,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         }
     }
 
-    public Task<Response<string>> UpdateActiveOrNotSubMainScreenAsync(int id)
-    {
-        throw new NotImplementedException();
-    }
+   
 
     public async Task<Response<string>> DeleteSubMainScreenAsync(int id)
     {
@@ -291,7 +294,14 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         throw new NotImplementedException();
     }
 
-    
+   
+    public Task<Response<string>> UpdateActiveOrNotSubMainScreenAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+ 
+
 
     #endregion
 }
