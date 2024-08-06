@@ -121,7 +121,6 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             Screen_sub_title_ar = model.Screen_sub_title_ar,
             ScreenCatId = model.ScreenCatId,
             Url = model.Url,
-            //Name = model.Name,
             ScreenCode = model.ScreenCode,
             ListOfActions = model.Actions.Select(ob => new StSubMainScreenAction
             {
