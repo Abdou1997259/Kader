@@ -33,4 +33,5 @@ public interface IAuthService
     Task<Response<string>> ChangeTitle(int title);
     Task<Response<string>> ChangeCompany(int company);
 
+    Task<Response<IEnumerable<TitleLookups>>> GetTitleLookUps(string id, string lang);
 }

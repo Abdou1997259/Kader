@@ -4,8 +4,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Kader_System.Api.Helpers.SwaggerHelper
 {
-    public class AddHeadersOperationFilter : IOperationFilter
-    {
+      public class AddHeadersOperationFilter : IOperationFilter
+  {
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
             operation.Parameters ??= [];

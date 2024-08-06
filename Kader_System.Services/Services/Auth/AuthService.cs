@@ -801,9 +801,13 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model,string host,string lang)
     {
         Expression<Func<ApplicationUser, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-            (string.IsNullOrEmpty(model.Word) || x.Email.Contains(model.Word) 
-             
-            
+            (string.IsNullOrEmpty(model.Word) || x.Email.Contains(model.Word)||
+           (string.IsNullOrEmpty(model.Word) || x.UserName.Contains(model.Word)||
+           (string.IsNullOrEmpty(model.Word) || x.FullName.Contains(model.Word)
+    
+
+           ))
+
             );
         var companise =await _unitOfWork.Companies.GetAllAsync();
         var jobs=await _unitOfWork.Jobs.GetAllAsync();
@@ -1259,6 +1263,31 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         };
 
 
+    }
+
+    public async  Task<Response<IEnumerable<TitleLookups>>> GetTitleLookUps(string id,string lang)
+    {
+        var user =await _unitOfWork.Users.GetFirstOrDefaultAsync(x=>x.Id==id);
+        if(user is null)
+        {
+            var msg = _sharLocalizer[Localization.NotFound];
+            return new()
+            {
+                Msg = msg,
+                Check = false,
+                Data = null,
+            };
+        }
+        var titles=await _unitOfWork.Titles.GetSpecificSelectAsync(x=>user.TitleId.Splitter().Contains(x.Id),x=>x);
+        return new()
+        {
+            Check=true,
+            Data = titles.Select(x => new TitleLookups
+            {
+                Id = x.Id,
+                TitleName = Localization.Arabic == lang ? x.TitleNameAr : x.TitleNameEn
+            })
+        };
     }
 
     #endregion
