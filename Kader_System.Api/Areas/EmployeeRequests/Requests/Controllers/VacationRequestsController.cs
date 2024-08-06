@@ -49,7 +49,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateVacationRequestAsync([FromForm] DTOVacationRequest model)
         {
-            var response = await service.AddNewVacationRequest(model, hostEnvironment.WebRootPath, requestService.client_id,
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+            var response = await service.AddNewVacationRequest(model, serverPath,
 
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
@@ -67,7 +69,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateVacationRequestAsync([FromRoute] int id, [FromForm] DTOVacationRequest model)
         {
-            var response = await service.UpdateVacationRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+            var response = await service.UpdateVacationRequest(id, model, serverPath,
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
                 return Ok(response);

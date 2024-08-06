@@ -92,14 +92,14 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         };
     }
 
-    public async Task<Response<StCreateSubMainScreenRequest>> CreateSubMainScreenAsync(StCreateSubMainScreenRequest model, string root, string clientName, string moduleName)
+    public async Task<Response<StCreateSubMainScreenRequest>> CreateSubMainScreenAsync(StCreateSubMainScreenRequest model, string appPath, string moduleName)
     {
         var newRequest = _mapper.Map<StScreenSub>(model);
         bool exists = false;
         exists = await _unitOfWork.SubMainScreens.ExistAsync(x => x.Screen_sub_title_ar.Trim() == model.Screen_sub_title_ar
         || x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim());
         newRequest.Screen_sub_image = (model.Screen_sub_image == null || model.Screen_sub_image.Length == 0) ? null :
-              await _fileServer.UploadFile(root, clientName, moduleName, model.Screen_sub_image);
+              await _fileServer.UploadFile(appPath, moduleName, model.Screen_sub_image);
         await _unitOfWork.SubMainScreens.AddAsync(newRequest);
 
         if (exists)

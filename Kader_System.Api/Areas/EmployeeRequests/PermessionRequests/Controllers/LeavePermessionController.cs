@@ -1,4 +1,5 @@
 using Kader_System.Api.Helpers;
+using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.Interfaces;
@@ -23,7 +24,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateLeavePermessionasRequests([FromForm] DTOCreateLeavePermissionRequest model)
         {
-                var response = await service.AddNewLeavePermissionRequest(model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+                var response = await service.AddNewLeavePermissionRequest(model, 
+                    serverPath, Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.LeavePermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -52,7 +55,8 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateLeavePermessionasRequests([FromRoute] int id,[FromForm] DTOCreateLeavePermissionRequest model)
         {
-            var response = await service.UpdateLeavePermissionRequest(id,model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+            var response = await service.UpdateLeavePermissionRequest(id,model, serverPath, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

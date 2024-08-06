@@ -45,7 +45,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateAllowanceRequests([FromForm] DTOAllowanceRequest model)
         {
-            var response = await service.AddNewAllowanceRequest(model, _hostEnvironment.WebRootPath, requestService.client_id,
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+            var response = await service.AddNewAllowanceRequest(model,serverPath,
                 Modules.EmployeeRequest,Domain.Constants.Enums.HrEmployeeRequestTypesEnums.AllowanceRequest);
             if (response.Check)
                 return Ok(response);
@@ -60,7 +62,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateAllowanceRequests([FromQuery] int id, [FromForm] DTOAllowanceRequest model)
         {
-            var response = await service.UpdateAllowanceRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+            var response = await service.UpdateAllowanceRequest(id, model,serverPath,
                  Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
                 return Ok(response);

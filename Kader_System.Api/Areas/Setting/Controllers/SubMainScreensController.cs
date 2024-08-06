@@ -51,7 +51,9 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
     [Permission(Helpers.Permission.View, 2)]
     public async Task<IActionResult> CreateSubMainScreenAsync([FromForm] StCreateSubMainScreenRequest model)
     {
-        var response = await service.CreateSubMainScreenAsync(model, _hostEnvironment.WebRootPath, headerService.client_id, Modules.Setting);
+        var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+        var response = await service.CreateSubMainScreenAsync(model, serverPath, Modules.Setting);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
