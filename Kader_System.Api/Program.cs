@@ -17,6 +17,7 @@ using Kader_System.Domain.Interfaces.StaticDataRepository;
 using Kader_System.Domain.Interfaces.Trans;
 using Kader_System.Domain.Options;
 using Kader_System.Domain.SwaggerFilter;
+using Kader_System.Services.AppServices;
 using Kader_System.Services.IServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
@@ -31,6 +32,7 @@ using Kader_System.Services.Services.Setting;
 using Kader_System.Services.Services.Trans;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -63,6 +65,7 @@ builder.Services.AddCors();
 builder.Services.AddControllers(op =>
 {
     op.Filters.Add<PermissionFilter>();
+    op.Filters.Add<DeflateCompressionAttribute>();
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -231,7 +234,7 @@ builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHand
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProviderService>();
 builder.Services.AddScoped<ILoanRequestService, LoanRequesService>();
 builder.Services.AddSingleton<IStaticDataRepository, StaticDataRepository>();
-builder.Services.AddScoped<IStructureMangement,StructureMangement>();
+builder.Services.AddScoped<IStructureMangement, StructureMangement>();
 builder.Services.AddScoped<IScreenService, ScreenService>();
 builder.Services.AddScoped<IResignationRequestService, ResignationRequestService>();
 builder.Services.AddScoped<IFileServer, FileServer>();
@@ -271,7 +274,7 @@ builder.Services.AddScoped<IRequestService, RequestService>();
 builder.Services.AddScoped<ITitleService, TitleService>();
 builder.Services.AddScoped<IPermessionStructureService, PermessionStructureService>();
 builder.Services.AddScoped<IUserPermessionService, UserPermessionService>();
-builder.Services.AddScoped<ITitlePermessionService, TitlePermessionService>();    
+builder.Services.AddScoped<ITitlePermessionService, TitlePermessionService>();
 #region Employee_Requests
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
 builder.Services.AddScoped<IVacationRequestService, VacationRequestService>();
@@ -376,6 +379,7 @@ app.UseStaticFiles();
 app.UseRequestLocalization(localizationOptions);
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 app.UseMiddleware<HeadersValidationMiddleware>();
+app.UseMiddleware<PathMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

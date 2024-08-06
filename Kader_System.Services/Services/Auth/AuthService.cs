@@ -133,7 +133,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     }
 
     public async Task<Response<UpdateUserRequest>> UpdateUserAsync(string id,string lang, 
-        UpdateUserRequest model, string root, string clientName, string moduleName, UsereEnum userenum = UsereEnum.None)
+        UpdateUserRequest model, string appPath, string moduleName, UsereEnum userenum = UsereEnum.None)
     {
         if (id == null)
         {
@@ -151,14 +151,14 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var obj = await _userManager.FindByIdAsync(id);
        
 
-        var full_path = Path.Combine(root, clientName, moduleName);
+        var full_path = Path.Combine(appPath, moduleName);
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         if (model.image != null)
             _fileServer.RemoveFile(full_path, obj.ImagePath);
 
        
         obj.ImagePath = (model.image == null || model.image.Length == 0) ? " " :
-           await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.image);
+           await _fileServer.UploadFile(appPath, moduleNameWithType, model.image);
         obj.UpdateDate = new DateTime().NowEg();
         obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
        
@@ -536,7 +536,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     //}
     public async  Task<Response<CreateUserResponse>> CreateUserAsync(CreateUserRequest model,
-        string root, string clientName, string moduleName, UsereEnum userenum= UsereEnum.None)
+        string appPath, string moduleName, UsereEnum userenum= UsereEnum.None)
     {  // Check if user already exists
         var isExited = await _unitOfWork.Users.ExistAsync(x => x.UserName == model.user_name);
         if (isExited)
@@ -571,7 +571,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
       
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         user.ImagePath = (model.image == null || model.image.Length == 0) ? null :
-            await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.image);
+            await _fileServer.UploadFile(appPath, moduleNameWithType, model.image);
       
 
        

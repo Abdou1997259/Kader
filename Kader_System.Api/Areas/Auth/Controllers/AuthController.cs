@@ -95,7 +95,9 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
 
     public async Task<IActionResult> CreatUser(CreateUserRequest model)
     {
-      var response =  await _service.CreateUserAsync(model, hostEnvironment.WebRootPath, requestService.client_id, Modules.Auth, Domain.Constants.Enums.UsereEnum.Users);
+        var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+        var response =  await _service.CreateUserAsync(model, serverPath, Modules.Auth, Domain.Constants.Enums.UsereEnum.Users);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -108,9 +110,10 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     string id, [FromForm] UpdateUserRequest  model)
 
     {
+        var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
         var response = await _service.UpdateUserAsync(id, requestService.GetRequestHeaderLanguage,  model,
-            hostEnvironment.WebRootPath, requestService.client_id, Modules.Auth, Domain.Constants.Enums.UsereEnum.Users);
+            serverPath, Modules.Auth, Domain.Constants.Enums.UsereEnum.Users);
 
         if (response.Check)
             return Ok(response);

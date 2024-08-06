@@ -1,11 +1,5 @@
-﻿using Kader_System.Domain.Dtos.Response;
-using Kader_System.Domain.DTOs.Request.Auth;
-using Kader_System.Domain.DTOs.Request.Setting;
+﻿using Kader_System.Services.AppServices;
 using Kader_System.Services.IServices.HTTP;
-using Kader_System.Services.IServices.Setting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System.Drawing;
 
 namespace Kader_System.Api.Areas.Setting.Controllers
 {
@@ -14,6 +8,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
     [ApiController]
     //[Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
+    [DeflateCompression]
     public class UserPermessionController(IUserPermessionService userPermession, IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
@@ -21,8 +16,12 @@ namespace Kader_System.Api.Areas.Setting.Controllers
 
         #region Retrieve
         [HttpGet(ApiRoutes.UserPermession.GetUserPermissionsBySubScreen)]
-        public async Task<IActionResult> GetUserPermissionsBySubScreen([FromRoute] string userId) =>
-               Ok(await _userPermession.GetUserPermissionsBySubScreen(userId, requestService.GetRequestHeaderLanguage));
+        [DeflateCompression]
+        public async Task<IActionResult> GetUserPermissionsBySubScreen([FromRoute] string userId)
+        {
+            var res = HttpContext.Items["ServerPath"]?.ToString();
+           return Ok(await _userPermession.GetUserPermissionsBySubScreen(userId, requestService.GetRequestHeaderLanguage));
+        }
 
         #endregion
     }
