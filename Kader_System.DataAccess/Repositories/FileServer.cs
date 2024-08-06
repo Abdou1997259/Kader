@@ -20,10 +20,10 @@ namespace Kader_System.DataAccess.Repositories
                 File.Delete(fullPath);
         }
 
-        public async Task<string> UploadFile(string rootPath, string clinetName, string moduleName, IFormFile file)
+        public async Task<string> UploadFile(string appPath, string moduleName, IFormFile file)
         {
             #region Directory_Validation
-            var clientPath = Path.Combine(rootPath, SysFileServer.UploadFolderNamder, clinetName, moduleName);
+            var clientPath = Path.Combine(appPath, moduleName);
             if (!Directory.Exists(clientPath))
                 Directory.CreateDirectory(clientPath);
 

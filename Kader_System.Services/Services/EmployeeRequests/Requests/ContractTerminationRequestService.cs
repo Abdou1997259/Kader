@@ -143,7 +143,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddLoanRequest
-        public async Task<Response<ContractTerminationRequest>> AddNewContractTerminationRequest(DTOContractTerminationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<ContractTerminationRequest>> AddNewContractTerminationRequest(DTOContractTerminationRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.TerminateContract)
         {
             var IsEmpolyeeExisted = await unitOfWork.Employees.ExistAsync(model.EmployeeId);
             if (!IsEmpolyeeExisted)
@@ -161,7 +161,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var newRequest = mapper.Map<ContractTerminationRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
             await unitOfWork.ContractTerminationRequest.AddAsync(newRequest);
             var result = await unitOfWork.CompleteAsync();
             return new()
@@ -207,7 +207,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region UpdateLoanRequest
-        public async Task<Response<ContractTerminationRequest>> UpdateContractTerminationRequest(int id, DTOContractTerminationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<ContractTerminationRequest>> UpdateContractTerminationRequest(int id, DTOContractTerminationRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.TerminateContract)
         {
             var result = await unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
 
@@ -226,7 +226,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
                 var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
                 updatingModel.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                    await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
 
 
             }
@@ -241,16 +241,6 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
         }
-
-
-
-
-
-
-
-
-
-
         #endregion
 
     }

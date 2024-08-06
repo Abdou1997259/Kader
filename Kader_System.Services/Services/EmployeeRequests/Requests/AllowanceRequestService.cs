@@ -150,7 +150,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddAllowanceRequest
-        public async Task<Response<GetAllowanceRequestResponse>> AddNewAllowanceRequest(DTOAllowanceRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        public async Task<Response<GetAllowanceRequestResponse>> AddNewAllowanceRequest(DTOAllowanceRequest model,string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.AllowanceRequest)
         {
 
             var IsEmpolyeeExisted = await unitOfWork.Employees.ExistAsync(model.EmployeeId);
@@ -169,7 +169,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var newRequest = mapper.Map<AllowanceRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.attachment_file_name = (model.Attachment== null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
             await unitOfWork.AllowanceRequests.AddAsync(newRequest);
             var result = await unitOfWork.CompleteAsync();
             return new()
@@ -183,7 +183,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
         #region UpdateAllowanceRequest
-        public async Task<Response<AllowanceRequest>> UpdateAllowanceRequest(int id, DTOAllowanceRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<AllowanceRequest>> UpdateAllowanceRequest(int id, DTOAllowanceRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.AllowanceRequest)
         {
             var result = await unitOfWork.AllowanceRequests.GetByIdAsync(id);
 
@@ -201,7 +201,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             {
                 var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
                 updatingModel.attachment_file_name = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                    await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
             }
             unitOfWork.AllowanceRequests.Update(result);
             await unitOfWork.CompleteAsync();

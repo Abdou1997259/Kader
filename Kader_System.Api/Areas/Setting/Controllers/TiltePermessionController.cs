@@ -22,7 +22,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Retrieve
         [HttpGet(ApiRoutes.TitlePermession.GetAllTitlePermessions)]
         public async Task<IActionResult> GetAllTitlePermessions([FromRoute] int titleId) =>
-            Ok(await _titlePermession.GetAllTitlePermession(titleId, requestService.GetRequestHeaderLanguage));
+            Ok(await _titlePermession.GetTitlePermissionsBySubScreen(titleId, requestService.GetRequestHeaderLanguage));
 
 
 

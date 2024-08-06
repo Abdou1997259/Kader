@@ -46,10 +46,10 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> SalaryIncreaseRequest([FromForm] DTOSalaryIncreaseRequest model)
         {
-            if (string.IsNullOrEmpty(requestService.client_id))
-                return Unauthorized("client_id is empty");
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
-            var response = await increaseRequestService.AddNewSalaryIncreaseRequest(model, _hostEnvironment.WebRootPath, requestService.client_id,
+
+            var response = await increaseRequestService.AddNewSalaryIncreaseRequest(model,serverPath,
                 Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.VacationRequest);
 
             if (response != null)
@@ -63,7 +63,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateIncreaseSalary([FromQuery]int id ,[FromForm] DTOSalaryIncreaseRequest model)
         {
-            var response = await increaseRequestService.UpdateSalaryIncreaseRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+            var response = await increaseRequestService.UpdateSalaryIncreaseRequest(id, model,serverPath,
                  Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
                 return Ok(response);

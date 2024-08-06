@@ -3,6 +3,7 @@
 using Kader_System.DataAccess.Repositories;
 using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Setting
 {
@@ -170,7 +171,18 @@ namespace Kader_System.Services.Services.Setting
             //}
 
 
-            await AssginTitlePermssion(id, model.Permssions,lang,all);
+
+           var result= await AssginTitlePermssion(id, model.Permssions,lang,all);
+            if (result.Check == false) {
+                return new()
+                {
+                    Msg = result.Msg,
+                    Check = false,
+                    Data = null
+                };
+
+
+            }
             unitOfWork.Titles.Update(title);
             //var listOfTitlePermssion = pers.Select(x => new TitlePermission
             //{
@@ -217,9 +229,7 @@ namespace Kader_System.Services.Services.Setting
                 {
                    Id = id,
                     Name = Localization.Arabic == lang ? title.TitleNameAr : title.TitleNameEn,
-                    all_permissions = (await permessionService.GetAllTitlePermession(id, lang)).DataList,
-
-
+                    all_permissions = (await permessionService.GetTitlePermissionsBySubScreen(id, lang)).DynamicData,
                 }
 
             };
@@ -240,13 +250,16 @@ namespace Kader_System.Services.Services.Setting
         {
 
 
+
             int userCounter = 0;
             foreach (var assignedPermission in model)
+
             {
                 var userPermissionQuery = await unitOfWork.TitlePermissionRepository
                     .GetSpecificSelectAsync(x=> x.SubScreenId == assignedPermission.SubId, x => x);
 
                 var userPermission = all ? userPermissionQuery : userPermissionQuery.Where(x => x.Id == id);
+
 
                 if (userPermission.Any())
                 {
@@ -267,8 +280,10 @@ namespace Kader_System.Services.Services.Setting
 
                     if (subScreenExists)
                     {
+
                         await unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
                         {
+
 
 
 

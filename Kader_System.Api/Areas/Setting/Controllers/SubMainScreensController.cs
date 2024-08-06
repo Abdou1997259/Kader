@@ -1,5 +1,9 @@
+
+﻿using Kader_System.Services.IServices.HTTP;
+using Microsoft.Extensions.Hosting;
 ﻿using Kader_System.Api.Helpers;
 using Kader_System.Services.IServices.HTTP;
+
 
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
@@ -8,10 +12,13 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 //[Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
-public class SubSubMainScreensController(ISubMainScreenService service, IRequestService headerService) : ControllerBase
+public class SubSubMainScreensController(ISubMainScreenService service, IRequestService headerService, IWebHostEnvironment hostEnvironment) : ControllerBase
 {
     private readonly IRequestService headerService = headerService;
     private readonly ISubMainScreenService service = service;
+    private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment;
+
+
     #region Retrieve
 
     [HttpGet(ApiRoutes.SubMainScreen.ListOfSubMainScreens)]
@@ -44,7 +51,9 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
     [Permission(Helpers.Permission.View, 2)]
     public async Task<IActionResult> CreateSubMainScreenAsync([FromForm] StCreateSubMainScreenRequest model)
     {
-        var response = await service.CreateSubMainScreenAsync(model);
+        var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+        var response = await service.CreateSubMainScreenAsync(model, serverPath, Modules.Setting);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -60,7 +69,7 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
     [Permission(Helpers.Permission.Edit, 2)]
     public async Task<IActionResult> UpdateSubMainScreenAsync([FromRoute] int id, [FromForm] StUpdateSubMainScreenRequest model)
     {
-        var response = await service.UpdateSubMainScreenAsync(id, model);
+        var response = await service.UpdateSubMainScreenAsync(id, model,_hostEnvironment.WebRootPath,headerService.client_id,Modules.Setting);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

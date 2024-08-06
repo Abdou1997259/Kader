@@ -48,7 +48,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateLoanRequestAsync([FromForm] DTOContractTerminationRequest model)
         {
-            var response = await service.AddNewContractTerminationRequest(model, hostEnvironment.WebRootPath, requestService.client_id,
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+            var response = await service.AddNewContractTerminationRequest(model,serverPath,
 
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
@@ -66,7 +68,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateLoanRequestAsync([FromRoute] int id, [FromForm] DTOContractTerminationRequest model)
         {
-            var response = await service.UpdateContractTerminationRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+            var response = await service.UpdateContractTerminationRequest(id, model,serverPath,
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
                 return Ok(response);

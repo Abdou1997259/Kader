@@ -15,12 +15,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         private readonly IMapper _mapper = mapper;
         private readonly IFileServer _fileServer = fileServer;
         #region Create
-        public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model,string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
             var newRequest = _mapper.Map<LeavePermissionRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
             await _unitOfWork.LeavePermissionRequest.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
             return new()
@@ -125,7 +125,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #endregion
 
         #region Update
-        public async Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(int id ,DTOCreateLeavePermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        public async Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(int id ,DTOCreateLeavePermissionRequest model,string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
             
             var leave = await _unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
@@ -144,10 +144,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
 
             leave.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
 
             
-            var full_path = Path.Combine(root, clientName, moduleName);
+            var full_path = Path.Combine(appPath, moduleName);
             if (model.Attachment != null)
                 _fileServer.RemoveFile(full_path, leave.AttachmentPath);
 

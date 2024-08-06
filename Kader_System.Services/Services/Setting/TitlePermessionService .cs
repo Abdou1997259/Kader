@@ -1,4 +1,5 @@
 ﻿using Kader_System.DataAccesss.DbContext;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -7,47 +8,40 @@ namespace Kader_System.Services.Services.Setting
 {
     public class TitlePermessionService(KaderDbContext _context, IPermessionStructureService permession) : ITitlePermessionService
     {
-        public async Task<Response<DTOUserPermessionsForUser>> GetAllTitlePermession(int titleId, string lang)
+        public async Task<Response<DTOSPGetUserPermissionsBySubScreen>> GetTitlePermissionsBySubScreen(int titleId, string lang)
         {
-            var permStruct = (await permession.GetAllPermessionStructureForUser(lang)).DataList;
-            var titlePermessions = await _context.TitlePermissions
-                                                .Where(x => x.TitleId == titleId)
-                                                .FirstOrDefaultAsync();
+            var userIdParameter = new SqlParameter("@TitleId", titleId);
+            var langParameter = new SqlParameter("@Lang", lang);
 
-            var titlePermessionsIds = titlePermessions.Permissions
-                                                   .Split(',')
-                                                   .Select(int.Parse)
-                                                   .ToArray();
+            var results = await _context.SPUserPermissionsBySubScreens
+                .FromSqlRaw("EXEC SP_GetTitlePermissionsBySubScreen @TitleId, @Lang", userIdParameter, langParameter)
+                .AsNoTracking()
+                .ToListAsync();
 
-            var actionNames = await GetActionNamesAsync(lang);
-
-            foreach (var perm in permStruct)
+            var finalResult = results.Select(x => new DTOSPGetUserPermissionsBySubScreen
             {
-                var permissionsDict = new Dictionary<string, bool>();
+                actions = x.actions,
+                cat_id = x.cat_id,
+                cat_title = x.cat_title,
+                main_id = x.main_id,
+                main_img = x.main_image,
+                main_title = x.main_title,
+                permissions = x.permissions.Split(',').Distinct().ToDictionary(
+                            perm => perm,
+                            perm => true
+                      ),
+                screen_code = x.screen_code,
+                sub_id = x.sub_id,
+                sub_title = x.sub_title,
+                url = x.url
+            });
 
-                foreach (var actionId in perm.actions)
-                {
-                    if (actionNames.TryGetValue(actionId, out var actionName))
-                    {
-                        permissionsDict[actionName] = titlePermessionsIds.Contains(actionId);
-                    }
-                }
-                perm.permissions = permissionsDict;
-            }
-
-            return new Response<DTOUserPermessionsForUser>()
+            return new Response<DTOSPGetUserPermissionsBySubScreen>()
             {
                 Check = true,
-                DataList = permStruct,
-                Msg = ""
+                DynamicData = finalResult,
+                Error = "",
             };
-        }
-        private async Task<Dictionary<int, string>> GetActionNamesAsync(string lang)
-        {
-            var actions = await _context.Actions
-                                        .AsNoTracking()
-                                        .ToListAsync();
-            return actions.ToDictionary(a => a.Id, a => lang == "ar" ?  a.Name :a.NameInEnglish);
         }
     }
 }
