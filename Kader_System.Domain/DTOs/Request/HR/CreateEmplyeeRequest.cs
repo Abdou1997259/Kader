@@ -85,7 +85,7 @@
         public int shift_id { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "company_id")]
-        public int company_id { get; set; }
+        public int CompanyId { get; set; }
 
         /// <summary>
         /// جهاز البصمه

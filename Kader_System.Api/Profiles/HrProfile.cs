@@ -33,7 +33,7 @@ public class HrProfile : Profile
             .ForMember(dest => dest.birth_date, opt => opt.MapFrom(src => src.BirthDate))
             .ForMember(dest => dest.hiring_date, opt => opt.MapFrom(src => src.HiringDate))
             .ForMember(dest => dest.children_number, opt => opt.MapFrom(src => src.ChildrenNumber))
-            .ForMember(dest => dest.company_id, opt => opt.MapFrom(src => src.CompanyId))
+            .ForMember(dest => dest.CompanyId, opt => opt.MapFrom(src => src.CompanyId))
             .ForMember(dest => dest.department_id, opt => opt.MapFrom(src => src.DepartmentId))
             .ForMember(dest => dest.management_id, opt => opt.MapFrom(src => src.ManagementId))
             .ForMember(dest => dest.job_id, opt => opt.MapFrom(src => src.JobId))
