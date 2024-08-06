@@ -33,6 +33,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NuGet.Packaging.Signing;
 using Serilog;
 using System.Text;
 using System.Text.Json;
@@ -120,6 +121,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings.Issuer,
         ClockSkew = TimeSpan.Zero
     };
+  
     o.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>

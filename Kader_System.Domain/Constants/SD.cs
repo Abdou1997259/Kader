@@ -188,6 +188,7 @@ public static class SD
             public const string RestoreUser = "RestoreUser/{id}";
             public const string GetListOfUser = "GetListOfUsers";
             public const string GetLookups = "GetLookups";
+            public const string GetTitleLookups = "TitleLookups";
    
 
         }

@@ -273,6 +273,18 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
+    [HttpGet(ApiRoutes.User.GetTitleLookups)]
+
+    public async Task<IActionResult> GetTitleUser(string id)
+    {
+        var response = await _service.GetTitleLookUps(id,requestService.GetRequestHeaderLanguage);
+        if (response.Check)
+            return Ok(response);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    }
+    
 
     public class CompanyContractModel
     {
