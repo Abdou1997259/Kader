@@ -207,6 +207,9 @@
   <data name="SubMainScreen" xml:space="preserve">
     <value>الشاشة الفرعية</value>
   </data>
+  <data name="TitlePermisson" xml:space="preserve">
+    <value>من فضلك ارسل المسئولية</value>
+  </data>
   <data name="Updated" xml:space="preserve">
     <value>تم التحديث بنجاح</value>
   </data>

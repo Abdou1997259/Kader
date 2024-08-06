@@ -668,6 +668,7 @@ public static class SD
         public const string Management = "Management";
         public const string Allowance = "Allowance";
         public const string Benefit = "Benefit";
+        public const string TitlePermisson = "TitlePermisson";
         public const string Qualification = "Qualification";
         public const string Shift = "Shift";
         public const string Deduction = "Deduction";

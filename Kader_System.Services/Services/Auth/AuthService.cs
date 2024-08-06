@@ -638,12 +638,14 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
 
     }
 
-    public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int titleId, IEnumerable<Permissions> model,string lang)
+    public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int? titleId, IEnumerable<Permissions> model,string lang)
     {
-        if (titleId == 0)
+        if (titleId == 0 || titleId ==null )
         {
+            var msg = _sharLocalizer[Localization.TitlePermisson];
             return new Response<string>
             {
+                Msg=msg,
                 Check = false,
                 Data = "",
             };
@@ -694,7 +696,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
             UserId = id,
             Permission = string.Join(',', x.TitlePermssion),
             SubScreenId = x.SubId,
-            TitleId = titleId
+            TitleId = titleId?? 0
         }).ToList();
 
         // Process Title Permissions
@@ -724,7 +726,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
                 {
                     await _unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
                     {
-                        TitleId = titleId,
+                        TitleId = titleId??0,
                         SubScreenId = assignedPermission.SubId,
                         Permissions = string.Join(',', assignedPermission.TitlePermssion)
                     });
@@ -741,7 +743,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
         await _unitOfWork.CompleteAsync();
 
         // Process User Permissions
-        await ProcessUserPermissions(id, titleId, model, all);
+        await ProcessUserPermissions(id, titleId??0, model, all);
 
         return new Response<string>
         {
