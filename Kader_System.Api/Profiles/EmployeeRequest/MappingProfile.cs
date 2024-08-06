@@ -35,6 +35,7 @@ namespace Kader_System.Services.Services
             CreateMap<LeavePermissionRequest, ListOfLeavePermissionsReponse>().ForMember(x => x.EmployeeName, d => d.MapFrom(S => S.Employee.SetName()));
             CreateMap<DelayPermission, DtoListOfDelayRequestReponse>().ForMember(x => x.EmployeeName, x => x.MapFrom(d => d.Employee.SetName()));
             CreateMap<StCreateSubMainScreenRequest, StScreenSub>().ReverseMap();
+            CreateMap<StUpdateMainScreenCategoryRequest, StMainScreenCat>().ReverseMap();
             //.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Screen_main_id));
 
         }

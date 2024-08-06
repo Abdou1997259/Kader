@@ -1,14 +1,17 @@
-﻿using Kader_System.DataAccesss.DbContext;
+﻿using Kader_System.DataAccess.Repositories;
+using Kader_System.DataAccesss.DbContext;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : IMainScreenCategoryService
+public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper,IFileServer fileServer) : IMainScreenCategoryService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
     private readonly KaderDbContext _context = context;
+    private readonly IFileServer _fileServer = fileServer;
+
 
     #region Main screen category
 
@@ -106,6 +109,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
         string imageName = null!, imageExtension = null!;
         if (model.Screen_main_cat_image is not null)
         {
+
             var fileObj = ManageFilesHelper.UploadFile(model.Screen_main_cat_image, GoRootPath.SettingImagesPath);
             imageName = fileObj.FileName;
             imageExtension = fileObj.FileExtension;
@@ -163,23 +167,26 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
         
     }
 
-    public async Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model,string lang)
+    public async Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model,string lang, string root, string clientName, string moduleName)
     {
         var obj = await _unitOfWork.MainScreenCategories.GetByIdAsync(id);
 
-        if (obj == null)
-        {
-            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                _sharLocalizer[Localization.MainScreenCategory]);
 
-            return new()
-            {
-                Data = model,
-                Error = resultMsg,
-                Msg = resultMsg
-            };
-        }
+        var mappedcatscreen = _mapper.Map(model, obj);
+        _unitOfWork.MainScreenCategories.Update(mappedcatscreen);
 
+        obj.Screen_main_cat_image = (model.Screen_main_cat_image == null || model.Screen_main_cat_image.Length == 0) ? null :
+            await _fileServer.UploadFile(root, clientName, moduleName, model.Screen_main_cat_image);
+
+
+        var full_path = Path.Combine(root, clientName, moduleName);
+        if (model.Screen_main_cat_image != null)
+            _fileServer.RemoveFile(full_path, obj.Screen_main_cat_image);
+
+
+        _unitOfWork.MainScreenCategories.Update(obj);
+        var result = await _unitOfWork.CompleteAsync();
+       
         var lookupActionScreen = await _context.Actions.AsQueryable()
             .ToDynamicLookUpAsync("Id", lang == "ar" ? "Name" : "NameInEnglish");
 
