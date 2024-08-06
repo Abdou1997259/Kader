@@ -139,7 +139,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddLoanRequest
-        public async Task<Response<VacationRequests>> AddNewVacationRequest(DTOVacationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<VacationRequests>> AddNewVacationRequest(DTOVacationRequest model , string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.VacationRequest)
         {
             var IsEmpolyeeExisted = await unitOfWork.Employees.ExistAsync(model.EmployeeId);
             if (!IsEmpolyeeExisted)
@@ -157,7 +157,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var newRequest = mapper.Map<VacationRequests>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
             await unitOfWork.VacationRequests.AddAsync(newRequest);
             var result = await unitOfWork.CompleteAsync();
             return new()
@@ -199,7 +199,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region UpdateLoanRequest
-        public async Task<Response<VacationRequests>> UpdateVacationRequest(int id, DTOVacationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<VacationRequests>> UpdateVacationRequest(int id, DTOVacationRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.VacationRequest)
         {
             var result = await unitOfWork.VacationRequests.GetByIdAsync(id);
 
@@ -217,7 +217,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             {
                 var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
                 updatingModel.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                    await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
             }
             unitOfWork.VacationRequests.Update(result);
             await unitOfWork.CompleteAsync();

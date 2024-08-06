@@ -9,11 +9,11 @@ namespace Kader_System.Domain.DTOs.Request.Setting
     public class GetAllStMainScreenCat
     {
         public int Id { get; set; }
-        public int MainScreenId { get; set; }
+        public int main_id { get; set; }
 
 
-        public required string Screen_cat_title { get; set; }
-        public required string Screen_main_cat_image { get; set; }
-        public ICollection<GetAllStScreenSub> StScreenSub { get; set; } = [];
+        public required string title { get; set; }
+        //public required string image { get; set; }
+        public ICollection<GetAllStScreenSub> subs { get; set; } = [];
     }
 }

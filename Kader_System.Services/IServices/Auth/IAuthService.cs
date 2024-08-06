@@ -11,8 +11,8 @@ public interface IAuthService
     Task<Response<AuthLoginUserResponse>> LoginUserAsync(AuthLoginUserRequest model);
     Task<Response<string>> LogOutUserAsync();
 
-    Task<Response<CreateUserResponse>> CreateUserAsync(CreateUserRequest model, string root, string clientName, string moduleName, UsereEnum userEnum = UsereEnum.None);
-    //Task<Response<AuthUpdateUserRequest>> UpdateUserAsync(string id, AuthUpdateUserRequest model);
+    public  Task<Response<CreateUserResponse>> CreateUserAsync(CreateUserRequest model,
+        string appPath, string moduleName, UsereEnum userenum = UsereEnum.None);
     Task<Response<string>> ShowPasswordToSpecificUserAsync(string id);
     Task<Response<AuthChangePassOfUserResponse>> ChangePasswordAsync(AuthChangePassOfUserRequest model);
     Task<Response<AuthSetNewPasswordRequest>> SetNewPasswordToSpecificUserAsync(AuthSetNewPasswordRequest model);
@@ -23,7 +23,7 @@ public interface IAuthService
     Task<Response<UsersLookups>> UsersGetLookups(string lang);
 
     Task<Response<UpdateUserRequest>> UpdateUserAsync(string id, string lang,
-         UpdateUserRequest model, string root, string clientName, string moduleName, UsereEnum userenum = UsereEnum.None);
+         UpdateUserRequest model, string appPath, string moduleName, UsereEnum userenum = UsereEnum.None);
 
     Task<Response<string>> DeleteUser(string id);
     Task<Response<string>> RestoreUser(string id);

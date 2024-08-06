@@ -15,7 +15,7 @@ namespace Kader_System.Domain.Interfaces
         /// <param name="clinetName"></param>
         /// <param name="file"></param>
         /// <returns>new file name with GUID</returns>
-        public Task<string> UploadFile(string rootPath, string clinetName, string moduleName, IFormFile file);
+        public Task<string> UploadFile(string appPath, string moduleName, IFormFile file);
         /// <summary>
         /// Remove File From wwwroot by filename
         /// </summary>

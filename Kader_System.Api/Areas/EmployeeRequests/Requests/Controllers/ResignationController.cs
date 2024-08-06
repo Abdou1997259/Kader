@@ -46,7 +46,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateResignationRequestAsync([FromForm] DTOResignationRequest model)
         {
-            var response = await service.AddNewResignationRequest(model, hostEnvironment.WebRootPath, requestService.client_id,
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+            var response = await service.AddNewResignationRequest(model, serverPath,
 
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
@@ -64,7 +66,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateResignationRequestAsync([FromRoute] int id, [FromForm] DTOResignationRequest model)
         {
-            var response = await service.UpdateResignationRequest(id, model, hostEnvironment.WebRootPath, requestService.client_id,
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+            var response = await service.UpdateResignationRequest(id, model, serverPath,
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
                 return Ok(response);

@@ -152,7 +152,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddSalaryIncrease
-        public async Task<Response<SalaryIncreaseRequest>> AddNewSalaryIncreaseRequest(DTOSalaryIncreaseRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<SalaryIncreaseRequest>> AddNewSalaryIncreaseRequest(DTOSalaryIncreaseRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.SalaryIncreaseRequest)
         {
              
         
@@ -172,7 +172,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var newRequest = mapper.Map<SalaryIncreaseRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await fileserver.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                await fileserver.UploadFile(appPath, moduleNameWithType, model.Attachment);
             await unitOfWork.SalaryIncreaseRequest.AddAsync(newRequest);
             var result = await unitOfWork.CompleteAsync();
             return new()
@@ -186,7 +186,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
         #region UpdateSalaryIncrease
-        public async Task<Response<SalaryIncreaseRequest>> UpdateSalaryIncreaseRequest(int id, DTOSalaryIncreaseRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<SalaryIncreaseRequest>> UpdateSalaryIncreaseRequest(int id, DTOSalaryIncreaseRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.SalaryIncreaseRequest)
         {
             var result = await unitOfWork.SalaryIncreaseRequest.GetByIdAsync(id);
 
@@ -204,7 +204,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             {
                 var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
                 updatingModel.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await fileserver.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                    await fileserver.UploadFile(appPath, moduleNameWithType, model.Attachment);
             }
             unitOfWork.SalaryIncreaseRequest.Update(result);
             await unitOfWork.CompleteAsync();

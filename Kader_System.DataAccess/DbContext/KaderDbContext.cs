@@ -79,6 +79,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrRelegion> Relegions { get; set; }
     public DbSet<HrMaritalStatus> MaritalStatus { get; set; }
     public DbSet<MainScreenTree> MainScreenTrees { get; set; }
+    public DbSet<SPUserPermissionsBySubScreen> SPUserPermissionsBySubScreens { get; set; }
 
     #region EmployeeRequest_Dbset
     public DbSet<HrEmployeeRequests> HrEmployeeRequests { get; set; }
@@ -230,6 +231,13 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             HasMany(x => x.StScreenSub).
             WithOne(x => x.ScreenCat).
             HasForeignKey(x => x.ScreenCatId);
+
+        modelBuilder.Entity<SPUserPermissionsBySubScreen>(e =>
+        {
+            e.HasNoKey();
+            e.ToView(null);
+
+        });
         #endregion
 
     }

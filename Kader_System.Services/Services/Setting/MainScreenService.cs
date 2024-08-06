@@ -253,52 +253,52 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         var ChildScreens = mainScreens.Select(ms => new GetAllStMainScreen
         {
 
-            Screen_main_title = lang == "en" ? ms.Screen_main_title_en : ms.Screen_main_title_ar,
-            Screen_main_image = ms.Screen_main_image,
-            CategoryScreen = ms.CategoryScreen.Select(x => new GetAllStMainScreenCat
+            main_title = lang == "en" ? ms.Screen_main_title_en : ms.Screen_main_title_ar,
+            main_image = ms.Screen_main_image,
+            cats = ms.CategoryScreen.Select(x => new GetAllStMainScreenCat
             {
                 Id = x.Id,
-                Screen_cat_title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
-                Screen_main_cat_image = x.Screen_main_cat_image,
-                StScreenSub = x.StScreenSub.Select(k => new GetAllStScreenSub
+                title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
+                main_id = x.MainScreenId,
+                subs = x.StScreenSub.Select(k => new GetAllStScreenSub
                 {
                     Sub_Id = k.Id,
                     Screen_CatId = k.ScreenCatId,
-                    Cat_Title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_en,
-                    Main_title = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Name).FirstOrDefault(),
-                    Screen_MainId = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Id).FirstOrDefault(),
-                    Screen_sub_title = lang == "en" ? k.Screen_sub_title_en : k.Screen_sub_title_ar,
-                    Url = k.Url,
-                    Screen_sub_image = k.Screen_sub_image,
-                    ScreenCode = k.ScreenCode,
-                    Actions = subs.Where(x => x.ScreenSubId == k.Id).Select(x => x.ActionId).ToList().Concater(),
-                    Permissions = permision.Where(x => x.SubScreenId == k.Id).Select(p => p.Id).ToList().Concater()
+                    cat_Title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_en,
+                    main_title = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Name).FirstOrDefault(),
+                    main_id = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Id).FirstOrDefault(),
+                    sub_title = lang == "en" ? k.Screen_sub_title_en : k.Screen_sub_title_ar,
+                    url = k.Url,
+                    sub_image = k.Screen_sub_image,
+                    screen_code = k.ScreenCode,
+                    actions = subs.Where(x => x.ScreenSubId == k.Id).Select(x => x.ActionId).ToList().Concater(),
+                    permissions = permision.Where(x => x.SubScreenId == k.Id).Select(p => p.Id).ToList().Concater()
                 }).ToList()
             }).ToList()
         }).ToList();
 
         foreach (var mainScreen in ChildScreens)
         {
-            Console.WriteLine($"Main Screen Title: {mainScreen.Screen_main_title}");
-            Console.WriteLine($"Main Screen Image: {mainScreen.Screen_main_image}");
+            Console.WriteLine($"Main Screen Title: {mainScreen.main_title}");
+            Console.WriteLine($"Main Screen Image: {mainScreen.main_image}");
 
-            foreach (var categoryScreen in mainScreen.CategoryScreen)
+            foreach (var categoryScreen in mainScreen.cats)
             {
                 Console.WriteLine($"Category ID: {categoryScreen.Id}");
-                Console.WriteLine($"Category Screen Title: {categoryScreen.Screen_cat_title}");
-                Console.WriteLine($"Category Main Image: {categoryScreen.Screen_main_cat_image}");
-
-                foreach (var screenSub in categoryScreen.StScreenSub)
+                Console.WriteLine($"Category Screen Title: {categoryScreen.title}");
+                Console.WriteLine($"Category Screen Title: {categoryScreen.title}");
+ 
+                foreach (var screenSub in categoryScreen.subs)
                 {
                     Console.WriteLine($"Screen Sub ID: {screenSub.Sub_Id}");
-                    Console.WriteLine($"Screen Sub Title: {screenSub.Screen_sub_title}");
+                    Console.WriteLine($"Screen Sub Title: {screenSub.sub_title}");
                     Console.WriteLine($"Screen Screen_CatId {screenSub.Screen_CatId}");
-                    Console.WriteLine($"Screen Main Title: {screenSub.Main_title}");
-                    Console.WriteLine($"Category Screen Title: {categoryScreen.Screen_cat_title}");
-                    Console.WriteLine($"Actions: {screenSub.Actions}");
-                    Console.WriteLine($"URL: {screenSub.Url}");
-                    Console.WriteLine($"Screen Sub Image: {screenSub.Screen_sub_image}");
-                    Console.WriteLine($"Screen Code: {screenSub.ScreenCode}");
+                    Console.WriteLine($"Screen Main Title: {screenSub.main_title}");
+                    Console.WriteLine($"Category Screen Title: {screenSub.cat_Title}");
+                    Console.WriteLine($"Actions: {screenSub.actions}");
+                    Console.WriteLine($"URL: {screenSub.url}");
+                    Console.WriteLine($"Screen Sub Image: {screenSub.sub_image}");
+                    Console.WriteLine($"Screen Code: {screenSub.screen_code}");
                     Console.WriteLine();
                 }
             }

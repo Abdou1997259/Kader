@@ -45,7 +45,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> AddNewDelayPermissionRequest([FromForm] DTODelayPermissionRequest model)
         {
-            var response = await delayPermission.AddNewDelayPermissionRequest(model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+            var response = await delayPermission.AddNewDelayPermissionRequest(model,serverPath , Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -72,7 +74,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateDelayPermissionRequest([FromRoute] int id, [FromForm] DTODelayPermissionRequest model)
         {
-            var response = await delayPermission.UpdateDelayPermissionRequest(id,model, _hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+
+            var response = await delayPermission.UpdateDelayPermissionRequest(id,model, serverPath, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

@@ -54,12 +54,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
         #region insert
 
-        public async Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
             var newRequest = _mapper.Map<DelayPermission>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
             await _unitOfWork.DelayPermission.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
 
@@ -170,7 +170,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
         #region Update
 
-        public async Task<Response<DtoListOfDelayRequestReponse>> UpdateDelayPermissionRequest(int id,DTODelayPermissionRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        public async Task<Response<DtoListOfDelayRequestReponse>> UpdateDelayPermissionRequest(int id,DTODelayPermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
        
 
@@ -187,12 +187,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             }
             var mappedleave = _mapper.Map(model, leave);
             _unitOfWork.DelayPermission.Update(mappedleave);
-            var full_path = Path.Combine(root, clientName, moduleName);
+            var full_path = Path.Combine(appPath, moduleName);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
               if (model.Attachment != null)
                 _fileServer.RemoveFile(full_path, leave.AtachmentPath);
             leave.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
 
 
  

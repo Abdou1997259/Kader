@@ -143,7 +143,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddLoanRequest
-        public async Task<Response<ResignationRequest>> AddNewResignationRequest(DTOResignationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<ResignationRequest>> AddNewResignationRequest(DTOResignationRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.ResignationRequest)
         {
             var IsEmpolyeeExisted = await unitOfWork.Employees.ExistAsync(model.EmployeeId);
             if (!IsEmpolyeeExisted)
@@ -161,7 +161,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var newRequest = mapper.Map<ResignationRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await fileserver.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                await fileserver.UploadFile(appPath, moduleNameWithType, model.Attachment);
             await unitOfWork.ResignationRepository.AddAsync(newRequest);
             var result = await unitOfWork.CompleteAsync();
             return new()
@@ -203,7 +203,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region UpdateLoanRequest
-        public async Task<Response<ResignationRequest>> UpdateResignationRequest(int id, DTOResignationRequest model, string root, string clientName, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<ResignationRequest>> UpdateResignationRequest(int id, DTOResignationRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.ResignationRequest)
         {
             var result = await unitOfWork.ResignationRepository.GetByIdAsync(id);
 
@@ -221,7 +221,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             {
                 var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
                 updatingModel.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await fileserver.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
+                    await fileserver.UploadFile(appPath, moduleNameWithType, model.Attachment);
             }
             unitOfWork.ResignationRepository.Update(result);
             await unitOfWork.CompleteAsync();
