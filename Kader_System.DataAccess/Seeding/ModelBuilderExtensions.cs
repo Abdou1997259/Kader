@@ -427,20 +427,37 @@ new StScreenSub { Id = 30, ScreenCatId = 2, Screen_sub_title_ar = "الدوام"
 
 
         modelBuilder.Entity<Kader_System.Domain.Models.Setting.UserPermission>().HasData(
-
-            new UserPermession { });
-
-
-
-
-        modelBuilder.Entity<StSubMainScreenAction>()
-                 .HasData(
-                    new StSubMainScreenAction() { Id = 1, ScreenSubId = 4, ActionId = 1 },
-                    new StSubMainScreenAction() { Id = 2, ScreenSubId = 1, ActionId = 3 },
-                    new StSubMainScreenAction() { Id = 4, ScreenSubId = 4, ActionId = 2 },
-                    new StSubMainScreenAction() { Id = 5, ScreenSubId = 1, ActionId = 1 },
-                    new StSubMainScreenAction() { Id = 9, ScreenSubId = 2, ActionId = 2 }
-                 );
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 1, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 1, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 2, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 2, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 3, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 3, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 4, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 4, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 5, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 5, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 6, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 6, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 7, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 7, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 8, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 8, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 9, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 9, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 10, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 10, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 11, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 11, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 12, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 12, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 13, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 13, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 14, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 14, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 15, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 15, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 16, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 16, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 17, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 17, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 18, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 18, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 19, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 19, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 20, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 20, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 21, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 21, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 22, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 22, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 23, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 23, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 24, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 24, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 25, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 25, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 26, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 26, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 27, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 27, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 28, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 28, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 29, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 29, Permission = "1,2,3,4,5" },
+         new Kader_System.Domain.Models.Setting.UserPermission { Id = 30, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 30, Permission = "1,2,3,4,5" }
+     );
 
 
 
