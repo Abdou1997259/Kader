@@ -1,8 +1,10 @@
 ﻿
 
 using Kader_System.DataAccess.Repositories;
+using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.Interfaces;
+using Microsoft.Extensions.Hosting;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Setting
@@ -42,39 +44,47 @@ namespace Kader_System.Services.Services.Setting
             };
         }
 
-        public async Task<Response<GetAllTitleResponse>> GetAllTitlesAsync(string lang, GetAllFilterrationForTitleRequest model)
+        public async Task<Response<GetAllTitleResponse>> GetAllTitlesAsync(string lang, GetAllFilterrationForTitleRequest model, string host)
         {
-            Expression<Func<Title, bool>> filter = x => x.IsDeleted == model.IsDeleted;
+            Expression<Func<Title, bool>> filter = x => x.IsDeleted == model.IsDeleted
+                                              &&(string.IsNullOrEmpty(model.Word) ||
+                                                  x.TitleNameAr.Contains(model.Word)
+                                                  || x.TitleNameEn.Contains(model.Word)
+                                               );
+
+            var totalRecords = await unitOfWork.Titles.CountAsync(filter: filter);
+            int page = 1;
+            int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+            if (model.PageNumber < 1)
+                page = 1;
+            else
+                page = model.PageNumber;
+            var pageLinks = Enumerable.Range(1, totalPages)
+                .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+                .ToList();
 
             var result = new GetAllTitleResponse
             {
-                TotalRecords = await unitOfWork.Titles.CountAsync(filter: filter),
+                TotalRecords = totalRecords,
 
-                Items = (await unitOfWork.Titles.GetSpecificSelectAsync(filter: filter,
-                    includeProperties: $"{nameof(_instance.TitlePermissions)}",
-                    take: model.PageSize,
-                    skip: (model.PageNumber - 1) * model.PageSize,
-                    select: x => new TitleData()
-                    {
-                        Id = x.Id,
-                        TitleNameAr = x.TitleNameAr,
-                        TitleNameEn = x.TitleNameEn,
-                        Add_date = x.Add_date,
-                        //Permissions = x.TitlePermissions.Select(p=>new GetAllTitlePermissionResponse()
-                        //{
-                        //    Id = p.Id,
-                        //    SubScreenId = p.SubScreenId,
-                        //    sub_title = p.ScreenSub!.Screen_sub_title_ar,
-                        //    actions = "",
-                        //    url = p.ScreenSub!.Url,
-                        //    title_permission = new List<int>()
-                        //    {
-                        //       1,2, 3, 4,
-                        //    }
-
-                        //}).ToList()
-                    }, orderBy: x =>
-                        x.OrderByDescending(x => x.Id))).ToList()
+                Items = (await unitOfWork.Titles.GetSpecificSelectAsync(filter: filter,x =>x,
+                     take: model.PageSize,
+                     skip: (model.PageNumber - 1) * model.PageSize)).Select(x=>new TitleData
+                     {
+                         TitleNameAr = x.TitleNameAr,
+                         TitleNameEn = x.TitleNameEn,   
+                     }).ToList(),
+                CurrentPage = model.PageNumber,
+                FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+                From = (page - 1) * model.PageSize + 1,
+                To = Math.Min(page * model.PageSize, totalRecords),
+                LastPage = totalPages,
+                LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+                PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+                NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+                Path = host,
+                PerPage = model.PageSize,
+                Links = pageLinks
             };
 
             if (result.TotalRecords is 0)
@@ -97,6 +107,8 @@ namespace Kader_System.Services.Services.Setting
                 Data = result,
                 Check = true
             };
+
+
         }
 
         public async Task<Response<CreateTitleRequest>> CreateTitleAsync(CreateTitleRequest model)

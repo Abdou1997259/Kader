@@ -1,19 +1,14 @@
-﻿using Kader_System.DataAccess.Repositories;
-using Kader_System.DataAccesss.DbContext;
-using Kader_System.Domain.Dtos.Response;
-using Kader_System.Domain.Models.EmployeeRequests;
-using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
-using System.Net;
+﻿using Kader_System.DataAccesss.Context;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository,IFileServer fileServer) : ISubMainScreenService
+public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository, Domain.Interfaces.IFileServer fileServer) : ISubMainScreenService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
     private readonly ILoggingRepository _loggingRepository = loggingRepository;
-    private readonly IFileServer _fileServer = fileServer;
+    private readonly Domain.Interfaces.IFileServer _fileServer = fileServer;
 
 
     #region Sub main screen
@@ -95,18 +90,16 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
 
     public async Task<Response<StCreateSubMainScreenRequest>> CreateSubMainScreenAsync(StCreateSubMainScreenRequest model, string appPath, string moduleName)
     {
-        var newRequest = _mapper.Map<StScreenSub>(model);
+
+
         bool exists = false;
-        exists = await _unitOfWork.SubMainScreens.ExistAsync(x => x.Screen_sub_title_ar.Trim() == model.Screen_sub_title_ar
-        || x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim());
-        newRequest.Screen_sub_image = (model.Screen_sub_image == null || model.Screen_sub_image.Length == 0) ? null :
-              await _fileServer.UploadFile(appPath, moduleName, model.Screen_sub_image);
-        await _unitOfWork.SubMainScreens.AddAsync(newRequest);
+        exists = await _unitOfWork.SubMainScreens.ExistAsync(x => x.Screen_sub_title_en.Trim() == model.Screen_sub_title_ar
+        && x.Screen_sub_title_en.Trim() == model.Screen_sub_title_ar.Trim());
 
         if (exists)
         {
             string resultMsg = string.Format(_sharLocalizer[Localization.IsExist],
-                _sharLocalizer[Localization.SubMainScreen]);
+                _sharLocalizer[Localization.MainScreenCategory]);
 
             return new()
             {
@@ -115,18 +108,22 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             };
         }
 
-        var obj = await _unitOfWork.SubMainScreens.AddAsync(new()
+        string imageName = null!, imageExtension = null!;
+        if (model.Screen_sub_image is not null)
         {
-            Screen_sub_title_en = model.Screen_sub_title_en,
-            Screen_sub_title_ar = model.Screen_sub_title_ar,
-            ScreenCatId = model.ScreenCatId,
-            Url = model.Url,
-            ScreenCode = model.ScreenCode,
-            ListOfActions = model.Actions.Select(ob => new StSubMainScreenAction
-            {
-                ActionId = ob,
 
-            }).ToList()
+            var fileObj = ManageFilesHelper.UploadFile(model.Screen_sub_image, GoRootPath.SettingImagesPath);
+            imageName = fileObj.FileName;
+            imageExtension = fileObj.FileExtension;
+        }
+
+
+        await _unitOfWork.SubMainScreens.AddAsync(new()
+        {
+            Screen_sub_title_ar = model.Screen_sub_title_ar,
+            Screen_sub_title_en = model.Screen_sub_title_en,
+            ScreenCatId = model.ScreenCatId,
+            ScreenCode = model.ScreenCode,
         });
         await _unitOfWork.CompleteAsync();
 
@@ -136,6 +133,49 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             Check = true,
             Data = model
         };
+
+
+        //var newRequest = _mapper.Map<StScreenSub>(model);
+        //bool exists = false;
+        //exists = await _unitOfWork.SubMainScreens.ExistAsync(x => x.Screen_sub_title_ar.Trim() == model.Screen_sub_title_ar
+        //|| x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim());
+        //newRequest.Screen_sub_image = (model.Screen_sub_image == null || model.Screen_sub_image.Length == 0) ? null :
+        //      await _fileServer.UploadFile(appPath, moduleName, model.Screen_sub_image);
+        //await _unitOfWork.SubMainScreens.AddAsync(newRequest);
+
+        //if (exists)
+        //{
+        //    string resultMsg = string.Format(_sharLocalizer[Localization.IsExist],
+        //        _sharLocalizer[Localization.SubMainScreen]);
+
+        //    return new()
+        //    {
+        //        Error = resultMsg,
+        //        Msg = resultMsg
+        //    };
+        //}
+
+        //var obj = await _unitOfWork.SubMainScreens.AddAsync(new()
+        //{
+        //    Screen_sub_title_en = model.Screen_sub_title_en,
+        //    Screen_sub_title_ar = model.Screen_sub_title_ar,
+        //    ScreenCatId = model.ScreenCatId,
+        //    Url = model.Url,
+        //    ScreenCode = model.ScreenCode,
+        //    ListOfActions = model.Actions.Select(ob => new StSubMainScreenAction
+        //    {
+        //        ActionId = ob,
+
+        //    }).ToList()
+        //});
+        //await _unitOfWork.CompleteAsync();
+
+        //return new()
+        //{
+        //    Msg = _sharLocalizer[Localization.Done],
+        //    Check = true,
+        //    Data = model
+        //};
     }
 
     public async Task<Response<StGetSubMainScreenByIdResponse>> GetSubMainScreenByIdAsync(int id, string lang)

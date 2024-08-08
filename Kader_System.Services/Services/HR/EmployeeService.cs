@@ -489,7 +489,8 @@ namespace Kader_System.Services.Services.HR
                     TitleId="1",
                     FullName=newEmployee.FullNameAr,
                     PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, model.password),
-                    VisiblePassword = model.password
+                    VisiblePassword = model.password,
+                    CompanyId = model.CompanyId.ToString(),
 
                 });
                 await unitOfWork.CompleteAsync();

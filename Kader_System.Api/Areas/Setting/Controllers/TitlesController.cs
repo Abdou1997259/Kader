@@ -24,8 +24,8 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Retrieve
         [HttpGet(ApiRoutes.Title.GetAllTitles)]
         [Permission(Helpers.Permission.View, 4)]
-        public async Task<IActionResult> GetAllTitles([FromQuery] GetAllFilterrationForTitleRequest model, ITitleService titleService) =>
-            Ok(await titleService.GetAllTitlesAsync(requestService.GetRequestHeaderLanguage, model));
+        public async Task<IActionResult> GetAllTitlesAsync([FromQuery] GetAllFilterrationForTitleRequest model, ITitleService titleService ) =>
+            Ok(await titleService.GetAllTitlesAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
 
         [HttpGet(ApiRoutes.Title.GetTitleById)]

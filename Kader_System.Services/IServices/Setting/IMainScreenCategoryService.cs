@@ -6,7 +6,8 @@ public interface IMainScreenCategoryService
     Task<Response<StGetAllMainScreensCategoriesResponse>> GetAllMainScreensCategoriesAsync(string lang, StGetAllFiltrationsForMainScreenCategoryRequest model);
     Task<Response<StCreateMainScreenCategoryRequest>> CreateMainScreenCategoryAsync(StCreateMainScreenCategoryRequest model);
     Task<Response<StGetMainScreenCategoryByIdResponse>> GetMainScreenCategoryByIdAsync(int id );
-    public  Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model, string lang, string appPath, string moduleName);    Task<Response<string>> UpdateActiveOrNotMainScreenCategoryAsync(int id);
+    public  Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model, string lang, string appPath, string moduleName);  
+    Task<Response<string>> UpdateActiveOrNotMainScreenCategoryAsync(int id);
     Task<Response<string>> DeleteMainScreenCategoryAsync(int id);
     Task<Response<StMainScreenCat>> RestoreCatScreenAsync(int id);
 }
