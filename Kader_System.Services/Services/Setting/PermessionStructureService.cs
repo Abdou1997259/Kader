@@ -1,12 +1,6 @@
-﻿using Kader_System.DataAccesss.DbContext;
+﻿using Kader_System.DataAccesss.Context;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kader_System.Services.Services.Setting
 {

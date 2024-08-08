@@ -78,7 +78,32 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
+    [HttpPut(ApiRoutes.SubMainScreen.OrderbyPattern)]
+    [Permission(Helpers.Permission.Edit, 2)]
+    public async Task<IActionResult> OrderByPattern( [FromBody]int[] model)
+    {
+        
 
+        var response = await service.OrderByPattern(model);
+        if (response.Check)
+            return Ok(response);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    }
+    [HttpPut(ApiRoutes.SubMainScreen.RestoreScreen)]
+    [Permission(Helpers.Permission.Edit, 2)]
+    public async Task<IActionResult> RestoreScreen( [FromRoute]int id)
+    {
+
+
+        var response = await service.RestoreSubScreenAsync(id);
+        if (response.Check)
+            return Ok(response);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    }
     #endregion
 
     #region Delete

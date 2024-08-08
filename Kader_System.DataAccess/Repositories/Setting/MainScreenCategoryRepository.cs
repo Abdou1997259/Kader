@@ -2,4 +2,7 @@
 
 public class MainScreenCategoryRepository(KaderDbContext context) : BaseRepository<StMainScreenCat>(context), IMainScreenCategoryRepository
 {
+   
+
+   
 }

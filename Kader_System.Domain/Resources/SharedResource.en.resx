@@ -156,6 +156,9 @@
   <data name="Employee" xml:space="preserve">
     <value>Employee</value>
   </data>
+  <data name="InvalidSubId" xml:space="preserve">
+    <value>Invalid Sub id </value>
+  </data>
   <data name="IsDepartmentInMang" xml:space="preserve">
     <value>There isnt such department in this mangement</value>
   </data>

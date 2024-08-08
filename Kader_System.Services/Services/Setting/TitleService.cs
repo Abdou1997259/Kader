@@ -165,22 +165,53 @@ namespace Kader_System.Services.Services.Setting
                 };
             }
 
+            var subMainScreenActions = await unitOfWork.SubMainScreenActions.GetAllAsync();
+            foreach (var sub in model.Permssions)
+            {
+                // Get ActionIds for the current SubId
+                var actionIdsForSubId = subMainScreenActions
+                    .Where(x => x.ScreenSubId == sub.SubId)
+                    .Select(x => x.ActionId)
+                    .Distinct()
+                    .ToList();
 
+                // Get TitlePermssion for the current SubId
+                var titlePermissions = sub.TitlePermssion;
+
+                // Check if there is at least one ActionId that is not in the TitlePermssion
+                var missingActionsExist = titlePermissions.Except(actionIdsForSubId);
+
+                // Process the result
+                if (missingActionsExist.Any() && missingActionsExist.Any(x => x != 0))
+                {
+                    var permssions = await unitOfWork.ActionsRepo.GetSpecificSelectAsync(x => missingActionsExist.Any(u => u == x.Id), x => x);
+                    var subscrren = await unitOfWork.SubMainScreens.GetByIdAsync(sub.SubId);
+                    string name = Localization.Arabic == lang ? subscrren.Screen_sub_title_ar : subscrren.Screen_sub_title_en;
+                    string nameofpermissions = "";
+                    foreach (var per in permssions)
+                    {
+                        nameofpermissions += Localization.Arabic == lang ? per.Name + " " : per.NameInEnglish + " ";
+                    }
+                    var msg = $"{name} {sharLocalizer[Localization.ScreenInAction]} {nameofpermissions}";
+                    // Handle the case where at least one ActionId is missing
+                    // Example: Log or perform some action
+                    return new()
+                    {
+                        Check = false,
+                        Msg = msg,
+                        Data = null
+
+                    };
+
+                }
+            }
 
 
             title.TitleNameAr = model.TitleNameAr;
             title.TitleNameEn = model.TitleNameEn;
 
 
-            //foreach (var titlePermission in model.Permissions)
-            //{
-            //    newTitle.TitlePermissions.Add(new TitlePermission()
-            //    {
-            //     SubScreenId = titlePermission.SubScreenId,
-            //     Permissions = titlePermission.Permissions
-
-            //    });
-            //}
+          
 
 
 
@@ -196,14 +227,7 @@ namespace Kader_System.Services.Services.Setting
 
             }
             unitOfWork.Titles.Update(title);
-            //var listOfTitlePermssion = pers.Select(x => new TitlePermission
-            //{
-            //    SubScreenId = x.SubScreenId,
-            //    TitleId = title.Id,
-            //    Permissions = string.Join(',', x.Permission)
-
-            //});
-            //await unitOfWork.TitlePermissionRepository.AddRangeAsync(listOfTitlePermssion);
+        
 
 
             await unitOfWork.CompleteAsync();
@@ -263,59 +287,93 @@ namespace Kader_System.Services.Services.Setting
 
 
 
-            int userCounter = 0;
+          
             foreach (var assignedPermission in model)
 
             {
-                var userPermissionQuery = await unitOfWork.TitlePermissionRepository
-                    .GetSpecificSelectAsync(x=> x.SubScreenId == assignedPermission.SubId, x => x);
 
-                var userPermission = all ? userPermissionQuery : userPermissionQuery.Where(x => x.Id == id);
+         
 
+                if (await unitOfWork.SubMainScreens.ExistAsync(x => x.Id == assignedPermission.SubId) ) {
 
-                if (userPermission.Any())
-                {
-                    var listUpdatedPer = userPermission.Select(x => new TitlePermission
+                    if (all)
                     {
-                        Id = x.Id,
-                       
-                        Permissions = string.Join(',', assignedPermission.TitlePermssion),
-                        SubScreenId = x.SubScreenId,
-                        TitleId = x.TitleId
-                    });
-                    unitOfWork.TitlePermissionRepository.UpdateRange(listUpdatedPer);
-                }
-                else
-                {
-                    // Check if the SubScreenId exists in the st_screens_subs table
-                    var subScreenExists = await unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubId);
+                        var userPermissionQuery = await unitOfWork.TitlePermissionRepository
+                                .GetSpecificSelectAsync(x => true, x => x);
 
-                    if (subScreenExists)
-                    {
-
-                        await unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
+                        if (userPermissionQuery.Count() > 0)
                         {
+                            unitOfWork.TitlePermissionRepository.RemoveRange(userPermissionQuery);
+                        }
+                        if (assignedPermission.TitlePermssion.Count == 0||assignedPermission.TitlePermssion.Any(x => x == 0))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            await unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
+                            {
 
 
+                                TitleId=id,
 
 
-                           
-                            SubScreenId = assignedPermission.SubId,
-                            Permissions = string.Join(',', assignedPermission.TitlePermssion)
-                        });
+                                SubScreenId = assignedPermission.SubId,
+                                Permissions = string.Join(',', assignedPermission.TitlePermssion)
+                            });
+                        }
                     }
                     else
                     {
-                        // Log the invalid SubScreenId or handle accordingly
-                        Console.WriteLine("Invalid SubScreenId: " + assignedPermission.SubId);
-                        continue;
+                        var userPermissionQuery = await unitOfWork.TitlePermissionRepository
+                           .GetSpecificSelectAsync(x => x.SubScreenId == assignedPermission.SubId, x => x);
+
+                        if (userPermissionQuery.Count() > 0)
+                        {
+                            unitOfWork.TitlePermissionRepository.RemoveRange(userPermissionQuery);
+                        }
+                        if (assignedPermission.TitlePermssion.Count == 0 ||assignedPermission.TitlePermssion.Any(x=>x==0))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            await unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
+                            {
+
+
+
+
+
+                                SubScreenId = assignedPermission.SubId,
+                                Permissions = string.Join(',', assignedPermission.TitlePermssion)
+                            });
+                        }
+
+
                     }
+
                 }
+                else
+                {
+                    var msg = sharLocalizer[Localization.InvalidSubId];
+                    return new Response<string>()
+                    {
+                        Check = false,
+                        Data = null,
+                        Msg = msg
+
+
+                    };
+                };
+
+
+
               
 
 
             }
-           
+
             await unitOfWork.CompleteAsync();
             return new()
             {

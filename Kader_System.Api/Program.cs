@@ -1,12 +1,14 @@
 using Kader_System.Api.Helpers;
 using Kader_System.Api.Helpers.SwaggerHelper;
+using Kader_System.DataAccess.Context;
+using Kader_System.DataAccess.DbMiddlewares;
 using Kader_System.DataAccess.Repositories;
 using Kader_System.DataAccess.Repositories.EmployeeRequests;
 using Kader_System.DataAccess.Repositories.HR;
 using Kader_System.DataAccess.Repositories.Logging;
 using Kader_System.DataAccess.Repositories.StaticDataRepository;
 using Kader_System.DataAccess.Repositories.Trans;
-using Kader_System.DataAccesss.DbContext;
+using Kader_System.DataAccesss.Context;
 using Kader_System.Domain;
 using Kader_System.Domain.Customization.Middleware;
 using Kader_System.Domain.Interfaces;
@@ -17,7 +19,6 @@ using Kader_System.Domain.Interfaces.StaticDataRepository;
 using Kader_System.Domain.Interfaces.Trans;
 using Kader_System.Domain.Options;
 using Kader_System.Domain.SwaggerFilter;
-using Kader_System.Services.AppServices;
 using Kader_System.Services.IServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
@@ -32,10 +33,8 @@ using Kader_System.Services.Services.Setting;
 using Kader_System.Services.Services.Trans;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using NuGet.Packaging.Signing;
 using Serilog;
 using System.Text;
 using System.Text.Json;
@@ -66,7 +65,7 @@ builder.Services.AddCors();
 builder.Services.AddControllers(op =>
 {
     op.Filters.Add<PermissionFilter>();
-    op.Filters.Add<DeflateCompressionAttribute>();
+   // op.Filters.Add<DeflateCompressionAttribute>();
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -94,6 +93,9 @@ builder.Services.AddControllersWithViews().AddJsonOptions(x =>
 }
     );
 
+builder.Services.AddDbContext<KaderAuthorizationContext>(options =>
+ options.UseSqlServer(builder.Configuration.GetConnectionString("KaderAuthorizationConnection"))
+ );
 builder.Services.AddDbContext<KaderDbContext>(options =>
      options.UseSqlServer(builder.Configuration.GetConnectionString(Shared.KaderSystemConnection),
      b => b.MigrationsAssembly(typeof(KaderDbContext).Assembly.FullName)));
@@ -277,6 +279,7 @@ builder.Services.AddScoped<ITitleService, TitleService>();
 builder.Services.AddScoped<IPermessionStructureService, PermessionStructureService>();
 builder.Services.AddScoped<IUserPermessionService, UserPermessionService>();
 builder.Services.AddScoped<ITitlePermessionService, TitlePermessionService>();
+builder.Services.AddScoped<INetworkInterfaceService, NetworkInterfaceService>();
 #region Employee_Requests
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
 builder.Services.AddScoped<IVacationRequestService, VacationRequestService>();
@@ -382,7 +385,7 @@ app.UseRequestLocalization(localizationOptions);
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 app.UseMiddleware<HeadersValidationMiddleware>();
 app.UseMiddleware<PathMiddleware>();
-
+app.UseMiddleware<ClientDatabaseMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

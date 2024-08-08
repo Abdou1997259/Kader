@@ -1,12 +1,7 @@
 using Kader_System.Api.Helpers;
-using Kader_System.DataAccesss.DbContext;
-using Kader_System.Domain.DTOs.Request.Setting;
+using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs.Response.Setting;
-using Kader_System.Domain.Interfaces.Setting;
 using Kader_System.Services.IServices.HTTP;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using System.Linq;
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.Setting)]
@@ -89,6 +84,17 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     public async Task<IActionResult> UpdateMainScreenAsync([FromRoute] int id, [FromBody] StUpdateMainScreenRequest model)
     {
         var response = await service.UpdateMainScreenAsync(id, model);
+        if (response.Check)
+            return Ok(response);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    }
+    [HttpPut(ApiRoutes.MainScreen.RestoreMainScreen)]
+    [Permission(Helpers.Permission.Edit, 1)]
+    public async Task<IActionResult> restoremain([FromRoute] int id)
+    {
+        var response = await service.RestoreMainScreenAsync(id);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

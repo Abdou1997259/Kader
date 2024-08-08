@@ -84,7 +84,7 @@
         [JsonProperty(PropertyName = "shift_id")]
         public int shift_id { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        [JsonProperty(PropertyName = "company_id")]
+        [JsonProperty(PropertyName = "CompanyId")]
         public int CompanyId { get; set; }
 
         /// <summary>
