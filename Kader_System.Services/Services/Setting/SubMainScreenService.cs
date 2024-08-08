@@ -1,8 +1,10 @@
 ﻿using Kader_System.DataAccess.Repositories;
 using Kader_System.DataAccesss.DbContext;
 using Kader_System.Domain.Dtos.Response;
+using Kader_System.Domain.DTOs;
 using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
+using Microsoft.Extensions.Hosting;
 using System.Net;
 
 namespace Kader_System.Services.Services.Setting;
@@ -50,30 +52,51 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         };
     }
 
-    public async Task<Response<StGetAllSubMainScreensResponse>> GetAllSubMainScreensAsync(string lang, StGetAllFiltrationsForSubMainScreenRequest model)
+    public async Task<Response<StGetAllSubMainScreensResponse>> GetAllSubMainScreensAsync(string lang, StGetAllFiltrationsForSubMainScreenRequest model, string host)
     {
-        Expression<Func<StScreenSub, bool>> filter = x => x.IsDeleted == model.IsDeleted;
+        Expression<Func<StScreenSub, bool>> filter = x => x.IsDeleted == model.IsDeleted
+                                             && (string.IsNullOrEmpty(model.Word) ||
+                                                 x.Screen_sub_title_ar.Contains(model.Word)
+                                                 || x.Screen_sub_title_en.Contains(model.Word)
+                                              );
+
+        var totalRecords = await unitOfWork.SubMainScreens.CountAsync(filter: filter);
+        int page = 1;
+        int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+        if (model.PageNumber < 1)
+            page = 1;
+        else
+            page = model.PageNumber;
+        var pageLinks = Enumerable.Range(1, totalPages)
+            .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+            .ToList();
 
         var result = new StGetAllSubMainScreensResponse
         {
-            TotalRecords = await _unitOfWork.SubMainScreens.CountAsync(filter: filter),
+            TotalRecords = totalRecords,
 
-            Items = (await _unitOfWork.SubMainScreens.GetSpecificSelectAsync(filter: filter,
+            Items = (await unitOfWork.SubMainScreens.GetSpecificSelectAsync(filter: filter, x => x,
                  take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize,
-                 select: x => new SubMainScreenData
+                 skip: (model.PageNumber - 1) * model.PageSize)).Select(x => new SubMainScreenData
                  {
-                     Ids = x.Id,
                      Screen_sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
-                     Url = x.Url,
-                     Screen_cat_id = x.ScreenCatId,
-                     Screen_sub_image = string.Concat(ReadRootPath.SettingImagesPath, x.ScreenCat.StScreenSub.Select(y => y.Screen_sub_image).ToList())
-                 }, orderBy: x =>
-                   x.OrderByDescending(x => x.Id))).ToList()
+                 }).ToList(),
+            CurrentPage = model.PageNumber,
+            FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+            From = (page - 1) * model.PageSize + 1,
+            To = Math.Min(page * model.PageSize, totalRecords),
+            LastPage = totalPages,
+            LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+            PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+            NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+            Path = host,
+            PerPage = model.PageSize,
+            Links = pageLinks
         };
+
         if (result.TotalRecords is 0)
         {
-            string resultMsg = _sharLocalizer[Localization.NotFoundData];
+            string resultMsg = sharLocalizer[Localization.NotFoundData];
 
             return new()
             {
