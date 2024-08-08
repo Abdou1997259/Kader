@@ -466,7 +466,7 @@ public static class ModelBuilderExtensions
             new HrManagement { Id = 4, NameEn = "Programming Mangement", NameAr = "ادارة البرمجة", CompanyId = 3, IsDeleted = false, IsActive = true }
             );
         modelBuilder.Entity<HrDepartment>().HasData(
-            new HrDepartment { Id = 5, NameEn = "Programming Mangement", NameAr = "ادارة البرمجة", ManagementId = 4, IsDeleted = false, IsActive = true }
+            new HrDepartment { Id = 5, NameEn = "ASP Dep", NameAr = "ASP قسم ال", ManagementId = 4, IsDeleted = false, IsActive = true }
             );
         modelBuilder.Entity<HrShift>().HasData(
             new HrShift { Id = 1,Name_ar = "شيفت مسائى",Name_en = "evening shifts",IsDeleted = false,IsActive = true} 

@@ -1,8 +1,5 @@
-﻿
-using Kader_System.DataAccesss.DbContext;
-using Kader_System.Domain.DTOs;
+﻿using Kader_System.DataAccesss.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.Setting;
 

@@ -1,16 +1,14 @@
-﻿using Kader_System.DataAccess.Repositories;
-using Kader_System.DataAccesss.DbContext;
-using Microsoft.EntityFrameworkCore;
+﻿using Kader_System.DataAccesss.Context;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper,IFileServer fileServer) : IMainScreenCategoryService
+public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, Domain.Interfaces.IFileServer fileServer) : IMainScreenCategoryService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
     private readonly KaderDbContext _context = context;
-    private readonly IFileServer _fileServer = fileServer;
+    private readonly Domain.Interfaces.IFileServer _fileServer = fileServer;
 
 
     #region Main screen category

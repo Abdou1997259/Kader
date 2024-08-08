@@ -1,12 +1,7 @@
 using Kader_System.Api.Helpers;
-using Kader_System.DataAccesss.DbContext;
-using Kader_System.Domain.DTOs.Request.Setting;
+using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs.Response.Setting;
-using Kader_System.Domain.Interfaces.Setting;
 using Kader_System.Services.IServices.HTTP;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using System.Linq;
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.Setting)]
