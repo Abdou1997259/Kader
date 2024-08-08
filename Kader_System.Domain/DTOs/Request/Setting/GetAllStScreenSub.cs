@@ -9,7 +9,7 @@ namespace Kader_System.Domain.DTOs.Request.Setting
     public class GetAllStScreenSub
     {
         public int Sub_Id{ get; set; }
-        public int Screen_CatId { get; set; }
+        public int? Screen_CatId { get; set; }
         public string cat_Title { get; set; }
         public int main_id { get; set; }
        public string main_title { get; set; }

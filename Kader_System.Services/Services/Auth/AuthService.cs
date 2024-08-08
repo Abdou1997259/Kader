@@ -667,7 +667,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             var missingActionsExist = titlePermissions.Except(actionIdsForSubId);
 
             // Process the result
-            if (missingActionsExist.Any())
+            if (missingActionsExist.Any() && missingActionsExist.Any(x=>x!=0))
             {
                 var permssions = await _unitOfWork.ActionsRepo.GetSpecificSelectAsync(x=>missingActionsExist.Any(u=>u==x.Id),x=>x);
                 var subscrren = await _unitOfWork.SubMainScreens.GetByIdAsync(sub.SubId);
@@ -702,48 +702,64 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         // Process Title Permissions
         foreach (var assignedPermission in model)
         {
-            var titlePermission = await _unitOfWork.TitlePermissionRepository
+
+            if (await _unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubId))
+            {
+
+                var titlePermission = await _unitOfWork.TitlePermissionRepository
                 .GetSpecificSelectAsync(x =>
                 x.TitleId == titleId && x.SubScreenId == assignedPermission.SubId, x => x);
 
-            if (titlePermission.Any())
-            {
-                var listUpdatedPer = titlePermission.Select(x => new TitlePermission
-                {
-                    Id=x.Id,
-                    Permissions = string.Join(',', assignedPermission.SubId),
-                    SubScreenId = x.SubScreenId,
-                    TitleId = x.TitleId
-                });
-                _unitOfWork.TitlePermissionRepository.UpdateRange(listUpdatedPer);
-            }
-            else
-            {
-                // Check if the SubScreenId exists in the st_screens_subs table
-                var subScreenExists = await _unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubId);
 
-                if (subScreenExists)
+                if (titlePermission.Count() > 0)
                 {
-                    await _unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
-                    {
-                        TitleId = titleId??0,
-                        SubScreenId = assignedPermission.SubId,
-                        Permissions = string.Join(',', assignedPermission.TitlePermssion)
-                    });
+                    unitOfWork.TitlePermissionRepository.RemoveRange(titlePermission);
+                }
+                if (assignedPermission.TitlePermssion.Count == 0 || assignedPermission.TitlePermssion.Any(x => x == 0))
+                {
+                    continue;
                 }
                 else
                 {
-                    // Log the invalid SubScreenId or handle accordingly
-                    Console.WriteLine("Invalid SubScreenId: " + assignedPermission.SubId);
-                    continue;
+                        await _unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
+                {
+                    TitleId = titleId ?? 0,
+                    SubScreenId = assignedPermission.SubId,
+                    Permissions = assignedPermission.TitlePermssion.Concater()
+                });
                 }
+
+
+
             }
+            else
+            {
+                var msg = _sharLocalizer[Localization.InvalidSubId];
+                return new Response<string>()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+
+
+                };
+            }
+
         }
 
         await _unitOfWork.CompleteAsync();
 
         // Process User Permissions
-        await ProcessUserPermissions(id, titleId??0, model, all);
+      var result=    await ProcessUserPermissions(id, titleId??0, model, all);
+        if (!result.Check)
+        {
+            return new Response<string>
+            {
+                Check = result.Check,
+                Data = null,
+                Msg = result.Msg
+            };
+        }
 
         return new Response<string>
         {
@@ -752,7 +768,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         };
     }
 
-    private async Task ProcessUserPermissions(string userId, int titleId, IEnumerable<Permissions> model, bool all)
+    private async Task<Response<string>> ProcessUserPermissions(string userId, int titleId, IEnumerable<Permissions> model, bool all)
     {
         int userCounter = 0;
         foreach (var assignedPermission in model)
@@ -760,47 +776,60 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             var userPermissionQuery = await _unitOfWork.UserPermssionRepositroy
                 .GetSpecificSelectAsync(x => x.TitleId == titleId && x.SubScreenId == assignedPermission.SubId, x => x);
 
-            var userPermission = all ? userPermissionQuery : userPermissionQuery.Where(x => x.UserId == userId);
-
-            if (userPermission.Any())
+            if (await _unitOfWork.SubMainScreens.ExistAsync(x => x.Id == assignedPermission.SubId))
             {
-                var listUpdatedPer = userPermission.Select(x => new UserPermission
+                if (userPermissionQuery.Count() > 0)
                 {
-                    Id=x.Id,
-                    UserId=x.UserId,
-                    Permission = string.Join(',', assignedPermission.TitlePermssion),
-                    SubScreenId = x.SubScreenId,
-                    TitleId = x.TitleId
-                });
-                _unitOfWork.UserPermssionRepositroy.UpdateRange(listUpdatedPer);
-            }
-            else
-            {
-                // Check if the SubScreenId exists in the st_screens_subs table
-                var subScreenExists = await _unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubId);
+                    _unitOfWork.UserPermssionRepositroy.RemoveRange(userPermissionQuery);
 
-                if (subScreenExists)
+                }
+
+         
+
+
+                if (assignedPermission.TitlePermssion.Count == 0 ||  assignedPermission.TitlePermssion.Any(x => x == 0))
+                {
+                    continue;
+                }
+                else
                 {
                     await _unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission
-                    { 
+                    {
 
-                        UserId=userId.ToString(),
-                       
+                        UserId = userId.ToString(),
+
                         TitleId = titleId,
                         SubScreenId = assignedPermission.SubId,
                         Permission = string.Join(',', assignedPermission.TitlePermssion)
                     });
                 }
-                else
-                {
-                    // Log the invalid SubScreenId or handle accordingly
-                    Console.WriteLine("Invalid SubScreenId: " + assignedPermission.SubId);
-                    continue;
-                }
+
             }
+            else
+            {
+                var msg = _sharLocalizer[Localization.InvalidSubId];
+                return new Response<string>()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+
+
+                };
+            }
+       
+      
         }
 
         await _unitOfWork.CompleteAsync();
+        return new Response<string>()
+        {
+            Check = true,
+            Data = null,
+          
+
+
+        };
     }
 
 

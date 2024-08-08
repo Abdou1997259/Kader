@@ -71,7 +71,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                      Screen_main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty,
                      //Title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en
                  }, orderBy: x =>
-                   x.OrderByDescending(x => x.Id))).ToList()
+                   x.OrderBy(x => x.Order))).ToList()
         };
         if (result.TotalRecords is 0)
         {
@@ -94,7 +94,34 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             Check = true
         };
     }
+    public async Task<Response<StMainScreen>> RestoreMainScreenAsync(int id)
+    {
+        var obj = await _unitOfWork.MainScreens.GetByIdAsync(id);
+        if (obj == null)
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+                _sharLocalizer[Localization.Allowance]);
 
+            return new()
+            {
+                Data = null,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+        await _unitOfWork.MainScreens.SoftDeleteAsync(obj, "IsDeleted", false);
+        //obj.IsDeleted = false;
+        //_unitOfWork.Allowances.Update(obj);
+        //await _unitOfWork.CompleteAsync();
+        return new()
+        {
+            Check = true,
+            Data = obj,
+            Msg = _sharLocalizer[Localization.Restored]
+        };
+
+
+    }
     public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string appPath, string moduleName)
     {
          var mainScreenmap = _mapper.Map<StMainScreen>(model);
@@ -257,7 +284,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             {
                 Id = x.Id,
                 title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
-                main_id = x.MainScreenId,
+                main_id = x.MainScreenId ,
                 subs = x.StScreenSub.Select(k => new GetAllStScreenSub
                 {
                     Sub_Id = k.Id,

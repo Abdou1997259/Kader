@@ -7,7 +7,7 @@ public class StSubMainScreenAction : BaseEntity
     public int Id { get; set; }
 
     public int ScreenSubId { get; set; }
-    [ForeignKey(nameof(ScreenSubId))]
+   
     public StScreenSub ScreenSub { get; set; } = default!;
 
     public int ActionId { get; set; }

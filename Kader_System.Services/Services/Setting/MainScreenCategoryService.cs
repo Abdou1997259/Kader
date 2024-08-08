@@ -45,7 +45,34 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             Check = true
         };
     }
+    public async Task<Response<StMainScreenCat>> RestoreCatScreenAsync(int id)
+    {
+        var obj = await _unitOfWork.MainScreenCategories.GetByIdAsync(id);
+        if (obj == null)
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+                _sharLocalizer[Localization.Allowance]);
 
+            return new()
+            {
+                Data = null,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+        await _unitOfWork.MainScreenCategories.SoftDeleteAsync(obj, "IsDeleted", false);
+        //obj.IsDeleted = false;
+        //_unitOfWork.Allowances.Update(obj);
+        //await _unitOfWork.CompleteAsync();
+        return new()
+        {
+            Check = true,
+            Data = obj,
+            Msg = _sharLocalizer[Localization.Restored]
+        };
+
+
+    }
     public async Task<Response<StGetAllMainScreensCategoriesResponse>> GetAllMainScreensCategoriesAsync(string lang, StGetAllFiltrationsForMainScreenCategoryRequest model)
     {
         Expression<Func<StMainScreenCat, bool>> filter = x => x.IsDeleted == model.IsDeleted;
@@ -60,10 +87,12 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
                  select: x => new MainScreenCategoryData
                  {
                      Id = x.Id,
+                    
                      Screen_main_title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
+                     ScrennCatTitle = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en
                      //Screen_main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty
                  }, orderBy: x =>
-                   x.OrderByDescending(x => x.Id))).ToList()
+                   x.OrderBy(x => x.Order))).ToList()
         };
 
         if (result.TotalRecords is 0)

@@ -95,6 +95,17 @@ public class MainScreensController(IMainScreenService service, IRequestService r
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
+    [HttpPut(ApiRoutes.MainScreen.RestoreMainScreen)]
+    [Permission(Helpers.Permission.Edit, 1)]
+    public async Task<IActionResult> restoremain([FromRoute] int id)
+    {
+        var response = await service.RestoreMainScreenAsync(id);
+        if (response.Check)
+            return Ok(response);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    }
 
     #endregion
 

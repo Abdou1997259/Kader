@@ -92,7 +92,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         public async Task<IActionResult> UpdateTitle(
             [FromRoute] int id, [FromBody] UpdateTitleRequest model, [FromQuery] bool all=false
            )
-        {
+            {
             var respone = await titleService.UpdateTitleAsync(id, model,requestService.GetRequestHeaderLanguage,all);
 
             if (respone.Check == true)

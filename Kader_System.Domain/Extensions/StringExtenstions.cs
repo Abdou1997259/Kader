@@ -30,9 +30,10 @@
             return result;
 
         }
-        public static string Concater(this List<int> intergers ) {
-        
-        
+        public static string Concater(this List<int> intergers)
+        {
+
+
             if (intergers is null)
             {
                 return "";
@@ -40,6 +41,17 @@
             return string.Join(',', intergers);
 
         }
-        
-    }
+            public static string NulalbleConcater(this List<int?> intergers)
+            {
+
+
+                if (intergers is null)
+                {
+                    return "";
+                }
+                return string.Join(',', intergers);
+
+            }
+
+        }
 }

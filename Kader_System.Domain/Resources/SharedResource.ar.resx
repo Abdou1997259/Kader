@@ -156,6 +156,9 @@
   <data name="Employee" xml:space="preserve">
     <value>الموظف</value>
   </data>
+  <data name="InvalidSubId" xml:space="preserve">
+    <value>لاتوجد شاشه بهذا الرقم </value>
+  </data>
   <data name="IsDepartmentInMang" xml:space="preserve">
     <value>لايوجد قسم بذلك الاسم في هذا الاداره</value>
   </data>
