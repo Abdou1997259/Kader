@@ -691,7 +691,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         foreach (var assignedPermission in model)
         {
 
-            if (await _unitOfWork.SubMainScreens.AnyAsync(x => x.Id == assignedPermission.SubId))
+            if (await _unitOfWork.SubMainScreens.ExistAsync(x => x.Id == assignedPermission.SubId))
             {
 
                 var titlePermission = await _unitOfWork.TitlePermissionRepository
