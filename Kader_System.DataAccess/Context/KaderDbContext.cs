@@ -6,7 +6,7 @@ using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 
-namespace Kader_System.DataAccesss.DbContext;
+namespace Kader_System.DataAccesss.Context;
 
 public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpContextAccessor accessor) :
     IdentityDbContext<ApplicationUser, ApplicationRole, string,
@@ -214,9 +214,12 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
         modelBuilder.Entity<TransLoanDetails>()
             .Property(p => p.Amount)
             .HasPrecision(18, 2);
+
+        modelBuilder.Entity<StScreenSub>().HasMany(x => x.ListOfActions)
+            .WithOne(x => x.ScreenSub);
         #endregion
 
-        #region SubScreen
+            #region SubScreen
         //modelBuilder.Entity<StMainScreenCat>()
         //    .HasMany(s => s.StScreenSub)
         //    .WithOne(sub => sub.ScreenCat)

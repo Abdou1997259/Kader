@@ -14,10 +14,10 @@ public class StScreenSub : BaseEntity
     public string? Url { get; set; }
 
     
-    public int ScreenCatId { get; set; }
+    public int  ScreenCatId { get; set; }
     [ForeignKey(nameof(ScreenCatId))]
     public StMainScreenCat ScreenCat { get; set; } = default!;
-
+    public int Order { get; set; }
 
     public ICollection<StSubMainScreenAction> ListOfActions { get; set; } = [];
  }

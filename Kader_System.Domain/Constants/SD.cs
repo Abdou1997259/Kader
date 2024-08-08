@@ -123,6 +123,8 @@ public static class SD
             public const string UpdateMainScreenCategory = "screen_cat/update/{id}";
             public const string GetMainScreenCategoryById = "screen_cat/getById/{id}";
             public const string DeleteMainScreenCategory = "screen_cat/{id}";
+
+            public const string restore = "screen_cat/restore/{id}";
         }
 
         public class MainScreen
@@ -156,6 +158,8 @@ public static class SD
             public const string UpdateSubMainScreen = "screen_sub/update/{id}";
             public const string GetSubMainScreenById = "screen_sub/getById/{id}";
             public const string DeleteSubMainScreen = "screen_sub/delete/{id}";
+            public const string RestoreScreen = "screen_sub/restore/{id}";
+            public const string OrderbyPattern = "order_by_pattern";
         }
         public class StResponsiblity
         {
@@ -598,6 +602,7 @@ public static class SD
         public const string DelayedSuccessfully = "DelayedSuccessfully";
         public const string MainScreenCategory = "MainScreenCategory";
         public const string MainScreen = "MainScreen";
+        public const string InvalidSubId = "InvalidSubId";
         public const string Screen = "Screen";
         public const string SubMainScreen = "SubMainScreen";
         public const string PaidSuccessfuly = "PaidSuccessfuly";

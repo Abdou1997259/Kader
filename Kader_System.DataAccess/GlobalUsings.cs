@@ -22,7 +22,7 @@ global using Kader_System.Domain.Interfaces;
 global using Kader_System.Domain.Interfaces.StaticDataRepository;
 global using Kader_System.Domain.Interfaces.Logging;
 global using static Kader_System.Domain.Constants.SD;
-global using Kader_System.DataAccesss.DbContext;
+global using Kader_System.DataAccesss.Context;
 global using Kader_System.Domain.Interfaces.Setting;
 global using Kader_System.Domain.Models.Setting;
 global using Kader_System.DataAccess.Repositories.Setting;

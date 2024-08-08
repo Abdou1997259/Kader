@@ -243,6 +243,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
 
     public async Task<IActionResult> GetMyProfile()
     {
+        
         var response = await _service.GetMyProfile( requestService.GetRequestHeaderLanguage);
         if (response.Check)
             return Ok(response);

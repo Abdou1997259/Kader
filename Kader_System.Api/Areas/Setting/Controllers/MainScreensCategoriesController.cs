@@ -68,6 +68,18 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
 
+    [HttpPut(ApiRoutes.MainScreenCategory.restore)]
+    public async Task<IActionResult> RestoreAsync([FromRoute] int id)
+    {
+    
+
+        var response = await service.RestoreCatScreenAsync(id);
+        if (response.Check)
+            return Ok(response);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    }
     #endregion
 
     #region Delete

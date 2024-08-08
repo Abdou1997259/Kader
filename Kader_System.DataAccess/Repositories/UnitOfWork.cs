@@ -4,6 +4,7 @@ using Kader_System.DataAccess.Repositories.EmployeeRequests.Requests;
 using Kader_System.Domain.Interfaces.EmployeeRequest;
 using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
 using Kader_System.Domain.Interfaces.EmployeeRequest.Request;
+using Microsoft.Data.SqlClient;
 
 namespace Kader_System.DataAccess.Repositories;
 
@@ -102,6 +103,7 @@ public class UnitOfWork : IUnitOfWork
     public IUserPermssionRepositroy UserPermssionRepositroy { get; private set; }
     #endregion
     public IActionsRepository ActionsRepo  { get; private set; }
+    public string DatabaseName { get; set; }
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
     {
@@ -178,6 +180,7 @@ public class UnitOfWork : IUnitOfWork
         EmployeeRequests = new EmployeeRequestsRepository(_context);
         PermessionStructure = new PermessionStructureRepository(_context);  
         ActionsRepo = new ActionsRepository(_context);
+        DatabaseName = new SqlConnectionStringBuilder(_context.Database.GetConnectionString()).InitialCatalog;
     }
 
     public IDatabaseTransaction BeginTransaction() =>

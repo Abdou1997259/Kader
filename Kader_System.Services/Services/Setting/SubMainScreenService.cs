@@ -1,19 +1,14 @@
-﻿using Kader_System.DataAccess.Repositories;
-using Kader_System.DataAccesss.DbContext;
-using Kader_System.Domain.Dtos.Response;
-using Kader_System.Domain.Models.EmployeeRequests;
-using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
-using System.Net;
+﻿using Kader_System.DataAccesss.Context;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository,IFileServer fileServer) : ISubMainScreenService
+public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository, Domain.Interfaces.IFileServer fileServer) : ISubMainScreenService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
     private readonly ILoggingRepository _loggingRepository = loggingRepository;
-    private readonly IFileServer _fileServer = fileServer;
+    private readonly Domain.Interfaces.IFileServer _fileServer = fileServer;
 
 
     #region Sub main screen
@@ -53,12 +48,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
     public async Task<Response<StGetAllSubMainScreensResponse>> GetAllSubMainScreensAsync(string lang, StGetAllFiltrationsForSubMainScreenRequest model)
     {
         Expression<Func<StScreenSub, bool>> filter = x => x.IsDeleted == model.IsDeleted;
-
-        var result = new StGetAllSubMainScreensResponse
-        {
-            TotalRecords = await _unitOfWork.SubMainScreens.CountAsync(filter: filter),
-
-            Items = (await _unitOfWork.SubMainScreens.GetSpecificSelectAsync(filter: filter,
+        var items = (await _unitOfWork.SubMainScreens.GetSpecificSelectAsync(filter: filter,
                  take: model.PageSize,
                  skip: (model.PageNumber - 1) * model.PageSize,
                  select: x => new SubMainScreenData
@@ -69,7 +59,12 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
                      Screen_cat_id = x.ScreenCatId,
                      Screen_sub_image = string.Concat(ReadRootPath.SettingImagesPath, x.ScreenCat.StScreenSub.Select(y => y.Screen_sub_image).ToList())
                  }, orderBy: x =>
-                   x.OrderByDescending(x => x.Id))).ToList()
+                   x.OrderBy(x => x.Order))).ToList();
+        var result = new StGetAllSubMainScreensResponse
+        {
+            TotalRecords = await _unitOfWork.SubMainScreens.CountAsync(filter: filter),
+
+            Items = items
         };
         if (result.TotalRecords is 0)
         {
@@ -225,8 +220,35 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             LookUps = lookup
         };
     }
+    public async Task<Response<StScreenSub>> RestoreSubScreenAsync(int id)
+    {
+        var obj = await _unitOfWork.SubMainScreens.GetByIdAsync(id);
+        if (obj == null)
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+                _sharLocalizer[Localization.Allowance]);
 
-   
+            return new()
+            {
+                Data = null,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+        await _unitOfWork.SubMainScreens.SoftDeleteAsync(obj, "IsDeleted", false);
+        //obj.IsDeleted = false;
+        //_unitOfWork.Allowances.Update(obj);
+        //await _unitOfWork.CompleteAsync();
+        return new()
+        {
+            Check = true,
+            Data =obj,
+            Msg = _sharLocalizer[Localization.Restored]
+        };
+
+
+    }
+
     public async Task<Response<StUpdateSubMainScreenRequest>> UpdateSubMainScreenAsync(int id, StUpdateSubMainScreenRequest model, string appPath, string moduleName)
     {
   
@@ -344,7 +366,21 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         throw new NotImplementedException();
     }
 
- 
+    public async Task<Response<string>> OrderByPattern(int[] pattern)
+    {
+        int count = 0;
+        var allsubs = await _unitOfWork.SubMainScreens.GetAllAsync();
+        foreach (var sub in allsubs) {
+            sub.Order = pattern[count];
+            count++;
+        
+        };
+        _unitOfWork.SubMainScreens.UpdateRange(allsubs);
+        await _unitOfWork.CompleteAsync();  
+        return new() {Check = true};
+    }
+
+
 
 
     #endregion

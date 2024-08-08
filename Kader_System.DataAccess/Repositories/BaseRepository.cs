@@ -1,4 +1,6 @@
-﻿namespace Kader_System.DataAccess.Repositories;
+﻿using Kader_System.DataAccesss.Context;
+
+namespace Kader_System.DataAccess.Repositories;
 
 public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> where T : class
 {
