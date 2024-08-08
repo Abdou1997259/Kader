@@ -18,7 +18,7 @@ namespace Kader_System.Api.Helpers.SwaggerHelper
                 Schema = new OpenApiSchema
                 {
                     Type = "string",
-                    Default = new OpenApiString("Kader") // Set the default value here
+                    Default = new OpenApiString("1000") // Set the default value here
 
 
                 },
