@@ -35,7 +35,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     [HttpGet(ApiRoutes.MainScreen.GetAllMainScreens)]
     [Permission(Helpers.Permission.View, 1)]
     public async Task<IActionResult> GetAllMainScreensAsync([FromQuery] StGetAllFiltrationsForMainScreenRequest model) =>
-        Ok(await service.GetAllMainScreensAsync(requestService.GetRequestHeaderLanguage, model));
+        Ok(await service.GetAllMainScreensAsync(requestService.GetRequestHeaderLanguage, model,requestService.GetCurrentHost));
 
 
 

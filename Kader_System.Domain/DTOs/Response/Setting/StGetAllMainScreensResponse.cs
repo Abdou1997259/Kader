@@ -7,6 +7,7 @@ public class MainScreenData
 {
     public int Id { get; set; }
     public required string Screen_main_title { get; set; }
+    public   string Screen_cat_title { get; set; }
      public string? Screen_main_image { get; set; } = string.Empty;
 }
 
