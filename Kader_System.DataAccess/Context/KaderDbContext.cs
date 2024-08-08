@@ -6,7 +6,7 @@ using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 
-namespace Kader_System.DataAccesss.DbContext;
+namespace Kader_System.DataAccesss.Context;
 
 public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpContextAccessor accessor) :
     IdentityDbContext<ApplicationUser, ApplicationRole, string,

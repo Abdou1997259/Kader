@@ -1,20 +1,10 @@
-﻿using Kader_System.Domain.DTOs;
+﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.Auth;
-using Kader_System.Domain.Models;
-using Kader_System.Domain.Models.EmployeeRequests;
-using Kader_System.Domain.Models.Setting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Formatters;
+using Kader_System.Services.IServices;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json.Linq;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
-using static Kader_System.Domain.Constants.SD.ApiRoutes;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -23,9 +13,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                    IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
                    IFileServer fileServer,
                    RoleManager<ApplicationRole> roleManager,
-                   IMainScreenService mainScreenService
-
-
+                   IMainScreenService mainScreenService,
+                   INetworkInterfaceService networkInterfaceService
                 ) : IAuthService
 
 {
@@ -41,7 +30,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     private readonly IFileServer _fileServer = fileServer;
     private readonly IPermessionStructureService _permissionservice = premissionsevice;
     private readonly IMainScreenService _mainScreenService = mainScreenService;
-
+    private readonly INetworkInterfaceService _networkInterfaceService = networkInterfaceService;
     #region Authentication
 
     public async Task<Response<AuthLoginUserResponse>> LoginUserAsync(AuthLoginUserRequest model)
@@ -89,7 +78,6 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                     UserName = model.UserName
                 },
                 Error = resultMsg,
-                Msg = resultMsg
             };
         }
 
@@ -121,14 +109,14 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             
             
         };
-
         return new Response<AuthLoginUserResponse>
         {
             IsActive = true,
             Check = true,
             Data = result,
             Error = string.Empty,
-            Msg = string.Empty
+            Msg = string.Empty,
+            DBName = _networkInterfaceService.GetDeviceMacAddress() + " : Ip : " + _networkInterfaceService.GetIPAddress()
         };
     }
 
