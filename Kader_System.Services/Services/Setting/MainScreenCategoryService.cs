@@ -1,3 +1,8 @@
+﻿using Kader_System.DataAccess.Repositories;
+using Kader_System.DataAccesss.DbContext;
+using Kader_System.Domain.DTOs;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 ﻿using Kader_System.DataAccesss.Context;
 
 namespace Kader_System.Services.Services.Setting;
@@ -84,22 +89,52 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             Msg = _sharLocalizer[Localization.Restored]
         };
 
+    public async Task<Response<StGetAllMainScreensCategoriesResponse>> GetAllMainScreensCategoriesAsync(string lang, StGetAllFiltrationsForMainScreenCategoryRequest model, string host)
 
     }
     public async Task<Response<StGetAllMainScreensCategoriesResponse>> GetAllMainScreensCategoriesAsync(string lang, StGetAllFiltrationsForMainScreenCategoryRequest model)
     {
-        Expression<Func<StMainScreenCat, bool>> filter = x => x.IsDeleted == model.IsDeleted;
+        Expression<Func<StMainScreenCat, bool>> filter = x => x.IsDeleted == model.IsDeleted
+                                            && (string.IsNullOrEmpty(model.Word) ||
+                                                x.Screen_cat_title_ar.Contains(model.Word)
+                                                || x.Screen_cat_title_en.Contains(model.Word)
+                                             );
+
+
+        var totalRecords = await unitOfWork.MainScreenCategories.CountAsync(filter: filter);
+        int page = 1;
+        int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+        if (model.PageNumber < 1)
+            page = 1;
+        else
+            page = model.PageNumber;
+        var pageLinks = Enumerable.Range(1, totalPages)
+            .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+            .ToList();
 
         var result = new StGetAllMainScreensCategoriesResponse
         {
-            TotalRecords = await _unitOfWork.MainScreenCategories.CountAsync(filter: filter),
+            TotalRecords = totalRecords,
 
-            Items = (await _unitOfWork.MainScreenCategories.GetSpecificSelectAsync(filter: filter,
+            Items = ( await unitOfWork.MainScreenCategories.GetSpecificSelectAsync(filter: filter, x => x,
                  take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize,
-                 select: x => new MainScreenCategoryData
+                 skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "screenCat")).Select(x => new MainScreenCategoryData
                  {
                      Id = x.Id,
+                     Screen_cat_Title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
+                     Screen_main_title = lang == Localization.Arabic ? x.screenCat.Screen_main_title_ar : x.screenCat.Screen_main_title_en,
+                 }).ToList(),
+            CurrentPage = model.PageNumber,
+            FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+            From = (page - 1) * model.PageSize + 1,
+            To = Math.Min(page * model.PageSize, totalRecords),
+            LastPage = totalPages,
+            LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+            PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+            NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+            Path = host,
+            PerPage = model.PageSize,
+            Links = pageLinks
                     
                      Screen_main_title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
                      ScrennCatTitle = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en
@@ -110,7 +145,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
 
         if (result.TotalRecords is 0)
         {
-            string resultMsg = _sharLocalizer[Localization.NotFoundData];
+            string resultMsg = sharLocalizer[Localization.NotFoundData];
 
             return new()
             {
