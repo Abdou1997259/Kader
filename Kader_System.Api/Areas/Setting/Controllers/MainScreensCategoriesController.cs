@@ -23,7 +23,7 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
 
     [HttpGet(ApiRoutes.MainScreenCategory.GetAllMainScreenCategories)]
     public async Task<IActionResult> GetAllMainScreensCategoriesAsync([FromQuery] StGetAllFiltrationsForMainScreenCategoryRequest model) =>
-        Ok(await service.GetAllMainScreensCategoriesAsync(requestService.GetRequestHeaderLanguage, model));
+        Ok(await service.GetAllMainScreensCategoriesAsync(requestService.GetRequestHeaderLanguage, model,requestService.GetCurrentHost));
 
     [HttpGet(ApiRoutes.MainScreenCategory.GetMainScreenCategoryById)]
     public async Task<IActionResult> GetMainScreenCategoryByIdAsync(int id)

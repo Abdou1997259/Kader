@@ -50,19 +50,48 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<Response<StGetAllMainScreensResponse>> GetAllMainScreensAsync(string lang, StGetAllFiltrationsForMainScreenRequest model)
+    public async Task<Response<StGetAllMainScreensResponse>> GetAllMainScreensAsync(string lang, StGetAllFiltrationsForMainScreenRequest model,string host)
     {
-        Expression<Func<StMainScreen, bool>> filter = x => x.IsDeleted == model.IsDeleted;
+        Expression<Func<StMainScreen, bool>> filter = x => x.IsDeleted == model.IsDeleted
+                                               && (string.IsNullOrEmpty(model.Word) ||
+                                                   x.Screen_main_title_ar.Contains(model.Word)
+                                                   || x.Screen_main_title_en.Contains(model.Word)
+                                                );
+
+        var totalRecords = await unitOfWork.MainScreens.CountAsync(filter: filter);
+        int page = 1;
+        int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+        if (model.PageNumber < 1)
+            page = 1;
+        else
+            page = model.PageNumber;
+        var pageLinks = Enumerable.Range(1, totalPages)
+            .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+            .ToList();
 
         var result = new StGetAllMainScreensResponse
         {
-            TotalRecords = await _unitOfWork.MainScreens.CountAsync(filter: filter),
+            TotalRecords = totalRecords,
 
-            Items = (await _unitOfWork.MainScreens.GetSpecificSelectAsync(filter: filter,
+            Items = (await unitOfWork.MainScreens.GetSpecificSelectAsync(filter: filter, x => x,
                  take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize,
-                 select: x => new MainScreenData
+                 skip: (model.PageNumber - 1) * model.PageSize)).Select(x => new MainScreenData
                  {
+                     Screen_main_title = x.Screen_main_title_ar
+                    
+                 }).ToList(),
+            CurrentPage = model.PageNumber,
+            FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+            From = (page - 1) * model.PageSize + 1,
+            To = Math.Min(page * model.PageSize, totalRecords),
+            LastPage = totalPages,
+            LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+            PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+            NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+            Path = host,
+            PerPage = model.PageSize,
+            Links = pageLinks
+
                      Id = x.Id,
                      Screen_main_title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en,
                      Screen_main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty,
@@ -70,9 +99,10 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                  }, orderBy: x =>
                    x.OrderBy(x => x.Order))).ToList()
         };
+
         if (result.TotalRecords is 0)
         {
-            string resultMsg = _sharLocalizer[Localization.NotFoundData];
+            string resultMsg = sharLocalizer[Localization.NotFoundData];
 
             return new()
             {
