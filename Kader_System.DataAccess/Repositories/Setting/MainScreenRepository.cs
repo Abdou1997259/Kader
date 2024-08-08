@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.Interfaces;
+﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.Interfaces;
 
 namespace Kader_System.DataAccess.Repositories.Setting;
 

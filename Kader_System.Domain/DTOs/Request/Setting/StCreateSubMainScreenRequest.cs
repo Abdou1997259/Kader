@@ -9,8 +9,7 @@ public class StCreateSubMainScreenRequest
     public required string Screen_sub_title_ar { get; set; }
 
     [Display(Name = Annotations.Name), Required(ErrorMessage = Annotations.FieldIsRequired)]
-    public required string Name { get; set; }
-    public string ScreenCode { get; set; }
+
 
     public int ScreenCatId { get; set; }
     public required string Url { get; set; }

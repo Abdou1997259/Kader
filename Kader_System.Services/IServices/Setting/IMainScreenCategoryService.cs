@@ -10,4 +10,5 @@ public interface IMainScreenCategoryService
     Task<Response<string>> UpdateActiveOrNotMainScreenCategoryAsync(int id);
     Task<Response<string>> DeleteMainScreenCategoryAsync(int id);
     Task<Response<StMainScreenCat>> RestoreCatScreenAsync(int id);
+    Task<Response<string>> OrderByPattern(int[] pattern);
 }

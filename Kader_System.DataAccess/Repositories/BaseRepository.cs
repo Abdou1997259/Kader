@@ -1,4 +1,5 @@
 ﻿using Kader_System.DataAccesss.Context;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Kader_System.DataAccess.Repositories;
 
@@ -291,5 +292,10 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     {
         var result = context.SoftDeleteAsync(_entity, _softDeleteProperty,IsDeleted);
         return result;
+    }
+
+    public async Task<T> GetLast()
+    {
+        return await dbSet.LastAsync();
     }
 }

@@ -119,6 +119,21 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
 
     }
+    public async Task<Response<string>> OrderByPattern(int[] pattern)
+    {
+        int count = 0;
+        var allsubs = await _unitOfWork.MainScreens.GetAllAsync();
+        foreach (var sub in allsubs)
+        {
+            sub.Order = pattern[count];
+            count++;
+
+        };
+        _unitOfWork.MainScreens.UpdateRange(allsubs);
+        await _unitOfWork.CompleteAsync();
+        return new() { Check = true };
+    }
+
     public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string appPath, string moduleName)
     {
          var mainScreenmap = _mapper.Map<StMainScreen>(model);

@@ -23,7 +23,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
                     Screen_cat_title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
                     Screen_main_cat_image = x.Screen_main_cat_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_cat_image) : string.Empty
                 }, orderBy: x =>
-                  x.OrderByDescending(x => x.Id));
+                  x.OrderBy(x => x.Order));
 
         if (!result.Any())
         {
@@ -43,6 +43,21 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             Check = true
         };
     }
+    public async Task<Response<string>> OrderByPattern(int[] pattern)
+    {
+        int count = 0;
+        var allsubs = await _unitOfWork.MainScreenCategories.GetAllAsync();
+        foreach (var sub in allsubs)
+        {
+            sub.Order = pattern[count];
+            count++;
+
+        };
+        _unitOfWork.MainScreenCategories.UpdateRange(allsubs);
+        await _unitOfWork.CompleteAsync();
+        return new() { Check = true };
+    }
+
     public async Task<Response<StMainScreenCat>> RestoreCatScreenAsync(int id)
     {
         var obj = await _unitOfWork.MainScreenCategories.GetByIdAsync(id);
@@ -184,8 +199,9 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             Data = new()
             {
                 Id = id,
-                Screen_main_title_ar = obj.Screen_cat_title_ar,
-                Screen_main_title_en = obj.Screen_cat_title_en,
+                Screen_cat_title_ar = obj.Screen_cat_title_ar,
+                Screen_cat_title_en = obj.Screen_cat_title_en,
+                ScreenMainId=obj.MainScreenId,
                 Screen_main_cat_image = string.Concat(ReadRootPath.SettingImagesPath, obj.Screen_main_cat_image)
             },
             Check = true

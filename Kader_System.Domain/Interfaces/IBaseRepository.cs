@@ -2,7 +2,7 @@
 {
     Task<T> GetByIdAsync(int id);
     Task<T> GetByIdWithNoTrackingAsync(int id);
-
+    Task<T> GetLast();
     Task<IEnumerable<TType>> GetSpecificSelectAsync<TType>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, TType>> select,

@@ -125,6 +125,8 @@ public static class SD
             public const string DeleteMainScreenCategory = "screen_cat/{id}";
 
             public const string restore = "screen_cat/restore/{id}";
+
+            public const string OrderbyPattern = "order_by_pattern";
         }
 
         public class MainScreen
@@ -137,6 +139,7 @@ public static class SD
             public const string GetMainScreenById = "screen_main/getById/{id}";
             public const string DeleteMainScreen = "screen_main/{id}";
             public const string RestoreMainScreen = "screen_main/restore/{id}";
+            public const string OrderbyPattern = "order_by_pattern";
 
         }
 

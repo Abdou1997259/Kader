@@ -117,13 +117,16 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             imageExtension = fileObj.FileExtension;
         }
 
+        var lastsubscreen = await _unitOfWork.SubMainScreens.GetLast();
+          ;
 
+        var screencode = "01" + $"{lastsubscreen.Id}".PadLeft(4, '0');
         await _unitOfWork.SubMainScreens.AddAsync(new()
         {
             Screen_sub_title_ar = model.Screen_sub_title_ar,
             Screen_sub_title_en = model.Screen_sub_title_en,
             ScreenCatId = model.ScreenCatId,
-            ScreenCode = model.ScreenCode,
+            ScreenCode = screencode,
         });
         await _unitOfWork.CompleteAsync();
 

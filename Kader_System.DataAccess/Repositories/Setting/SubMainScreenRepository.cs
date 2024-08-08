@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Kader_System.DataAccesss.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.DataAccess.Repositories.Setting;
 
