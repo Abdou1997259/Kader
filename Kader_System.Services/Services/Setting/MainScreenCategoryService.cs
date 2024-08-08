@@ -167,7 +167,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
         
     }
 
-    public async Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model,string lang,string appPath, string moduleName)
+    public async Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model, string lang, string appPath, string moduleName)
     {
         var obj = await _unitOfWork.MainScreenCategories.GetByIdAsync(id);
 
