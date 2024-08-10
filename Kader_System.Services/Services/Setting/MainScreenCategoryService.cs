@@ -1,19 +1,18 @@
 ﻿using Kader_System.DataAccess.Repositories;
-using Kader_System.DataAccesss.DbContext;
-using Kader_System.Domain.DTOs;
+using Kader_System.DataAccesss.Context;
+ using Kader_System.Domain.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
-﻿using Kader_System.DataAccesss.Context;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, Domain.Interfaces.IFileServer fileServer) : IMainScreenCategoryService
+public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, IFileServer fileServer) : IMainScreenCategoryService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
     private readonly KaderDbContext _context = context;
-    private readonly Domain.Interfaces.IFileServer _fileServer = fileServer;
+    private readonly IFileServer _fileServer = fileServer;
 
 
     #region Main screen category
@@ -28,7 +27,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
                     Screen_cat_title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
                     Screen_main_cat_image = x.Screen_main_cat_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_cat_image) : string.Empty
                 }, orderBy: x =>
-                  x.OrderBy(x => x.Order));
+                  x.OrderByDescending(x => x.Id));
 
         if (!result.Any())
         {
@@ -48,51 +47,8 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             Check = true
         };
     }
-    public async Task<Response<string>> OrderByPattern(int[] pattern)
-    {
-        int count = 0;
-        var allsubs = await _unitOfWork.MainScreenCategories.GetAllAsync();
-        foreach (var sub in allsubs)
-        {
-            sub.Order = pattern[count];
-            count++;
-
-        };
-        _unitOfWork.MainScreenCategories.UpdateRange(allsubs);
-        await _unitOfWork.CompleteAsync();
-        return new() { Check = true };
-    }
-
-    public async Task<Response<StMainScreenCat>> RestoreCatScreenAsync(int id)
-    {
-        var obj = await _unitOfWork.MainScreenCategories.GetByIdAsync(id);
-        if (obj == null)
-        {
-            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                _sharLocalizer[Localization.Allowance]);
-
-            return new()
-            {
-                Data = null,
-                Error = resultMsg,
-                Msg = resultMsg
-            };
-        }
-        await _unitOfWork.MainScreenCategories.SoftDeleteAsync(obj, "IsDeleted", false);
-        //obj.IsDeleted = false;
-        //_unitOfWork.Allowances.Update(obj);
-        //await _unitOfWork.CompleteAsync();
-        return new()
-        {
-            Check = true,
-            Data = obj,
-            Msg = _sharLocalizer[Localization.Restored]
-        };
 
     public async Task<Response<StGetAllMainScreensCategoriesResponse>> GetAllMainScreensCategoriesAsync(string lang, StGetAllFiltrationsForMainScreenCategoryRequest model, string host)
-
-    }
-    public async Task<Response<StGetAllMainScreensCategoriesResponse>> GetAllMainScreensCategoriesAsync(string lang, StGetAllFiltrationsForMainScreenCategoryRequest model)
     {
         Expression<Func<StMainScreenCat, bool>> filter = x => x.IsDeleted == model.IsDeleted
                                             && (string.IsNullOrEmpty(model.Word) ||
@@ -116,7 +72,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
         {
             TotalRecords = totalRecords,
 
-            Items = ( await unitOfWork.MainScreenCategories.GetSpecificSelectAsync(filter: filter, x => x,
+            Items = (await unitOfWork.MainScreenCategories.GetSpecificSelectAsync(filter: filter, x => x,
                  take: model.PageSize,
                  skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "screenCat")).Select(x => new MainScreenCategoryData
                  {
@@ -135,12 +91,6 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             Path = host,
             PerPage = model.PageSize,
             Links = pageLinks
-                    
-                     Screen_main_title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
-                     ScrennCatTitle = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en
-                     //Screen_main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty
-                 }, orderBy: x =>
-                   x.OrderBy(x => x.Order))).ToList()
         };
 
         if (result.TotalRecords is 0)
@@ -199,7 +149,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             Screen_cat_title_en = model.Screen_cat_title_en,
             //Screen_main_cat_image = imageName,
             ImageExtension = imageExtension,
-            MainScreenId= model.Screen_main_id,
+            MainScreenId = model.Screen_main_id,
         });
         await _unitOfWork.CompleteAsync();
 
@@ -227,7 +177,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             };
         }
 
-       
+
 
         return new()
         {
@@ -236,13 +186,12 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
                 Id = id,
                 Screen_cat_title_ar = obj.Screen_cat_title_ar,
                 Screen_cat_title_en = obj.Screen_cat_title_en,
-                ScreenMainId=obj.MainScreenId,
                 Screen_main_cat_image = string.Concat(ReadRootPath.SettingImagesPath, obj.Screen_main_cat_image)
             },
             Check = true
         };
 
-        
+
     }
 
     public async Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model, string lang, string appPath, string moduleName)
@@ -264,7 +213,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
 
         _unitOfWork.MainScreenCategories.Update(obj);
         var result = await _unitOfWork.CompleteAsync();
-       
+
         var lookupActionScreen = await _context.Actions.AsQueryable()
             .ToDynamicLookUpAsync("Id", lang == "ar" ? "Name" : "NameInEnglish");
 

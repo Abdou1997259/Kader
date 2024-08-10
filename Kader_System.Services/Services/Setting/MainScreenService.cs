@@ -1,9 +1,11 @@
 ﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper ,KaderDbContext context,IFileServer fileServer) : IMainScreenService
+public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, KaderDbContext context, IFileServer fileServer) : IMainScreenService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -12,7 +14,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
     private readonly KaderDbContext _dbContext = context;
 
-  
+
 
 
     #region Main screen
@@ -50,7 +52,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<Response<StGetAllMainScreensResponse>> GetAllMainScreensAsync(string lang, StGetAllFiltrationsForMainScreenRequest model,string host)
+    public async Task<Response<StGetAllMainScreensResponse>> GetAllMainScreensAsync(string lang, StGetAllFiltrationsForMainScreenRequest model, string host)
     {
         Expression<Func<StMainScreen, bool>> filter = x => x.IsDeleted == model.IsDeleted
                                                && (string.IsNullOrEmpty(model.Word) ||
@@ -78,7 +80,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                  skip: (model.PageNumber - 1) * model.PageSize)).Select(x => new MainScreenData
                  {
                      Screen_main_title = x.Screen_main_title_ar
-                    
+
                  }).ToList(),
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
@@ -91,13 +93,6 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             Path = host,
             PerPage = model.PageSize,
             Links = pageLinks
-
-                     Id = x.Id,
-                     Screen_main_title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en,
-                     Screen_main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty,
-                     //Title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en
-                 }, orderBy: x =>
-                   x.OrderBy(x => x.Order))).ToList()
         };
 
         if (result.TotalRecords is 0)
@@ -121,54 +116,12 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             Check = true
         };
     }
-    public async Task<Response<StMainScreen>> RestoreMainScreenAsync(int id)
-    {
-        var obj = await _unitOfWork.MainScreens.GetByIdAsync(id);
-        if (obj == null)
-        {
-            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                _sharLocalizer[Localization.Allowance]);
-
-            return new()
-            {
-                Data = null,
-                Error = resultMsg,
-                Msg = resultMsg
-            };
-        }
-        await _unitOfWork.MainScreens.SoftDeleteAsync(obj, "IsDeleted", false);
-        //obj.IsDeleted = false;
-        //_unitOfWork.Allowances.Update(obj);
-        //await _unitOfWork.CompleteAsync();
-        return new()
-        {
-            Check = true,
-            Data = obj,
-            Msg = _sharLocalizer[Localization.Restored]
-        };
-
-
-    }
-    public async Task<Response<string>> OrderByPattern(int[] pattern)
-    {
-        int count = 0;
-        var allsubs = await _unitOfWork.MainScreens.GetAllAsync();
-        foreach (var sub in allsubs)
-        {
-            sub.Order = pattern[count];
-            count++;
-
-        };
-        _unitOfWork.MainScreens.UpdateRange(allsubs);
-        await _unitOfWork.CompleteAsync();
-        return new() { Check = true };
-    }
 
     public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string appPath, string moduleName)
     {
-         var mainScreenmap = _mapper.Map<StMainScreen>(model);
+        var mainScreenmap = _mapper.Map<StMainScreen>(model);
 
-         bool exists = await _unitOfWork.MainScreens.ExistAsync(x => x.Screen_main_title_en.Trim() == model.Screen_main_title_ar);
+        bool exists = await _unitOfWork.MainScreens.ExistAsync(x => x.Screen_main_title_en.Trim() == model.Screen_main_title_ar);
 
         if (exists)
         {
@@ -180,14 +133,14 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             };
         }
 
-         mainScreenmap.Screen_main_image = (model.Screen_main_image == null || model.Screen_main_image.Length == 0) ? null
-            : await _fileServer.UploadFile(appPath, moduleName, model.Screen_main_image);
+        mainScreenmap.Screen_main_image = (model.Screen_main_image == null || model.Screen_main_image.Length == 0) ? null
+           : await _fileServer.UploadFile(appPath, moduleName, model.Screen_main_image);
 
-         await _unitOfWork.MainScreens.AddAsync(mainScreenmap);
+        await _unitOfWork.MainScreens.AddAsync(mainScreenmap);
 
-         await _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync();
 
-         return new Response<StCreateMainScreenRequest>
+        return new Response<StCreateMainScreenRequest>
         {
             Msg = _sharLocalizer[Localization.Done],
             Check = true,
@@ -200,7 +153,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
     public async Task<Response<StGetMainScreenByIdResponse>> GetMainScreenByIdAsync(int id)
     {
-     
+
         var obj = await _unitOfWork.MainScreens.GetFirstOrDefaultAsync(x => x.Id == id);
 
         if (obj is null)
@@ -247,7 +200,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
         obj.Screen_main_title_ar = model.Screen_main_title_ar;
         obj.Screen_main_title_en = model.Screen_main_title_en;
- 
+
         _unitOfWork.MainScreens.Update(obj);
         await _unitOfWork.CompleteAsync();
 
@@ -311,9 +264,9 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             ThenInclude(cs => cs.StScreenSub).
             ToListAsync();
 
-        var subs =await _unitOfWork.SubMainScreenActions.GetAllAsync();
+        var subs = await _unitOfWork.SubMainScreenActions.GetAllAsync();
         var permision = await _unitOfWork.TitlePermissionRepository.GetAllAsync();
-        var mains = await _unitOfWork.MainScreens.GetAllAsync() ;
+        var mains = await _unitOfWork.MainScreens.GetAllAsync();
 
 
 
@@ -326,7 +279,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             {
                 Id = x.Id,
                 title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
-                main_id = x.MainScreenId ,
+                main_id = x.MainScreenId,
                 subs = x.StScreenSub.Select(k => new GetAllStScreenSub
                 {
                     Sub_Id = k.Id,
@@ -354,7 +307,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                 Console.WriteLine($"Category ID: {categoryScreen.Id}");
                 Console.WriteLine($"Category Screen Title: {categoryScreen.title}");
                 Console.WriteLine($"Category Screen Title: {categoryScreen.title}");
- 
+
                 foreach (var screenSub in categoryScreen.subs)
                 {
                     Console.WriteLine($"Screen Sub ID: {screenSub.Sub_Id}");
@@ -372,7 +325,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         }
 
 
-      
+
 
 
 
@@ -384,14 +337,16 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             Msg = "",
         };
     }
-
-   
-
-
-
-
-
-
-
     #endregion
 }
+
+
+
+
+
+
+
+
+
+
+

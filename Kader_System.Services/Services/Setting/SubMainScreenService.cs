@@ -1,6 +1,7 @@
 ﻿using Kader_System.DataAccess.Repositories;
-using Kader_System.DataAccesss.DbContext;
+using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.Dtos.Response;
+using Kader_System.Domain.DTOs;
 using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using System.Net;
@@ -75,14 +76,23 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
 
             Items = (await unitOfWork.SubMainScreens.GetSpecificSelectAsync(filter: filter, x => x,
                  take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize)).Select(x => new SubMainScreenData
+                 skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "screenCat")).Select(x => new SubMainScreenData
                  {
+                     Ids = x.Id,
                      Screen_sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
-                     Url = x.Url,
-                     Screen_cat_id = x.ScreenCatId,
-                     Screen_sub_image = string.Concat(ReadRootPath.SettingImagesPath, x.ScreenCat.StScreenSub.Select(y => y.Screen_sub_image).ToList())
-                 }, orderBy: x =>
-                   x.OrderByDescending(x => x.Id))).ToList()
+                     //Screen_sub_image = lang == Localization.Arabic ? x.screenCat.Screen_main_title_ar : x.screenCat.Screen_main_title_en,
+                 }).ToList(),
+            CurrentPage = model.PageNumber,
+            FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+            From = (page - 1) * model.PageSize + 1,
+            To = Math.Min(page * model.PageSize, totalRecords),
+            LastPage = totalPages,
+            LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+            PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+            NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+            Path = host,
+            PerPage = model.PageSize,
+            Links = pageLinks
         };
 
         if (result.TotalRecords is 0)
