@@ -28,7 +28,7 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
 
     [HttpGet(ApiRoutes.SubMainScreen.GetAllSubMainScreens)]
     public async Task<IActionResult> GetAllSubMainScreensAsync([FromQuery] StGetAllFiltrationsForSubMainScreenRequest model) =>
-        Ok(await service.GetAllSubMainScreensAsync(headerService.GetRequestHeaderLanguage, model));
+        Ok(await service.GetAllSubMainScreensAsync(headerService.GetRequestHeaderLanguage, model,headerService.GetCurrentHost));
 
     [HttpGet(ApiRoutes.SubMainScreen.GetSubMainScreenById)]
     public async Task<IActionResult> GetSubMainScreenByIdAsync([FromRoute] int id)
