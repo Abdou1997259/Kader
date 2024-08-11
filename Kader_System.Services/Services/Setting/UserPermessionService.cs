@@ -1,6 +1,8 @@
 ﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.DTOs.Response;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Kader_System.Services.Services.Setting
 {
@@ -16,7 +18,12 @@ namespace Kader_System.Services.Services.Setting
                 .AsNoTracking()
                 .ToListAsync();
 
-            var userName = await _context.Users.AsNoTracking().Where(x => x.Id == userId).Select(x =>x.UserName).FirstOrDefaultAsync();
+
+
+            var userName = await _context.Users.AsNoTracking().
+                Where(x => x.Id == userId).Select(x =>x.UserName).
+                FirstOrDefaultAsync();
+
             var finalResult = results.Select(x => new DTOSPGetUserPermissionsBySubScreen
             {
 
@@ -26,10 +33,7 @@ namespace Kader_System.Services.Services.Setting
                 main_id = x.main_id,
                 main_img = x.main_image,
                 main_title = x.main_title,
-                permissions = x.permissions.Split(',').Distinct().ToDictionary(
-                            perm => perm,
-                            perm => true
-                      ),
+                permissions = x.permissions.CreateNewPermission(x.actions, x.permissions,x.PermissionNames),
                 screen_code = x.screen_code,
                 sub_id = x.sub_id,
                 sub_title = x.sub_title,
