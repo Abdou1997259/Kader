@@ -10,5 +10,7 @@ public interface IMainScreenService
     Task<Response<StGetMainScreenByIdResponse>> GetMainScreenByIdAsync(int id);
     Task<Response<StUpdateMainScreenRequest>> UpdateMainScreenAsync(int id, StUpdateMainScreenRequest model);
     //Task<Response<string>> UpdateActiveOrNotSubMainScreenAsync(int id);
+    Task<Response<string>> OrderByPattern(int[] pattern);
     Task<Response<string>> DeleteMainScreenAsync(int id);
+    Task<Response<StMainScreen>> RestoreMainScreenAsync(int id);
 }

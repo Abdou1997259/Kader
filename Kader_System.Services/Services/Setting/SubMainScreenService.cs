@@ -69,19 +69,22 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         var pageLinks = Enumerable.Range(1, totalPages)
             .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
             .ToList();
+        var items = (await unitOfWork.SubMainScreens.GetSpecificSelectAsync(filter: filter, x => x,
+                 take: model.PageSize,
+                 skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "ScreenCat", orderBy: x =>
+                  x.OrderBy(x => x.Order))).Select(x => new SubMainScreenData
+                  {
+                      Ids = x.Id,
+                      Screen_sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
+                      ScreenCode = x.ScreenCode
 
+                  }
+                 ).ToList();
         var result = new StGetAllSubMainScreensResponse
         {
             TotalRecords = totalRecords,
 
-            Items = (await unitOfWork.SubMainScreens.GetSpecificSelectAsync(filter: filter, x => x,
-                 take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "screenCat")).Select(x => new SubMainScreenData
-                 {
-                     Ids = x.Id,
-                     Screen_sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
-                     //Screen_sub_image = lang == Localization.Arabic ? x.screenCat.Screen_main_title_ar : x.screenCat.Screen_main_title_en,
-                 }).ToList(),
+            Items = items,
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,
@@ -407,6 +410,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             count++;
         
         };
+     
         _unitOfWork.SubMainScreens.UpdateRange(allsubs);
         await _unitOfWork.CompleteAsync();  
         return new() {Check = true};

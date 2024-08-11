@@ -9,4 +9,6 @@ public interface IMainScreenCategoryService
     public Task<Response<StUpdateMainScreenCategoryRequest>> UpdateMainScreenCategoryAsync(int id, StUpdateMainScreenCategoryRequest model, string lang, string appPath, string moduleName);
     Task<Response<string>> UpdateActiveOrNotMainScreenCategoryAsync(int id);
     Task<Response<string>> DeleteMainScreenCategoryAsync(int id);
+    Task<Response<string>> OrderByPattern(int[] pattern);
+    Task<Response<StMainScreenCat>> RestoreCatScreenAsync(int id);
 }

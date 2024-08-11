@@ -31,7 +31,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                     Main_title = lang == Localization.Arabic ? x.Screen_main_title_ar : x.Screen_main_title_en,
                     Main_image = x.Screen_main_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_image) : string.Empty
                 }, orderBy: x =>
-                  x.OrderByDescending(x => x.Id));
+                  x.OrderBy(x => x.Order));
 
         if (!result.Any())
         {
@@ -51,7 +51,49 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             Check = true
         };
     }
+    public async Task<Response<string>> OrderByPattern(int[] pattern)
+    {
+        int count = 0;
+        var allsubs = await _unitOfWork.MainScreens.GetAllAsync();
+        foreach (var sub in allsubs)
+        {
+            sub.Order = pattern[count];
+            count++;
 
+        };
+
+        _unitOfWork.MainScreens.UpdateRange(allsubs);
+        await _unitOfWork.CompleteAsync();
+        return new() { Check = true };
+    }
+    public async Task<Response<StMainScreen>> RestoreMainScreenAsync(int id)
+    {
+        var obj = await _unitOfWork.MainScreens.GetByIdAsync(id);
+        if (obj == null)
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+                _sharLocalizer[Localization.Allowance]);
+
+            return new()
+            {
+                Data = null,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+        await _unitOfWork.MainScreens.SoftDeleteAsync(obj, "IsDeleted", false);
+        //obj.IsDeleted = false;
+        //_unitOfWork.Allowances.Update(obj);
+        //await _unitOfWork.CompleteAsync();
+        return new()
+        {
+            Check = true,
+            Data = obj,
+            Msg = _sharLocalizer[Localization.Restored]
+        };
+
+
+    }
     public async Task<Response<StGetAllMainScreensResponse>> GetAllMainScreensAsync(string lang, StGetAllFiltrationsForMainScreenRequest model, string host)
     {
         Expression<Func<StMainScreen, bool>> filter = x => x.IsDeleted == model.IsDeleted

@@ -126,7 +126,7 @@ public static class SD
 
             public const string restore = "screen_cat/restore/{id}";
 
-            public const string OrderbyPattern = "order_by_pattern";
+            public const string OrderbyPattern = "screen_cat/order_by_pattern";
         }
 
         public class MainScreen
@@ -139,7 +139,7 @@ public static class SD
             public const string GetMainScreenById = "screen_main/getById/{id}";
             public const string DeleteMainScreen = "screen_main/{id}";
             public const string RestoreMainScreen = "screen_main/restore/{id}";
-            public const string OrderbyPattern = "order_by_pattern";
+            public const string OrderbyPattern = "screen_main/order_by_pattern";
 
         }
 
@@ -162,7 +162,7 @@ public static class SD
             public const string GetSubMainScreenById = "screen_sub/getById/{id}";
             public const string DeleteSubMainScreen = "screen_sub/delete/{id}";
             public const string RestoreScreen = "screen_sub/restore/{id}";
-            public const string OrderbyPattern = "order_by_pattern";
+            public const string OrderbyPattern = "screen_sub/order_by_pattern";
         }
         public class StResponsiblity
         {

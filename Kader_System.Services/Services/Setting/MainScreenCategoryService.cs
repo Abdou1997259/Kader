@@ -48,6 +48,50 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
         };
     }
 
+    public async Task<Response<string>> OrderByPattern(int[] pattern)
+    {
+        int count = 0;
+        var allsubs = await _unitOfWork.MainScreenCategories.GetAllAsync();
+        foreach (var sub in allsubs)
+        {
+            sub.Order = pattern[count];
+            count++;
+
+        };
+
+        _unitOfWork.MainScreenCategories.UpdateRange(allsubs);
+        await _unitOfWork.CompleteAsync();
+        return new() { Check = true };
+    }
+    public async Task<Response<StMainScreenCat>> RestoreCatScreenAsync(int id)
+    {
+        var obj = await _unitOfWork.MainScreenCategories.GetByIdAsync(id);
+        if (obj == null)
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+                _sharLocalizer[Localization.Allowance]);
+
+            return new()
+            {
+                Data = null,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+        await _unitOfWork.MainScreenCategories.SoftDeleteAsync(obj, "IsDeleted", false);
+        //obj.IsDeleted = false;
+        //_unitOfWork.Allowances.Update(obj);
+        //await _unitOfWork.CompleteAsync();
+        return new()
+        {
+            Check = true,
+            Data = obj,
+            Msg = _sharLocalizer[Localization.Restored]
+        };
+
+
+    }
+
     public async Task<Response<StGetAllMainScreensCategoriesResponse>> GetAllMainScreensCategoriesAsync(string lang, StGetAllFiltrationsForMainScreenCategoryRequest model, string host)
     {
         Expression<Func<StMainScreenCat, bool>> filter = x => x.IsDeleted == model.IsDeleted
@@ -74,7 +118,8 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
 
             Items = (await unitOfWork.MainScreenCategories.GetSpecificSelectAsync(filter: filter, x => x,
                  take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "screenCat")).Select(x => new MainScreenCategoryData
+                 skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "screenCat", orderBy: x =>
+                  x.OrderBy(x => x.Order))).Select(x => new MainScreenCategoryData
                  {
                      Id = x.Id,
                      Screen_cat_Title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
