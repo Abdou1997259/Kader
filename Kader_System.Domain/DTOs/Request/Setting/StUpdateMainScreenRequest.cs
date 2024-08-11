@@ -2,5 +2,5 @@
 
 public class StUpdateMainScreenRequest : StCreateMainScreenRequest
 {
-    public int id { get; set; }
+   
 }

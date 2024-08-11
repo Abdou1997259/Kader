@@ -226,9 +226,9 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<Response<StUpdateMainScreenRequest>> UpdateMainScreenAsync(int id, StUpdateMainScreenRequest model)
+    public async Task<Response<StUpdateMainScreenRequest>> UpdateMainScreenAsync(int id, StUpdateMainScreenRequest model, string appPath, string moduleName)
     {
-        var obj = await _unitOfWork.MainScreens.GetFirstOrDefaultAsync(x => x.Id == model.id);
+        var obj = await _unitOfWork.MainScreens.GetFirstOrDefaultAsync(x => x.Id ==id);
 
         if (obj == null)
         {
@@ -245,6 +245,22 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
         obj.Screen_main_title_ar = model.Screen_main_title_ar;
         obj.Screen_main_title_en = model.Screen_main_title_en;
+        if (model.Screen_main_image != null)
+        {
+            // Check if the current image exists and delete it if it does
+            if (!string.IsNullOrEmpty(obj.Screen_main_image))
+            {
+                var path = Path.Combine(SD.GoRootPath.GetSettingImagesPath, obj.Screen_main_image);
+                if (File.Exists(path))
+                {
+                    File.Delete(path);
+                }
+            }
+
+            // Upload the new image if provided
+            obj.Screen_main_image = (model.Screen_main_image.Length == 0) ? null
+                : await _fileServer.UploadFile(appPath, moduleName, model.Screen_main_image);
+        }
 
         _unitOfWork.MainScreens.Update(obj);
         await _unitOfWork.CompleteAsync();

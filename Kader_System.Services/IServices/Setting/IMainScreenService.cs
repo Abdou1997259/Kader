@@ -8,7 +8,7 @@ public interface IMainScreenService
     Task<Response<StGetAllMainScreensResponse>> GetAllMainScreensAsync(string lang, StGetAllFiltrationsForMainScreenRequest model, string host);
     Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string serverPath, string moduleName);
     Task<Response<StGetMainScreenByIdResponse>> GetMainScreenByIdAsync(int id);
-    Task<Response<StUpdateMainScreenRequest>> UpdateMainScreenAsync(int id, StUpdateMainScreenRequest model);
+    Task<Response<StUpdateMainScreenRequest>> UpdateMainScreenAsync(int id, StUpdateMainScreenRequest model, string appPath, string moduleName);
     //Task<Response<string>> UpdateActiveOrNotSubMainScreenAsync(int id);
     Task<Response<string>> OrderByPattern(int[] pattern);
     Task<Response<string>> DeleteMainScreenAsync(int id);

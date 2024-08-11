@@ -83,7 +83,8 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     [Permission(Helpers.Permission.Edit, 1)]
     public async Task<IActionResult> UpdateMainScreenAsync([FromRoute] int id, [FromForm] StUpdateMainScreenRequest model)
     {
-        var response = await service.UpdateMainScreenAsync(id, model);
+        var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+        var response = await service.UpdateMainScreenAsync(id, model,serverPath, Modules.Setting);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
