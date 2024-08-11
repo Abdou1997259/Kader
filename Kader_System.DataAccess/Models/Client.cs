@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Kader_System.Domain.Models;
+namespace Kader_System.DataAccess.Models;
 
 public partial class Client
 {
