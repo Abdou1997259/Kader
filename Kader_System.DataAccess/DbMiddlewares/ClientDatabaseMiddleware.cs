@@ -1,5 +1,4 @@
-﻿using Kader_System.DataAccess.Context;
-using Kader_System.DataAccesss.Context;
+﻿using Kader_System.DataAccess.Models;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,10 +26,10 @@ namespace Kader_System.DataAccess.DbMiddlewares
                         .UseSqlServer(authorizationConnectionString)
                         .Options);
 
-
+                var test = await authorizationContext.Clients.ToListAsync();
                 var client = await authorizationContext.Clients
-                    .Where(c => c.client_code == client_id && c.client_active == true)
-                    .Select(x => x.client_code)
+                    .Where(c => c.ClientCode == client_id && c.ClientActive == true)
+                    .Select(x => x.ClientCode)
                     .FirstOrDefaultAsync();
 
                 if (client == null)
