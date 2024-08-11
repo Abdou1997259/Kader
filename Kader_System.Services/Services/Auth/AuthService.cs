@@ -14,7 +14,6 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                    IFileServer fileServer,
                    RoleManager<ApplicationRole> roleManager,
                    IMainScreenService mainScreenService,
-                   INetworkInterfaceService networkInterfaceService
                 ) : IAuthService
 
 {
@@ -30,7 +29,6 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     private readonly IFileServer _fileServer = fileServer;
     private readonly IPermessionStructureService _permissionservice = premissionsevice;
     private readonly IMainScreenService _mainScreenService = mainScreenService;
-    private readonly INetworkInterfaceService _networkInterfaceService = networkInterfaceService;
     #region Authentication
 
     public async Task<Response<AuthLoginUserResponse>> LoginUserAsync(AuthLoginUserRequest model)
@@ -116,7 +114,6 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             Data = result,
             Error = string.Empty,
             Msg = string.Empty,
-            DBName = _networkInterfaceService.GetDeviceMacAddress() + " : Ip : " + _networkInterfaceService.GetIPAddress()
         };
     }
 
