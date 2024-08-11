@@ -1,4 +1,6 @@
-﻿namespace Kader_System.Domain.Dtos.Response;
+﻿using Kader_System.Domain.DTOs.Response.Auth;
+
+namespace Kader_System.Domain.Dtos.Response;
 
 public class Response<T> where T : class
 {
@@ -16,8 +18,8 @@ public class Response<T> where T : class
 }
 public class ResponseWithUser<T> : Response<T> where T : class
 {
-
-
+    public List<TitleLookups> titles { get; set; }
+    public int CurrentTitleId { get; set; }
     public string UserName { get; set; }
 }
 
