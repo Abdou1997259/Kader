@@ -14,11 +14,11 @@ public class Response<T> where T : class
     public object LookUps { get; set; } = null;
     public object LookUpsScreen { get; set; } = null;
 }
-public class ResponseWithUser<T>: Response<T> where T: class
+public class ResponseWithUser<T> : Response<T> where T : class
 {
-   
 
-  public string UserName { get; set; }
+
+    public string UserName { get; set; }
 }
 
 
