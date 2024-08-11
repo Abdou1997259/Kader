@@ -222,4 +222,7 @@
   <data name="UserInTitle" xml:space="preserve">
     <value>لاتوجد هذا المسئولية في المتسخدم خاصتك</value>
   </data>
+  <data name="ViewInclude" xml:space="preserve">
+    <value>يجب ان يحتوي علي صلاحية العرض اولا</value>
+  </data>
 </root>

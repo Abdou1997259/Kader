@@ -13,7 +13,7 @@ public class SubMainScreenData
     public string ScreenCat { get; set; }
     public string? Url { get; set; }
     public string ScreenCode { get; set; }
-    public string? Screen_sub_image { get; set; }
+    public string? ScreenMainImage { get; set; }
 
 
 

@@ -1,4 +1,5 @@
 ﻿using Kader_System.DataAccesss.Context;
+using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 
 namespace Kader_System.DataAccess.Repositories;
@@ -294,8 +295,8 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
         return result;
     }
 
-    public async Task<T> GetLast()
+    public async Task<T> GetLast(Expression<Func<T, object>> orderby)
     {
-        return await dbSet.LastAsync();
+        return await dbSet.OrderBy(orderby).LastAsync();
     }
 }

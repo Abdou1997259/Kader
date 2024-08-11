@@ -82,8 +82,9 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
                       ScreenCode = x.ScreenCode,
                       Url=x.Url,
                       ScreenMain =  Localization.Arabic ==lang?  x.ScreenCat.screenCat.Screen_main_title_ar:x.ScreenCat.screenCat.Screen_main_title_en,
-                      ScreenCat = Localization.Arabic == lang ? x.ScreenCat.Screen_cat_title_ar:x.Screen_sub_title_en
-
+                      ScreenCat = Localization.Arabic == lang ? x.ScreenCat.Screen_cat_title_ar:x.Screen_sub_title_en,
+                      ScreenMainImage=Path.Combine(SD.GoRootPath.GetSettingImagesPath,x.ScreenCat.screenCat.Screen_main_image ?? "")
+                      
 
 
 
@@ -149,25 +150,34 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             };
         }
 
-        string imageName = null!, imageExtension = null!;
-        if (model.Screen_sub_image is not null)
-        {
 
-            var fileObj = ManageFilesHelper.UploadFile(model.Screen_sub_image, GoRootPath.SettingImagesPath);
-            imageName = fileObj.FileName;
-            imageExtension = fileObj.FileExtension;
+        if (!model.Actions.Any(x => x == 1))
+        {
+            string resultms = _sharLocalizer[Localization.ViewInclude];
+            return new()
+            {
+                Msg = resultms,
+                Check = false
+            };
+            
         }
 
-        var lastsubscreen = await _unitOfWork.SubMainScreens.GetLast();
-          ;
+        var lastsubscreen = await _unitOfWork.SubMainScreens.GetLast(x=>x.Id) ;
 
-        var screencode = "01" + $"{lastsubscreen.Id}".PadLeft(4, '0');
+        var screencode = "01-" + $"{lastsubscreen.Id+1}".PadLeft(3, '0');
         await _unitOfWork.SubMainScreens.AddAsync(new()
         {
             Screen_sub_title_ar = model.Screen_sub_title_ar,
             Screen_sub_title_en = model.Screen_sub_title_en,
             ScreenCatId = model.ScreenCatId,
             ScreenCode = screencode,
+
+            ListOfActions=model.Actions.Select(x=>new StSubMainScreenAction
+            {
+                ActionId=x
+             
+            }).ToList(),
+            Url = model.Url,
         });
         await _unitOfWork.CompleteAsync();
 
@@ -250,6 +260,8 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
                 Screen_sub_title_ar = obj.Screen_sub_title_ar,
                 Screen_sub_title_en = obj.Screen_sub_title_en,
                 Url = obj.Url,
+                ScreenCode=obj.ScreenCode,
+
                 //Name = obj.Name,
                 Actions = obj.ListOfActions.Select(x => new ActionsData
                 {
@@ -325,14 +337,10 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             var mappedsubscreen = _mapper.Map(model, obj);
             _unitOfWork.SubMainScreens.Update(mappedsubscreen);
  
-            obj.Screen_sub_image = (model.Screen_sub_image == null || model.Screen_sub_image.Length == 0) ? null :
-                await _fileServer.UploadFile(appPath,moduleName, model.Screen_sub_image);
+         
 
 
-            var full_path = Path.Combine(appPath, moduleName);
-            if (model.Screen_sub_image != null)
-                _fileServer.RemoveFile(full_path, obj.Screen_sub_image);
-
+   
 
               _unitOfWork.SubMainScreens.Update(obj);
             var result = await _unitOfWork.CompleteAsync();

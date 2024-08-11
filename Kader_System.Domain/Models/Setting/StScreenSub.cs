@@ -8,7 +8,7 @@ public class StScreenSub : BaseEntity
     public int Id { get; set; }
     public required string Screen_sub_title_en { get; set; } 
     public required string Screen_sub_title_ar { get; set; } 
-     public  string? Screen_sub_image { get; set; }
+
 
     public string ScreenCode { get; set; }
     public string? Url { get; set; }

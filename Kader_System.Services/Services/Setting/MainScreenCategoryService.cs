@@ -25,7 +25,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
                 {
                     Ids = x.Id,
                     Screen_cat_title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
-                    Screen_main_cat_image = x.Screen_main_cat_image != null ? string.Concat(ReadRootPath.SettingImagesPath, x.Screen_main_cat_image) : string.Empty
+                    Screen_main_image = Path.Combine(SD.GoRootPath.GetSettingImagesPath, x.screenCat.Screen_main_image ?? "")
                 }, orderBy: x =>
                   x.OrderByDescending(x => x.Id));
 
@@ -124,7 +124,9 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
                      Id = x.Id,
                      Screen_cat_Title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
                      Screen_main_title = lang == Localization.Arabic ? x.screenCat.Screen_main_title_ar : x.screenCat.Screen_main_title_en,
-                 }).ToList(),
+                     Screen_main_image=Path.Combine(SD.GoRootPath.GetSettingImagesPath,x.screenCat.Screen_main_image ?? " ")
+
+                  }).ToList(),
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,
@@ -178,22 +180,16 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             };
         }
 
-        string imageName = null!, imageExtension = null!;
-        if (model.Screen_main_cat_image is not null)
-        {
-
-            var fileObj = ManageFilesHelper.UploadFile(model.Screen_main_cat_image, GoRootPath.SettingImagesPath);
-            imageName = fileObj.FileName;
-            imageExtension = fileObj.FileExtension;
-        }
+  
+     
 
 
         await _unitOfWork.MainScreenCategories.AddAsync(new()
         {
             Screen_cat_title_ar = model.Screen_cat_title_ar,
             Screen_cat_title_en = model.Screen_cat_title_en,
-            //Screen_main_cat_image = imageName,
-            ImageExtension = imageExtension,
+     
+     
             MainScreenId = model.Screen_main_id,
         });
         await _unitOfWork.CompleteAsync();
@@ -231,7 +227,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
                 Id = id,
                 Screen_cat_title_ar = obj.Screen_cat_title_ar,
                 Screen_cat_title_en = obj.Screen_cat_title_en,
-                Screen_main_cat_image = string.Concat(ReadRootPath.SettingImagesPath, obj.Screen_main_cat_image)
+               
             },
             Check = true
         };
@@ -247,15 +243,8 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
         var mappedcatscreen = _mapper.Map(model, obj);
         _unitOfWork.MainScreenCategories.Update(mappedcatscreen);
 
-        obj.Screen_main_cat_image = (model.Screen_main_cat_image == null || model.Screen_main_cat_image.Length == 0) ? null :
-            await _fileServer.UploadFile(appPath, moduleName, model.Screen_main_cat_image);
 
-
-        var full_path = Path.Combine(appPath, moduleName);
-        if (model.Screen_main_cat_image != null)
-            _fileServer.RemoveFile(full_path, obj.Screen_main_cat_image);
-
-
+  
         _unitOfWork.MainScreenCategories.Update(obj);
         var result = await _unitOfWork.CompleteAsync();
 
@@ -271,18 +260,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
 
 
 
-        if (model.Screen_main_cat_image is not null)
-        {
-            string path = GoRootPath.SettingImagesPath;
-
-            //ManageFilesHelper.RemoveFile(path + "/" + obj.Screen_main_image);
-
-            var fileObj = ManageFilesHelper.UploadFile(model.Screen_main_cat_image, path);
-            //obj.Screen_main_image = fileObj.FileName;
-            //obj.ImageExtension= fileObj.FileExtension;
-            obj.Screen_main_cat_image = path;
-        }
-
+   
         obj.Screen_cat_title_ar = model.Screen_cat_title_ar;
         obj.Screen_cat_title_en = model.Screen_cat_title_ar;
 

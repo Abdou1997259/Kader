@@ -13,6 +13,6 @@ public class MainScreenCategoryData
 
     public string? Screen_main_image { get; set; }
 
-    public StMainScreen screenCat { get; set; } = default!;
+
 }
 

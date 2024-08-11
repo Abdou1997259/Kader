@@ -2,6 +2,7 @@
 using Kader_System.Domain.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using System.Drawing;
 
 namespace Kader_System.Services.Services.Setting;
 
@@ -124,7 +125,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                  {
                      Id=x.Id,
                      Screen_main_title = Localization.Arabic ==lang? x.Screen_main_title_ar:x.Screen_main_title_en,
-                  
+                     Screen_main_image=Path.Combine(SD.GoRootPath.GetSettingImagesPath,x.Screen_main_image ?? "")
 
                  }).ToList(),
             CurrentPage = model.PageNumber,
@@ -217,10 +218,9 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             Data = new()
             {
                 Id = id,
-                Screen_cat_title_ar = obj.Screen_main_title_ar,
-                Screen_cat_title_en = obj.Screen_main_title_en,
-                Main_title_ar = obj.Screen_main_title_ar,
-                Main_title_en = obj.Screen_main_title_en
+                Screen_main_image= SD.GoRootPath.GetSettingImagesPath + obj.Screen_main_image,
+                Screen_Main_title_ar = obj.Screen_main_title_ar,
+                Screen_Main_title_en = obj.Screen_main_title_en
             },
             Check = true
         };
@@ -334,7 +334,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                     main_id = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Id).FirstOrDefault(),
                     sub_title = lang == "en" ? k.Screen_sub_title_en : k.Screen_sub_title_ar,
                     url = k.Url,
-                    sub_image = k.Screen_sub_image,
+                    sub_image =Path.Combine(SD.GoRootPath.GetSettingImagesPath, ms.Screen_main_image ?? " "),
                     screen_code = k.ScreenCode,
                     actions = subs.Where(x => x.ScreenSubId == k.Id).Select(x => x.ActionId).ToList().Concater(),
                     permissions = permision.Where(x => x.SubScreenId == k.Id).Select(p => p.Id).ToList().Concater()

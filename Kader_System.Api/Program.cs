@@ -1,5 +1,6 @@
 using Kader_System.Api.Helpers;
 using Kader_System.Api.Helpers.SwaggerHelper;
+
 using Kader_System.DataAccess.DbMiddlewares;
 using Kader_System.DataAccess.Models;
 using Kader_System.DataAccess.Repositories;
@@ -376,8 +377,9 @@ app.UseSwaggerUI(x =>
 app.UseMiddleware<ExceptionMiddleware>();
 app.ConfigureExceptionHandler(loggingRepository);    // custom as a global exception
 app.UseHttpsRedirection();
+app.UseStaticFiles(); 
 app.UseRouting();
-app.UseStaticFiles();
+
 //app.UseExceptionHandler();
 //app.ConfigureStaticFilesHandler();                   // custom as Static files
 app.UseRequestLocalization(localizationOptions);

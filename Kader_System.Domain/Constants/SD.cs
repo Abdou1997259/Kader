@@ -6,6 +6,7 @@ public static class SD
     public static class GoRootPath
     {
         public const string SettingImagesPath = "/wwwroot/Images/Setting/";
+        public const string GetSettingImagesPath = "/Images/Setting/";
         public const string SettingFilesPath = "/wwwroot/Files/Setting/";
         public const string SettingAudiosPath = "/wwwroot/Audios/Setting/";
         public const string SettingVideosPath = "/wwwroot/Videos/Setting/";
@@ -573,6 +574,7 @@ public static class SD
         public const string English = "en";
         public const string IsExist = "IsExist";
         public const string ScreenInAction = "ScreenInAction";
+        public const string ViewInclude = "ViewInclude";
         public const string Project = "Project";
         public const string Task = "Task";
         public const string SalaryMoreThanInstallment = "SalaryMoreThanInstallment";
