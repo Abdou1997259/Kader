@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 
-namespace Kader_System.DataAccess.Context;
+namespace Kader_System.DataAccess.Models;
 
 public partial class KaderAuthorizationContext : DbContext
 {
@@ -19,49 +19,60 @@ public partial class KaderAuthorizationContext : DbContext
     {
         modelBuilder.Entity<Client>(entity =>
         {
-            entity.HasKey(e => e.client_id).HasName("PK__clients__BF21A4249C5D37EB");
+            entity.HasKey(e => e.ClientId).HasName("PK__Client__BF21A424DDD8A84D");
 
             entity.ToTable("clients");
 
-            entity.Property(e => e.client_id).HasColumnName("client_id");
-            entity.Property(e => e.add_date)
+            entity.HasIndex(e => new { e.ClientCode, e.DeviceName, e.MacAddress, e.IpAddress }, "UQ__Client__7877F880830D77E2").IsUnique();
+
+            entity.Property(e => e.ClientId).HasColumnName("client_id");
+            entity.Property(e => e.AddDate)
                 .HasColumnType("datetime")
                 .HasColumnName("add_date");
-            entity.Property(e => e.add_user).HasColumnName("add_user");
-            entity.Property(e => e.client_active)
-                .HasDefaultValue(true)
-                .HasColumnName("client_active");
-            entity.Property(e => e.client_code).HasColumnName("client_code");
-            entity.Property(e => e.client_name_ar)
-                .HasMaxLength(100)
+            entity.Property(e => e.AddUser).HasColumnName("add_user");
+            entity.Property(e => e.ClientActive).HasColumnName("client_active");
+            entity.Property(e => e.ClientCode).HasColumnName("client_code");
+            entity.Property(e => e.ClientNameAr)
+                .HasMaxLength(255)
                 .HasColumnName("client_name_ar");
-            entity.Property(e => e.client_name_en)
-                .HasMaxLength(100)
+            entity.Property(e => e.ClientNameEn)
+                .HasMaxLength(255)
                 .HasColumnName("client_name_en");
-            entity.Property(e => e.disable_date)
+            entity.Property(e => e.DeviceName)
+                .HasMaxLength(255)
+                .HasColumnName("device_name");
+            entity.Property(e => e.DisableDate)
                 .HasColumnType("datetime")
                 .HasColumnName("disable_date");
-            entity.Property(e => e.disable_user).HasColumnName("disable_user");
-            entity.Property(e => e.email)
-                .HasMaxLength(100)
+            entity.Property(e => e.DisableUser).HasColumnName("disable_user");
+            entity.Property(e => e.Email)
+                .HasMaxLength(255)
                 .HasColumnName("email");
-            entity.Property(e => e.end_date).HasColumnName("end_date");
-            entity.Property(e => e.mobile)
-                .HasMaxLength(15)
+            entity.Property(e => e.EndDate)
+                .HasColumnType("datetime")
+                .HasColumnName("end_date");
+            entity.Property(e => e.IpAddress)
+                .HasMaxLength(255)
+                .HasColumnName("ip_address");
+            entity.Property(e => e.MacAddress)
+                .HasMaxLength(255)
+                .HasColumnName("mac_address");
+            entity.Property(e => e.Mobile)
+                .HasMaxLength(50)
                 .HasColumnName("mobile");
-            entity.Property(e => e.notice_period)
-                .HasDefaultValue(7)
-                .HasColumnName("notice_period");
-            entity.Property(e => e.project_id).HasColumnName("project_id");
-            entity.Property(e => e.start_date).HasColumnName("start_date");
-            entity.Property(e => e.status)
-                .HasDefaultValue(true)
-                .HasColumnName("status");
-            entity.Property(e => e.tax_facility_name)
-                .HasMaxLength(100)
+            entity.Property(e => e.NoticePeriod).HasColumnName("notice_period");
+            entity.Property(e => e.ProjectId)
+                .HasMaxLength(255)
+                .HasColumnName("project_id");
+            entity.Property(e => e.StartDate)
+                .HasColumnType("datetime")
+                .HasColumnName("start_date");
+            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.TaxFacilityName)
+                .HasMaxLength(255)
                 .HasColumnName("tax_facility_name");
-            entity.Property(e => e.tax_facility_name).HasColumnName("tax_reg_num");
-            entity.Property(e => e.users).HasColumnName("users");
+            entity.Property(e => e.TaxRegNum).HasColumnName("tax_reg_num");
+            entity.Property(e => e.Users).HasColumnName("users");
         });
 
         OnModelCreatingPartial(modelBuilder);
