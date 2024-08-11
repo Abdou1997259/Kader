@@ -119,9 +119,12 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
             Items = (await unitOfWork.MainScreens.GetSpecificSelectAsync(filter: filter, x => x,
                  take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize)).Select(x => new MainScreenData
+                 skip: (model.PageNumber - 1) * model.PageSize, orderBy: x =>
+                  x.OrderBy(x => x.Order))).Select(x => new MainScreenData
                  {
-                     Screen_main_title = x.Screen_main_title_ar
+                     Id=x.Id,
+                     Screen_main_title = Localization.Arabic ==lang? x.Screen_main_title_ar:x.Screen_main_title_en,
+                  
 
                  }).ToList(),
             CurrentPage = model.PageNumber,

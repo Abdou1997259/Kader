@@ -80,7 +80,7 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
-    [HttpPut(ApiRoutes.MainScreenCategory.OrderbyPattern)]
+    [HttpPost(ApiRoutes.MainScreenCategory.OrderbyPattern)]
     public async Task<IActionResult> orderbyPatttern(int[] id)
     {
 

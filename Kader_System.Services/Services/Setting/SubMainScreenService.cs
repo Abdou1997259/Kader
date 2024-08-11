@@ -59,6 +59,8 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
                                                  || x.Screen_sub_title_en.Contains(model.Word)
                                               );
 
+     
+
         var totalRecords = await unitOfWork.SubMainScreens.CountAsync(filter: filter);
         int page = 1;
         int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
@@ -67,16 +69,23 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         else
             page = model.PageNumber;
         var pageLinks = Enumerable.Range(1, totalPages)
+           
             .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
             .ToList();
         var items = (await unitOfWork.SubMainScreens.GetSpecificSelectAsync(filter: filter, x => x,
                  take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "ScreenCat", orderBy: x =>
+                 skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "ScreenCat.screenCat", orderBy: x =>
                   x.OrderBy(x => x.Order))).Select(x => new SubMainScreenData
                   {
                       Ids = x.Id,
                       Screen_sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
-                      ScreenCode = x.ScreenCode
+                      ScreenCode = x.ScreenCode,
+                      Url=x.Url,
+                      ScreenMain =  Localization.Arabic ==lang?  x.ScreenCat.screenCat.Screen_main_title_ar:x.ScreenCat.screenCat.Screen_main_title_en,
+                      ScreenCat = Localization.Arabic == lang ? x.ScreenCat.Screen_cat_title_ar:x.Screen_sub_title_en
+
+
+
 
                   }
                  ).ToList();

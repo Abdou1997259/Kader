@@ -101,7 +101,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
-    [HttpPut(ApiRoutes.MainScreen.OrderbyPattern)]
+    [HttpPost(ApiRoutes.MainScreen.OrderbyPattern)]
     [Permission(Helpers.Permission.Edit, 1)]
     public async Task<IActionResult> orderPattern(int[] id)
     {

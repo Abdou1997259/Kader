@@ -78,7 +78,7 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
-    [HttpPut(ApiRoutes.SubMainScreen.OrderbyPattern)]
+    [HttpPost(ApiRoutes.SubMainScreen.OrderbyPattern)]
     [Permission(Helpers.Permission.Edit, 2)]
     public async Task<IActionResult> OrderByPattern( [FromBody]int[] model)
     {

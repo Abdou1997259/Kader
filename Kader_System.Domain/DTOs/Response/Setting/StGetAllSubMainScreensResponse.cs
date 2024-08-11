@@ -9,6 +9,8 @@ public class SubMainScreenData
     public int Ids { get; set; }
     public int? Screen_cat_id { get; set; }
     public required string Screen_sub_title { get; set; }
+    public string ScreenMain { get; set; }
+    public string ScreenCat { get; set; }
     public string? Url { get; set; }
     public string ScreenCode { get; set; }
     public string? Screen_sub_image { get; set; }
