@@ -1,8 +1,10 @@
 ﻿using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs.Response;
+using Kader_System.Domain.DTOs.Response.Auth;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using static Kader_System.Domain.Constants.SD.ApiRoutes;
 
 namespace Kader_System.Services.Services.Setting
 {
@@ -14,15 +16,30 @@ namespace Kader_System.Services.Services.Setting
             var langParameter = new SqlParameter("@Lang", lang);
 
             var results = await _context.SPUserPermissionsBySubScreens
-                .FromSqlRaw("EXEC SP_GetUserPermissionsBySubScreen @UserId, @Lang", userIdParameter, langParameter)
-                .AsNoTracking()
+                 .FromSqlRaw("EXEC SP_GetUserPermissionsBySubScreen @UserId, @Lang", userIdParameter, langParameter)
+            .AsNoTracking()
                 .ToListAsync();
+            var user = _context.Users.AsNoTracking()
+                            .Where(x => x.Id == userId)
+                            .Select(u => new
+                            {
+                                u.UserName,
+                                u.TitleId,
+                                u.CurrentTitleId
+                            }).FirstOrDefault();
 
+            var titleIds = user.TitleId?.Split(',', StringSplitOptions.None)
+                     .Where(id => int.TryParse(id, out _))
+                     .Select(int.Parse)
+                     .ToList();
 
-
-            var userName = await _context.Users.AsNoTracking().
-                Where(x => x.Id == userId).Select(x =>x.UserName).
-                FirstOrDefaultAsync();
+            var titles = _context.Titles
+            .Where(title => titleIds.Contains(title.Id))
+                            .Select(title => new TitleLookups
+                            {
+                                Id = title.Id,
+                                TitleName = lang == Localization.English ? title.TitleNameEn : title.TitleNameAr
+                            }).ToList();
 
             var finalResult = results.Select(x => new DTOSPGetUserPermissionsBySubScreen
             {
@@ -33,7 +50,7 @@ namespace Kader_System.Services.Services.Setting
                 main_id = x.main_id,
                 main_img = x.main_image,
                 main_title = x.main_title,
-                permissions = x.permissions.CreateNewPermission(x.actions, x.permissions,x.PermissionNames),
+                permissions = x.permissions.CreateNewPermission(x.actions, x.permissions, x.PermissionNames),
                 screen_code = x.screen_code,
                 sub_id = x.sub_id,
                 sub_title = x.sub_title,
@@ -46,7 +63,9 @@ namespace Kader_System.Services.Services.Setting
                 Check = true,
                 DynamicData = finalResult,
                 Error = "",
-                UserName = userName
+                UserName = user.UserName,
+                titles = titles,
+                CurrentTitleId = user.CurrentTitleId
             };
         }
 
