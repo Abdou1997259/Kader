@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Kader_System.DataAccess.Repositories.Setting
 {
-    public class PermessionStructureRepository(KaderDbContext context) : BaseRepository<StScreenAction>(context), IPermessionStructureRepository
+    public class GetAllScreensRepository(KaderDbContext context): BaseRepository<StMainScreen>(context),IGetAllScreensRepository
     {
 
     }

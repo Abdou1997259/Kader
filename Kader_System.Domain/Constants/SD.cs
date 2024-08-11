@@ -557,6 +557,11 @@ public static class SD
         {
             public const string GetPermissionsBySubScreen = "PermessionStruct/GetPermissionsBySubScreen";
         }
+
+        public class GetAllScreens
+        {
+            public const string SpGetAllScreens = "GetAllScreens/SpGetAllScreens";
+        }
         public class UserPermession
         {
             public const string GetAllUserPermessions = "userPermession/getAllUserPermessions/{userId}";
