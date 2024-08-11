@@ -279,7 +279,6 @@ builder.Services.AddScoped<ITitleService, TitleService>();
 builder.Services.AddScoped<IPermessionStructureService, PermessionStructureService>();
 builder.Services.AddScoped<IUserPermessionService, UserPermessionService>();
 builder.Services.AddScoped<ITitlePermessionService, TitlePermessionService>();
-builder.Services.AddScoped<INetworkInterfaceService, NetworkInterfaceService>();
 #region Employee_Requests
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
 builder.Services.AddScoped<IVacationRequestService, VacationRequestService>();

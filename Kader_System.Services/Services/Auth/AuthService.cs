@@ -13,7 +13,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                    IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
                    IFileServer fileServer,
                    RoleManager<ApplicationRole> roleManager,
-                   IMainScreenService mainScreenService,
+                   IMainScreenService mainScreenService
                 ) : IAuthService
 
 {
