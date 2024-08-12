@@ -204,7 +204,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
 
     public async Task<Response<StGetMainScreenCategoryByIdResponse>> GetMainScreenCategoryByIdAsync(int id)
     {
-        var obj = await _unitOfWork.MainScreenCategories.GetByIdAsync(id);
+        var obj = (await _unitOfWork.MainScreenCategories.GetSpecificSelectAsync(x=>x.Id==id,x=>x,includeProperties: "screenCat")).FirstOrDefault();
 
         if (obj is null)
         {
@@ -225,6 +225,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             Data = new()
             {
                 Id = id,
+                ScreenMainId=obj.screenCat.Id,
                 Screen_cat_title_ar = obj.Screen_cat_title_ar,
                 Screen_cat_title_en = obj.Screen_cat_title_en,
                
