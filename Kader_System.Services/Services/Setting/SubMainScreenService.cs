@@ -319,27 +319,34 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             };
         }
 
-        using var transaction = _unitOfWork.BeginTransaction();
-        try
+
+
+
+
+        if (obj.ListOfActions.Count > 0)
         {
-            if (obj.ListOfActions.Count > 0)
-            {
-                _unitOfWork.SubMainScreenActions.RemoveRange(obj.ListOfActions);
-                await _unitOfWork.CompleteAsync();
-            }
+            _unitOfWork.SubMainScreenActions.RemoveRange(obj.ListOfActions);
+            await _unitOfWork.CompleteAsync();
+        }
+        obj.Screen_sub_title_ar=model.screen_sub_title_ar;
+        obj.Screen_sub_title_en=model.screen_sub_title_en;  
+        obj.ScreenCatId=model.screen_cat_id;
+        obj.Url=model.url;
+        _unitOfWork.SubMainScreens.Update(obj);
+        var result = await _unitOfWork.CompleteAsync();
+        obj.ListOfActions = model.actions.Select(x => new StSubMainScreenAction
+        {
+            ActionId = x,
+            ScreenSubId=obj.Id,
+        }).ToList();
+
+    await _unitOfWork.CompleteAsync();
 
 
-            var mappedsubscreen = _mapper.Map(model, obj);
-            _unitOfWork.SubMainScreens.Update(mappedsubscreen);
- 
-         
 
 
-   
 
-              _unitOfWork.SubMainScreens.Update(obj);
-            var result = await _unitOfWork.CompleteAsync();
-            return new()
+        return new ()
             {
                 Msg = sharLocalizer[Localization.Done],
                 Check = true,
@@ -347,17 +354,8 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
  
 
           
-        }
-        catch (Exception ex)
-        {
-            transaction.Rollback();
-            await _loggingRepository.LogExceptionInDb(ex, JsonConvert.SerializeObject(model));
-            return new()
-            {
-                Error = ex.Message,
-                Msg = ex.Message + (ex.InnerException == null ? string.Empty : ex.InnerException.Message)
-            };
-        }
+        
+        
     }
 
    
