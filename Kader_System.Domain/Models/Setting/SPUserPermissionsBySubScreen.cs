@@ -20,6 +20,7 @@ namespace Kader_System.Domain.Models.Setting
         public string? actions { get; set; }
         public string? permissions { get; set; }
         public string? PermissionNames { get; set; }
+        public int TitleId { get; set; }
         public string? url { get; set; }
 
     }

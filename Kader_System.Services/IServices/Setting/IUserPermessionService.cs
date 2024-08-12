@@ -8,6 +8,6 @@ namespace Kader_System.Services.IServices.Setting
 {
     public interface IUserPermessionService
     {
-        public Task<Response<DTOSPGetUserPermissionsBySubScreen>> GetUserPermissionsBySubScreen(string userId, string lang);
+        public Task<Response<DTOSPGetUserPermissionsBySubScreen>> GetUserPermissionsBySubScreen(int titleId, string userId, string lang);
     }
 }

@@ -565,7 +565,7 @@ public static class SD
         public class UserPermession
         {
             public const string GetAllUserPermessions = "userPermession/getAllUserPermessions/{userId}";
-            public const string GetUserPermissionsBySubScreen = "userPermession/GetUserPermissionsBySubScreen/{userId}";
+            public const string GetUserPermissionsBySubScreen = "userPermession/GetUserPermissionsBySubScreen/{userId}/{titleId}";
         }
         public class TitlePermession
         {

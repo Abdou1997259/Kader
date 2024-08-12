@@ -10,22 +10,25 @@ namespace Kader_System.Services.Services.Setting
 {
     public class UserPermessionService(KaderDbContext _context, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, IPermessionStructureService permession) : IUserPermessionService
     {
-        public async Task<Response<DTOSPGetUserPermissionsBySubScreen>> GetUserPermissionsBySubScreen(string userId, string lang)
+        public async Task<Response<DTOSPGetUserPermissionsBySubScreen>> GetUserPermissionsBySubScreen(int titleId, string userId, string lang)
         {
             var userIdParameter = new SqlParameter("@UserId", userId);
             var langParameter = new SqlParameter("@Lang", lang);
 
             var results = await _context.SPUserPermissionsBySubScreens
                  .FromSqlRaw("EXEC SP_GetUserPermissionsBySubScreen @UserId, @Lang", userIdParameter, langParameter)
-            .AsNoTracking()
-                .ToListAsync();
+                 .AsNoTracking()
+        
+                 .ToListAsync();
+            results = results.Where(x => x.TitleId == titleId).ToList();
             var user = _context.Users.AsNoTracking()
-                            .Where(x => x.Id == userId)
+                            .Where(x => x.Id == userId )
                             .Select(u => new
                             {
                                 u.UserName,
                                 u.TitleId,
-                                u.CurrentTitleId
+                                u.CurrentTitleId,
+                               
                             }).FirstOrDefault();
 
             var titleIds = user.TitleId?.Split(',', StringSplitOptions.None)

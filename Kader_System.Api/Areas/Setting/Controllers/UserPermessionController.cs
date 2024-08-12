@@ -17,9 +17,9 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         #region Retrieve
         [HttpGet(ApiRoutes.UserPermession.GetUserPermissionsBySubScreen)]
         [DeflateCompression]
-        public async Task<IActionResult> GetUserPermissionsBySubScreen([FromRoute] string userId)
+        public async Task<IActionResult> GetUserPermissionsBySubScreen([FromRoute] string userId,[FromRoute]int titleId)
         {
-            var result = await _userPermession.GetUserPermissionsBySubScreen(userId, requestService.GetRequestHeaderLanguage);
+            var result = await _userPermession.GetUserPermissionsBySubScreen(titleId, userId, requestService.GetRequestHeaderLanguage);
            return Ok(result);
         }
 
