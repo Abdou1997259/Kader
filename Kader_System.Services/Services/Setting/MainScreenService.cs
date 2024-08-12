@@ -1,5 +1,6 @@
 ﻿using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using System.Drawing;
@@ -58,10 +59,16 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         var allsubs = await _unitOfWork.MainScreens.GetAllAsync();
         foreach (var sub in allsubs)
         {
-            sub.Order = pattern[count];
-            count++;
-
-        };
+            if (count < pattern.Length)
+            {
+                sub.Order = pattern[count];
+                count++;
+            }
+            else
+            {
+                continue;
+            }
+        }
 
         _unitOfWork.MainScreens.UpdateRange(allsubs);
         await _unitOfWork.CompleteAsync();
