@@ -122,6 +122,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
                   x.OrderBy(x => x.Order))).Select(x => new MainScreenCategoryData
                  {
                      Id = x.Id,
+                     screen_main_id = x.MainScreenId,
                      Screen_cat_Title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
                      Screen_main_title = lang == Localization.Arabic ? x.screenCat.Screen_main_title_ar : x.screenCat.Screen_main_title_en,
                      Screen_main_image=Path.Combine(SD.GoRootPath.GetSettingImagesPath,x.screenCat.Screen_main_image ?? " ")
