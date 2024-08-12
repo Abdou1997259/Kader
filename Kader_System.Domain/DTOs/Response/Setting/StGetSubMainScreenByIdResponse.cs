@@ -8,7 +8,7 @@ public class StGetSubMainScreenByIdResponse
     public int Screen_cat_id { get; set; }
     public required string Url { get; set; }
     public string ScreenCode { get; set; }
-    public string Actions { get; set; } = "";
+    public List<int> Actions { get; set; } = [];
     public List<Title> Titles { get; set; } = [];
 }
 public class ActionsData : SpecificSelectListResponse

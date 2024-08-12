@@ -16,3 +16,4 @@ public class StCreateSubMainScreenRequest
 
     public List<int>? actions { get; set; } = [];
 }
+

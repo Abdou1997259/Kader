@@ -74,10 +74,11 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             .ToList();
         var items = (await unitOfWork.SubMainScreens.GetSpecificSelectAsync(filter: filter, x => x,
                  take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "ScreenCat.screenCat", orderBy: x =>
+                 skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "ScreenCat.screenCat,ScreenCat", orderBy: x =>
                   x.OrderBy(x => x.Order))).Select(x => new SubMainScreenData
                   {
                       Ids = x.Id,
+                      Screen_cat_id=x.ScreenCat.Id,
                       Screen_sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
                       ScreenCode = x.ScreenCode,
                       Url=x.Url,
@@ -263,7 +264,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
                 ScreenCode=obj.ScreenCode,
 
                 //Name = obj.Name,
-                Actions = obj.ListOfActions.Select(x => x.Id).ToList().Concater()
+                Actions = obj.ListOfActions.Select(x => x.ActionId).ToList()
 
 
             },
@@ -334,12 +335,12 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         obj.Url=model.url;
         _unitOfWork.SubMainScreens.Update(obj);
         var result = await _unitOfWork.CompleteAsync();
-        obj.ListOfActions = model.actions.Select(x => new StSubMainScreenAction
+        var actionSubs = model.actions.Select(x => new StSubMainScreenAction
         {
             ActionId = x,
             ScreenSubId=obj.Id,
         }).ToList();
-
+       await     _unitOfWork.SubMainScreenActions.AddRangeAsync(actionSubs);
     await _unitOfWork.CompleteAsync();
 
 
