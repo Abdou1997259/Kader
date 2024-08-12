@@ -10,7 +10,7 @@ namespace Kader_System.Services.Services.Setting
         {
             var langParameter = new SqlParameter("@Lang", lang);
 
-            var results = await _context.SPUserPermissionsBySubScreens
+            var results = await _context.SPPermissionsBySubScreen
                 .FromSqlRaw("EXEC SP_GetPermissionsBySubScreen  @Lang", langParameter)
                 .AsNoTracking()
                 .ToListAsync();
