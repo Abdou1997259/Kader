@@ -81,11 +81,11 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPost(ApiRoutes.MainScreenCategory.OrderbyPattern)]
-    public async Task<IActionResult> orderbyPatttern(int[] id)
+    public async Task<IActionResult> orderbyPatttern(int[] Ids)
     {
 
 
-        var response = await service.OrderByPattern(id);
+        var response = await service.OrderByPattern(Ids);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
