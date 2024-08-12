@@ -22,5 +22,10 @@ public class ResponseWithUser<T> : Response<T> where T : class
     public int CurrentTitleId { get; set; }
     public string UserName { get; set; }
 }
+public class ResponseForPermession<T> : Response<T> where T : class
+{
+    public string? title_name_en { get; set; }
+    public string? title_name_ar { get; set; }
+}
 
 
