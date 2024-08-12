@@ -19,8 +19,8 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         [DeflateCompression]
         public async Task<IActionResult> GetUserPermissionsBySubScreen([FromRoute] string userId)
         {
-            var res = HttpContext.Items["ServerPath"]?.ToString();
-           return Ok(await _userPermession.GetUserPermissionsBySubScreen(userId, requestService.GetRequestHeaderLanguage));
+            var result = await _userPermession.GetUserPermissionsBySubScreen(userId, requestService.GetRequestHeaderLanguage);
+           return Ok(result);
         }
 
         #endregion
