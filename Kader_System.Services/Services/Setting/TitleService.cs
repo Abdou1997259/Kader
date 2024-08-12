@@ -71,6 +71,7 @@ namespace Kader_System.Services.Services.Setting
                      take: model.PageSize,
                      skip: (model.PageNumber - 1) * model.PageSize)).Select(x=>new TitleData
                      {
+                         Id = x.Id,
                          TitleNameAr = x.TitleNameAr,
                          TitleNameEn = x.TitleNameEn,   
                      }).ToList(),
