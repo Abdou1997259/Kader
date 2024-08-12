@@ -167,7 +167,7 @@ namespace Kader_System.Services.Services.Setting
             }
 
             var subMainScreenActions = await unitOfWork.SubMainScreenActions.GetAllAsync();
-            foreach (var sub in model.Permssions)
+            foreach (var sub in model.permissions)
             {
                 // Get ActionIds for the current SubId
                 var actionIdsForSubId = subMainScreenActions
@@ -177,7 +177,7 @@ namespace Kader_System.Services.Services.Setting
                     .ToList();
 
                 // Get TitlePermssion for the current SubId
-                var titlePermissions = sub.TitlePermssion;
+                var titlePermissions = sub.title_permission;
 
                 // Check if there is at least one ActionId that is not in the TitlePermssion
                 var missingActionsExist = titlePermissions.Except(actionIdsForSubId);
@@ -211,12 +211,12 @@ namespace Kader_System.Services.Services.Setting
             title.TitleNameAr = model.TitleNameAr;
             title.TitleNameEn = model.TitleNameEn;
 
-
+     
           
 
 
 
-           var result= await AssginTitlePermssion(id, model.Permssions,lang,all);
+           var result= await AssginTitlePermssion(id, model.permissions,lang,all);
             if (result.Check == false) {
                 return new()
                 {
@@ -306,7 +306,7 @@ namespace Kader_System.Services.Services.Setting
                         {
                             unitOfWork.TitlePermissionRepository.RemoveRange(userPermissionQuery);
                         }
-                        if (assignedPermission.TitlePermssion.Count == 0||assignedPermission.TitlePermssion.Any(x => x == 0))
+                        if (assignedPermission.title_permission.Count == 0|| assignedPermission.title_permission.Any(x => x == 0))
                         {
                             continue;
                         }
@@ -320,20 +320,21 @@ namespace Kader_System.Services.Services.Setting
 
 
                                 SubScreenId = assignedPermission.SubId,
-                                Permissions = string.Join(',', assignedPermission.TitlePermssion)
+                                Permissions = string.Join(',', assignedPermission.title_permission)
                             });
                         }
                     }
                     else
                     {
-                        var userPermissionQuery = await unitOfWork.TitlePermissionRepository
-                           .GetSpecificSelectAsync(x => x.SubScreenId == assignedPermission.SubId, x => x);
+                        var userPermissionQuery = (await unitOfWork.TitlePermissionRepository
+                           .GetSpecificSelectTrackingAsync(x => x.SubScreenId == assignedPermission.SubId, x => x,includeProperties: "ScreenSub,Title")).ToList();
 
-                        if (userPermissionQuery.Count() > 0)
+                        if (userPermissionQuery.Count() > 0 )
                         {
                             unitOfWork.TitlePermissionRepository.RemoveRange(userPermissionQuery);
+                            await unitOfWork.CompleteAsync();
                         }
-                        if (assignedPermission.TitlePermssion.Count == 0 ||assignedPermission.TitlePermssion.Any(x=>x==0))
+                        if (assignedPermission.title_permission.Count == 0 ||assignedPermission.title_permission.Any(x=>x==0))
                         {
                             continue;
                         }
@@ -344,11 +345,12 @@ namespace Kader_System.Services.Services.Setting
 
 
 
-
+                                TitleId= id,
 
                                 SubScreenId = assignedPermission.SubId,
-                                Permissions = string.Join(',', assignedPermission.TitlePermssion)
+                                Permissions = string.Join(',', assignedPermission.title_permission)
                             });
+                            await unitOfWork.CompleteAsync();
                         }
 
 
@@ -375,7 +377,7 @@ namespace Kader_System.Services.Services.Setting
 
             }
 
-            await unitOfWork.CompleteAsync();
+            
             return new()
             {
                 Check = true,

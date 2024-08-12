@@ -3,6 +3,7 @@
     [Table("st_title_permission")]
     public class TitlePermission
     {
+      
         [Key]
         public int Id { get; set; }
         public int TitleId { get; set; } 

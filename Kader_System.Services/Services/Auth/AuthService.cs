@@ -646,7 +646,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 .ToList();
 
             // Get TitlePermssion for the current SubId
-            var titlePermissions = sub.TitlePermssion;
+            var titlePermissions = sub.title_permission;
 
             // Check if there is at least one ActionId that is not in the TitlePermssion
             var missingActionsExist = titlePermissions.Except(actionIdsForSubId);
@@ -679,7 +679,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             var userPermissions = model.Select(x => new UserPermission
         {
             UserId = id,
-            Permission = string.Join(',', x.TitlePermssion),
+            Permission = string.Join(',', x.title_permission),
             SubScreenId = x.SubId,
             TitleId = titleId?? 0
         }).ToList();
@@ -700,7 +700,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 {
                     unitOfWork.TitlePermissionRepository.RemoveRange(titlePermission);
                 }
-                if (assignedPermission.TitlePermssion.Count == 0 || assignedPermission.TitlePermssion.Any(x => x == 0))
+                if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
                 {
                     continue;
                 }
@@ -710,7 +710,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 {
                     TitleId = titleId ?? 0,
                     SubScreenId = assignedPermission.SubId,
-                    Permissions = assignedPermission.TitlePermssion.Concater()
+                    Permissions = assignedPermission.title_permission.Concater()
                 });
                 }
 
@@ -772,7 +772,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
          
 
 
-                if (assignedPermission.TitlePermssion.Count == 0 ||  assignedPermission.TitlePermssion.Any(x => x == 0))
+                if (assignedPermission.title_permission.Count == 0 ||  assignedPermission.title_permission.Any(x => x == 0))
                 {
                     continue;
                 }
@@ -785,7 +785,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
                         TitleId = titleId,
                         SubScreenId = assignedPermission.SubId,
-                        Permission = string.Join(',', assignedPermission.TitlePermssion)
+                        Permission = string.Join(',', assignedPermission.title_permission)
                     });
                 }
 

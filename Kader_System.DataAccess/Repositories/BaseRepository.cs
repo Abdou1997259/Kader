@@ -1,4 +1,5 @@
 ﻿using Kader_System.DataAccesss.Context;
+using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 
@@ -16,42 +17,9 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     {
         return await dbSet.AsNoTracking().FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id);
     }
+    
 
-    public async Task<IEnumerable<TType>> GetSpecificSelectAsync<TType>(
-        Expression<Func<T, bool>> filter,
-        Expression<Func<T, TType>> select,
-        string includeProperties = null!,
-        int? skip = null,
-        int? take = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!
-       ) where TType : class
-    {
-
-
-        IQueryable<T> query = dbSet.AsNoTracking();
-
-        if (includeProperties != null)
-        {
-            query.AsSplitQuery();
-            foreach (var includeProperty in includeProperties.Split(new char[] { ',' },
-                StringSplitOptions.RemoveEmptyEntries))
-                query = query.Include(includeProperty).IgnoreQueryFilters();
-        }
-
-
-
-        if (filter != null)
-            query = query.Where(filter);
-        if (orderBy != null)
-            query = orderBy(query);
-
-        if (skip.HasValue)
-            query = query.Skip(skip.Value);
-        if (take.HasValue)
-            query = query.Take(take.Value);
-
-        return await query.Select(select).ToListAsync();
-    }
+  
     public async Task<IQueryable<TType>> GetSpecificSelectAsQuerableAsync<TType>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, TType>> select,
@@ -298,5 +266,60 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     public async Task<T> GetLast(Expression<Func<T, object>> orderby)
     {
         return await dbSet.OrderBy(orderby).LastAsync();
+    }
+
+
+    public async Task<IEnumerable<TType>> GetSpecificSelectAsync<TType>(Expression<Func<T, bool>> filter, Expression<Func<T, TType>> select, string includeProperties = null, int? skip = null, int? take = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null) where TType : class
+    {
+        IQueryable<T> query = dbSet.AsNoTracking();
+
+        if (includeProperties != null)
+        {
+            query.AsSplitQuery();
+            foreach (var includeProperty in includeProperties.Split(new char[] { ',' },
+                StringSplitOptions.RemoveEmptyEntries))
+                query = query.Include(includeProperty).IgnoreQueryFilters();
+        }
+
+
+
+        if (filter != null)
+            query = query.Where(filter);
+        if (orderBy != null)
+            query = orderBy(query);
+
+        if (skip.HasValue)
+            query = query.Skip(skip.Value);
+        if (take.HasValue)
+            query = query.Take(take.Value);
+
+        return query.Select(select).ToList();
+    }
+
+    public async Task<IQueryable<TType>> GetSpecificSelectTrackingAsync<TType>(Expression<Func<T, bool>> filter, Expression<Func<T, TType>> select, string includeProperties = null, int? skip = null, int? take = null, Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null) where TType : class
+    {
+        IQueryable<T> query = dbSet;
+
+        if (includeProperties != null)
+        {
+            query.AsSplitQuery();
+            foreach (var includeProperty in includeProperties.Split(new char[] { ',' },
+                StringSplitOptions.RemoveEmptyEntries))
+                query = query.Include(includeProperty).IgnoreQueryFilters();
+        }
+
+
+
+        if (filter != null)
+            query = query.Where(filter);
+        if (orderBy != null)
+            query = orderBy(query);
+
+        if (skip.HasValue)
+            query = query.Skip(skip.Value);
+        if (take.HasValue)
+            query = query.Take(take.Value);
+
+        return query.Select(select);
     }
 }

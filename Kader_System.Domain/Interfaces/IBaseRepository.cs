@@ -3,13 +3,24 @@
     Task<T> GetByIdAsync(int id);
     Task<T> GetByIdWithNoTrackingAsync(int id);
     Task<T> GetLast(Expression<Func<T, object>> orderby);
-    Task<IEnumerable<TType>> GetSpecificSelectAsync<TType>(
+    Task<IQueryable<TType>> GetSpecificSelectTrackingAsync<TType>(
+          Expression<Func<T, bool>> filter,
+          Expression<Func<T, TType>> select,
+          string includeProperties = null!,
+          int? skip = null,
+          int? take = null,
+          Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!
+         ) where TType : class;
+  
+      Task<IEnumerable<TType>> GetSpecificSelectAsync<TType>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, TType>> select,
         string includeProperties = null!,
         int? skip = null,
         int? take = null,
         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!) where TType : class;   
+
+
       Task<IQueryable<TType>> GetSpecificSelectAsQuerableAsync<TType>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, TType>> select,
