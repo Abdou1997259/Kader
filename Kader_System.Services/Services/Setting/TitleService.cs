@@ -1,16 +1,18 @@
 ﻿
 
 using Kader_System.DataAccess.Repositories;
+using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Setting
 {
 
-    public class TitleService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ITitlePermessionService permessionService) : ITitleService
+    public class TitleService(IUnitOfWork unitOfWork, KaderDbContext _context, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ITitlePermessionService permessionService) : ITitleService
     {
         private Title _instance;
         public async Task<Response<IEnumerable<SelectListOfTitleResponse>>> ListOfTitlesAsync(string lang)
@@ -47,7 +49,7 @@ namespace Kader_System.Services.Services.Setting
         public async Task<Response<GetAllTitleResponse>> GetAllTitlesAsync(string lang, GetAllFilterrationForTitleRequest model, string host)
         {
             Expression<Func<Title, bool>> filter = x => x.IsDeleted == model.IsDeleted
-                                              &&(string.IsNullOrEmpty(model.Word) ||
+                                              && (string.IsNullOrEmpty(model.Word) ||
                                                   x.TitleNameAr.Contains(model.Word)
                                                   || x.TitleNameEn.Contains(model.Word)
                                                );
@@ -67,13 +69,13 @@ namespace Kader_System.Services.Services.Setting
             {
                 TotalRecords = totalRecords,
 
-                Items = (await unitOfWork.Titles.GetSpecificSelectAsync(filter: filter,x =>x,
+                Items = (await unitOfWork.Titles.GetSpecificSelectAsync(filter: filter, x => x,
                      take: model.PageSize,
-                     skip: (model.PageNumber - 1) * model.PageSize)).Select(x=>new TitleData
+                     skip: (model.PageNumber - 1) * model.PageSize)).Select(x => new TitleData
                      {
                          Id = x.Id,
                          TitleNameAr = x.TitleNameAr,
-                         TitleNameEn = x.TitleNameEn,   
+                         TitleNameEn = x.TitleNameEn,
                      }).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
@@ -150,7 +152,7 @@ namespace Kader_System.Services.Services.Setting
             };
         }
 
-        public async Task<Response<UpdateTitleRequest>> UpdateTitleAsync(int id, UpdateTitleRequest model,string lang,bool all=false)
+        public async Task<Response<UpdateTitleRequest>> UpdateTitleAsync(int id, UpdateTitleRequest model, string lang, bool all = false)
         {
             var title = await unitOfWork.Titles.GetByIdAsync(id);
 
@@ -211,13 +213,14 @@ namespace Kader_System.Services.Services.Setting
             title.TitleNameAr = model.TitleNameAr;
             title.TitleNameEn = model.TitleNameEn;
 
-     
-          
 
 
 
-           var result= await AssginTitlePermssion(id, model.permissions,lang,all);
-            if (result.Check == false) {
+
+
+            var result = await AssginTitlePermssion(id, model.permissions, lang, all);
+            if (result.Check == false)
+            {
                 return new()
                 {
                     Msg = result.Msg,
@@ -228,7 +231,7 @@ namespace Kader_System.Services.Services.Setting
 
             }
             unitOfWork.Titles.Update(title);
-        
+
 
 
             await unitOfWork.CompleteAsync();
@@ -264,7 +267,7 @@ namespace Kader_System.Services.Services.Setting
                 Check = true,
                 Data = new GetTitleByIdResponse
                 {
-                   Id = id,
+                    Id = id,
                     Name = Localization.Arabic == lang ? title.TitleNameAr : title.TitleNameEn,
                     all_permissions = (await permessionService.GetTitlePermissionsBySubScreen(id, lang)).DynamicData,
                 }
@@ -278,24 +281,55 @@ namespace Kader_System.Services.Services.Setting
             throw new NotImplementedException();
         }
 
-        public Task<Response<string>> DeleteTitleAsync(int id)
+        public async Task<Response<string>> DeleteTitleAsync(int id) // 1
         {
-            throw new NotImplementedException();
+            var titleResult = await _context.Titles.Where(x => x.Id == id).ExecuteUpdateAsync(x => x.
+                  SetProperty(p => p.IsDeleted, true).
+                  SetProperty(p => p.DeleteDate, DateTime.Now));
+            if (titleResult > 0)
+            {
+                var users =  _context.Users.AsNoTracking()
+                                .AsEnumerable()
+                                .Where(u => u.TitleId.Split(",",StringSplitOptions.None)
+                                .Contains(id.ToString()))
+                                .ToList();
+                  
+
+
+
+                foreach (var user in users)
+                {
+                    var userTitles = user.TitleId.Splitter(); // [1,2,3]
+                    userTitles.Remove(id); // [2,3]
+                    var removedUserTitles = string.Join(",", userTitles); // "2,3"
+                    user.TitleId = removedUserTitles; // "2,3"
+                    user.CurrentTitleId = id == user.CurrentTitleId ? userTitles.ElementAt(0) : user.CurrentTitleId; // = 2 shifted if current = 1 ,if current = 2 then will be = 2  
+                    _context.Users.Update(user);
+                    await _context.SaveChangesAsync();
+                }
+                return new Response<string>()
+                {
+                    Check = true,
+                    Data = "Data deleted sucessfully",
+                };
+            }
+            return null;
         }
 
-        private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model, string lang, bool all=false)
+        private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model, string lang, bool all = false)
         {
 
 
 
-          
+
             foreach (var assignedPermission in model)
 
             {
 
-         
 
-                if (await unitOfWork.SubMainScreens.ExistAsync(x => x.Id == assignedPermission.SubId) ) {
+
+                if (await unitOfWork.SubMainScreens.ExistAsync(x => x.Id == assignedPermission.SubId))
+                {
 
                     if (all)
                     {
@@ -306,7 +340,7 @@ namespace Kader_System.Services.Services.Setting
                         {
                             unitOfWork.TitlePermissionRepository.RemoveRange(userPermissionQuery);
                         }
-                        if (assignedPermission.title_permission.Count == 0|| assignedPermission.title_permission.Any(x => x == 0))
+                        if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
                         {
                             continue;
                         }
@@ -316,7 +350,7 @@ namespace Kader_System.Services.Services.Setting
                             {
 
 
-                                TitleId=id,
+                                TitleId = id,
 
 
                                 SubScreenId = assignedPermission.SubId,
@@ -327,14 +361,14 @@ namespace Kader_System.Services.Services.Setting
                     else
                     {
                         var userPermissionQuery = (await unitOfWork.TitlePermissionRepository
-                           .GetSpecificSelectTrackingAsync(x => x.SubScreenId == assignedPermission.SubId, x => x,includeProperties: "ScreenSub,Title")).ToList();
+                           .GetSpecificSelectTrackingAsync(x => x.SubScreenId == assignedPermission.SubId, x => x, includeProperties: "ScreenSub,Title")).ToList();
 
-                        if (userPermissionQuery.Count() > 0 )
+                        if (userPermissionQuery.Count() > 0)
                         {
                             unitOfWork.TitlePermissionRepository.RemoveRange(userPermissionQuery);
                             await unitOfWork.CompleteAsync();
                         }
-                        if (assignedPermission.title_permission.Count == 0 ||assignedPermission.title_permission.Any(x=>x==0))
+                        if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
                         {
                             continue;
                         }
@@ -345,7 +379,7 @@ namespace Kader_System.Services.Services.Setting
 
 
 
-                                TitleId= id,
+                                TitleId = id,
 
                                 SubScreenId = assignedPermission.SubId,
                                 Permissions = string.Join(',', assignedPermission.title_permission)
@@ -372,12 +406,12 @@ namespace Kader_System.Services.Services.Setting
 
 
 
-              
+
 
 
             }
 
-            
+
             return new()
             {
                 Check = true,
