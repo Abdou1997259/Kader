@@ -17,8 +17,8 @@ namespace Kader_System.Domain.Models.Setting
         public string? sub_title { get; set; }
         public string? screen_code { get; set; }
         public string? url { get; set; }
-        public StMainScreen mainScreen { get; set; }
-        public StMainScreenCat catscreen { get; set; }
+        //public StMainScreen mainScreen { get; set; }
+        //public StMainScreenCat catscreen { get; set; }
 
 
     }
