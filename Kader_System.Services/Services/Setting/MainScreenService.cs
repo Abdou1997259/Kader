@@ -5,13 +5,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, KaderDbContext context, IFileServer fileServer) : IMainScreenService
+public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer,IPermessionStructureService permessionStructureService, IMapper mapper, KaderDbContext context, IFileServer fileServer) : IMainScreenService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
     private readonly IFileServer _fileServer = fileServer;
-
+    private readonly IPermessionStructureService _permessionStructureService= permessionStructureService;
     private readonly KaderDbContext _dbContext = context;
 
 
@@ -256,31 +256,39 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<Response<GetAllStMainScreen>> GetMainScreensWithRelatedDataAsync(string lang
-        )
+    public async Task<Response<GetAllStMainScreen>> GetMainScreensWithRelatedDataAsync(string lang)
     {
         var mainScreens = await context.MainScreenCategories.
             Include(ms => ms.CategoryScreen).
-            ThenInclude(cs => cs.StScreenSub).
-            ToListAsync();
+            ThenInclude(cs => cs.StScreenSub)
+              .Where(ms => ms.CategoryScreen != null)
+            .ToListAsync(); 
 
+
+
+        var permStruct = (List<Dictionary<string, DTOSPGetPermissionsBySubScreen>>)(await _permessionStructureService.GetPermissionsBySubScreen(lang)).DynamicData;
+
+ 
         var subs = await _unitOfWork.SubMainScreenActions.GetAllAsync();
         var permision = await _unitOfWork.TitlePermissionRepository.GetAllAsync();
         var mains = await _unitOfWork.MainScreens.GetAllAsync();
 
-
-
-        var ChildScreens = mainScreens.Select(ms => new GetAllStMainScreen
-        {
-
-            main_title = lang == "en" ? ms.Screen_main_title_en : ms.Screen_main_title_ar,
+        #region recent code
+     var ChildScreens = mainScreens
+    .Where(ms => ms.CategoryScreen.Any(x => x.MainScreenId == ms.Id)) // Filter out main screens with no linked category screens
+    .Select(ms => new GetAllStMainScreen
+    {
+        main_title = lang == "en" ? ms.Screen_main_title_en : ms.Screen_main_title_ar,
             main_image = ms.Screen_main_image,
-            cats = ms.CategoryScreen.Select(x => new GetAllStMainScreenCat
+            cats = ms.CategoryScreen.Where(x => x.MainScreenId == ms.Id)
+            .Select(x => new GetAllStMainScreenCat
             {
                 Id = x.Id,
                 title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
                 main_id = x.MainScreenId,
-                subs = x.StScreenSub.Select(k => new GetAllStScreenSub
+                subs = x.StScreenSub.Where(k => permStruct.Any(ps =>
+                    ps.ContainsKey(k.ScreenCode) && ps[k.ScreenCode].permissions.Contains(1)))
+                .Select(k => new GetAllStScreenSub
                 {
                     Sub_Id = k.Id,
                     Screen_CatId = k.ScreenCatId,
@@ -297,6 +305,9 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             }).ToList()
         }).ToList();
 
+        
+
+        #endregion
         foreach (var mainScreen in ChildScreens)
         {
             Console.WriteLine($"Main Screen Title: {mainScreen.main_title}");
@@ -304,12 +315,15 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
             foreach (var categoryScreen in mainScreen.cats)
             {
+                if (categoryScreen.main_id ==  null ) continue;
                 Console.WriteLine($"Category ID: {categoryScreen.Id}");
                 Console.WriteLine($"Category Screen Title: {categoryScreen.title}");
                 Console.WriteLine($"Category Screen Title: {categoryScreen.title}");
 
+
                 foreach (var screenSub in categoryScreen.subs)
                 {
+                    if (screenSub == null) continue;
                     Console.WriteLine($"Screen Sub ID: {screenSub.Sub_Id}");
                     Console.WriteLine($"Screen Sub Title: {screenSub.sub_title}");
                     Console.WriteLine($"Screen Screen_CatId {screenSub.Screen_CatId}");
@@ -320,6 +334,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                     Console.WriteLine($"Screen Sub Image: {screenSub.sub_image}");
                     Console.WriteLine($"Screen Code: {screenSub.screen_code}");
                     Console.WriteLine();
+
                 }
             }
         }
