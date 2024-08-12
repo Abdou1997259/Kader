@@ -104,7 +104,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     }
     [HttpPost(ApiRoutes.MainScreen.OrderbyPattern)]
     [Permission(Helpers.Permission.Edit, 1)]
-    public async Task<IActionResult> orderPattern(int[] id)
+    public async Task<IActionResult> orderPattern(  int[] id)
     {
         var response = await service.OrderByPattern(id);
         if (response.Check)

@@ -19,7 +19,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         [HttpGet(ApiRoutes.GetAllScreens.SpGetAllScreens)]
 
         public async Task<IActionResult> GetAllScreens() =>
-            Ok(await _getallScreensService.GetAllScreens(requestService.GetRequestHeaderLanguage));
+            Ok(await _getallScreensService.GetAllScreensAsync(requestService.GetRequestHeaderLanguage));
 
     }
 }

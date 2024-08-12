@@ -33,10 +33,13 @@ using Kader_System.Services.Services.HR;
 using Kader_System.Services.Services.Setting;
 using Kader_System.Services.Services.Trans;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -168,6 +171,23 @@ builder.Services.AddControllers().AddDataAnnotationsLocalization(options =>
     options.DataAnnotationLocalizerProvider = (type, factory) =>
         factory.Create(typeof(DataAnnotationValidation));
 });
+
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+
+    var cultures = new[]
+    {
+        new CultureInfo("en-US"),
+        new CultureInfo("ar-EG")
+    };
+
+    options.DefaultRequestCulture = new RequestCulture(uiCulture: "en-US", culture: "en-US");
+    options.SupportedCultures = cultures;
+    options.SupportedUICultures = cultures;
+});
+builder.Services.AddMvcCore().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+
 
 #endregion
 
