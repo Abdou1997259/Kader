@@ -141,6 +141,12 @@
   <data name="ContractNotFound" xml:space="preserve">
     <value>Doesn't have a contract</value>
   </data>
+  <data name="CurrentIsNotExitedInCompanys" xml:space="preserve">
+    <value>Current Is Not Exited In Companys</value>
+  </data>
+  <data name="CurrentIsNotExitedInTitle" xml:space="preserve">
+    <value>Current  Is Not Exited In Title</value>
+  </data>
   <data name="Deduction" xml:space="preserve">
     <value>Deduction</value>
   </data>
@@ -166,7 +172,7 @@
     <value>{0} is exist</value>
   </data>
   <data name="IsNotExisted" xml:space="preserve">
-    <value>Is Not Exited</value>
+    <value>{0} Is Not Exited</value>
   </data>
   <data name="IsNotExistedIn" xml:space="preserve">
     <value>Not Exited in </value>
