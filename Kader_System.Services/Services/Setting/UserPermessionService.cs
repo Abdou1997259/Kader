@@ -50,7 +50,7 @@ namespace Kader_System.Services.Services.Setting
                 main_id = x.main_id,
                 main_img = x.main_image,
                 main_title = x.main_title,
-                permissions = x.permissions.CreateNewPermission(x.actions, x.permissions, x.PermissionNames),
+                permissions = x.permissions.CreateNewPermission(x.actions, x.permissions, x.permissions),
                 screen_code = x.screen_code,
                 sub_id = x.sub_id,
                 sub_title = x.sub_title,

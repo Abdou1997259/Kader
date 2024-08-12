@@ -81,6 +81,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrMaritalStatus> MaritalStatus { get; set; }
     public DbSet<MainScreenTree> MainScreenTrees { get; set; }
     public DbSet<SPUserPermissionsBySubScreen> SPUserPermissionsBySubScreens { get; set; }
+    public DbSet<SPPermissionStruct> SPPermissionsBySubScreen { get; set; }
     public DbSet<SpGetAllScreens> SpGetAllScreens { get; set; }
 
     #region EmployeeRequest_Dbset
@@ -244,6 +245,12 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
 
         });
 
+        modelBuilder.Entity<SPPermissionStruct>(e =>
+        {
+            e.HasNoKey();
+            e.ToView(null);
+
+        });
         modelBuilder.Entity<SpGetAllScreens>(g =>
         {
             g.HasNoKey();
