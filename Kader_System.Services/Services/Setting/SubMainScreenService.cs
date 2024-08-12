@@ -418,10 +418,18 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         int count = 0;
         var allsubs = await _unitOfWork.SubMainScreens.GetAllAsync();
         foreach (var sub in allsubs) {
-            sub.Order = pattern[count];
-            count++;
-        
-        };
+
+            if (count < pattern.Length)
+            {
+                sub.Order = pattern[count];
+                count++;
+            }
+            else
+            {
+                continue;
+            }
+
+        }
      
         _unitOfWork.SubMainScreens.UpdateRange(allsubs);
         await _unitOfWork.CompleteAsync();  

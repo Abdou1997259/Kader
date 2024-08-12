@@ -54,10 +54,17 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
         var allsubs = await _unitOfWork.MainScreenCategories.GetAllAsync();
         foreach (var sub in allsubs)
         {
-            sub.Order = pattern[count];
-            count++;
+            if (count < pattern.Length)
+            {
+                sub.Order = pattern[count];
+                count++;
+            }
+            else
+            {
+                continue;
+            }
 
-        };
+        }
 
         _unitOfWork.MainScreenCategories.UpdateRange(allsubs);
         await _unitOfWork.CompleteAsync();
