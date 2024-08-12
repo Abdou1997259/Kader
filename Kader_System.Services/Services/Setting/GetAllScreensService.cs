@@ -20,7 +20,6 @@ namespace Kader_System.Services.Services.Setting
                 .AsNoTracking()
                 .ToListAsync();
 
-            // Initialize the output structure
             var output = new Dictionary<string, List<Dictionary<string, object>>>
             {
                 { "main", new List<Dictionary<string, object>>() },
@@ -28,35 +27,35 @@ namespace Kader_System.Services.Services.Setting
                 { "sub", new List<Dictionary<string, object>>() }
             };
 
-            // Process the results
+          
             foreach (var item in results)
             {
                 var mainItem = new Dictionary<string, object>
                 {
                     { "id", item.main_id },
-                    { "title", item.main_title },
-                    { "image", item.Screen_main_cat_image }
+                    { "main_title", item.main_title },
+                    { "main_image", item.Screen_main_cat_image }
                 };
 
                 var catItem = new Dictionary<string, object>
                 {
                     { "id", item.cat_id },
-                    { "main_id", item.mainScreen.Id },
-                    { "title", item.cat_title },
-                    { "Main_Title", item.mainScreen.Screen_main_title_ar },
+                    { "main_id", item.main_id },
+                    { "cat_title", item.cat_title },
+                    { "Main_Title", item.main_title},
                 };
 
                 var subItem = new Dictionary<string, object>
                 {
-                    { "id", item.sub_id },
-                    { "cat_id", item.catscreen.Id },
-                    { "cat_id", item.catscreen.Screen_cat_title_ar },
-                    { "title", item.sub_title },
+                    { "sub_id", item.sub_id },
+                    { "cat_id", item.cat_id },
+                    { "Cat_title", item.cat_title },
+                    { "sub_title", item.sub_title },
                     { "url", item.url },
                     { "screen_code", item.screen_code }
                 };
 
-                // Add to output dictionaries
+             
                 output["main"].Add(mainItem);
                 output["cat"].Add(catItem);
                 output["sub"].Add(subItem);
@@ -120,5 +119,5 @@ namespace Kader_System.Services.Services.Setting
             #endregion
 
         }
-        }
+    }   
 }
