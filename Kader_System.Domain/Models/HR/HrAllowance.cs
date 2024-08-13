@@ -8,4 +8,5 @@ public class HrAllowance : BaseEntity
     public required string Name_ar { get; set; }
     public required string Name_en { get; set; }
     public long? AccountNo { get; set; }
+    public int Order { get; set; }
 }

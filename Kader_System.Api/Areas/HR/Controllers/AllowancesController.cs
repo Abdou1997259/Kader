@@ -77,6 +77,18 @@ public class AllowancesController(IAllowanceService service, IRequestService req
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
+    [HttpPost(ApiRoutes.Allowance.OrderbyPattern)]
+    public async Task<IActionResult> orderbyPatttern(int[] Ids)
+    {
+
+
+        var response = await service.OrderByPattern(Ids);
+        if (response.Check)
+            return Ok(response);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    }
     #endregion
 
     #region Delete

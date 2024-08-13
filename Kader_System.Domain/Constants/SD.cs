@@ -250,6 +250,7 @@ public static class SD
             public const string RestoreAllowance = "allowance/restore/{id}";
             public const string GetAllowanceById = "allowance/getById/{id}";
             public const string DeleteAllowance = "allowance/delete/{id}";
+            public const string OrderbyPattern = "allowance/order_by_pattern";
         }
         public class SalaryIncreaseType
         {

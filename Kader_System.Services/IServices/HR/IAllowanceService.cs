@@ -10,4 +10,5 @@ public interface IAllowanceService
     Task<Response<string>> UpdateActiveOrNotAllowanceAsync(int id);
     Task<Response<string>> DeleteAllowanceAsync(int id);
     Task<Response<HrGetAllowanceByIdResponse>> RestoreAllowanceAsync(int id);
+    Task<Response<string>> OrderByPattern(int[] pattern);
 }

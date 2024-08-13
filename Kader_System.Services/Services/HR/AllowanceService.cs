@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.DTOs;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
 namespace Kader_System.Services.Services.HR;
 
@@ -66,6 +67,7 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
 
             Items = ( _unitOfWork.Allowances.GetAllowanceInfo(filter: filter,
                  take: model.PageSize,
+                
                  skip: (model.PageNumber - 1) * model.PageSize,
                 lang:lang )),
             CurrentPage = model.PageNumber,
@@ -200,6 +202,7 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
         throw new NotImplementedException();
     }
 
+
     public async Task<Response<HrGetAllowanceByIdResponse>> RestoreAllowanceAsync(int id)
     {
         var obj = await _unitOfWork.Allowances.GetByIdAsync(id);
@@ -259,6 +262,28 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
             Data = string.Empty,
             Msg = _sharLocalizer[Localization.Deleted]
         };
+    }
+
+    public async Task<Response<string>> OrderByPattern(int[] pattern)
+    {
+        int count = 0;
+        var allownecs = await _unitOfWork.Allowances.GetAllAsync();
+        foreach (var allow in allownecs)
+        {
+            if (count < pattern.Length)
+            {
+                allow.Order = pattern[count];
+                count++;
+            }
+            else
+            {
+                continue;
+            }
+        }
+
+        _unitOfWork.Allowances.UpdateRange(allownecs);
+        await _unitOfWork.CompleteAsync();
+        return new() { Check = true };
     }
 
     #endregion

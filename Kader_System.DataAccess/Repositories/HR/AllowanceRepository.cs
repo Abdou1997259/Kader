@@ -6,9 +6,10 @@ public class AllowanceRepository(KaderDbContext context) : BaseRepository<HrAllo
 {
     public List<AllowanceData> GetAllowanceInfo(
         Expression<Func<HrAllowance, bool>> filter,
+       
         int? skip = null,
         int? take = null
-        ,string lang ="ar")
+        ,string lang ="ar" )
     {
         var query = context.Set<HrAllowance>()
 
@@ -20,6 +21,7 @@ public class AllowanceRepository(KaderDbContext context) : BaseRepository<HrAllo
                 (shiftEmployee, users) => new { Allowance = shiftEmployee, Users = users })
             .SelectMany(
                 x => x.Users.DefaultIfEmpty(),
+
                 (allowance, user) => new { allowance.Allowance, User = user });
 
 
@@ -27,16 +29,20 @@ public class AllowanceRepository(KaderDbContext context) : BaseRepository<HrAllo
             query = query.Skip(skip.Value);
         if (take.HasValue)
             query = query.Take(take.Value);
-
-        return query
-            .GroupBy(x => new { x.Allowance.Id, x.Allowance.Name_ar, x.Allowance.Name_en })
+       
+       var items = query
+            .GroupBy(x => new { x.Allowance.Id, x.Allowance.Name_ar, x.Allowance.Name_en, x.Allowance.Order })
+            .OrderBy(x => x.Key.Order)
             .Select(group => new AllowanceData()
             {
                 Id = group.Key.Id,
-                Name = lang==Localization.Arabic? group.Key.Name_ar:group.Key.Name_en,
-                AddedByUser = group.FirstOrDefault()!.User!.UserName
+                Name = lang == Localization.Arabic ? group.Key.Name_ar : group.Key.Name_en,
+                AddedByUser = group.FirstOrDefault()!.User!.UserName,
+
+
             })
             .ToList();
+        return items;
     }
 
 
@@ -48,7 +54,8 @@ public class AllowanceRepository(KaderDbContext context) : BaseRepository<HrAllo
             .Select(a => new
             {
                 id = a.Id,
-                name=lang==Localization.Arabic?a.Name_ar:a.Name_en
+                name=lang==Localization.Arabic?a.Name_ar:a.Name_en,
+              
 
             }).ToListAsync();
     }
