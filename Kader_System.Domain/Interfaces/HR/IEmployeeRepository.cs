@@ -8,6 +8,7 @@ public interface IEmployeeRepository : IBaseRepository<HrEmployee>
     Task<object> GetEmployeesDataAsLookUp(string lang);
     Task<object> GetEmployeesDataNameAndIdAsLookUp(string lang);
     Task<object> GetEmployeesNameIdSalaryAsLookUp(string lang);
+    Task<object> GetEmployeesNameIdSalaryWithoutContractAsLookUp(string lang);
     List<EmployeesData> GetEmployeesInfo(
         Expression<Func<HrEmployee, bool>> filter,
         Expression<Func<EmployeesData, bool>> filterSearch,

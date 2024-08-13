@@ -182,7 +182,9 @@ namespace Kader_System.Services.Services.Trans
                      {
                          transationDate = x.transactionDate,
                          AfterIncreaseSalary=x.salaryAfterIncrease,
-                          PreviousSalary=x.PreviousSalary,
+                         PreviousSalary=x.PreviousSalary,
+                         
+                          
                          employeeName = lang == Localization.Arabic ? x.Employee!.FullNameAr : x.Employee!.FullNameEn,
                          increaseValue = x.Amount,
                          salrayIncreaseType = 
@@ -191,8 +193,8 @@ namespace Kader_System.Services.Services.Trans
                         x.Increase_type == 1 && lang == Localization.English ? "Value" :
                         x.Increase_type == 2 && lang == Localization.English ? "Percentage" :
                         string.Empty
-                     },
-                     orderBy: x => x.OrderByDescending(x => x.Id), includeProperties: "Employee")).ToList(),
+                     },includeProperties:"",
+                     orderBy: x => x.OrderByDescending(x => x.Id))).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,

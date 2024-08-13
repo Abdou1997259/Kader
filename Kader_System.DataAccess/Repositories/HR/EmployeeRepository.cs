@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.DTOs.Response.HR;
+using System.Text.RegularExpressions;
 
 namespace Kader_System.DataAccess.Repositories.HR;
 
@@ -178,6 +179,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
 
         return await context.Employees.
             Where(e => !e.IsDeleted && e.IsActive)
+           
             .Select(e => new
             {
                 id = e.Id,
@@ -195,6 +197,27 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                 employee_name = lang == Localization.Arabic ? e.FullNameAr : e.FullNameEn,
                 Salary = e.FixedSalary
             }).ToArrayAsync();
+    }
+    public async Task<object> GetEmployeesNameIdSalaryWithoutContractAsLookUp(string lang)
+    {
+
+        var employees = from e in context.Employees
+                        join c in context.Contracts
+                        on e.Id equals c.EmployeeId into ecgroup
+                        from u in ecgroup.DefaultIfEmpty()
+                        where u.EmployeeId == null && !e.IsDeleted
+                        select new
+                        {
+                            Id = e.Id,
+                            Name = Localization.Arabic == lang ? e.FullNameAr : e.FullNameEn,
+
+                        };
+
+        return employees;
+
+
+
+
     }
 
 
