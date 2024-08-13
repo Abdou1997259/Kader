@@ -129,8 +129,8 @@ namespace Kader_System.Services.Services.HR
             {
                 NameEn = model.NameEn,
                 NameAr = model.NameAr,
-                HasAdditionalTime = model.HasAdditionalTime,
-                HasNeedLicense = model.HasNeedLicense
+                //HasAdditionalTime = model.HasAdditionalTime,
+                //HasNeedLicense = model.HasNeedLicense
             });
             await unitOfWork.CompleteAsync();
 
