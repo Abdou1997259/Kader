@@ -141,6 +141,12 @@
   <data name="ContractNotFound" xml:space="preserve">
     <value>ليس لديه عقد عمل </value>
   </data>
+  <data name="CurrentIsNotExitedInCompanys" xml:space="preserve">
+    <value>لايوجد هذا الشركه من ضمن الشركات المتاحه</value>
+  </data>
+  <data name="CurrentIsNotExitedInTitle" xml:space="preserve">
+    <value>لايوجد هذا المسؤليه من ضمن المسؤلبات</value>
+  </data>
   <data name="Deduction" xml:space="preserve">
     <value>اسم الخصم</value>
   </data>
@@ -166,7 +172,7 @@
     <value>{0} موجود بالفعل</value>
   </data>
   <data name="IsNotExisted" xml:space="preserve">
-    <value>ليس موجود</value>
+    <value>{0} ليس موجود</value>
   </data>
   <data name="IsNotExistedIn" xml:space="preserve">
     <value>ليس موجود في</value>

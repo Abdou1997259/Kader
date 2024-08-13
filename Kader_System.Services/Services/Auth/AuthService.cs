@@ -5,6 +5,7 @@ using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.Auth;
 using Kader_System.Services.IServices;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -475,17 +476,17 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             expires: DateTime.UtcNow.AddDays(2).Add(_jwt.TokenLifetime),
             signingCredentials: signingCredentials);
     }
-    
+
     //public async Task<Response<CreateUserResponse>> UpdateUserAsync(Guid id, 
     //     CreateUserRequest request, string root, string clientName, 
-        
+
     //    string moduleName, UsereEnum userenum = UsereEnum.None)
     //{
     //    var user = await _userManager.FindByIdAsync(id.ToString());
     //    var msg = _sharLocalizer[Localization.NotFoundData];
     //    if (user == null)
     //    {
-           
+
     //        return new()
     //        {
     //            Check = false,
@@ -494,7 +495,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     //        };
     //    }
 
-    
+
 
     //    // Map CreateUserRequest to ApplicationUser
     //    var mappeduser=_mapper.Map(request,user);
@@ -510,7 +511,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     //    _unitOfWork.Users.Update(mappeduser);
     //    await _unitOfWork.CompleteAsync();
-   
+
     //     msg = _sharLocalizer[Localization.Updated];
     //    return new()
     //    {
@@ -520,11 +521,11 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     //    };
 
     //}
-    public async  Task<Response<CreateUserResponse>> CreateUserAsync(CreateUserRequest model,
-        string appPath, string moduleName, UsereEnum userenum= UsereEnum.None)
-    {  // Check if user already exists
-        var isExited = await _unitOfWork.Users.ExistAsync(x => x.UserName == model.user_name);
-        if (isExited)
+    public async Task<Response<CreateUserResponse>> CreateUserAsync(CreateUserRequest model,
+     string appPath, string moduleName, UsereEnum userenum = UsereEnum.None)
+    {
+        // Check if user already exists
+        if (await _unitOfWork.Users.ExistAsync(x => x.UserName == model.user_name))
         {
             var msg = _sharLocalizer[Localization.IsExist];
             return new Response<CreateUserResponse>
@@ -534,59 +535,110 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Data = null
             };
         }
-        
+
+        // Retrieve companies and validate company IDs
+        var companyList = await _unitOfWork.Companies.GetAllAsync();
+        var validCompanyIds = companyList.Select(c => c.Id).ToHashSet();
+
+        if (!model.company_id.All(id => validCompanyIds.Contains(id.Value)))
+        {
+            var msg = _sharLocalizer[Localization.CurrentIsNotExitedInTitle];
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+        }
+
+        // Check if the current company exists
+        if (!validCompanyIds.Contains(model.current_company.Value))
+        {
+            var msg = _sharLocalizer[Localization.CurrentIsNotExitedInTitle];
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+        }
+
+        // Set default title and company if not provided
+        model.current_title ??= model.title_id.FirstOrDefault();
+        model.current_company ??= model.company_id.FirstOrDefault();
+
+        // Validate current company and title against provided lists
+        if (!model.company_id.Contains(model.current_company))
+        {
+            var msg = _sharLocalizer[Localization.CurrentIsNotExitedInCompanys];
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+        }
+
+        if (!model.title_id.Contains(model.current_title))
+        {
+            var msg = _sharLocalizer[Localization.CurrentIsNotExitedInCompanys];
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+        }
+
         // Map CreateUserRequest to ApplicationUser
         var user = _mapper.Map<ApplicationUser>(model);
-
         user.VisiblePassword = model.password;
         user.PhoneNumber = model.phone;
         user.FullName = model.full_name;
         user.Email = model.email;
-        user.FinancialYear= model.financial_year;
-        user.CompanyId = model.company_id.Concater();
+        user.FinancialYear = model.financial_year;
+        user.CompanyId = model.company_id.NulalbleConcater();
+        user.TitleId = model.title_id.NulalbleConcater();
+        user.CurrentTitleId = model.current_title.Value;
+        user.CurrentCompanyId = model.current_company.Value;
         user.JobId = model.job_title;
         user.UserName = model.user_name;
-        user.Add_date = new DateTime().NowEg();
-        var company = user?.CompanyId[0];
-        var title = user?.TitleId[0];
-        model.current_company=company;
-        model.current_title = title;
-        user.CurrentCompanyId = model?.current_company ?? 3;
-        user.CurrentTitleId = model?.current_title ?? 1;
-        user.Added_by = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
-        // Set additional user properties if needed
+        user.Add_date = DateTime.UtcNow;
+        user.Added_by = _accessor.HttpContext?.User.GetUserId() ?? string.Empty;
         user.Id = Guid.NewGuid().ToString();
 
-      
+        // Upload user image
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
-        user.ImagePath = (model.image == null || model.image.Length == 0) ? null :
-            await _fileServer.UploadFile(appPath, moduleNameWithType, model.image);
-      
-
-       
-       var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetByIdAsync(model.current_title ?? 1);
-       var userpermission = new UserPermission
+        if (model.image != null && model.image.Length > 0)
         {
+            user.ImagePath = await _fileServer.UploadFile(appPath, moduleNameWithType, model.image);
+        }
 
-                UserId = user.Id,
-                TitleId = titlepermissions.TitleId,
-                SubScreenId = titlepermissions.SubScreenId,
-                Permission = titlepermissions.Permissions
-       };
-       await  _unitOfWork.UserPermssionRepositroy.AddAsync(userpermission);
+        // Manage user permissions
+        var existingUserPermissions = await _unitOfWork.UserPermssionRepositroy
+            .GetSpecificSelectTrackingAsync(x => x.TitleId == model.current_title && x.UserId == user.Id, x => x);
 
+        if (existingUserPermissions.Any())
+        {
+            _unitOfWork.UserPermssionRepositroy.RemoveRange(existingUserPermissions);
+            await _unitOfWork.CompleteAsync();
+        }
 
-
-
+        var titlePermissions = await _unitOfWork.TitlePermissionRepository
+            .GetSpecificSelectTrackingAsync(
+                x => x.TitleId == model.current_title,
+                select: x => new UserPermission
+                {
+                    UserId = user.Id,
+                    SubScreenId = x.SubScreenId,
+                    Permission = x.Permissions
+                }
+            );
+        await _unitOfWork.UserPermssionRepositroy.AddRangeAsync(titlePermissions);
+        await _unitOfWork.CompleteAsync();
 
         // Add user to the database
-    var result=    await _userManager.CreateAsync(user,model.password);
-
-        if (result.Succeeded)
-        {
-            await _unitOfWork.CompleteAsync();
-        };
-     
+        var result = await _userManager.CreateAsync(user, model.password);
         if (!result.Succeeded)
         {
             var errorMsg = _sharLocalizer[Localization.Error];
@@ -600,28 +652,27 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
         // Optionally, generate JWT token
         var token = await CreateJwtToken(user); // Implement this method if needed
-        var resutl = new CreateUserResponse
+
+        var response = new CreateUserResponse
         {
             CompanyId = model.company_id,
             FullName = model.full_name,
             Email = model.email,
             JobTitle = model.job_title,
-            CompanyYear = 2023,
-            TitleId=model.title_id,
-            Token = "Bearer" + " " + new JwtSecurityTokenHandler().WriteToken(token),
+            CompanyYear = DateTime.Now.Year,
+            TitleId = model.title_id,
+            Token = "Bearer " + new JwtSecurityTokenHandler().WriteToken(token),
             UserName = model.user_name,
         };
+
         // Return success response
         return new Response<CreateUserResponse>
         {
             Check = true,
-            Data =resutl ,
-          // Include the token if you generated it
+            Data = response,
         };
-
-
-
     }
+
 
     public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int? titleId, IEnumerable<Permissions> model,string lang)
     {

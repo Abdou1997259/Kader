@@ -579,6 +579,8 @@ public static class SD
         public const string Arabic = "ar";
         public const string English = "en";
         public const string IsExist = "IsExist";
+        public const string CurrentIsNotExitedInCompanys = "CurrentIsNotExitedInCompanys";
+        public const string CurrentIsNotExitedInTitle = "CurrentIsNotExitedInTitle";
         public const string ScreenInAction = "ScreenInAction";
         public const string ViewInclude = "ViewInclude";
         public const string Project = "Project";
