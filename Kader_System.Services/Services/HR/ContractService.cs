@@ -9,6 +9,7 @@ namespace Kader_System.Services.Services.HR
     public class ContractService(
         IUnitOfWork unitOfWork,
         IStringLocalizer<SharedResource> shareLocalizer,
+        IFileServer _fileServer,
         IMapper mapper) : IContractService
     {
         private HrContract _instanceContract;
@@ -245,7 +246,7 @@ namespace Kader_System.Services.Services.HR
             };
         }
 
-        public async Task<Response<CreateContractRequest>> CreateContractAsync(CreateContractRequest model)
+        public async Task<Response<CreateContractRequest>> CreateContractAsync(CreateContractRequest model,string appPath,string moduleName)
         {
             var newContract = new HrContract()
             {
@@ -271,15 +272,7 @@ namespace Kader_System.Services.Services.HR
                 ;
             }
 
-            GetFileNameAndExtension contractFile = new();
-            if (model.ContractFile is not null)
-            {
-
-                contractFile = ManageFilesHelper.UploadFile(model.ContractFile, GoRootPath.HRFilesPath);
-            }
-
-            newContract.FileName = contractFile?.FileName;
-            newContract.FileExtension = contractFile?.FileExtension;
+            newContract.FileName = model.ContractFile == null ? string.Empty : await _fileServer.UploadFile(appPath, moduleName, model.ContractFile);
             await unitOfWork.Contracts.AddAsync(newContract);
             await unitOfWork.CompleteAsync();
 
@@ -299,7 +292,7 @@ namespace Kader_System.Services.Services.HR
             throw new NotImplementedException();
         }
 
-        public async Task<Response<CreateContractRequest>> UpdateContractAsync(int id, CreateContractRequest model)
+        public async Task<Response<CreateContractRequest>> UpdateContractAsync(int id, CreateContractRequest model,string appPath,string moduleName)
         {
             using var transaction = unitOfWork.BeginTransaction();
             {
@@ -318,14 +311,15 @@ namespace Kader_System.Services.Services.HR
                     };
                 }
 
-                if (!model.FileName.Contains(GoRootPath.HRFilesPath)  || model.ContractFile==null)
+                if (model.ContractFile != null)
                 {
-                    if (!string.IsNullOrEmpty(obj.FileName))
-                    {
-                        ManageFilesHelper.RemoveFile(Path.Combine(GoRootPath.HRFilesPath, obj.FileName));
-                    }
+                    if (_fileServer.FileExist(appPath, moduleName, obj.FileName))
+                        _fileServer.RemoveFile(appPath, moduleName, obj.FileName);
+
+
+                    obj.FileName = (model.ContractFile.Length == 0) ? null
+                        : await _fileServer.UploadFile(appPath, moduleName, model.ContractFile);
                 }
-                
 
                 obj.EmployeeId = model.EmployeeId;
                 obj.EndDate = model.EndDate;

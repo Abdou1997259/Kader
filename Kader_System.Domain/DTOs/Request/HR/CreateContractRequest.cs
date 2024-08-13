@@ -21,8 +21,8 @@ namespace Kader_System.Domain.DTOs.Request.HR
         public IFormFile? ContractFile { get;set; }
 
 
-        [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public string FileName { get; set; }
+      
+  
         public List<CreateContractDetailsRequest>? Details { get; set; } 
 
     }
