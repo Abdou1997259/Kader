@@ -165,8 +165,8 @@ namespace Kader_System.Services.Services.HR
                     Id = id,
                     NameAr = obj.NameAr,
                     NameEn = obj.NameEn,
-                    HasAdditionalTime = obj.HasAdditionalTime,
-                    HasNeedLicense = obj.HasNeedLicense,
+                    //HasAdditionalTime = obj.HasAdditionalTime,
+                    //HasNeedLicense = obj.HasNeedLicense,
                     EmployeesCount =await unitOfWork.Employees.CountAsync(e=>e.JobId==id)
                 },
                 Check = true
@@ -233,8 +233,8 @@ namespace Kader_System.Services.Services.HR
                 Check = true,
                 Data = new()
                 {
-                    HasAdditionalTime = obj.HasAdditionalTime,
-                    HasNeedLicense = obj.HasNeedLicense,
+                    //HasAdditionalTime = obj.HasAdditionalTime,
+                    //HasNeedLicense = obj.HasNeedLicense,
                     Id = obj.Id,
                     NameAr = obj.NameAr,
                     NameEn = obj.NameEn

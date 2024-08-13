@@ -348,7 +348,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                 title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
                 main_id = x.MainScreenId,
                 subs = x.StScreenSub.Where(k => permStruct.Any(ps =>
-                    ps.ContainsKey(k.ScreenCode) && ps[k.ScreenCode].permissions.Contains(1)))
+                    ps.ContainsKey(k.ScreenCode) && ps[k.ScreenCode].permissions.Contains(1) && k.ScreenCatId == x.Id))
                 .Select(k => new GetAllStScreenSub
                 {
                     Sub_Id = k.Id,

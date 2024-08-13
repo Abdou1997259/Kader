@@ -7,7 +7,7 @@
     public class JobData : SelectListResponse
     {
         public bool HasNeedLicense { get; set; }
-        public bool HasAdditionalTime { get; set; }
-        public int EmployeesCount { get; set; }
+        public bool? HasAdditionalTime { get; set; }
+        public int? EmployeesCount { get; set; }
     }
 }
