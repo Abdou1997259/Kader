@@ -167,14 +167,15 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         var lastsubscreen = await _unitOfWork.SubMainScreens.GetLast(x=>x.Id) ;
 
         var screencode = "01-" + $"{lastsubscreen.Id+1}".PadLeft(3, '0');
+        var maxId = await _unitOfWork.SubMainScreens.MaxInCloumn(x => x.Id);
         await _unitOfWork.SubMainScreens.AddAsync(new()
         {
             Screen_sub_title_ar = model.screen_sub_title_ar,
             Screen_sub_title_en = model.screen_sub_title_en,
             ScreenCatId = model.screen_cat_id,
             ScreenCode = screencode,
-
-            ListOfActions=model.actions.Select(x=>new StSubMainScreenAction
+            Order = maxId+1,
+            ListOfActions =model.actions.Select(x=>new StSubMainScreenAction
             {
                 ActionId=x
              
