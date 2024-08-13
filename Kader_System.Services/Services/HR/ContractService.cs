@@ -194,11 +194,7 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<GetContractByIdResponse>> GetContractByIdAsync(int id,string lang)
         {
-            //Expression<Func<HrContract, bool>> filter = x => x.Id == id;
-            //var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync(filter,
-            //    includeProperties:
-            //    $"{nameof(_instanceContract.Employee)},{nameof(_instanceContract.ListOfAllowancesDetails)}");
-
+      
             var obj = unitOfWork.Contracts.GetContractById(id, lang);
             var emps =await  unitOfWork.Employees.GetSpecificSelectAsync(x => !x.IsDeleted, select: x => new
             {
@@ -208,35 +204,10 @@ namespace Kader_System.Services.Services.HR
             var allownces = await unitOfWork.Allowances.GetSpecificSelectAsync(x => !x.IsDeleted, select: x => new
             {
                 Id = x.Id,
-                AlllownceName = Localization.Arabic == lang ? x.Name_ar:x.Name_en,
+                AllownceName = Localization.Arabic == lang ? x.Name_ar:x.Name_en,
             });
 
-            if (!allownces.Any())
-            {
-                string empMsg = shareLocalizer[Localization.Allowance];
-                string resultMsg = shareLocalizer[Localization.IsNotExisted, empMsg];
-
-                return new()
-                {
-                    Data = new(),
-                    Error = resultMsg,
-                    Msg = resultMsg
-                };
-
-            }
-            if (!emps.Any())
-            {
-                string empMsg = shareLocalizer[Localization.Employee];
-                string resultMsg = shareLocalizer[Localization.IsNotExisted, empMsg];
-
-                return new()
-                {
-                    Data = new(),
-                    Error = resultMsg,
-                    Msg = resultMsg
-                };
-
-            }
+            
 
             if (obj is null)
             {
@@ -265,8 +236,17 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<object> > GetLookUps(string lang)
         {
-            var employees =await unitOfWork.Employees.GetEmployeesDataAsLookUp(lang);
-            var allowances = await unitOfWork.Allowances.GetAllowancesDataAsLookUp(lang);
+            var emps = await unitOfWork.Employees.GetSpecificSelectAsync(x => !x.IsDeleted, select: x => new
+            {
+                Id = x.Id,
+                EmpolyeeName = Localization.Arabic == lang ? x.FullNameAr : x.FullNameEn,
+            });
+            var allownces = await unitOfWork.Allowances.GetSpecificSelectAsync(x => !x.IsDeleted, select: x => new
+            {
+                Id = x.Id,
+                AllownceName = Localization.Arabic == lang ? x.Name_ar : x.Name_en,
+            });
+
             return new()
             {
                 Check = true,
@@ -274,8 +254,8 @@ namespace Kader_System.Services.Services.HR
                 Msg = string.Empty,
                 Data = new
                 {
-                    employees,
-                    allowances
+                    emps,
+                    allownces
                 },
                 IsActive = true
               
