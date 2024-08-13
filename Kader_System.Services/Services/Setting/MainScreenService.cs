@@ -343,19 +343,19 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
         #region recent code
      var ChildScreens = mainScreens
-    .Where(ms => ms.CategoryScreen.Any(x => x.MainScreenId == ms.Id)) // Filter out main screens with no linked category screens
+    .Where(ms => ms.CategoryScreen.Any(x => x.MainScreenId == ms.Id)).OrderBy(ms => ms.Order) 
     .Select(ms => new GetAllStMainScreen
     {
         main_title = lang == "en" ? ms.Screen_main_title_en : ms.Screen_main_title_ar,
             main_image = ms.Screen_main_image,
-            cats = ms.CategoryScreen.Where(x => x.MainScreenId == ms.Id)
+            cats = ms.CategoryScreen.Where(x => x.MainScreenId == ms.Id).OrderBy(x=>x.Order)
             .Select(x => new GetAllStMainScreenCat
             {
                 Id = x.Id,
                 title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
                 main_id = x.MainScreenId,
                 subs = x.StScreenSub.Where(k => permStruct.Any(ps =>
-                    ps.ContainsKey(k.ScreenCode) && ps[k.ScreenCode].permissions.Contains(1) && k.ScreenCatId == x.Id))
+                    ps.ContainsKey(k.ScreenCode) && ps[k.ScreenCode].permissions.Contains(1) && k.ScreenCatId == x.Id)).OrderBy(k=>k.Order)
                 .Select(k => new GetAllStScreenSub
                 {
                     Sub_Id = k.Id,
