@@ -7,6 +7,6 @@ public class HrJob : BaseEntity
     public int Id { get; set; }
     public required string NameEn { get; set; }
     public required string NameAr { get; set; }
-    public bool HasNeedLicense { get; set; }
-    public bool HasAdditionalTime { get; set; }
+    public bool? HasNeedLicense { get; set; }
+    public bool? HasAdditionalTime { get; set; }
 }
