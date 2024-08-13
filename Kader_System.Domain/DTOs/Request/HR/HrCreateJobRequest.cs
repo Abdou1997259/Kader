@@ -7,7 +7,7 @@
 
         [Display(Name = Annotations.NameInArabic), Required(ErrorMessage = Annotations.FieldIsRequired)]
         public required string NameAr { get; set; }
-        public bool HasNeedLicense { get; set; }
-        public bool HasAdditionalTime { get; set; }
+        public bool? HasNeedLicense { get; set; }
+        public bool? HasAdditionalTime { get; set; }
     }
 }
