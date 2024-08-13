@@ -173,7 +173,8 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
     public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string appPath, string moduleName)
     {
         var mainScreenmap = _mapper.Map<StMainScreen>(model);
-
+        var maxId = await _unitOfWork.MainScreens.MaxInCloumn(x =>x.Id);
+        mainScreenmap.Order = maxId + 1;
         bool exists = await _unitOfWork.MainScreens.ExistAsync(x => x.Screen_main_title_en.Trim() == model.Screen_main_title_ar);
 
         if (exists)

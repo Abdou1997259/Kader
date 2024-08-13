@@ -45,7 +45,7 @@
         string includeProperties = null!
     );
 
-
+    public Task<int> MaxInCloumn(Expression<Func<T, int>> selector);
     Task<IEnumerable<TResult>> GetGrouped<TKey, TResult>(
         Expression<Func<T, TKey>> groupingKey,
         Expression<Func<IGrouping<TKey, T>, TResult>> resultSelector,

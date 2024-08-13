@@ -322,4 +322,9 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
 
         return query.Select(select);
     }
+
+    public async Task<int> MaxInCloumn(Expression<Func<T, int>> selector)
+    {
+        return await dbSet.MaxAsync(selector);
+    }
 }
