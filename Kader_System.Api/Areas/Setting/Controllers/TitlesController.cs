@@ -120,7 +120,7 @@ namespace Kader_System.Api.Areas.Setting.Controllers
         {
             var respone = await titleService.DeleteTitleAsync(id);
 
-            if (respone == null)
+            if (respone.Check == true)
                 return Ok(respone);
             else return BadRequest(respone);    
         }
