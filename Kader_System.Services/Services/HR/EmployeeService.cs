@@ -2,11 +2,13 @@
 
 namespace Kader_System.Services.Services.HR
 {
-    public class EmployeeService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper
+    public class EmployeeService(IUnitOfWork unitOfWork,
+        IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper,
+          IHttpContextAccessor _accessor 
     , UserManager<ApplicationUser> userManager) : IEmployeeService
     {
         private HrEmployee _instanceEmployee;
-
+   
         #region Retreive
 
         public async Task<Response<IEnumerable<ListOfEmployeesResponse>>> ListOfEmployeesAsync(string lang)
@@ -276,7 +278,9 @@ namespace Kader_System.Services.Services.HR
         {
             try
             {
-                var companies = await unitOfWork.Companies.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
+                var user = _accessor!.HttpContext!.User as ClaimsPrincipal;
+                var currentCompany=  int.Parse( user.GetCurrentCompany());
+                var companies = await unitOfWork.Companies.GetSpecificSelectAsync(filter => filter.IsDeleted == false&& filter.Id==currentCompany,
                     select: x => new
                     {
                         Id = x.Id,
@@ -285,14 +289,14 @@ namespace Kader_System.Services.Services.HR
                     });
 
                 var departments = await unitOfWork.Departments.GetSpecificSelectAsync(
-                    filter: filter => filter.IsDeleted == false
+                    filter: filter => filter.IsDeleted == false && filter.Management.CompanyId==currentCompany
                     , select: x => new
                     {
                         Id = x.Id,
                         Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
                         ManagementId = x.ManagementId
 
-                    });
+                    },includeProperties: "Management");
                 var jobs = await unitOfWork.Jobs.GetSpecificSelectAsync(
                     filter: filter => filter.IsDeleted == false
                     , select: x => new
