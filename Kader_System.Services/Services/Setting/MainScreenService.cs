@@ -56,7 +56,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
     public async Task<Response<string>> OrderByPattern(int[] pattern)
     {
         int count = 0;
-        var allsubs = await _unitOfWork.MainScreens.GetAllAsync();
+        var allsubs = await _unitOfWork.MainScreenCategories.GetAllAsync();
         foreach (var sub in allsubs)
         {
             if (count < pattern.Length)
@@ -70,7 +70,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             }
         }
 
-        _unitOfWork.MainScreens.UpdateRange(allsubs);
+        _unitOfWork.MainScreenCategories.UpdateRange(allsubs);
         await _unitOfWork.CompleteAsync();
         return new() { Check = true };
     }
@@ -204,11 +204,10 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
 
 
-    public async Task<Response<StGetMainScreenByIdResponse>> GetMainScreenByIdAsync(int id)
+    public async Task<Response<StGetMainScreenByIdResponse>> GetMainScreenByIdAsync(int id,string moduleName)
     {
-
         var obj = await _unitOfWork.MainScreens.GetFirstOrDefaultAsync(x => x.Id == id);
-
+        var imagePath = obj.Screen_main_image == null ? string.Empty : _fileServer.GetFilePath(moduleName, obj.Screen_main_image);
         if (obj is null)
         {
             string resultMsg = _sharLocalizer[Localization.NotFoundData];
@@ -225,7 +224,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             Data = new()
             {
                 Id = id,
-                Screen_main_image= SD.GoRootPath.GetSettingImagesPath + obj.Screen_main_image,
+                Screen_main_image= imagePath,
                 Screen_Main_title_ar = obj.Screen_main_title_ar,
                 Screen_Main_title_en = obj.Screen_main_title_en
             },

@@ -2,6 +2,7 @@ using Kader_System.Api.Helpers;
 using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs.Response.Setting;
 using Kader_System.Services.IServices.HTTP;
+using System.Reflection;
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
 [Area(Modules.Setting)]
@@ -48,7 +49,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     [Permission(Helpers.Permission.View, 1)]
     public async Task<IActionResult> GetMainScreenByIdAsync([FromRoute] int id)
     {
-        var response = await service.GetMainScreenByIdAsync(id);
+        var response = await service.GetMainScreenByIdAsync(id,Modules.Setting);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

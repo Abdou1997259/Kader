@@ -118,6 +118,16 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
+    [HttpDelete(ApiRoutes.SubMainScreen.RemoveSceenCodeSpace)]
+    [Permission(Helpers.Permission.Delete, 2)]
+    public async Task<IActionResult> RemoveSceenCodeSpace()
+    {
+        var response = await service.DeleteScreenCodeSpace();
+        if (response >0)
+            return Ok(new {msg = $"{response} Screen codes  updated sucessfully"});
+        else
+            return BadRequest(new {msg  = "cannot update please try again"});
+    }
     #endregion
 
 

@@ -7,6 +7,11 @@
         {
         }
 
+        public string GetFilePath(string moduleName, string fileName)
+        {
+            return $@"{moduleName}\{fileName}";
+        }
+
         public void RemoveFile(string FolderPath, string filename)
         {
             var fullPath = Path.Combine(FolderPath, filename);

@@ -24,5 +24,14 @@ namespace Kader_System.Domain.Interfaces
         public void RemoveFile(string FolderPath, string filename);
 
 
+        /// <summary>
+        /// Get File Path From wwwroot by filename
+        /// </summary>
+        /// <param name="appPath"></param>
+        /// <param name="moduleName"></param>
+        /// <param name="fileName"></param>
+        /// <returns>File Path</returns>
+        public string GetFilePath(string moduleName, string fileName);
+
     }
 }

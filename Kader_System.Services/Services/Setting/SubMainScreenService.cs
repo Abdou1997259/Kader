@@ -4,6 +4,7 @@ using Kader_System.Domain.Dtos.Response;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace Kader_System.Services.Services.Setting;
@@ -432,6 +433,19 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         _unitOfWork.SubMainScreens.UpdateRange(allsubs);
         await _unitOfWork.CompleteAsync();  
         return new() {Check = true};
+    }
+
+    public  async Task<int> DeleteScreenCodeSpace()
+    {
+        var result = await _context.SubMainScreens
+                                  .ExecuteUpdateAsync(e =>
+                                      e.SetProperty(
+                                          p => p.ScreenCode,
+                                          p => p.ScreenCode.Replace("\t", "")
+                                      )
+                                  );
+
+        return result;
     }
 
 
