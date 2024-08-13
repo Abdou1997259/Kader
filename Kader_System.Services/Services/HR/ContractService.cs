@@ -220,7 +220,14 @@ namespace Kader_System.Services.Services.HR
                 {
                     Master = obj,
                     allowances =await unitOfWork.Allowances.GetAllowancesDataAsLookUp(lang:lang),
-                    employees = await unitOfWork.Employees.GetEmployeesDataAsLookUp(lang)
+                    employees = new[]
+                        {
+                            new
+                            {
+                                Id = obj.EmployeeId,
+                                Name = obj.EmployeeName
+                            }
+                        }
                 },
                 Check = true
             };
@@ -250,29 +257,36 @@ namespace Kader_System.Services.Services.HR
         {
             var newContract = new HrContract()
             {
-                StartDate = model.StartDate,
-                EndDate = model.EndDate,
-                FixedSalary = model.FixedSalary,
-                EmployeeId = model.EmployeeId,
-                HousingAllowance = model.HousingAllowance,
+                StartDate = model.start_date,
+                EndDate = model.end_date,
+                FixedSalary = model.fixed_salary,
+                EmployeeId = model.employee_id,
+                HousingAllowance = model.housing_allowance,
 
 
             };
-            if (model.Details != null)
+            if (model.details != null)
             {
                 newContract.ListOfAllowancesDetails =
 
-                    model.Details.Select(d => new HrContractAllowancesDetail()
+                    model.details.Select(d => new HrContractAllowancesDetail()
                     {
-                        AllowanceId = d.AllowanceId,
-                        Value = d.Value,
-                        IsPercent = d.IsPercent
+                        AllowanceId = d.allowance_id,
+                        Value = d.value,
+                        IsPercent = d.is_percent
                     }).ToList()
 
                 ;
             }
 
-            newContract.FileName = model.ContractFile == null ? string.Empty : await _fileServer.UploadFile(appPath, moduleName, model.ContractFile);
+            newContract.FileName = model.contract_file == null ? string.Empty : await _fileServer.UploadFile(appPath, moduleName, model.contract_file);
+            if (model.contract_file != null) {
+                newContract.FileExtension = Path.GetExtension(model.contract_file.FileName);
+            }
+            else
+            {
+                newContract.FileExtension = "";
+            }
             await unitOfWork.Contracts.AddAsync(newContract);
             await unitOfWork.CompleteAsync();
 
@@ -311,33 +325,35 @@ namespace Kader_System.Services.Services.HR
                     };
                 }
 
-                if (model.ContractFile != null)
+                if (model.contract_file != null)
                 {
                     if (_fileServer.FileExist(appPath, moduleName, obj.FileName))
                         _fileServer.RemoveFile(appPath, moduleName, obj.FileName);
+                    obj.FileExtension = Path.GetExtension(model.contract_file.FileName);
 
-
-                    obj.FileName = (model.ContractFile.Length == 0) ? null
-                        : await _fileServer.UploadFile(appPath, moduleName, model.ContractFile);
+                    obj.FileName = (model.contract_file.Length == 0) ? null
+                        : await _fileServer.UploadFile(appPath, moduleName, model.contract_file);
                 }
+              
+              
 
-                obj.EmployeeId = model.EmployeeId;
-                obj.EndDate = model.EndDate;
-                obj.StartDate = model.StartDate;
-                obj.TotalSalary = model.TotalSalary;
-                obj.FixedSalary = model.FixedSalary;
-                obj.HousingAllowance = model.HousingAllowance;
+                obj.EmployeeId = model.employee_id;
+                obj.EndDate = model.end_date;
+                obj.StartDate = model.start_date;
+                obj.TotalSalary = model.total_salary;
+                obj.FixedSalary = model.fixed_salary;
+                obj.HousingAllowance = model.housing_allowance;
 
 
-                var lstNewInserted = model.Details?.Where(d => d.Status == RowStatus.Inserted).ToList();
-                var lstUpdatedDetails = model.Details?.Where(d => d.Status == RowStatus.Updated).ToList();
-                var lstDeletedDetails = model.Details?.Where(d => d.Status == RowStatus.Deleted).ToList();
+                var lstNewInserted = model.details?.Where(d => d.status == RowStatus.Inserted).ToList();
+                var lstUpdatedDetails = model.details?.Where(d => d.status == RowStatus.Updated).ToList();
+                var lstDeletedDetails = model.details?.Where(d => d.status == RowStatus.Deleted).ToList();
                 //Deleted Items
                 if (lstDeletedDetails != null && lstDeletedDetails.Any())
                 {
                     foreach (var deletedRow in lstDeletedDetails)
                     {
-                        var existObj = await unitOfWork.ContractAllowancesDetails.GetByIdAsync(deletedRow.Id);
+                        var existObj = await unitOfWork.ContractAllowancesDetails.GetByIdAsync(deletedRow.id);
                         if (existObj != null)
                         {
                             unitOfWork.ContractAllowancesDetails.Remove(existObj);
@@ -346,7 +362,7 @@ namespace Kader_System.Services.Services.HR
                         {
                             return new()
                             {
-                                Msg = $"Contract Detail with Id:{deletedRow.Id} Can not be found !!!!",
+                                Msg = $"Contract Detail with Id:{deletedRow.id} Can not be found !!!!",
                                 Check = false,
                                 Data = model
                             };
@@ -360,10 +376,10 @@ namespace Kader_System.Services.Services.HR
                     {
                         await unitOfWork.ContractAllowancesDetails.AddAsync(new HrContractAllowancesDetail()
                         {
-                            AllowanceId = newItem.AllowanceId,
-                            Value = newItem.Value,
+                            AllowanceId = newItem.allowance_id,
+                            Value = newItem.value,
                             ContractId = id,
-                            IsPercent = newItem.IsPercent
+                            IsPercent = newItem.is_percent
                         });
                     }
                 }
@@ -371,12 +387,12 @@ namespace Kader_System.Services.Services.HR
                 {
                     foreach (var updateItem in lstUpdatedDetails)
                     {
-                        var existObj = await unitOfWork.ContractAllowancesDetails.GetByIdAsync(updateItem.Id);
+                        var existObj = await unitOfWork.ContractAllowancesDetails.GetByIdAsync(updateItem.id);
                         if (existObj != null)
                         {
-                            existObj.AllowanceId = updateItem.AllowanceId;
-                            existObj.IsPercent = updateItem.IsPercent;
-                            existObj.Value = updateItem.Value;
+                            existObj.AllowanceId = updateItem.allowance_id;
+                            existObj.IsPercent = updateItem.is_percent;
+                            existObj.Value = updateItem.value;
                             existObj.ContractId = id;
                             unitOfWork.ContractAllowancesDetails.Update(existObj);
                         }
@@ -384,7 +400,7 @@ namespace Kader_System.Services.Services.HR
                         {
                             return new()
                             {
-                                Msg = $"Contract Detail with Id:{updateItem.Id} Can not be found to Update It !!!!",
+                                Msg = $"Contract Detail with Id:{updateItem.id} Can not be found to Update It !!!!",
                                 Check = false,
                                 Data = model
                             };
@@ -393,12 +409,12 @@ namespace Kader_System.Services.Services.HR
                 }
 
                 GetFileNameAndExtension contractFile = new();
-                if (model.ContractFile is not null)
+                if (model.contract_file is not null)
                 {
 
-                    if (model.ContractFile != null)
+                    if (model.contract_file != null)
                     {
-                        contractFile = ManageFilesHelper.UploadFile(model.ContractFile, GoRootPath.HRFilesPath);
+                        contractFile = ManageFilesHelper.UploadFile(model.contract_file, GoRootPath.HRFilesPath);
                     }
                     obj.FileName = contractFile?.FileName;
                     obj.FileExtension = contractFile?.FileExtension;
@@ -466,12 +482,12 @@ namespace Kader_System.Services.Services.HR
                     Check = true,
                     Data = new()
                     {
-                        EmployeeId = obj.EmployeeId,
-                        StartDate = obj.StartDate,
-                        EndDate = obj.EndDate,
-                        FixedSalary = obj.FixedSalary,
-                        HousingAllowance = obj.HousingAllowance,
-                        TotalSalary = obj.TotalSalary,
+                        employee_id = obj.EmployeeId,
+                        start_date = obj.StartDate,
+                        end_date = obj.EndDate,
+                        fixed_salary = obj.FixedSalary,
+                        housing_allowance = obj.HousingAllowance,
+                        total_salary= obj.TotalSalary,
                     }
                 };
             }

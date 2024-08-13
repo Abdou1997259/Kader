@@ -75,7 +75,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [HttpPut(ApiRoutes.Contract.UpdateContract)]
         [Permission(Permission.Edit, 17)]
         public async Task<IActionResult> UpdateAsync([FromRoute] int id,
-            [FromBody] CreateContractRequest request)
+            [FromForm] CreateContractRequest request)
         {
             if (ModelState.IsValid)
             {

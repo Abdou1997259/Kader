@@ -124,7 +124,7 @@ namespace Kader_System.Services.Services.Setting
         public async Task<Response<ScreenLookups>> GetAllScreensAsync(string lang)
         {
             var mains =await  unitOfWork.MainScreens.GetAllAsync();
-            List<ScreenMainLookup> lookupsForMain = mains.Where(x => !x.IsDeleted).Select(x => new ScreenMainLookup
+            List<ScreenMainLookup> lookupsForMain = mains.Where(x => !x.IsDeleted).OrderBy(x=>x.Order).Select(x => new ScreenMainLookup
             {
                 Id = x.Id,
                 main_image = Path.Combine(SD.GoRootPath.GetSettingImagesPath, x.Screen_main_image ?? " "),
@@ -138,7 +138,7 @@ namespace Kader_System.Services.Services.Setting
                 main_id = x.screenCat.Id,
                 Main_Title = Localization.Arabic == lang ? x.screenCat.Screen_main_title_ar : x.screenCat.Screen_main_title_en
 
-            }, includeProperties: "screenCat")).ToList();
+            }, includeProperties: "screenCat",orderBy:x=>x.OrderBy(s=>s.Order))).ToList();
 
 
             List<ScreenSubLookup> lookupsForsub = (await unitOfWork.SubMainScreens.GetSpecificSelectAsync(x => !x.IsDeleted, select: x => new ScreenSubLookup
@@ -150,7 +150,7 @@ namespace Kader_System.Services.Services.Setting
                 screen_code=x.ScreenCode,
                 url=x.Url
 
-            }, includeProperties: "ScreenCat")).ToList();
+            }, includeProperties: "ScreenCat", orderBy: x => x.OrderBy(s => s.Order))).ToList();
 
             return new()
             {
