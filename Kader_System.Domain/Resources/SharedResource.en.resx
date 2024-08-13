@@ -165,6 +165,9 @@
   <data name="InvalidSubId" xml:space="preserve">
     <value>Invalid Sub id </value>
   </data>
+  <data name="IsCalc" xml:space="preserve">
+    <value>this {0} Empolyee's salary has been calcluated </value>
+  </data>
   <data name="IsDepartmentInMang" xml:space="preserve">
     <value>There isnt such department in this mangement</value>
   </data>

@@ -2,6 +2,7 @@
 using Kader_System.Domain.DTOs.Response.Loan;
 using Kader_System.Domain.Interfaces.Trans;
 using Kader_System.Services.IServices;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace Kader_System.Services.Services.Trans
 {
@@ -164,6 +165,7 @@ namespace Kader_System.Services.Services.Trans
             int page = 1; var lookups = await _unitOfWork.Employees.GetEmployeesNameIdSalaryAsLookUp(lang);
 
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+            var users = await _unitOfWork.Users.GetAllAsync();
             if (model.PageNumber < 1)
                 page = 1;
             else
@@ -171,30 +173,46 @@ namespace Kader_System.Services.Services.Trans
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
+
+            var transSalaryIncreases = await _unitOfWork.TransSalaryIncrease.GetSpecificSelectAsync(
+                    filter: filter,
+                    take: model.PageSize,
+                    skip: (model.PageNumber - 1) * model.PageSize,
+                    select: x => new
+                    {
+                        x.transactionDate,
+                        x.salaryAfterIncrease,
+                        x.PreviousSalary,
+                        x.Added_by,
+                        EmployeeName = lang == Localization.Arabic ? x.Employee!.FullNameAr : x.Employee!.FullNameEn,
+                        x.Amount,
+                        IncreaseType = x.Increase_type,
+                    },
+                    includeProperties: "Employee.User",
+                    orderBy: x => x.OrderByDescending(x => x.Id)
+                );
+
+
             var result = new GetAllSalaryIncreaseResponse
             {
                 TotalRecords = await _unitOfWork.TransSalaryIncrease.CountAsync(filter: filter),
 
-                Items = (await _unitOfWork.TransSalaryIncrease.GetSpecificSelectAsync(filter: filter,
-                     take: model.PageSize,
-                     skip: (model.PageNumber - 1) * model.PageSize,
-                     select: x => new TransSalaryIncreaseResponse
-                     {
-                         transationDate = x.transactionDate,
-                         AfterIncreaseSalary=x.salaryAfterIncrease,
-                         PreviousSalary=x.PreviousSalary,
-                         
-                          
-                         employeeName = lang == Localization.Arabic ? x.Employee!.FullNameAr : x.Employee!.FullNameEn,
-                         increaseValue = x.Amount,
-                         salrayIncreaseType = 
-                        x.Increase_type == 1 && lang == Localization.Arabic ? "قيمة" :
-                        x.Increase_type == 2 && lang == Localization.Arabic ? "نسبة" :
-                        x.Increase_type == 1 && lang == Localization.English ? "Value" :
-                        x.Increase_type == 2 && lang == Localization.English ? "Percentage" :
-                        string.Empty
-                     },includeProperties:"",
-                     orderBy: x => x.OrderByDescending(x => x.Id))).ToList(),
+                Items = transSalaryIncreases
+                    .AsEnumerable() // Switching to client-side evaluation for the next part
+                    .Select(x => new TransSalaryIncreaseResponse
+                    {
+                        transationDate = x.transactionDate,
+                        AfterIncreaseSalary = x.salaryAfterIncrease,
+                        PreviousSalary = x.PreviousSalary,
+                        AddedBy = users.FirstOrDefault(u => u.Id == x.Added_by)?.UserName,
+                        employeeName = x.EmployeeName,
+                        increaseValue = x.Amount,
+                        salrayIncreaseType = x.IncreaseType == 1 && lang == Localization.Arabic ? "قيمة" :
+                                             x.IncreaseType == 2 && lang == Localization.Arabic ? "نسبة" :
+                                             x.IncreaseType == 1 && lang == Localization.English ? "Value" :
+                                             x.IncreaseType == 2 && lang == Localization.English ? "Percentage" :
+                                             string.Empty
+                    }).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -299,6 +317,20 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<CreateTransSalaryIncreaseRequest>> UpdateTransSalaryIncreaseAsync( int id, CreateTransSalaryIncreaseRequest model)
         {
             var obj = await _unitOfWork.TransSalaryIncrease.GetByIdAsync(id);
+            var emp = await _unitOfWork.Employees.GetByIdAsync(model.Employee_id);
+            if(emp is null)
+            {
+                string empMsg=sharLocalizer[Localization.Employee];
+                string resultMsg = sharLocalizer[Localization.IsNotExisted, empMsg];
+
+                return new()
+                {
+                    Data = new(),
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
+       
             var empSalary = (await _unitOfWork.Employees.GetByIdAsync(model.Employee_id)).FixedSalary;
             if (obj is null)
             {
@@ -312,6 +344,11 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
+            var IsCaculated = await _unitOfWork.TransSalaryCalculatorDetailsRepo.GetFirstOrDefaultAsync(x => x.EmployeeId == model.Employee_id);
+            if (IsCaculated != null)
+            {
+
+            }
             #region SalaryTypesCases
             double salaryAfterIncrease = (SalaryIncreaseTypes)model.Increase_type switch
             {
