@@ -7,6 +7,12 @@
         {
         }
 
+        public bool FileExist(string appPath, string moduleName, string fileName)
+        {
+            var filePath = Path.Combine(appPath, moduleName, fileName);
+            return File.Exists(filePath);
+        }
+
         public string GetFilePath(string moduleName, string fileName)
         {
             return $@"{moduleName}\{fileName}";
@@ -18,7 +24,12 @@
             if (File.Exists(fullPath))
                 File.Delete(fullPath);
         }
-
+        public void RemoveFile(string appPath, string moduleName, string fileName)
+        {
+            var filePath = Path.Combine(appPath, moduleName, fileName);
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+        }
         public async Task<string> UploadFile(string appPath, string moduleName, IFormFile file)
         {
             #region Directory_Validation

@@ -31,7 +31,7 @@ public class JobRepository(KaderDbContext context) : BaseRepository<HrJob>(conte
                 Name = group.Key.NameAr,
                 EmployeesCount = group.Count(x => x.Employee != null),
                 HasAdditionalTime = group.Key.HasAdditionalTime,
-                HasNeedLicense = group.Key.HasNeedLicense,
+                //HasNeedLicense = group.Key.HasNeedLicense,
             });
       
         if (take.HasValue)

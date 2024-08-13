@@ -253,20 +253,14 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         obj.Screen_main_title_en = model.Screen_main_title_en;
         if (model.Screen_main_image != null)
         {
-            // Check if the current image exists and delete it if it does
-            if (!string.IsNullOrEmpty(obj.Screen_main_image))
-            {
-                var path = Path.Combine(SD.GoRootPath.GetSettingImagesPath, obj.Screen_main_image);
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-            }
+            if (_fileServer.FileExist(appPath, moduleName, obj.Screen_main_image))
+                _fileServer.RemoveFile(appPath, moduleName, obj.Screen_main_image);
 
-            // Upload the new image if provided
+
             obj.Screen_main_image = (model.Screen_main_image.Length == 0) ? null
                 : await _fileServer.UploadFile(appPath, moduleName, model.Screen_main_image);
         }
+
 
         _unitOfWork.MainScreens.Update(obj);
         await _unitOfWork.CompleteAsync();
@@ -354,7 +348,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                 title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
                 main_id = x.MainScreenId,
                 subs = x.StScreenSub.Where(k => permStruct.Any(ps =>
-                    ps.ContainsKey(k.ScreenCode) && ps[k.ScreenCode].permissions.Contains(1)))
+                    ps.ContainsKey(k.ScreenCode) && ps[k.ScreenCode].permissions.Contains(1) && k.ScreenCatId == x.Id))
                 .Select(k => new GetAllStScreenSub
                 {
                     Sub_Id = k.Id,
