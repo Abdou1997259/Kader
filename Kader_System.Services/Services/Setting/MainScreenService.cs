@@ -253,20 +253,14 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         obj.Screen_main_title_en = model.Screen_main_title_en;
         if (model.Screen_main_image != null)
         {
-            // Check if the current image exists and delete it if it does
-            if (!string.IsNullOrEmpty(obj.Screen_main_image))
-            {
-                var path = Path.Combine(SD.GoRootPath.GetSettingImagesPath, obj.Screen_main_image);
-                if (File.Exists(path))
-                {
-                    File.Delete(path);
-                }
-            }
+            if (_fileServer.FileExist(appPath, moduleName, obj.Screen_main_image))
+                _fileServer.RemoveFile(appPath, moduleName, obj.Screen_main_image);
 
-            // Upload the new image if provided
+
             obj.Screen_main_image = (model.Screen_main_image.Length == 0) ? null
                 : await _fileServer.UploadFile(appPath, moduleName, model.Screen_main_image);
         }
+
 
         _unitOfWork.MainScreens.Update(obj);
         await _unitOfWork.CompleteAsync();
