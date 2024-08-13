@@ -18,7 +18,6 @@ namespace Kader_System.Services.Services.Setting
             var results = await _context.SPUserPermissionsBySubScreens
                  .FromSqlRaw("EXEC SP_GetUserPermissionsBySubScreen @UserId, @Lang", userIdParameter, langParameter)
                  .AsNoTracking()
-        
                  .ToListAsync();
             results = results.Where(x => x.TitleId == titleId).ToList();
             var user = _context.Users.AsNoTracking()

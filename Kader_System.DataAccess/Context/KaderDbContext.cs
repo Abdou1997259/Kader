@@ -81,6 +81,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrMaritalStatus> MaritalStatus { get; set; }
     public DbSet<MainScreenTree> MainScreenTrees { get; set; }
     public DbSet<SPUserPermissionsBySubScreen> SPUserPermissionsBySubScreens { get; set; }
+    public DbSet<SPTitlePermissionsBySubScreen> SPTitlePermissionsBySubScreens { get; set; }
     public DbSet<SPPermissionStruct> SPPermissionsBySubScreen { get; set; }
     public DbSet<SpGetAllScreens> SpGetAllScreens { get; set; }
 
@@ -239,6 +240,12 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             HasForeignKey(x => x.ScreenCatId);
 
         modelBuilder.Entity<SPUserPermissionsBySubScreen>(e =>
+        {
+            e.HasNoKey();
+            e.ToView(null);
+
+        });  
+        modelBuilder.Entity<SPTitlePermissionsBySubScreen>(e =>
         {
             e.HasNoKey();
             e.ToView(null);
