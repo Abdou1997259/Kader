@@ -313,7 +313,10 @@ namespace Kader_System.Services.Services.Setting
                     Data = "Data deleted sucessfully",
                 };
             }
-            return null;
+            return new Response<string>()
+            {
+                Check = false
+            };
         }
 
         private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model, string lang, bool all = false)
