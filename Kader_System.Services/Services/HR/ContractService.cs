@@ -2,6 +2,7 @@
 using Kader_System.Domain.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Xml;
 using static Kader_System.Domain.Constants.SD.ApiRoutes;
 
 namespace Kader_System.Services.Services.HR
@@ -199,7 +200,43 @@ namespace Kader_System.Services.Services.HR
             //    $"{nameof(_instanceContract.Employee)},{nameof(_instanceContract.ListOfAllowancesDetails)}");
 
             var obj = unitOfWork.Contracts.GetContractById(id, lang);
+            var emps =await  unitOfWork.Employees.GetSpecificSelectAsync(x => !x.IsDeleted, select: x => new
+            {
+                Id = x.Id,
+                EmpolyeeName = Localization.Arabic == lang ? x.FullNameAr : x.FullNameEn,
+            });
+            var allownces = await unitOfWork.Allowances.GetSpecificSelectAsync(x => !x.IsDeleted, select: x => new
+            {
+                Id = x.Id,
+                AlllownceName = Localization.Arabic == lang ? x.Name_ar:x.Name_en,
+            });
 
+            if (!allownces.Any())
+            {
+                string empMsg = shareLocalizer[Localization.Allowance];
+                string resultMsg = shareLocalizer[Localization.IsNotExisted, empMsg];
+
+                return new()
+                {
+                    Data = new(),
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+
+            }
+            if (!emps.Any())
+            {
+                string empMsg = shareLocalizer[Localization.Employee];
+                string resultMsg = shareLocalizer[Localization.IsNotExisted, empMsg];
+
+                return new()
+                {
+                    Data = new(),
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+
+            }
 
             if (obj is null)
             {
@@ -218,8 +255,8 @@ namespace Kader_System.Services.Services.HR
                 Data = new()
                 {
                     Master = obj,
-                    allowances =await unitOfWork.Allowances.GetAllowancesDataAsLookUp(lang:lang),
-                    employees = await unitOfWork.Employees.GetEmployeesDataAsLookUp(lang)
+                    allowances =allownces,
+                    employees = emps
                 },
                 Check = true
             };

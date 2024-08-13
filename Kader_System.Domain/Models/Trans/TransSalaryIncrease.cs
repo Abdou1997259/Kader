@@ -10,7 +10,7 @@ public class TransSalaryIncrease : BaseEntity
     public string? Notes { get; set; }
     public DateTime transactionDate { get; set; }
     public DateTime dueDate { get; set; }
-
+    public double PreviousSalary { get; set; }
 
     public int Increase_type { get; set; }
     [ForeignKey(nameof(Increase_type))]

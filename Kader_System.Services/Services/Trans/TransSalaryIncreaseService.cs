@@ -128,13 +128,11 @@ namespace Kader_System.Services.Services.Trans
                     {
                         Id = x.Id,
                         transationDate = x.transactionDate,
-                        dueDate = x.dueDate,
-                        details = x.Notes,
-                        employeeId = x.Employee_id,
+                      
                         employeeName = lang == Localization.Arabic ? x.Employee!.FullNameAr : x.Employee!.FullNameEn,
                         increaseValue = x.Amount,
-                        salrayIncreaseTypeId = x.Increase_type,
-                        salrayIncreaseTypeName = x.ValueType.Name
+                      
+                       
                     }, orderBy: x =>
                x.OrderByDescending(x => x.Id));
 
@@ -183,13 +181,16 @@ namespace Kader_System.Services.Services.Trans
                      select: x => new TransSalaryIncreaseResponse
                      {
                          transationDate = x.transactionDate,
-                         dueDate = x.dueDate,
-                         details = x.Notes,
-                         employeeId = x.Employee_id,
+                         AfterIncreaseSalary=x.salaryAfterIncrease,
+                          PreviousSalary=x.PreviousSalary,
                          employeeName = lang == Localization.Arabic ? x.Employee!.FullNameAr : x.Employee!.FullNameEn,
                          increaseValue = x.Amount,
-                         salrayIncreaseTypeId = x.Increase_type,
-                         salrayIncreaseTypeName = x.ValueType.Name
+                         salrayIncreaseType = 
+                        x.Increase_type == 1 && lang == Localization.Arabic ? "قيمة" :
+                        x.Increase_type == 2 && lang == Localization.Arabic ? "نسبة" :
+                        x.Increase_type == 1 && lang == Localization.English ? "Value" :
+                        x.Increase_type == 2 && lang == Localization.English ? "Percentage" :
+                        string.Empty
                      },
                      orderBy: x => x.OrderByDescending(x => x.Id), includeProperties: "Employee")).ToList(),
                 CurrentPage = model.PageNumber,
@@ -232,7 +233,7 @@ namespace Kader_System.Services.Services.Trans
             var newTrans = _mapper.Map<TransSalaryIncrease>(model);
             newTrans.transactionDate = DateTime.Now;
             newTrans.dueDate = DateTime.Now.AddMonths(1);
-            var empSalary = (await _unitOfWork.Employees.GetByIdAsync(model.Employee_id)).FixedSalary;
+            var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.EmployeeId == model.Employee_id)).FixedSalary;
             #region SalaryTypesCases
             double salaryAfterIncrease = (SalaryIncreaseTypes)model.Increase_type switch
             {
@@ -242,6 +243,7 @@ namespace Kader_System.Services.Services.Trans
             };
             #endregion
             newTrans.salaryAfterIncrease = salaryAfterIncrease;
+            newTrans.PreviousSalary = empSalary;
             await _unitOfWork.TransSalaryIncrease.AddAsync(newTrans);
             await _unitOfWork.CompleteAsync();
             return new()
@@ -278,13 +280,10 @@ namespace Kader_System.Services.Services.Trans
                 {
 
                     transationDate = obj.transactionDate,
-                    dueDate = obj.dueDate,
-                    details = obj.Notes,
-                    employeeId = obj.Employee_id,
+                
                     employeeName = lang == Localization.Arabic ? obj.Employee!.FullNameAr : obj.Employee!.FullNameEn,
                     increaseValue = obj.Amount,
-                    salrayIncreaseTypeId = obj.Increase_type,
-                    salrayIncreaseTypeName = lang == Localization.Arabic ? obj.ValueType.Name! : obj.ValueType.NameInEnglish!,
+                 
                 },
                 Check = true,
                 LookUps = new

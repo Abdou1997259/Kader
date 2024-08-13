@@ -407,7 +407,7 @@ app.UseRequestLocalization(localizationOptions);
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 app.UseMiddleware<HeadersValidationMiddleware>();
 app.UseMiddleware<PathMiddleware>();
-app.UseMiddleware<ClientDatabaseMiddleware>();
+//app.UseMiddleware<ClientDatabaseMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

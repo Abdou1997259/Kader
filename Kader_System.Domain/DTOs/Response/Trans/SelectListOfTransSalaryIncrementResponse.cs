@@ -3,14 +3,17 @@
     public class SelectListOfTransSalaryIncrementResponse
     {
         public int Id { get; set; }
-        public int employeeId { get; set; }
+     
         public string employeeName { get; set; }
-        public int salrayIncreaseTypeId { get; set; }
-        public string salrayIncreaseTypeName { get; set; }
-        public string details { get; set; }
+        public double PreviousSalary { get; set; }
+        public double AfterIncreaseSalary { get; set; }
+        public string AddedBy { get; set; }       
+  
+        public string salrayIncreaseType { get; set; }
+     
         public double increaseValue { get; set; }
         public DateTime transationDate { get; set; }
-        public DateTime dueDate { get; set; }
+   
 
     }
 }
