@@ -12,6 +12,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\Audios\**" />
+    <Compile Remove="wwwroot\Files\**" />
+    <Compile Remove="wwwroot\Videos\**" />
+    <Content Remove="wwwroot\Audios\**" />
+    <Content Remove="wwwroot\Files\**" />
+    <Content Remove="wwwroot\Videos\**" />
+    <EmbeddedResource Remove="wwwroot\Audios\**" />
+    <EmbeddedResource Remove="wwwroot\Files\**" />
+    <EmbeddedResource Remove="wwwroot\Videos\**" />
+    <None Remove="wwwroot\Audios\**" />
+    <None Remove="wwwroot\Files\**" />
+    <None Remove="wwwroot\Videos\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
@@ -30,11 +45,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Audios\" />
-    <Folder Include="wwwroot\Files\HR\" />
-    <Folder Include="wwwroot\Files\Trans\" />
-    <Folder Include="wwwroot\Images\HR\Employees\" />
-    <Folder Include="wwwroot\Videos\" />
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

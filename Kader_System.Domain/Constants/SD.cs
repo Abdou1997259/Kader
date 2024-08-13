@@ -159,6 +159,7 @@ public static class SD
             public const string ListOfSubMainScreens = "screen_sub/getListOfSubMainScreens";
             public const string GetAllSubMainScreens = "screen_sub";
             public const string CreateSubMainScreen = "screen_sub";
+            public const string RemoveSceenCodeSpace = "screen_sub/remove_space";
             public const string UpdateSubMainScreen = "screen_sub/update/{id}";
             public const string GetSubMainScreenById = "screen_sub/getById/{id}";
             public const string DeleteSubMainScreen = "screen_sub/delete/{id}";
