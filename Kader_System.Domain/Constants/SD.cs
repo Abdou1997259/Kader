@@ -264,7 +264,7 @@ public static class SD
         }
         public class SalaryIncrease
         {
-            public const string ListOfSalaryIncrease = "allowance/getListOfSalaryIncrease";
+            public const string ListOfSalaryIncrease = "salaryIncrease/getListOfSalaryIncrease";
             public const string GetAllSalaryIncrease = "salaryIncrease/getAll";
             public const string CreateSalaryIncrease = "salaryIncrease/create";
             public const string UpdateSalaryIncrease = "salaryIncrease/update/{id}";

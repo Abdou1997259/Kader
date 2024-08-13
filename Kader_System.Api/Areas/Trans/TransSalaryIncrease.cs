@@ -19,7 +19,7 @@ namespace Kader_System.Api.Areas.Trans
         #region Create
         [HttpPost(ApiRoutes.SalaryIncrease.CreateSalaryIncrease)]
         [Permission(Helpers.Permission.Add, 28)]
-        public async Task<IActionResult> CreateTransVacation([FromForm] CreateTransSalaryIncreaseRequest request)
+        public async Task<IActionResult> CreateTransVacation(CreateTransSalaryIncreaseRequest request)
         {
             var result = await _service.CreateTransSalaryIncreaseAsync(request, requestService.GetRequestHeaderLanguage);
             return Ok(result);
@@ -29,7 +29,7 @@ namespace Kader_System.Api.Areas.Trans
         #region Read
         [HttpGet(ApiRoutes.SalaryIncrease.GetAllSalaryIncrease)]
         [Permission(Helpers.Permission.View, 28)]
-        public async Task<IActionResult> GetAllSalaryIncrease(GetAlFilterationForSalaryIncreaseRequest model)
+        public async Task<IActionResult> GetAllSalaryIncrease([FromQuery]  GetAlFilterationForSalaryIncreaseRequest model)
         {
             var result = await _service.GetAllTransSalaryIncreaseAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost);
             return Ok(result);
