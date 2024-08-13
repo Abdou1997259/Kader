@@ -245,6 +245,30 @@ namespace Kader_System.Services.Services.Setting
                 Data = model
             };
         }
+        public async Task<Response<string>> RestoreTitleAsync(int id)
+        {
+            var obj = await unitOfWork.Titles.GetByIdAsync(id);
+            if (obj is null)
+            {
+                string resultMsg = sharLocalizer[Localization.NotFoundData];
+
+                return new()
+                {
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
+            obj.IsDeleted = false;
+            unitOfWork.Titles.Update(obj);
+            await unitOfWork.CompleteAsync();
+
+            return new()
+            {
+                Check = true,
+                Error = string.Empty,
+                Msg = sharLocalizer[Localization.Restored],
+            };
+        }
 
         public async Task<Response<GetTitleByIdResponse>> GetTitleByIdAsync(int id, string lang)
         {
@@ -288,12 +312,12 @@ namespace Kader_System.Services.Services.Setting
                   SetProperty(p => p.DeleteDate, DateTime.Now));
             if (titleResult > 0)
             {
-                var users =  _context.Users.AsNoTracking()
+                var users = _context.Users.AsNoTracking()
                                 .AsEnumerable()
-                                .Where(u => u.TitleId.Split(",",StringSplitOptions.None)
+                                .Where(u => u.TitleId.Split(",", StringSplitOptions.None)
                                 .Contains(id.ToString()))
                                 .ToList();
-                  
+
 
 
 
