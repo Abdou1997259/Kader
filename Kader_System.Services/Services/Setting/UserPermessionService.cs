@@ -13,10 +13,11 @@ namespace Kader_System.Services.Services.Setting
         public async Task<Response<DTOSPGetUserPermissionsBySubScreen>> GetUserPermissionsBySubScreen(int titleId, string userId, string lang)
         {
             var userIdParameter = new SqlParameter("@UserId", userId);
+            var titleIdParameter = new SqlParameter("@TitleId", titleId);
             var langParameter = new SqlParameter("@Lang", lang);
 
             var results = await _context.SPUserPermissionsBySubScreens
-                 .FromSqlRaw("EXEC SP_GetUserPermissionsBySubScreen @UserId, @Lang", userIdParameter, langParameter)
+                 .FromSqlRaw("EXEC SP_GetUserPermissionsBySubScreen @UserId,@TitleId, @Lang", userIdParameter,titleIdParameter, langParameter)
                  .AsNoTracking()
                  .ToListAsync();
             var user = _context.Users.AsNoTracking()
