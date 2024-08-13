@@ -103,11 +103,12 @@ namespace Kader_System.Api.Areas.Setting.Controllers
 
         [HttpPut(ApiRoutes.Title.RestoreTitle)]
         [Permission(Helpers.Permission.Edit, 4)]
-        public async Task<IActionResult> RestoreTitle([FromBody] int id)
+        public async Task<IActionResult> RestoreTitle([FromRoute] int id)
         {
-            if (Response == null)
-                return Ok(Response);
-            else return BadRequest(Response);
+            var respone = await _titleService.RestoreTitleAsync(id);
+            if (respone.Check == true)
+                return Ok(respone);
+            else return BadRequest(respone);
         }
         #endregion
 

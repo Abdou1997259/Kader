@@ -196,8 +196,6 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
         {
             Screen_cat_title_ar = model.Screen_cat_title_ar,
             Screen_cat_title_en = model.Screen_cat_title_en,
-     
-     
             MainScreenId = model.Screen_main_id,
         });
         await _unitOfWork.CompleteAsync();

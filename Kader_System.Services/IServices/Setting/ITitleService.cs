@@ -13,6 +13,8 @@ namespace Kader_System.Services.IServices.Setting
         Task<Response<GetTitleByIdResponse>> GetTitleByIdAsync(int id, string lang);
 
         Task<Response<UpdateTitleRequest>> UpdateTitleAsync(int id, UpdateTitleRequest model,string lang,bool all);
+        public  Task<Response<string>> RestoreTitleAsync(int id);
+
         Task<Response<string>> UpdateActiveOrNotTitleAsync(int id);
         Task<Response<string>> DeleteTitleAsync(int id);
 
