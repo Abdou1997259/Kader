@@ -5,35 +5,35 @@ namespace Kader_System.Domain.DTOs.Request.HR
     public class CreateContractRequest
     {
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public int EmployeeId { get; set; }
+        public int employee_id { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public double TotalSalary { get; set; }
+        public double total_salary { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public double FixedSalary { get; set; }
-        public double HousingAllowance { get; set; }
+        public double fixed_salary { get; set; }
+        public double housing_allowance { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public DateOnly StartDate { get; set; }
+        public DateOnly start_date { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public DateOnly EndDate { get; set; }
+        public DateOnly end_date { get; set; }
         //[Required(ErrorMessage = Annotations.FieldIsRequired)]
         //public string? ContractFile { get; set; }
 
-        public IFormFile? ContractFile { get;set; }
+        public IFormFile? contract_file { get;set; }
 
 
       
   
-        public List<CreateContractDetailsRequest>? Details { get; set; } 
+        public List<CreateContractDetailsRequest>? details { get; set; } 
 
     }
 
     public class CreateContractDetailsRequest
     {
-        public int Id { get; set; }
-        public int AllowanceId { get; set; }
-        public double Value { get; set; }
-        public bool IsPercent { get; set; }
+        public int id { get; set; }
+        public int allowance_id { get; set; }
+        public double value { get; set; }
+        public bool is_percent { get; set; }
 
-        public RowStatus Status { get; set; }
+        public RowStatus status { get; set; }
     }
 }
