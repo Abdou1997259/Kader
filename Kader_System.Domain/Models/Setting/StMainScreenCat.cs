@@ -12,12 +12,10 @@ public class StMainScreenCat : BaseEntity
 
 
 
-    public int  MainScreenId { get; set; }
+    public int MainScreenId { get; set; }
     [ForeignKey(nameof(MainScreenId))]
-    public StMainScreen  screenCat { get; set; } = default!;
-    [ForeignKey(nameof(Order))]
+    public StMainScreen screenCat { get; set; } = default!;
     public int Order { get; set; }
-    public  StMainScreenCat StMainScreenCategory { get; set; }
     public ICollection<StScreenSub> StScreenSub { get; set; }
     //public StMainScreenCat stMainScreenCat { get; set; }
 }

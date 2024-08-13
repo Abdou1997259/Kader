@@ -239,13 +239,12 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             WithOne(x => x.ScreenCat).
             HasForeignKey(x => x.ScreenCatId);
 
-
         modelBuilder.Entity<SPUserPermissionsBySubScreen>(e =>
         {
             e.HasNoKey();
             e.ToView(null);
 
-        });  
+        });
         modelBuilder.Entity<SPTitlePermissionsBySubScreen>(e =>
         {
             e.HasNoKey();
@@ -268,8 +267,6 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
 
 
         #endregion
-
-
 
     }
 
