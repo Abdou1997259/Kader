@@ -610,6 +610,7 @@ public static class SD
         public const string Used = "Used";
         public const string CannotBeFound = "CannotBeFound";
         public const string UserInTitle = "UserInTitle";
+        public const string UserPermission = "UserPermission";
         public const string UserInCompany = "UserInCompany";
         public const string MangerAlready = "MangerAlready";
         public const string Restored = "Restored";
