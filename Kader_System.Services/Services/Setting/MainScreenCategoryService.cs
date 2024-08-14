@@ -50,11 +50,10 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
 
     public async Task<Response<string>> OrderByPattern(int[] orderedIds)
     {
-        var count = await _context.MainScreens.CountAsync();
         for (int i = 0; i < orderedIds.Length; i++)
         {
             var id = orderedIds[i];
-           var result =  await _context.MainScreenCategories
+           var result =  await _context.MainScreens
                 .Where(s => s.Id == id)
                 .ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, x => i + 1));
         }
