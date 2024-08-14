@@ -58,7 +58,7 @@ namespace Kader_System.Api.Areas.Trans
             var result = await _service.RestoreTransSalaryIncreaseAsync(id);
             return Ok(result);
         }
-        [HttpPut(ApiRoutes.SalaryIncrease.GetEmployeesLookups)]
+        [HttpGet(ApiRoutes.SalaryIncrease.GetEmployeesLookups)]
         public async Task<IActionResult> GetEmployeesLookups()
         {
             var result = await _service.GetEmployeesLookups(requestService.GetRequestHeaderLanguage);

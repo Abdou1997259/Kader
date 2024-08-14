@@ -278,48 +278,56 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetSalaryIncreaseByIdResponse>> GetTransSalaryIncreaseByIdAsync(int id, string lang)
         {
-            var obj = await _unitOfWork.TransSalaryIncrease.GetFirstOrDefaultAsync(c => c.Id == id ,
-                includeProperties: $"{nameof(_insatance.ValueType)},{nameof(_insatance.Employee)}");
-            var salaryIncreaseType = (await _unitOfWork.SalaryIncreaseTypeRepository.GetAllAsync()).Select(x => new { Id = x.Id, Name = lang == Localization.Arabic ? x.Name : x.NameInEnglish }).ToList();
+                    var obj = await _unitOfWork.TransSalaryIncrease.GetFirstOrDefaultAsync(
+               c => c.Id == id,
+               includeProperties: $"{nameof(_insatance.ValueType)},{nameof(_insatance.Employee)}");
 
+                    if (obj is null)
+                    {
+                        string resultMsg = sharLocalizer[Localization.NotFoundData];
+                        return new()
+                        {
+                            Data = new GetSalaryIncreaseByIdResponse(),
+                            Error = resultMsg,
+                            Msg = resultMsg
+                        };
+                    }
 
-            if (obj is null)
-            {
-                string resultMsg = sharLocalizer[Localization.NotFoundData];
+                    var salaryIncreaseTypes = await _unitOfWork.SalaryIncreaseTypeRepository.GetAllAsync();
+                    var salaryIncreaseTypeLookup = salaryIncreaseTypes
+                        .Select(x => new { x.Id, Name = lang == Localization.Arabic ? x.Name : x.NameInEnglish })
+                        .ToList();
 
-                return new()
-                {
-                    Data = new(),
-                    Error = resultMsg,
-                    Msg = resultMsg
-                };
-            }
+                    var employee = await _unitOfWork.Employees.GetByIdAsync(obj.Employee_id);
+                    var employeeName = lang == Localization.Arabic ? employee?.FullNameAr : employee?.FullNameEn;
 
-            var lookups = await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang);
-            var typeLookup = await _unitOfWork.SalaryIncreaseTypeRepository.GetSalaryIncreaseType(lang);
-           
-            return new()
-            {
-                Data = new GetSalaryIncreaseByIdResponse()
-                {
+                    var previousSalary = (await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang))
+                        .FirstOrDefault(x => x.Id == obj.Employee_id)?.Salary ?? 0;
 
-                    Amount = obj.Amount,
-                    Employee_id=obj.Employee_id,
-                    Increase_type=obj.Increase_type,
-                     Notes=obj.Notes ,
-                    TransactionDate = obj.transactionDate
+                    var lookups = await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang);
+                    var typeLookup = await _unitOfWork.SalaryIncreaseTypeRepository.GetSalaryIncreaseType(lang);
 
+                    return new()
+                    {
+                        Data = new GetSalaryIncreaseByIdResponse
+                        {
+                            Amount = obj.Amount,
+                            Employee_id = obj.Employee_id,
+                            Increase_type = obj.Increase_type,
+                            Notes = obj.Notes,
+                            TransactionDate = obj.transactionDate,
+                            EmployeeName = employeeName,
+                            PerviousSalary = previousSalary,
+                        },
+                        Check = true,
+                        LookUps = new
+                        {
+                            employees = lookups,
+                            salaryIncreaseType = typeLookup,
+                        }
+                    };
 
-
-
-                },
-                Check = true,
-                LookUps = new
-                {
-                    employees = lookups,
-                    salaryIncreaseType = typeLookup,
-                },
-            };
+                
         }
         public async Task<Response<IEnumerable<EmployeeWithSalary>>> GetEmployeesLookups(string lang)
         {
