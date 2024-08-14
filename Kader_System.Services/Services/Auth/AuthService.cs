@@ -1286,9 +1286,21 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             };
         }
         var oldpermissions = await _unitOfWork.UserPermssionRepositroy.GetSpecificSelectAsync(x => x.UserId == userId, x => x);
+
+       
       
         _unitOfWork.UserPermssionRepositroy.RemoveRange(oldpermissions);
         var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetByIdAsync(title);
+        if(titlepermissions is null)
+        {
+            var msg = _sharLocalizer[Localization.UserPermission];
+            return new()
+            {
+                Msg = msg,
+                Data = null,
+                Check = false
+            };
+        }
         var userpermission = new UserPermission
         {
 
