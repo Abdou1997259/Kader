@@ -65,8 +65,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<GetAllLeavePermissionRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
         {
 
-            Expression<Func<LeavePermissionRequest, bool>> filter = x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == ((int)model.ApporvalStatus == 0 ? null : (int)model.ApporvalStatus);
-            var totalRecords = await _unitOfWork.LeavePermissionRequest.CountAsync(filter: filter);
+            Expression<Func<LeavePermissionRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.None ?
+                x => x.IsDeleted == false :
+                x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
+
+                        var totalRecords = await _unitOfWork.LeavePermissionRequest.CountAsync(filter: filter);
             var items = await _unitOfWork.LeavePermissionRequest.GetSpecificSelectAsync(filter, x => x, orderBy: x => x.OrderBy(x => x.Id),
                 skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee"
             );

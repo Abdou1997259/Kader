@@ -47,8 +47,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedLoanRequest
         public async Task<Response<GetAllResignations>> GetAllResignationRequest(GetFillterationResignationRequest model, string host)
         {
-            Expression<Func<ResignationRequest, bool>> filter = x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == ((int)model.ApporvalStatus == 0 ? null : (int)model.ApporvalStatus);
-            var totalRecords = await unitOfWork.ResignationRepository.CountAsync(filter: filter);
+            Expression<Func<ResignationRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.None ?
+                   x => x.IsDeleted == false :
+                   x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus; var totalRecords = await unitOfWork.ResignationRepository.CountAsync(filter: filter);
             var data =await  unitOfWork.ResignationRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = localizer[Localization.NotFound];
             if (data == null)
