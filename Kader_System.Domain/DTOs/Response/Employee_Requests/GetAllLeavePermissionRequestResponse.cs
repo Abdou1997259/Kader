@@ -13,11 +13,9 @@ namespace Kader_System.Domain.DTOs.Response
         public string? Notes { get; set; }
         public double DelayHours { get; set; }
         public int EmployeeId { get; set; }
+        public int? ApporvalStatus { get; set; }
 
         public  string EmployeeName { get; set; }
-
-  
-
 
     }
 }

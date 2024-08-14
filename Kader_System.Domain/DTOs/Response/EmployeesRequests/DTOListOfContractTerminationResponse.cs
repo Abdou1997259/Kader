@@ -15,7 +15,8 @@ namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
     {
         public int Id { get; set; }
         public string? Notes { get; set; }
-     
+        public int? ApporvalStatus { get; set; }
+
         public int EmployeeId { get; set; }
    
     }
