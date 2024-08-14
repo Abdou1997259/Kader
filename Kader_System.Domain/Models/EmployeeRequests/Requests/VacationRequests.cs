@@ -10,6 +10,7 @@
 
         public string? Notes { get; set; }
         public string? AttachmentFileName { get; set; }
+        public double? SalaryAmount { get; set; }
 
         public int VacationTypeId { get; set; }
         [ForeignKey(nameof(VacationTypeId))]
