@@ -1,4 +1,5 @@
-﻿using Kader_System.DataAccesss.Context;
+﻿using AutoMapper.Internal;
+using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -336,37 +337,38 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         var permision = await _unitOfWork.TitlePermissionRepository.GetAllAsync();
         var mains = await _unitOfWork.MainScreens.GetAllAsync();
 
-      
-     var ChildScreens = mainScreens
-    .Where(ms => ms.CategoryScreen.Any(x => x.MainScreenId == ms.Id)).OrderBy(ms => ms.Order) 
-    .Select(ms => new GetAllStMainScreen
-    {
-        main_title = lang == "en" ? ms.Screen_main_title_en : ms.Screen_main_title_ar,
-            main_image = ms.Screen_main_image,
-            cats = ms.CategoryScreen.Where(x => x.MainScreenId == ms.Id).OrderBy(x=>x.Order)
-            .Select(x => new GetAllStMainScreenCat
-            {
-                Id = x.Id,
-                title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
-                main_id = x.MainScreenId,
-                subs = x.StScreenSub.Where(k => permision.Any(ps =>
-                ps.SubScreenId == k.Id && ps.Permissions.Contains("1") && k.ScreenCatId == x.Id)).OrderBy(k=>k.Order)
-                .Select(k => new GetAllStScreenSub
-                {
-                    Sub_Id = k.Id,
-                    Screen_CatId = k.ScreenCatId,
-                    cat_Title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_en,
-                    main_title = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Name).FirstOrDefault(),
-                    main_id = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Id).FirstOrDefault(),
-                    sub_title = lang == "en" ? k.Screen_sub_title_en : k.Screen_sub_title_ar,
-                    url = k.Url,
-                    sub_image =Path.Combine(SD.GoRootPath.GetSettingImagesPath, ms.Screen_main_image ?? " "),
-                    screen_code = k.ScreenCode,
-                    actions = subs.Where(x => x.ScreenSubId == k.Id).Select(x => x.ActionId).ToList().Concater(),
-                    permissions = permision.Where(x => x.SubScreenId == k.Id).Select(p => p.Id).ToList().Concater()
-                }).ToList()
-            }).ToList()
-        }).ToList();
+
+        var ChildScreens = mainScreens
+       .Where(ms => ms.CategoryScreen.Any(x => x.MainScreenId == ms.Id))
+       .Select(ms => new GetAllStMainScreen
+       {
+           main_title = lang == "en" ? ms.Screen_main_title_en : ms.Screen_main_title_ar,
+           main_image = ms.Screen_main_image,
+           cats = ms.CategoryScreen.Where(x => x.MainScreenId == ms.Id).OrderBy(ms => ms.Order)
+               .Select(x => new GetAllStMainScreenCat
+               {
+                   Id = x.Id,
+                   title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
+                   main_id = x.MainScreenId,
+                   subs = x.StScreenSub.Where(k => permision.Any(ps =>
+                   ps.SubScreenId == k.Id && ps.Permissions.Contains("1") && k.ScreenCatId == x.Id)).OrderBy(x => x.Order)
+                   .Select(k => new GetAllStScreenSub
+                   {
+                       Sub_Id = k.Id,
+                       Screen_CatId = k.ScreenCatId,
+                       cat_Title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_en,
+                       main_title = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Name).FirstOrDefault(),
+                       main_id = mains.Where(u => x.Id == k.ScreenCatId).Select(c => c.Id).FirstOrDefault(),
+                       sub_title = lang == "en" ? k.Screen_sub_title_en : k.Screen_sub_title_ar,
+                       url = k.Url,
+                       sub_image = Path.Combine(SD.GoRootPath.GetSettingImagesPath, ms.Screen_main_image ?? " "),
+                       screen_code = k.ScreenCode,
+                       actions = subs.Where(x => x.ScreenSubId == k.Id).Select(x => x.ActionId).ToList().Concater(),
+                       permissions = permision.Where(ps =>ps.SubScreenId == k.Id).Select(ps =>ps.Permissions).FirstOrDefault()
+ 
+                   }).ToList()
+               }).ToList()
+       }).ToList();
 
         
 
