@@ -11,34 +11,42 @@ namespace Kader_System.Services.Services
     {
         public MappingProfile()
         {
-            
+
             CreateMap<LoanRequest, DTOLoanRequest>().ReverseMap();
-            CreateMap<DTOListOfLoanRequestResponse, LoanRequest>().ReverseMap();
+            CreateMap<DTOListOfLoanRequestResponse, LoanRequest>().ReverseMap()
+                .ForMember(dest => dest.ApporvalStatus, opt => opt.MapFrom(src => src.StatuesOfRequest != null ? src.StatuesOfRequest.ApporvalStatus : null)); ;
             CreateMap<CreateTransSalaryIncreaseRequest, TransSalaryIncrease>();
             CreateMap<DTOLeavePermissionRequest, LeavePermissionRequest>().ReverseMap();
             CreateMap<DTOAllowanceRequest, AllowanceRequest>();
             CreateMap<DTODelayPermissionRequest, DelayPermission>();
             CreateMap<DTOVacationRequest, VacationRequests>().ReverseMap();
-            CreateMap<DTOCreateLeavePermissionRequest,LeavePermissionRequest>().ReverseMap();
+            CreateMap<DTOCreateLeavePermissionRequest, LeavePermissionRequest>().ReverseMap();
             CreateMap<DTOSalaryIncreaseRequest, SalaryIncreaseRequest>();
             CreateMap<DTOContractTerminationRequest, ContractTerminationRequest>();
-            CreateMap<ContractTerminationRequest, DTOListOfContractTerminationResponse>().ReverseMap();
+            CreateMap<ContractTerminationRequest, DTOListOfContractTerminationResponse>().ForMember(dest => dest.ApporvalStatus, opt => opt.MapFrom(src => src.StatuesOfRequest != null ? src.StatuesOfRequest.ApporvalStatus : null));
             CreateMap<LoanRequest, DTOLoanRequest>().ReverseMap();
-            CreateMap<LoanRequest, DTOListOfLoanRequestResponse>().ReverseMap();
+            CreateMap<LoanRequest, DTOListOfLoanRequestResponse>()
+              .ForMember(dest => dest.ApporvalStatus, opt => opt.MapFrom(src => src.StatuesOfRequest != null ? src.StatuesOfRequest.ApporvalStatus : null));
             CreateMap<ResignationRequest, DTOResignationRequest>().ReverseMap();
-            CreateMap<ResignationRequest, DtoListOfResignationResposne>().ReverseMap();
-            CreateMap<VacationRequests, DtoListOfVacationRequestResponse>().ReverseMap();
+            CreateMap<ResignationRequest, DtoListOfResignationResposne>().ForMember(dest => dest.ApporvalStatus, opt => opt.MapFrom(src => src.StatuesOfRequest != null ? src.StatuesOfRequest.ApporvalStatus : null));
+            CreateMap<VacationRequests, DtoListOfVacationRequestResponse>().
+                                                    ForMember(dest => dest.ApporvalStatus, opt => opt.MapFrom(src => src.StatuesOfRequest != null ? src.StatuesOfRequest.ApporvalStatus : null));
             CreateMap<SalaryIncreaseRequest, DTOSalaryIncreaseRequest>().ReverseMap();
-            CreateMap<SalaryIncreaseRequest, DTOListOfSalaryIncreaseRepostory>().ReverseMap();
+            CreateMap<SalaryIncreaseRequest, DTOListOfSalaryIncreaseRepostory>()
+              .ForMember(dest => dest.ApporvalStatus, opt => opt.MapFrom(src => src.StatuesOfRequest != null ? src.StatuesOfRequest.ApporvalStatus : null));
             CreateMap<AllowanceRequest, DTOAllowanceRequest>().ReverseMap();
-            CreateMap<AllowanceRequest, DTOAllowanceRequestResponse>().ReverseMap();
-            CreateMap<LeavePermissionRequest, ListOfLeavePermissionsReponse>().ForMember(x => x.EmployeeName, d => d.MapFrom(S => S.Employee.SetName()));
-            CreateMap<DelayPermission, DtoListOfDelayRequestReponse>().ForMember(x => x.EmployeeName, x => x.MapFrom(d => d.Employee.SetName()));
+            CreateMap<AllowanceRequest, DTOAllowanceRequestResponse>()
+                         .ForMember(dest => dest.ApporvalStatus, opt => opt.MapFrom(src => src.StatuesOfRequest != null ? src.StatuesOfRequest.ApporvalStatus : null));
+
+            CreateMap<LeavePermissionRequest, ListOfLeavePermissionsReponse>()
+              .ForMember(dest => dest.ApporvalStatus, opt => opt.MapFrom(src => src.StatuesOfRequest != null ? src.StatuesOfRequest.ApporvalStatus : null))
+              .ForMember(x => x.EmployeeName, d => d.MapFrom(S => S.Employee.SetName()));
+            CreateMap<DelayPermission, DtoListOfDelayRequestReponse>()
+              .ForMember(dest => dest.ApporvalStatus, opt => opt.MapFrom(src => src.StatuesOfRequest != null ? src.StatuesOfRequest.ApporvalStatus : null)).
+                  ForMember(x => x.EmployeeName, x => x.MapFrom(d => d.Employee.SetName()));
             CreateMap<StCreateSubMainScreenRequest, StScreenSub>().ReverseMap();
             CreateMap<StUpdateMainScreenCategoryRequest, StMainScreenCat>().ReverseMap();
             CreateMap<StCreateMainScreenRequest, StMainScreen>().ReverseMap();
-            //.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Screen_main_id));
-
         }
     }
 }
