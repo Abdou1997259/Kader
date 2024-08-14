@@ -44,8 +44,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedLoanRequest
         public async Task<Response<GetAllContractTermiantionResponse>> GetAllContractTerminationRequest(GetFilterationContractTerminationRequest model, string host)
         {
-            Expression<Func<ContractTerminationRequest, bool>> filter = x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == ((int)model.ApporvalStatus == 0 ? null : (int)model.ApporvalStatus);
-            var totalRecords = await unitOfWork.ContractTerminationRequest.CountAsync(filter: filter);
+            Expression<Func<ContractTerminationRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.None ?
+                     x => x.IsDeleted == false :
+                     x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus; var totalRecords = await unitOfWork.ContractTerminationRequest.CountAsync(filter: filter);
             var data = await unitOfWork.ContractTerminationRequest.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id),take:model.PageSize
                 , skip: (model.PageNumber - 1)*model.PageSize
                 );
