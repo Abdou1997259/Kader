@@ -71,7 +71,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
                         var totalRecords = await _unitOfWork.LeavePermissionRequest.CountAsync(filter: filter);
             var items = await _unitOfWork.LeavePermissionRequest.GetSpecificSelectAsync(filter, x => x, orderBy: x => x.OrderBy(x => x.Id),
-                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee"
+                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest"
             );
             var mappeditems = _mapper.Map<List<ListOfLeavePermissionsReponse>>(items);
             #region Pagination
