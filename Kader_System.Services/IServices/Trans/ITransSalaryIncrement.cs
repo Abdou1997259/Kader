@@ -11,4 +11,6 @@ public interface ITransSalaryIncrease
     Task<Response<string>> UpdateActiveOrNotTransVacationAsync(int id);
     Task<Response<object>> RestoreTransVacationAsync(int id);
     Task<Response<string>> DeleteTransVacationAsync(int id);
+    
+
 }

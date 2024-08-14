@@ -12,7 +12,7 @@
         public string salrayIncreaseType { get; set; }
      
         public double increaseValue { get; set; }
-        public DateTime transationDate { get; set; }
+        public DateOnly transationDate { get; set; }
    
 
     }

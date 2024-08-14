@@ -51,6 +51,19 @@ namespace Kader_System.Api.Areas.Trans
             var result = await _service.UpdateTransSalaryIncreaseAsync(id,model);
             return Ok(result);
         }
+        [HttpPut(ApiRoutes.SalaryIncrease.RestoreSalaryIncrease)]
+        [Permission(Helpers.Permission.Edit, 28)]
+        public async Task<IActionResult> RestoreSalaryIncrease(int id)
+        {
+            var result = await _service.RestoreTransSalaryIncreaseAsync(id);
+            return Ok(result);
+        }
+        [HttpPut(ApiRoutes.SalaryIncrease.GetEmployeesLookups)]
+        public async Task<IActionResult> GetEmployeesLookups()
+        {
+            var result = await _service.GetEmployeesLookups(requestService.GetRequestHeaderLanguage);
+            return Ok(result);  
+        }
         #endregion
 
         #region Delete
@@ -62,6 +75,8 @@ namespace Kader_System.Api.Areas.Trans
             return Ok(result);
         }
         #endregion
+
+   
 
     }
 }

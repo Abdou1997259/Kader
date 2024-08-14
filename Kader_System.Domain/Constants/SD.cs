@@ -272,6 +272,7 @@ public static class SD
             public const string RestoreSalaryIncrease = "salaryIncrease/restore/{id}";
             public const string GetSalaryIncreaseById = "salaryIncrease/getById/{id}";
             public const string DeleteSalaryIncrease = "salaryIncrease/delete/{id}";
+            public const string GetEmployeesLookups = "salaryIncrease/getemployeeslookups";
         }
         public class TransAllowance
         {
@@ -647,6 +648,8 @@ public static class SD
         public const string IsNotExisted = "IsNotExisted";
         public const string Employee = "Employee";
         public const string Contract = "Contract";
+
+        public const string Calculated = "Calculated";
         public const string ContractNotFound = "ContractNotFound";
         public const string ContractDetail = "ContractDetail";
         public const string EmployeeExist = "EmployeeExist";

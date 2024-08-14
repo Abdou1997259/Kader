@@ -126,6 +126,9 @@
   <data name="Benefit" xml:space="preserve">
     <value>Benefit</value>
   </data>
+  <data name="Calculated" xml:space="preserve">
+    <value>has been already calculated</value>
+  </data>
   <data name="CalculatedAready" xml:space="preserve">
     <value>This Employee's Salary has been calculated this month.</value>
   </data>

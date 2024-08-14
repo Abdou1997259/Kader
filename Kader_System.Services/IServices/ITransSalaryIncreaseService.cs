@@ -16,11 +16,12 @@ namespace Kader_System.Services.IServices
 
         public Task<Response<CreateTransSalaryIncreaseRequest>> CreateTransSalaryIncreaseAsync(CreateTransSalaryIncreaseRequest model,string lang);
 
-        public Task<Response<TransSalaryIncreaseResponse>> GetTransSalaryIncreaseByIdAsync(int id, string lang);
+        public Task<Response<GetSalaryIncreaseByIdResponse>> GetTransSalaryIncreaseByIdAsync(int id, string lang);
 
         public Task<Response<CreateTransSalaryIncreaseRequest>> UpdateTransSalaryIncreaseAsync(int id, CreateTransSalaryIncreaseRequest model);
         public Task<Response<object>> RestoreTransSalaryIncreaseAsync(int id);
         public Task<Response<string>> DeleteTransSalaryIncreaseAsync(int id);
+        Task<Response<IEnumerable<EmployeeWithSalary>>> GetEmployeesLookups(string lang);
 
     }
 }

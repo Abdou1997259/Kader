@@ -8,7 +8,7 @@ public class TransSalaryIncrease : BaseEntity
     public double Amount { get; set; }
     public double salaryAfterIncrease { get; set; }
     public string? Notes { get; set; }
-    public DateTime transactionDate { get; set; }
+    public DateOnly transactionDate { get; set; }
     public DateTime dueDate { get; set; }
     public double PreviousSalary { get; set; }
 
