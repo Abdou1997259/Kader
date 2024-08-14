@@ -60,7 +60,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         for (int i = 0; i < orderedIds.Length; i++)
         {
             var id = orderedIds[i];
-            await _dbContext.MainScreens
+            await _dbContext.MainScreenCategories
                 .Where(s => s.Id == id)
                 .ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, x => i + 1));
         }
