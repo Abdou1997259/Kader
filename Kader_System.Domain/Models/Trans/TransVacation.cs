@@ -6,6 +6,8 @@ public class TransVacation : BaseEntity
     [Key]
     public int Id { get; set; }
     public DateOnly StartDate { get; set; }
+    public double? SalaryAmount { get; set; }
+
     public double DaysCount { get; set; }
     public int EmployeeId { get; set; }
     [ForeignKey(nameof(EmployeeId))]

@@ -1,6 +1,7 @@
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
+using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 
@@ -41,8 +42,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedLoanRequest
         public async Task<Response<GetAllVacationRequestReponse>> GetAllVacationRequest(GetFilterationVacationRequestRequest model, string host)
         {
-            Expression<Func<VacationRequests, bool>> filter = x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == ((int)model.ApporvalStatus == 0 ? null : (int)model.ApporvalStatus);
-            var totalRecords = await unitOfWork.VacationRequests.CountAsync(filter: filter);
+            Expression<Func<VacationRequests, bool>> filter = model.ApporvalStatus == RequestStatusTypes.None ?
+                   x => x.IsDeleted == false :
+                   x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus; var totalRecords = await unitOfWork.VacationRequests.CountAsync(filter: filter);
             var data = await unitOfWork.VacationRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id), take: model.PageSize,
                      skip: (model.PageNumber - 1) * model.PageSize);
             var msg = _sharLocalizer[Localization.NotFound];
