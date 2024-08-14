@@ -19,30 +19,31 @@ namespace Kader_System.DataAccess.Repositories.Trans
         public async Task<IEnumerable<EmployeeWithSalary>> GetEmployeeWithSalary(string lang)
         {
             var today = DateOnly.FromDateTime(DateTime.Now);
+
             var query = from e in _context.Employees
                         join c in _context.Contracts
                         on e.Id equals c.EmployeeId
-                        where e.IsDeleted == false  && c.IsDeleted ==false
+                        where e.IsDeleted == false && c.IsDeleted == false
                         select new
                         {
                             Name = Localization.Arabic == lang ? e.FullNameAr : e.FullNameEn,
                             e.Id,
                             c.FixedSalary
-                            
                         }
                         into ecemps
                         join i in _context.TransSalaryIncreases
-                        on ecemps.Id equals i.Employee_id
-                        into iemps
+                        on ecemps.Id equals i.Employee_id into iemps
                         from grouIcemp in iemps.DefaultIfEmpty()
-                        where grouIcemp.transactionDate < today || grouIcemp ==null && grouIcemp.IsDeleted==false
+                        where grouIcemp == null || (grouIcemp.transactionDate < today && grouIcemp.IsDeleted == false)
+                        group new { ecemps, grouIcemp } by new { ecemps.Name, ecemps.Id, ecemps.FixedSalary } into g
                         select new EmployeeWithSalary
                         {
-                            Name = ecemps.Name,
-                            Id = ecemps.Id,
-                            Salary = ecemps.FixedSalary + (grouIcemp == null ? 0 : grouIcemp.Amount),
-
+                            Name = g.Key.Name,
+                            Id = g.Key.Id,
+                            Salary = g.Key.FixedSalary + g.Sum(x => x.grouIcemp == null ? 0 : x.grouIcemp.Amount)
                         };
+
+            var s = query.ToQueryString();
 
 
             return await query.ToListAsync();
