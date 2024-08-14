@@ -164,7 +164,7 @@ public static class SD
             public const string GetSubMainScreenById = "screen_sub/getById/{id}";
             public const string DeleteSubMainScreen = "screen_sub/delete/{id}";
             public const string RestoreScreen = "screen_sub/restore/{id}";
-            public const string OrderbyPattern = "screen_sub/order_by_pattern/{catId}";
+            public const string OrderbyPattern = "screen_sub/order_by_pattern";
         }
         public class StResponsiblity
         {
