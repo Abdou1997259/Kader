@@ -48,26 +48,15 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
         };
     }
 
-    public async Task<Response<string>> OrderByPattern(int[] pattern)
+    public async Task<Response<string>> OrderByPattern(int[] orderedIds)
     {
-        int count = 0;
-        var allsubs = await _unitOfWork.MainScreenCategories.GetAllAsync();
-        foreach (var sub in allsubs)
+        for (int i = 0; i < orderedIds.Length; i++)
         {
-            if (count < pattern.Length)
-            {
-                sub.Order = pattern[count];
-                count++;
-            }
-            else
-            {
-                continue;
-            }
-
+            var id = orderedIds[i];
+            await _context.MainScreenCategories
+                .Where(s => s.Id == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, x => i + 1));
         }
-
-        _unitOfWork.MainScreenCategories.UpdateRange(allsubs);
-        await _unitOfWork.CompleteAsync();
         return new() { Check = true };
     }
     public async Task<Response<StMainScreenCat>> RestoreCatScreenAsync(int id)

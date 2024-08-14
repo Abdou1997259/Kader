@@ -80,7 +80,7 @@ public class SubSubMainScreensController(ISubMainScreenService service, IRequest
     }
     [HttpPost(ApiRoutes.SubMainScreen.OrderbyPattern)]
     [Permission(Helpers.Permission.Edit, 2)]
-    public async Task<IActionResult> OrderByPattern( [FromBody]int[] model)
+    public async Task<IActionResult> OrderByPattern([FromRoute] int catId, [FromBody]int[] model)
     {
         
 

@@ -414,26 +414,15 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         throw new NotImplementedException();
     }
 
-    public async Task<Response<string>> OrderByPattern(int[] pattern)
-    {
-        int count = 0;
-        var allsubs = await _unitOfWork.SubMainScreens.GetAllAsync();
-        foreach (var sub in allsubs) {
-
-            if (count < pattern.Length)
-            {
-                sub.Order = pattern[count];
-                count++;
-            }
-            else
-            {
-                continue;
-            }
-
+    public async Task<Response<string>> OrderByPattern(int[] orderedIds)
+    {   
+        for (int i = 0; i < orderedIds.Length; i++)
+        {
+            var id = orderedIds[i];
+            await _context.SubMainScreens
+                .Where(s => s.Id == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, x => i + 1));
         }
-     
-        _unitOfWork.SubMainScreens.UpdateRange(allsubs);
-        await _unitOfWork.CompleteAsync();  
         return new() {Check = true};
     }
 
