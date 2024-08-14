@@ -336,7 +336,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         var permision = await _unitOfWork.TitlePermissionRepository.GetAllAsync();
         var mains = await _unitOfWork.MainScreens.GetAllAsync();
 
-        #region recent code
+      
      var ChildScreens = mainScreens
     .Where(ms => ms.CategoryScreen.Any(x => x.MainScreenId == ms.Id)).OrderBy(ms => ms.Order) 
     .Select(ms => new GetAllStMainScreen
@@ -370,7 +370,6 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
         
 
-        #endregion
         foreach (var mainScreen in ChildScreens)
         {
             Console.WriteLine($"Main Screen Title: {mainScreen.main_title}");
