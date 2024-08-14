@@ -6,7 +6,9 @@
         public DateOnly StartDate { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public double DaysCount { get; set; }
-        
+        public double? SalaryAmount { get; set; }
+
+
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public int EmployeeId { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]

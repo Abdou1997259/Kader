@@ -329,19 +329,19 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
 
         var ChildScreens = mainScreens
-       .Where(ms => ms.CategoryScreen.Any(x => x.MainScreenId == ms.Id))
+       .Where(ms => ms.CategoryScreen.Any(x => x.MainScreenId == ms.Id)).OrderBy(ms => ms.Order)
        .Select(ms => new GetAllStMainScreen
        {
            main_title = lang == "en" ? ms.Screen_main_title_en : ms.Screen_main_title_ar,
            main_image = ms.Screen_main_image,
-           cats = ms.CategoryScreen.Where(x => x.MainScreenId == ms.Id).OrderBy(ms => ms.Order)
+           cats = ms.CategoryScreen.Where(x => x.MainScreenId == ms.Id).OrderBy(x => x.Order)
                .Select(x => new GetAllStMainScreenCat
                {
                    Id = x.Id,
                    title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
                    main_id = x.MainScreenId,
                    subs = x.StScreenSub.Where(k => permision.Any(ps =>
-                   ps.SubScreenId == k.Id && ps.Permissions.Contains("1") && k.ScreenCatId == x.Id)).OrderBy(x => x.Order)
+                   ps.SubScreenId == k.Id && ps.Permissions.Contains("1") && k.ScreenCatId == x.Id)).OrderBy(k => k.Order)
                    .Select(k => new GetAllStScreenSub
                    {
                        Sub_Id = k.Id,
@@ -372,7 +372,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                 if (categoryScreen.main_id ==  null ) continue;
                 Console.WriteLine($"Category ID: {categoryScreen.Id}");
                 Console.WriteLine($"Category Screen Title: {categoryScreen.title}");
-                Console.WriteLine($"Category Screen Title: {categoryScreen.title}");
+                Console.WriteLine($"Main Screen Title: {mainScreen.main_title}");
 
 
                 foreach (var screenSub in categoryScreen.subs)
