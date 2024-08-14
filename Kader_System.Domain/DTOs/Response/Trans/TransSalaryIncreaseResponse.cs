@@ -9,17 +9,21 @@ namespace Kader_System.Domain.DTOs.Response.Trans
     public class GetAllSalaryIncreaseResponse : PaginationData<TransSalaryIncreaseResponse>
     {
     }
+
+
     public class TransSalaryIncreaseResponse
     {
-        public string employeeName { get; set; }
+        public int Id { get; set; } 
+        public int EmployeeId {  get; set; }    
+        public string EmployeeName { get; set; }=string.Empty;
         public double PreviousSalary { get; set; }
         public double AfterIncreaseSalary { get; set; }
-        public string AddedBy { get; set; }
+        public string AddedBy { get; set; } = string.Empty;
 
-        public string salrayIncreaseType { get; set; }
+        public string SalaryIncreaseType { get; set; } = string.Empty;
 
-        public double increaseValue { get; set; }
-        public DateTime transationDate { get; set; }
+        public double IncreaseValue { get; set; }
+        public DateOnly TransactionDate { get; set; }
 
 
     }
