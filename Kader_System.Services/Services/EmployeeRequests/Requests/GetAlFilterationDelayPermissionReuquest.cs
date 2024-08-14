@@ -9,5 +9,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
     public class GetAlFilterationDelayPermissionReuquest : PaginationRequest
     {
+        public RequestStatusTypes ApporvalStatus { get; set; }
+
     }
 }

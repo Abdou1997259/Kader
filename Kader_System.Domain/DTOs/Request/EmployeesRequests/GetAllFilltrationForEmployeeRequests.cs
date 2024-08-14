@@ -2,5 +2,6 @@
 {
     public class GetAllFilltrationForEmployeeRequests : PaginationRequest
     {
+        public RequestStatusTypes ApporvalStatus {  get; set; }  
     }
 }

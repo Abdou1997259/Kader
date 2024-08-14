@@ -2,5 +2,7 @@
 {
     public class GetAllFilterationAllowanceRequest : PaginationRequest
     {
+        public RequestStatusTypes ApporvalStatus { get; set; }
+
     }
 }

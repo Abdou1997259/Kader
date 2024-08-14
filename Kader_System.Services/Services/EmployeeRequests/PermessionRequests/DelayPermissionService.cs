@@ -107,8 +107,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Read
         public async Task<Response<GetAllDelayRequestRespond>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host)
         {
-          
-            Expression<Func<DelayPermission, bool>> filter = x => x.IsDeleted == false;
+
+            Expression<Func<DelayPermission, bool>> filter = x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == ((int)model.ApporvalStatus == 0 ? null : (int)model.ApporvalStatus);
 
             var totalRecords = await _unitOfWork.DelayPermission.CountAsync(filter: filter);
             var items = await _unitOfWork.DelayPermission.GetSpecificSelectAsync(filter, x => x, orderBy: x => x.OrderBy(x => x.Id),

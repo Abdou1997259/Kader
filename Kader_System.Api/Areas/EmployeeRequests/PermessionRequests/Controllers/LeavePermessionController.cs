@@ -13,11 +13,10 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
     //[Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
     public class LeavePermessionController(ILeavePermissionRequestService service,
-        IRequestService requestService, IWebHostEnvironment hostEnvironment, IFileServer fileServer) : ControllerBase
+        IRequestService requestService, IWebHostEnvironment hostEnvironment) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
         private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment;
-        private readonly IFileServer _fileServer = fileServer;
 
         #region Insert
         [HttpPost(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.CreateLeavePermessionasRequests)]

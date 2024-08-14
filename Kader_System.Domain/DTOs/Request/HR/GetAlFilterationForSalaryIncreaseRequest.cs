@@ -2,6 +2,7 @@
 {
     public class GetAlFilterationForSalaryIncreaseRequest : PaginationRequest
     {
+        public RequestStatusTypes ApporvalStatus { get; set; }
 
     }
 }

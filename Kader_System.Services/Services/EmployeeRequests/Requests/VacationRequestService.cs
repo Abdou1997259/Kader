@@ -41,8 +41,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedLoanRequest
         public async Task<Response<GetAllVacationRequestReponse>> GetAllVacationRequest(GetFilterationVacationRequestRequest model, string host)
         {
-            Expression<Func<LoanRequest, bool>> filter = x => x.IsDeleted == model.IsDeleted;
-            var totalRecords = await unitOfWork.LoanRequestRepository.CountAsync(filter: filter);
+            Expression<Func<VacationRequests, bool>> filter = x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == ((int)model.ApporvalStatus == 0 ? null : (int)model.ApporvalStatus);
+            var totalRecords = await unitOfWork.VacationRequests.CountAsync(filter: filter);
             var data = await unitOfWork.VacationRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id), take: model.PageSize,
                      skip: (model.PageNumber - 1) * model.PageSize);
             var msg = _sharLocalizer[Localization.NotFound];

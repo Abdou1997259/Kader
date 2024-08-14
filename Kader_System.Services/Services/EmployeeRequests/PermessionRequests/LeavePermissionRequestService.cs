@@ -15,7 +15,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         private readonly IMapper _mapper = mapper;
         private readonly IFileServer _fileServer = fileServer;
         #region Create
-        public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model,string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
             var newRequest = _mapper.Map<LeavePermissionRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
@@ -48,9 +48,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             }
 
             unitOfWork.LeavePermissionRequest.Remove(obj);
-            await unitOfWork.CompleteAsync(); 
-            if ( !string.IsNullOrWhiteSpace(obj.AttachmentPath))
-                _fileServer.RemoveFile(fullPath,obj.AttachmentPath);
+            await unitOfWork.CompleteAsync();
+            if (!string.IsNullOrWhiteSpace(obj.AttachmentPath))
+                _fileServer.RemoveFile(fullPath, obj.AttachmentPath);
 
             return new()
             {
@@ -64,15 +64,15 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Read
         public async Task<Response<GetAllLeavePermissionRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
         {
-            Expression<Func<LeavePermissionRequest, bool>> filter = x => x.IsDeleted == false;
 
+            Expression<Func<LeavePermissionRequest, bool>> filter = x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == ((int)model.ApporvalStatus == 0 ? null : (int)model.ApporvalStatus);
             var totalRecords = await _unitOfWork.LeavePermissionRequest.CountAsync(filter: filter);
-            var items=await _unitOfWork.LeavePermissionRequest.GetSpecificSelectAsync(filter,x=>x,orderBy:x=>x.OrderBy(x=>x.Id),
-                skip:(model.PageNumber-1)*model.PageSize,take:model.PageSize,includeProperties: "Employee"
+            var items = await _unitOfWork.LeavePermissionRequest.GetSpecificSelectAsync(filter, x => x, orderBy: x => x.OrderBy(x => x.Id),
+                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee"
             );
             var mappeditems = _mapper.Map<List<ListOfLeavePermissionsReponse>>(items);
             #region Pagination
-        
+
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
             if (model.PageNumber < 1)
@@ -125,9 +125,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #endregion
 
         #region Update
-        public async Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(int id ,DTOCreateLeavePermissionRequest model,string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        public async Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(int id, DTOCreateLeavePermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
-            
+
             var leave = await _unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
             if (leave == null)
             {
@@ -143,14 +143,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             _unitOfWork.LeavePermissionRequest.Update(mappedleave);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
 
+
+            if (!string.IsNullOrEmpty(leave.AttachmentPath))
+                _fileServer.RemoveFile(appPath, moduleName, leave.AttachmentPath);
+
             leave.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
-
-            
-            var full_path = Path.Combine(appPath, moduleName);
-            if (model.Attachment != null)
-                _fileServer.RemoveFile(full_path, leave.AttachmentPath);
-
 
             _unitOfWork.LeavePermissionRequest.Update(leave);
             var result = await _unitOfWork.CompleteAsync();
