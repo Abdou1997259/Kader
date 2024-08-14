@@ -395,6 +395,10 @@ namespace Kader_System.Services.Services.Trans
             #endregion
 
             obj.Notes = model.Notes;
+            obj.Amount = model.Amount;
+            obj.Increase_type= model.Increase_type;
+            obj.transactionDate = model.TransactionDate;
+
             obj.salaryAfterIncrease = salaryAfterIncrease;
             _unitOfWork.TransSalaryIncrease.Update(obj);
             await _unitOfWork.CompleteAsync();

@@ -509,7 +509,7 @@ namespace Kader_System.Services.Services.Trans
             var employeeWithCalculatedSalary = await _unitOfWork.StoredProcuduresRepo.SpCalculateSalary(
                 model.StartCalculationDate, model.StartActionDay, employeeIds);
             var spCalculatedSalaryTransDetails = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedTrans(
-                model.StartCalculationDate, model.StartActionDay, employeeIds)).Where(x => x.CalculateSalaryId != null);
+                model.StartCalculationDate, model.StartActionDay, employeeIds)).Where(x => x.CalculateSalaryId == null);
 
             var vacations = await _unitOfWork.TransVacations.GetAllAsync();
             var contracts = await _unitOfWork.Contracts.GetAllAsync();
