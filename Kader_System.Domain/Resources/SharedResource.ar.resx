@@ -168,6 +168,9 @@
   <data name="InvalidSubId" xml:space="preserve">
     <value>لاتوجد شاشه بهذا الرقم </value>
   </data>
+  <data name="IsCalc" xml:space="preserve">
+    <value>تم عمل حساب مرتب لهذا الحركه بالفعل </value>
+  </data>
   <data name="IsDepartmentInMang" xml:space="preserve">
     <value>لايوجد قسم بذلك الاسم في هذا الاداره</value>
   </data>
@@ -232,7 +235,7 @@
     <value>لاتوجد هذا المسئولية في المتسخدم خاصتك</value>
   </data>
   <data name="UserPermission" xml:space="preserve">
-    <value>هذا السمتخدم ليس له صلاحيات </value>
+    <value>هذه المسئولية ليس لها صلاحيات في هذا المستخدم </value>
   </data>
   <data name="ViewInclude" xml:space="preserve">
     <value>يجب ان يحتوي علي صلاحية العرض اولا</value>
