@@ -88,8 +88,8 @@ public static class SD
         public const string UserId = "uid";
         public const string Titles = "Titles";
         public const string Mobile = "Mobile";
-        public const string Image="Image";  
-        public const string Email="Email";
+        public const string Image = "Image";
+        public const string Email = "Email";
         public const string FullName = "FullName";
         public const string CurrentCompany = "CurrentCompany";
         public const string CurrentTitle = "CurrentTitle";
@@ -198,7 +198,7 @@ public static class SD
             public const string GetListOfUser = "GetListOfUsers";
             public const string GetLookups = "GetLookups";
             public const string GetTitleLookups = "TitleLookups";
-   
+
 
         }
 
@@ -443,6 +443,8 @@ public static class SD
                 public const string CreateLeavePermessionasRequests = "leavePermessionasRequests/create";
                 public const string UpdateLeavePermessionasRequests = "leavePermessionasRequests/update/{id}";
                 public const string DeleteLeavePermessionasRequests = "leavePermessionasRequests/delete/{id}";
+                public const string ApproveLeavePermessionasRequests = "leavePermessionasRequests/approve/{id}";
+                public const string RejectLeavePermessionasRequests = "leavePermessionasRequests/reject/{id}";
             }
             public class LoanRequests
             {
@@ -453,6 +455,8 @@ public static class SD
                 public const string RestoreLoanRequests = "loanrequests/restore/{id}";
                 public const string GetLoanRequestsById = "loanrequests/getById/{id}";
                 public const string DeleteLoanRequests = "loanrequests/delete/{id}";
+                public const string ApproveLoanRequests = "loanrequests/approve/{id}";
+                public const string RejectLoanRequests = "loanrequests/reject/{id}";
             }
             public class ResignationRequests
             {
@@ -463,6 +467,8 @@ public static class SD
                 public const string RestoreResignationRequests = "resignation/restore/{id}";
                 public const string GetResignationRequestsById = "resignation/getById/{id}";
                 public const string DeleteResignationRequests = "resignation/delete/{id}";
+                public const string ApproveResignationRequests = "resignation/approve/{id}";
+                public const string RejectResignationRequests = "resignation/reject/{id}";
             }
             public class DelayPermessionasRequests
             {
@@ -471,6 +477,8 @@ public static class SD
                 public const string GetDelayPermissionRequestsById = "delayPermissionRequests/getById/{id}";
                 public const string UpdateDelayPermissionRequests = "delayPermissionRequests/update/{id}";
                 public const string DeleteDelayPermissionRequests = "delayPermissionRequests/delete/{id}";
+                public const string ApproveDelayPermissionRequests = "delayPermissionRequests/approve/{id}";
+                public const string RejectDelayPermissionRequests = "delayPermissionRequests/reject/{id}";
             }
             public class VacationRequests
             {
@@ -482,6 +490,8 @@ public static class SD
                 public const string RestoreVacationRequests = "vacationRequests/restore/{id}";
                 public const string GetVacationRequestsById = "vacationRequests/getById/{id}";
                 public const string DeleteVacationRequests = "vacationRequests/delete/{id}";
+                public const string ApproveVacationRequests = "vacationRequests/approve/{id}";
+                public const string RejectVacationRequests = "vacationRequests/reject/{id}";
             }
             public class AllowanceRequests
             {
@@ -490,6 +500,8 @@ public static class SD
                 public const string UpdateAllowanceRequests = "allowanceRequests/update/{id}";
                 public const string DeleteAllowanceRequests = "allowanceRequests/delete/{id}";
                 public const string GetAllowanceRequestById = "allowanceRequests/getById/{id}";
+                public const string ApproveAllowanceRequests = "allowanceRequests/approve/{id}";
+                public const string RejectAllowanceRequests = "allowanceRequests/reject/{id}";
 
             }
             public const string GetEmployeeRequestsLookups = "employeeRequests/getLookups";
@@ -501,6 +513,8 @@ public static class SD
                 public const string GetSalaryIncreaseId = "salaryIncreaseRequests/getById/{id}";
                 public const string UpdateIncreaseSalary = "salaryIncreaseRequests/update/{id}";
                 public const string DeleteSalaryIncreaseRequest = "salaryIncreaseRequests/delete/{id}";
+                public const string ApproveSalaryIncreaseRequest = "salaryIncreaseRequests/approve/{id}";
+                public const string RejectSalaryIncreaseRequest = "salaryIncreaseRequests/reject/{id}";
 
             }
             public class ContractTerminationRequest
@@ -513,6 +527,8 @@ public static class SD
                 public const string RestoreContractTerminationRequest = "contractTerminationRequest/restore/{id}";
                 public const string GetContractTerminationRequestsById = "contractTerminationRequest/getById/{id}";
                 public const string DeleteContractTerminationRequest = "contractTerminationRequest/delete/{id}";
+                public const string ApproveContractTerminationRequest = "contractTerminationRequest/approve/{id}";
+                public const string RejectContractTerminationRequest = "contractTerminationRequest/reject/{id}";
             }
         }
         public class Job
@@ -842,6 +858,6 @@ public static class SD
 
 
 
-
     }
 }
+

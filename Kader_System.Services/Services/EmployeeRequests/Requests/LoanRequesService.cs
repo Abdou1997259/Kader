@@ -45,7 +45,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedLoanRequest
         public async Task<Response<GetAllLoanRequestResponse>> GetAllLoanRequest(GetFilterationLoanRequest model, string host)
         {
-            Expression<Func<LoanRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.None ?
+            Expression<Func<LoanRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
                    x => x.IsDeleted == false :
                    x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus; var totalRecords = await unitOfWork.LoanRequestRepository.CountAsync(filter: filter);
             var data = await unitOfWork.LoanRequestRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id), take: model.PageSize,

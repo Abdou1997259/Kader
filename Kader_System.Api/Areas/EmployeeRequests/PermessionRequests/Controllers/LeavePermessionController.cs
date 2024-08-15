@@ -62,6 +62,28 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
+        [HttpPut(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.ApproveLeavePermessionasRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> ApproveLeavePermessionasRequests([FromRoute] int id)
+        {
+            var response = await service.ApproveRequest(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        [HttpPut(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.RejectLeavePermessionasRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> RejectLeavePermessionasRequests([FromRoute] int id, [FromBody] string resoan)
+        {
+            var response = await service.RejectRequest(id,resoan);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
         #endregion
 
         #region Delete

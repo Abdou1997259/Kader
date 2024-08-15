@@ -57,6 +57,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
             var newRequest = _mapper.Map<DelayPermission>(model);
+            newRequest.StatuesOfRequest.ApporvalStatus = 1; //pending
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
@@ -108,7 +109,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<GetAllDelayRequestRespond>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host)
         {
 
-            Expression<Func<DelayPermission, bool>> filter = model.ApporvalStatus == RequestStatusTypes.None ?
+            Expression<Func<DelayPermission, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
                    x => x.IsDeleted == false :
                    x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
 

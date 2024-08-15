@@ -1,19 +1,24 @@
 
+using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
+using Kader_System.Services.IServices.HTTP;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 {
-    public class LeavePermissionRequestService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ILeavePermissionRequestService
+    public class LeavePermissionRequestService(IUnitOfWork unitOfWork, KaderDbContext context, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ILeavePermissionRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
         private readonly IFileServer _fileServer = fileServer;
+        private readonly IHttpContextService _contextService = contextService;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly KaderDbContext _context = context;
         #region Create
         public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
@@ -29,6 +34,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 Check = true,
             };
         }
+
+
         #endregion
 
         #region Delete
@@ -65,15 +72,23 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<GetAllLeavePermissionRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
         {
 
-            Expression<Func<LeavePermissionRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.None ?
+            Expression<Func<LeavePermissionRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
                 x => x.IsDeleted == false :
                 x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
 
-                        var totalRecords = await _unitOfWork.LeavePermissionRequest.CountAsync(filter: filter);
-            var items = await _unitOfWork.LeavePermissionRequest.GetSpecificSelectAsync(filter, x => x, orderBy: x => x.OrderBy(x => x.Id),
-                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest"
-            );
-            var mappeditems = _mapper.Map<List<ListOfLeavePermissionsReponse>>(items);
+            var totalRecords = await _unitOfWork.LeavePermissionRequest.CountAsync(filter: filter);
+            var items = (await _unitOfWork.LeavePermissionRequest.GetSpecificSelectAsync(filter, x => new ListOfLeavePermissionsReponse
+            {
+                Id = x.Id,
+                requet_date = x.Add_date,
+                EmployeeName = x.Employee.FirstNameEn,
+                LeaveTime = x.LeaveTime,
+                BackTime = x.BackTime,
+                ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
+                AtachmentPath = _contextService.GetRelativeServerPath(Modules.EmployeeRequest, x.AttachmentPath)
+            },
+            orderBy: x => x.OrderBy(x => x.Id),
+                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();
             #region Pagination
 
             int page = 1;
@@ -90,7 +105,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             var result = new GetAllLeavePermissionRequestResponse
             {
                 TotalRecords = totalRecords,
-                Items = mappeditems,
+                Items = items,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -125,6 +140,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 Check = true
             };
         }
+
+
         #endregion
 
         #region Update
@@ -159,6 +176,53 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             {
                 Msg = sharLocalizer[Localization.Done],
                 Check = true,
+            };
+        }
+        public async Task<Response<string>> ApproveRequest(int requestId)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _context.LeavePermissionsRequests.Where(x => x.Id == requestId)
+                                 .ExecuteUpdateAsync(x => x.
+                                   SetProperty(p => p.StatuesOfRequest.ApporvalStatus, 2).
+                                   SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
+                                   SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId)
+
+                                 );
+            if (result > 0)
+            {
+                return new Response<string>()
+                {
+                    Check = true,
+                    Msg = "Approved sucessfully"
+                };
+            }
+            return new Response<string>()
+            {
+                Check = false,
+                Msg = "Cannot approve "
+            };
+        }
+        public async Task<Response<string>> RejectRequest(int requestId, string resoan)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _context.LeavePermissionsRequests.Where(x => x.Id == requestId)
+                                 .ExecuteUpdateAsync(x => x.
+                                     SetProperty(p => p.StatuesOfRequest.ApporvalStatus, 3).
+                                     SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
+                                     SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId).
+                                     SetProperty(p => p.StatuesOfRequest.StatusMessage, resoan));
+            if (result > 0)
+            {
+                return new Response<string>()
+                {
+                    Check = true,
+                    Msg = "Rejected sucessfully"
+                };
+            }
+            return new Response<string>()
+            {
+                Check = false,
+                Msg = "Cannot approve"
             };
         }
         #endregion

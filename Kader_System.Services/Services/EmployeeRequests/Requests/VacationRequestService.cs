@@ -42,7 +42,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedLoanRequest
         public async Task<Response<GetAllVacationRequestReponse>> GetAllVacationRequest(GetFilterationVacationRequestRequest model, string host)
         {
-            Expression<Func<VacationRequests, bool>> filter = model.ApporvalStatus == RequestStatusTypes.None ?
+            Expression<Func<VacationRequests, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
                    x => x.IsDeleted == false :
                    x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus; var totalRecords = await unitOfWork.VacationRequests.CountAsync(filter: filter);
             var data = await unitOfWork.VacationRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id), take: model.PageSize,
