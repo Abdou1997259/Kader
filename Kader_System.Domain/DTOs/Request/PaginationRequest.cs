@@ -10,4 +10,5 @@ public class PaginationRequest
     [DefaultValue(false)]
     public bool IsDeleted { get; set; }
     public string? Word { get; set; }
+    public int? EmployeeId { get; set; } 
 }

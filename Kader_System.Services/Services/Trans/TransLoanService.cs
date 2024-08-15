@@ -168,7 +168,11 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<GetAllLoansResponse>> GetAllLoanAsync(string lang, GetAllFilltrationForLoanRequest model, string host)
         {
             Expression<Func<TransLoan, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-                                                           (string.IsNullOrEmpty(model.Word) || x.LoanDate.ToString() == model.Word);
+                                                           (string.IsNullOrEmpty(model.Word) || x.LoanDate.ToString() == model.Word)
+                                                           ||(!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
+
+
+
             var totalRecords = await _unitOfWork.LoanRepository.CountAsync(filter: filter);
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));

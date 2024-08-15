@@ -19,18 +19,17 @@ namespace Kader_System.DataAccess.Repositories.Trans
         public async Task<IEnumerable<EmployeeWithSalary>> GetEmployeeWithSalary(string lang)
         {
             var today = DateOnly.FromDateTime(DateTime.Now);
-
             var query = from e in _context.Employees
                         join c in _context.Contracts
                         on e.Id equals c.EmployeeId
                         where e.IsDeleted == false && c.IsDeleted == false
-                        select new
+                        select  new
                         {
                             Name = Localization.Arabic == lang ? e.FullNameAr : e.FullNameEn,
                             e.Id,
                             c.FixedSalary
                         }
-                   into ecemps
+            into ecemps
                         join i in _context.TransSalaryIncreases
                         on ecemps.Id equals i.Employee_id into iemps
                         from grouIcemp in iemps.DefaultIfEmpty()
@@ -39,8 +38,15 @@ namespace Kader_System.DataAccess.Repositories.Trans
                         {
                             Name = g.Key.Name,
                             Id = g.Key.Id,
-                            Salary = g.Key.FixedSalary + g.Sum(x => x.grouIcemp != null && x.grouIcemp.transactionDate <= today ? x.grouIcemp.Amount : 0)
+                            Salary = g.Key.FixedSalary + g.Sum(x =>
+                                x.grouIcemp != null && x.grouIcemp.transactionDate <= today
+                                    ? (x.grouIcemp.Increase_type == 2
+                                        ? (x.grouIcemp.Amount / 100) * g.Key.FixedSalary
+                                        : x.grouIcemp.Amount)
+                                    : 0)
                         };
+
+
 
             var s = query.ToQueryString();
 

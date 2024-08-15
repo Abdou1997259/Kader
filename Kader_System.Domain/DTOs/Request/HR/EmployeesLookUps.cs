@@ -15,6 +15,7 @@
          public object []genders { get; set; }
          public object []relegions { get; set; }
          public object []salary_payments_ways { get; set; }
+        public object[] titles { get; set; }
 
 
 
