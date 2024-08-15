@@ -12,7 +12,7 @@ namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests
         public int EmployeeId { get; set; }
         [Required(ErrorMessage = "please Insert EmployeeId")]
 
-        public TimeOnly HoursDelay { get; set; }
+        public int HoursDelay { get; set; }
         [Required(ErrorMessage = "please Insert HoursDelay")]
 
         public string? Notes { get; set; }
