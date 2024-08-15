@@ -12,9 +12,6 @@ namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests
         public int EmployeeId { get; set; }
         [Required(ErrorMessage = "please Insert Vacation TypeId ")]
 
-        public double? SalaryAmount { get; set; }
-        [Required(ErrorMessage = "please Insert Salary Amount ")]
-
         public int VacationTypeId { get; set; }
         [Required(ErrorMessage = "please Insert Day Counts")]
         public int DayCounts { get; set; }
