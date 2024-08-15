@@ -23,6 +23,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
             var newRequest = _mapper.Map<LeavePermissionRequest>(model);
+            newRequest.StatuesOfRequest.ApporvalStatus = 1;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
@@ -80,12 +81,15 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             var items = (await _unitOfWork.LeavePermissionRequest.GetSpecificSelectAsync(filter, x => new ListOfLeavePermissionsReponse
             {
                 Id = x.Id,
-                requet_date = x.Add_date,
+                EmployeeId = x.EmployeeId,
+                requet_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
                 EmployeeName = x.Employee.FirstNameEn,
                 LeaveTime = x.LeaveTime,
                 BackTime = x.BackTime,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
-                AtachmentPath = _contextService.GetRelativeServerPath(Modules.EmployeeRequest, x.AttachmentPath)
+                reason =  x.StatuesOfRequest.StatusMessage,
+                Notes = x.Notes,
+                AtachmentPath = _fileServer.GetFilePath(Modules.EmployeeRequest, x.AttachmentPath)
             },
             orderBy: x => x.OrderBy(x => x.Id),
                 skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();

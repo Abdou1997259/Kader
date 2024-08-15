@@ -24,8 +24,8 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         public async Task<IActionResult> CreateLeavePermessionasRequests([FromForm] DTOCreateLeavePermissionRequest model)
         {
             var serverPath = HttpContext.Items["ServerPath"]?.ToString();
-                var response = await service.AddNewLeavePermissionRequest(model, 
-                    serverPath, Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.LeavePermission);
+            var response = await service.AddNewLeavePermissionRequest(model,
+                serverPath, Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.LeavePermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -52,10 +52,10 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.UpdateLeavePermessionasRequests)]
         [Permission(Permission.Edit, 19)]
-        public async Task<IActionResult> UpdateLeavePermessionasRequests([FromRoute] int id,[FromForm] DTOCreateLeavePermissionRequest model)
+        public async Task<IActionResult> UpdateLeavePermessionasRequests([FromRoute] int id, [FromForm] DTOCreateLeavePermissionRequest model)
         {
             var serverPath = HttpContext.Items["ServerPath"]?.ToString();
-            var response = await service.UpdateLeavePermissionRequest(id,model, serverPath, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
+            var response = await service.UpdateLeavePermissionRequest(id, model, serverPath, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -75,9 +75,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         }
         [HttpPut(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.RejectLeavePermessionasRequests)]
         [Permission(Permission.Edit, 19)]
-        public async Task<IActionResult> RejectLeavePermessionasRequests([FromRoute] int id, [FromBody] string resoan)
+        public async Task<IActionResult> RejectLeavePermessionasRequests([FromRoute] int id, [FromBody] GlobalEmployeeRequests model)
         {
-            var response = await service.RejectRequest(id,resoan);
+            var response = await service.RejectRequest(id,model.reson);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
