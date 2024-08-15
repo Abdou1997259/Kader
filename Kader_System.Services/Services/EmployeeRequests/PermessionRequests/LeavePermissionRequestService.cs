@@ -4,6 +4,7 @@ using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
+using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.HTTP;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +24,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
             var newRequest = _mapper.Map<LeavePermissionRequest>(model);
-            newRequest.StatuesOfRequest.ApporvalStatus = 1;
+            StatuesOfRequest statues = new()
+            {
+                ApporvalStatus = 1 // pending
+            };
+            newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
@@ -87,9 +92,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 LeaveTime = x.LeaveTime,
                 BackTime = x.BackTime,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
-                reason =  x.StatuesOfRequest.StatusMessage,
+                reason = x.StatuesOfRequest.StatusMessage,
                 Notes = x.Notes,
-                AtachmentPath = _fileServer.GetFilePath(Modules.EmployeeRequest, x.AttachmentPath)
+                AtachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.LeavePermission.ToString(), x.AttachmentPath) : null
             },
             orderBy: x => x.OrderBy(x => x.Id),
                 skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();
@@ -169,10 +174,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
 
             if (!string.IsNullOrEmpty(leave.AttachmentPath))
+            {
                 _fileServer.RemoveFile(appPath, moduleName, leave.AttachmentPath);
-
-            leave.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
+                leave.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
+                    await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
+            }
 
             _unitOfWork.LeavePermissionRequest.Update(leave);
             var result = await _unitOfWork.CompleteAsync();

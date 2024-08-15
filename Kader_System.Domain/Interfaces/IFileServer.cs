@@ -30,15 +30,12 @@ namespace Kader_System.Domain.Interfaces
         /// <param name="fileName"></param>
         public void RemoveFile(string appPath, string moduleName, string fileName);
 
-
         /// <summary>
         /// Get File Path From wwwroot by filename
         /// </summary>
-        /// <param name="appPath"></param>
-        /// <param name="moduleName"></param>
-        /// <param name="fileName"></param>
-        /// <returns>File Path</returns>
-        public string GetFilePath(string moduleName, string fileName);
+        /// <param name="paths"></param>
+        /// <returns></returns>
+        public string GetFilePath(params string[] paths);
 
         /// <summary>
         /// check if file is exist or not

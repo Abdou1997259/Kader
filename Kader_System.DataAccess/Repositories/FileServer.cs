@@ -13,9 +13,9 @@
             return File.Exists(filePath);
         }
 
-        public string GetFilePath(string moduleName, string fileName)
+        public string GetFilePath(params string[] paths)
         {
-            return $@"{moduleName}\{fileName}";
+            return Path.Combine(paths);
         }
 
         public void RemoveFile(string FolderPath, string filename)
