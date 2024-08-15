@@ -1290,8 +1290,9 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
        
       
         _unitOfWork.UserPermssionRepositroy.RemoveRange(oldpermissions);
-        var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetByIdAsync(title);
-        if(titlepermissions is null)
+        var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetSpecificSelectAsync(x=>x.TitleId==title,x=>x);
+
+        if(!titlepermissions.Any() )
         {
             var msg = _sharLocalizer[Localization.UserPermission];
             return new()
@@ -1301,18 +1302,17 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Check = false
             };
         }
-        var userpermission = new UserPermission
+        var userpermission = titlepermissions.Select(x => new UserPermission
         {
-
-            UserId = user.Id,
-            TitleId = titlepermissions.TitleId,
-            SubScreenId = titlepermissions.SubScreenId,
-            Permission = titlepermissions.Permissions
-        };
+            TitleId = x.TitleId,
+            Permission = x.Permissions,
+            UserId = userId,
+            SubScreenId = x.SubScreenId
+        });
 
         user.CurrentTitleId = title;
          _unitOfWork.Users.Update(user);
-        await _unitOfWork.UserPermssionRepositroy.AddAsync(userpermission);
+        await _unitOfWork.UserPermssionRepositroy.AddRangeAsync(userpermission);
         await _unitOfWork.CompleteAsync();
         return new()
         {
