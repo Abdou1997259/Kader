@@ -262,11 +262,16 @@ namespace Kader_System.Services.Services.Trans
             {
                 SalaryIncreaseTypes.Amount => model.Amount + empSalary,
                 SalaryIncreaseTypes.percentage => ((model.Amount / 100) * empSalary) + empSalary,
+               
                 _ => empSalary,
             };
+
+          
             #endregion
+      
             newTrans.salaryAfterIncrease = salaryAfterIncrease;
             newTrans.PreviousSalary = empSalary;
+          
             await _unitOfWork.TransSalaryIncrease.AddAsync(newTrans);
             await _unitOfWork.CompleteAsync();
             return new()
