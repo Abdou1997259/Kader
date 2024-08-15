@@ -485,12 +485,17 @@ namespace Kader_System.Services.Services.HR
                 {
                     UserName = model.username,
                     Id = Guid.NewGuid().ToString(),
+                    PhoneNumber=model.phone,
+                    JobId=newEmployee.JobId,
+                   
                     NormalizedUserName = model.username.ToUpper(),
                     Email = newEmployee.Email,
                     NormalizedEmail = newEmployee.Email.ToUpper(),
                     EmailConfirmed = true,
                     IsActive = true,
-                    TitleId="1",
+                    FinancialYear=2023,
+                    CurrentCompanyId=newEmployee.CompanyId,
+                     
                     FullName=newEmployee.FullNameAr,
                     PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, model.password),
                     VisiblePassword = model.password,
