@@ -40,12 +40,12 @@ public static class ModelBuilderExtensions
                 Email = "mohammed88@gmail.com",
                 FullName = "Mohamed abdou",
                 ImagePath = "/",
-                TitleId = "1",
+                TitleId = "1,2",
                 PhoneNumber = "1202200",
                 FinancialYear = 2013,
                 CurrentCompanyId = 3,
                 CurrentTitleId = 1,
-                CompanyId = "1",
+                CompanyId = "3,2,1",
                 NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                 EmailConfirmed = true,
                 IsActive = true,
@@ -315,15 +315,77 @@ public static class ModelBuilderExtensions
 
 
         modelBuilder.Entity<Kader_System.Domain.Models.Title>().HasData(
-                  new Kader_System.Domain.Models.Title { Id = 1, TitleNameAr = "مدير عام", TitleNameEn = "maanger" }
+                  new Kader_System.Domain.Models.Title { Id = 1, TitleNameAr = "مدير عام", TitleNameEn = "maanger" },
+                 new Kader_System.Domain.Models.Title { Id = 2, TitleNameAr = "مدير مالي", TitleNameEn = "Finnacial manger" }
 
             );
 
 
         modelBuilder.Entity<TitlePermission>().HasData(
-                  new TitlePermission { Id = 1, TitleId = 1, Permissions = "1,2,3", SubScreenId = 4 }
+            new TitlePermission { Id = 1, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 1 },
+            new TitlePermission { Id = 2, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 2 },
+            new TitlePermission { Id = 3, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 3 },
+            new TitlePermission { Id = 4, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 4 },
+            new TitlePermission { Id = 5, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 5 },
+            new TitlePermission { Id = 6, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 6 },
+            new TitlePermission { Id = 7, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 7 },
+            new TitlePermission { Id = 8, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 8 },
+            new TitlePermission { Id = 9, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 9 },
+            new TitlePermission { Id = 10, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 10 },
+            new TitlePermission { Id = 11, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 11 },
+            new TitlePermission { Id = 12, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 12 },
+            new TitlePermission { Id = 13, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 13 },
+            new TitlePermission { Id = 14, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 14 },
+            new TitlePermission { Id = 15, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 15 },
+            new TitlePermission { Id = 16, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 16 },
+            new TitlePermission { Id = 17, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 17 },
+            new TitlePermission { Id = 18, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 18 },
+            new TitlePermission { Id = 19, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 19 },
+            new TitlePermission { Id = 20, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 20 },
+            new TitlePermission { Id = 21, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 21 },
+            new TitlePermission { Id = 22, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 22 },
+            new TitlePermission { Id = 23, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 23 },
+            new TitlePermission { Id = 24, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 24 },
+            new TitlePermission { Id = 25, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 25 },
+            new TitlePermission { Id = 26, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 26 },
+            new TitlePermission { Id = 27, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 27 },
+            new TitlePermission { Id = 28, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 28 },
+            new TitlePermission { Id = 29, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 29 },
+            new TitlePermission { Id = 30, TitleId = 2, Permissions ="1,2,3,4,5" , SubScreenId = 30 },
+            new TitlePermission { Id = 31, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 1 },
+            new TitlePermission { Id = 32, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 2 },
+            new TitlePermission { Id = 33, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 3 },
+            new TitlePermission { Id = 34, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 4 },
+            new TitlePermission { Id = 35, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 5 },
+            new TitlePermission { Id = 36, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 6 },
+            new TitlePermission { Id = 37, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 7 },
+            new TitlePermission { Id = 38, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 8 },
+            new TitlePermission { Id = 39, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 9 },
+            new TitlePermission { Id = 40, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 10 },
+            new TitlePermission { Id = 41, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 11 },
+            new TitlePermission { Id = 42, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 12 },
+            new TitlePermission { Id = 43, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 13 },
+            new TitlePermission { Id = 44, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 14 },
+            new TitlePermission { Id = 45, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 15 },
+            new TitlePermission { Id = 46, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 16 },
+            new TitlePermission { Id = 47, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 17 },
+            new TitlePermission { Id = 48, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 18 },
+            new TitlePermission { Id = 49, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 19 },
+            new TitlePermission { Id = 50, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 20 },
+            new TitlePermission { Id = 51, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 21 },
+            new TitlePermission { Id = 52, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 22 },
+            new TitlePermission { Id = 53, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 23 },
+            new TitlePermission { Id = 54, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 24 },
+            new TitlePermission { Id = 55, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 25 },
+            new TitlePermission { Id = 56, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 26 },
+            new TitlePermission { Id = 57, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 27 },
+            new TitlePermission { Id = 58, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 28 },
+            new TitlePermission { Id = 59, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 29 },
+            new TitlePermission { Id = 60, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 30 }
 
             );
+
+      
 
         modelBuilder.Entity<HrVacationType>()
             .HasData(
@@ -455,10 +517,43 @@ public static class ModelBuilderExtensions
          new UserPermission { Id = 27, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 27, Permission = "1,2,3,4,5" },
          new UserPermission { Id = 28, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 28, Permission = "1,2,3,4,5" },
          new UserPermission { Id = 29, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 29, Permission = "1,2,3,4,5" },
-         new UserPermission { Id = 30, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 30, Permission = "1,2,3,4,5" }
+         new UserPermission { Id = 30, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 1, SubScreenId = 30, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 31, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 1, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 32, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 2, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 33, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 3, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 34, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 4, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 35, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 5, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 36, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 6, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 37, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 7, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 38, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 8, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 39, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 9, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 40, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 10, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 41, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 11, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 42, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 12, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 43, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 13, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 44, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 14, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 45, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 15, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 46, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 16, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 47, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 17, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 48, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 18, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 49, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 19, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 50, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 20, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 51, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 21, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 52, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 22, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 53, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 23, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 54, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 24, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 55, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 25, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 56, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 26, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 57, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 27, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 58, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 28, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 59, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 29, Permission = "1,2,3,4,5" },
+         new UserPermission { Id = 60, UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", TitleId = 2, SubScreenId = 30, Permission = "1,2,3,4,5" }
+
      );
 
         modelBuilder.Entity<HrCompany>().HasData(
+            new HrCompany { Id = 1, NameEn = "Company1", NameAr = "شركه1", CompanyOwner = "1محمد", Company_licenses = "dad56ad1323", Company_licenses_extension = "234adad", CompanyTypeId = 1, IsDeleted = false, IsActive = true },
+            new HrCompany { Id = 2, NameEn = "Company2", NameAr = "شركه2", CompanyOwner = "محمد2", Company_licenses = "dad56ad1323", Company_licenses_extension = "234adad", CompanyTypeId = 1, IsDeleted = false, IsActive = true },
             new HrCompany { Id = 3, NameEn = "Kader", NameAr = "كادر", CompanyOwner = "Sallem", Company_licenses = "dad56ad1323", Company_licenses_extension = "234adad", CompanyTypeId = 1, IsDeleted = false, IsActive = true }
             );
 

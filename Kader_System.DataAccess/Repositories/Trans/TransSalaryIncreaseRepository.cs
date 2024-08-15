@@ -30,17 +30,16 @@ namespace Kader_System.DataAccess.Repositories.Trans
                             e.Id,
                             c.FixedSalary
                         }
-                        into ecemps
+                   into ecemps
                         join i in _context.TransSalaryIncreases
                         on ecemps.Id equals i.Employee_id into iemps
                         from grouIcemp in iemps.DefaultIfEmpty()
-                        where grouIcemp == null || (grouIcemp.transactionDate < today && grouIcemp.IsDeleted == false)
                         group new { ecemps, grouIcemp } by new { ecemps.Name, ecemps.Id, ecemps.FixedSalary } into g
                         select new EmployeeWithSalary
                         {
                             Name = g.Key.Name,
                             Id = g.Key.Id,
-                            Salary = g.Key.FixedSalary + g.Sum(x => x.grouIcemp == null ? 0 : x.grouIcemp.Amount)
+                            Salary = g.Key.FixedSalary + g.Sum(x => x.grouIcemp != null && x.grouIcemp.transactionDate <= today ? x.grouIcemp.Amount : 0)
                         };
 
             var s = query.ToQueryString();
