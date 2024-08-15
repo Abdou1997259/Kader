@@ -23,7 +23,7 @@ namespace Kader_System.DataAccess.Repositories.Trans
                         join c in _context.Contracts
                         on e.Id equals c.EmployeeId
                         where e.IsDeleted == false && c.IsDeleted == false
-                        select new
+                        select  new
                         {
                             Name = Localization.Arabic == lang ? e.FullNameAr : e.FullNameEn,
                             e.Id,

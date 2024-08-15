@@ -159,8 +159,12 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<GetAllSalaryIncreaseResponse>> GetAllTransSalaryIncreaseAsync(string lang,
             GetAlFilterationForSalaryIncreaseRequest model, string host)
         {
-            Expression<Func<TransSalaryIncrease, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-                                                                 (string.IsNullOrEmpty(model.Word) || x.transactionDate.ToString() == model.Word);
+            Expression<Func<TransSalaryIncrease, bool>> filter = x =>
+           x.IsDeleted == model.IsDeleted &&
+           (string.IsNullOrEmpty(model.Word) || x.transactionDate.ToString().Contains(model.Word)) ||
+           (!model.EmployeeId.HasValue || x.Employee_id == model.EmployeeId);
+
+
             var totalRecords = await _unitOfWork.TransSalaryIncrease.CountAsync(filter: filter);
             int page = 1; var lookups = await _unitOfWork.Employees.GetEmployeesNameIdSalaryAsLookUp(lang);
 
@@ -216,7 +220,7 @@ namespace Kader_System.Services.Services.Trans
                                              x.IncreaseType == 1 && lang == Localization.English ? "Value" :
                                              x.IncreaseType == 2 && lang == Localization.English ? "Percentage" :
                                              string.Empty
-                    }).ToList(),
+                    }).Where(x=>!model.EmployeeId.HasValue || x.EmployeeId==model.EmployeeId).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,

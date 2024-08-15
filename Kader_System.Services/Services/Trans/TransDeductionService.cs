@@ -60,6 +60,7 @@ namespace Kader_System.Services.Services.Trans
                                                                      || x.Deduction!.Name_ar.Contains(model.Word)
                                                                      || x.Employee!.FullNameEn.Contains(model.Word)
                                                                      || x.Employee!.FullNameAr.Contains(model.Word))
+                                                                     || (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
                 ;
             Expression<Func<TransDeductionData, bool>> filterSearch = x =>
                 (string.IsNullOrEmpty(model.Word)
@@ -85,7 +86,7 @@ namespace Kader_System.Services.Services.Trans
                 TotalRecords = totalRecords,
 
                 Items =unitOfWork.TransDeductions.GetTransDeductionInfo(filter:filter, filterSearch:filterSearch, skip: (model.PageNumber - 1) * model.PageSize
-                    ,take: model.PageSize,lang:lang)
+                    ,take: model.PageSize,lang:lang).Where(x => !model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId).ToList()
                 ,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",

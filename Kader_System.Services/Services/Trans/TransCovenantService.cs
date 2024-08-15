@@ -52,7 +52,8 @@ namespace Kader_System.Services.Services.Trans
                    || x.NameAr.Contains(model.Word)
                    || x.NameEn.Contains(model.Word)
                    || x.Employee!.FullNameAr.Contains(model.Word)
-                   || x.Employee!.FullNameEn.Contains(model.Word));
+                   || x.Employee!.FullNameEn.Contains(model.Word))
+                   || (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
 
             Expression<Func<TransCovenantData, bool>> filterSearch = x =>
                 (string.IsNullOrEmpty(model.Word)
@@ -60,7 +61,8 @@ namespace Kader_System.Services.Services.Trans
                  || x.EmployeeName.Contains(model.Word)
                  || x.NameEn.Contains(model.Word)
                  || x.EmployeeName.Contains(model.Word)
-                 || x.AddedBy!.Contains(model.Word));
+                 || x.AddedBy!.Contains(model.Word))
+               || (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
 
             var totalRecords = await unitOfWork.TransCovenants.CountAsync(filter: filter,
                 includeProperties: $"{nameof(_insatance.Employee)}");
@@ -81,7 +83,7 @@ namespace Kader_System.Services.Services.Trans
 
                 Items = unitOfWork.TransCovenants.GetTransCovenantDataInfo(filter: filter, filterSearch: filterSearch,
                     skip: (model.PageNumber - 1) * model.PageSize,
-                    take: model.PageSize, lang: lang)
+                    take: model.PageSize, lang: lang).Where(x=>!model.EmployeeId.HasValue||x.EmployeeId==model.EmployeeId).ToList()
                ,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",

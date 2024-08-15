@@ -135,6 +135,11 @@
         [Display(Name = "note")]
         public string? note { get; set; }
 
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        [JsonProperty(PropertyName = "title_id")]
+
+        public int title_id { get; set; }
+
         [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
         public IFormFile? employee_image { get; set; } = default!;
 

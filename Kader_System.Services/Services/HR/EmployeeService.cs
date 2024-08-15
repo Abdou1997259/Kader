@@ -372,6 +372,15 @@ namespace Kader_System.Services.Services.HR
                         Name = lang == Localization.Arabic ? x.Name : x.NameInEnglish,
                     });
 
+
+                var titles = await unitOfWork.Titles.GetSpecificSelectAsync(
+          filter: filter => filter.IsDeleted == false
+          , select: x => new
+          {
+              Id = x.Id,
+              Name = lang == Localization.Arabic ? x.TitleNameAr : x.TitleNameEn,
+          });
+
                 return new Response<EmployeesLookUps>()
                 {
                     Check = true,
@@ -393,6 +402,7 @@ namespace Kader_System.Services.Services.HR
                         salary_payments_ways = salary_payments_ways.ToArray(),
                         shifts = shifts.ToArray(),
                         vacations = vacations.ToArray(),
+                        titles= titles.ToArray(),
                     }
                 };
             }
@@ -481,6 +491,7 @@ namespace Kader_System.Services.Services.HR
                 }).ToList();
                 await unitOfWork.Employees.AddAsync(newEmployee);
 
+
                 var newUser = await unitOfWork.Users.AddAsync(new ApplicationUser()
                 {
                     UserName = model.username,
@@ -495,7 +506,9 @@ namespace Kader_System.Services.Services.HR
                     IsActive = true,
                     FinancialYear=2023,
                     CurrentCompanyId=newEmployee.CompanyId,
-                     
+                    TitleId=model.title_id.ToString(),
+                    CurrentTitleId=model.title_id,
+                  
                     FullName=newEmployee.FullNameAr,
                     PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, model.password),
                     VisiblePassword = model.password,
@@ -503,6 +516,29 @@ namespace Kader_System.Services.Services.HR
 
                 });
                 await unitOfWork.CompleteAsync();
+
+                var existingUserPermissions = await unitOfWork.UserPermssionRepositroy
+     .GetSpecificSelectTrackingAsync(x => x.TitleId == model.title_id && x.UserId == newUser.Id, x => x);
+
+                if (existingUserPermissions.Any())
+                {
+                    unitOfWork.UserPermssionRepositroy.RemoveRange(existingUserPermissions);
+                    await unitOfWork.CompleteAsync();
+                }
+
+                var titlePermissions = await unitOfWork.TitlePermissionRepository
+                    .GetSpecificSelectTrackingAsync(
+                        x => x.TitleId == model.title_id,
+                        select: x => new UserPermission
+                        {
+                            UserId = newUser.Id,
+                            SubScreenId = x.SubScreenId,
+                            Permission = x.Permissions
+                        }
+                    );
+                await unitOfWork.UserPermssionRepositroy.AddRangeAsync(titlePermissions);
+                await unitOfWork.CompleteAsync();
+
                 if (newUser != null)
                 {
                     newEmployee.UserId = newUser.Id;
