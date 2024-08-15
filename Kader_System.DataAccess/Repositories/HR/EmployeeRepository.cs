@@ -6,6 +6,7 @@ namespace Kader_System.DataAccess.Repositories.HR;
 public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmployee>(context), IEmployeeRepository
 {
 
+    private readonly KaderDbContext _context = context;
     public Response<GetEmployeeByIdResponse> GetEmployeeByIdAsync(int id, string lang)
     {
         try
@@ -41,6 +42,12 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
 
                          join shift in context.Shifts on employee.MaritalStatusId equals shift.Id into shiftGroup
                          from sh in shiftGroup.DefaultIfEmpty()
+
+                         join c in _context.Contracts
+                         on employee.Id equals c.EmployeeId
+                         into contractGroup
+                         from cGroup in contractGroup.DefaultIfEmpty()
+                        
                          where employee.Id == id
                          select new GetEmployeeByIdResponse()
                          {
@@ -68,7 +75,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              EmployeeTypeId = employee.EmployeeTypeId,
                              FingerPrintCode = employee.FingerPrintCode,
                              FingerPrintId = employee.FingerPrintId,
-                             FixedSalary = employee.FixedSalary,
+                             FixedSalary = cGroup ==null? employee.FixedSalary :cGroup.FixedSalary,
                              GenderId = employee.GenderId,
                              HiringDate = employee.HiringDate,
                              ImmediatelyDate = employee.ImmediatelyDate,
