@@ -1,5 +1,4 @@
 ﻿using Kader_System.Domain.DTOs.Response;
-using Kader_System.Domain.DTOs.Response.Employee_Requests;
 using Kader_System.Domain.Models.EmployeeRequests;
 
 namespace Kader_System.Domain.Interfaces.EmployeeRequest

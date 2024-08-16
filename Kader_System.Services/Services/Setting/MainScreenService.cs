@@ -1,11 +1,7 @@
-﻿using AutoMapper.Internal;
-using Kader_System.DataAccesss.Context;
+﻿using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
-using Microsoft.AspNetCore.SignalR;
+using Kader_System.Services.IServices.AppServices;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using System.Drawing;
-using System.Linq;
 
 namespace Kader_System.Services.Services.Setting;
 
@@ -180,7 +176,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         }
 
         mainScreenmap.Screen_main_image = (model.Screen_main_image == null || model.Screen_main_image.Length == 0) ? null
-           : await _fileServer.UploadFile(appPath, moduleName, model.Screen_main_image);
+           : await _fileServer.UploadFile(moduleName, model.Screen_main_image);
 
         await _unitOfWork.MainScreens.AddAsync(mainScreenmap);
 
@@ -246,12 +242,12 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         obj.Screen_main_title_en = model.Screen_main_title_en;
         if (model.Screen_main_image != null)
         {
-            if (_fileServer.FileExist(appPath, moduleName, obj.Screen_main_image))
-                _fileServer.RemoveFile(appPath, moduleName, obj.Screen_main_image);
+            if (_fileServer.FileExist(moduleName, obj.Screen_main_image))
+                _fileServer.RemoveFile(moduleName, obj.Screen_main_image);
 
 
             obj.Screen_main_image = (model.Screen_main_image.Length == 0) ? null
-                : await _fileServer.UploadFile(appPath, moduleName, model.Screen_main_image);
+                : await _fileServer.UploadFile( moduleName, model.Screen_main_image);
         }
 
 

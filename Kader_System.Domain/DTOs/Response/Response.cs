@@ -4,7 +4,6 @@ namespace Kader_System.Domain.Dtos.Response;
 
 public class Response<T> where T : class
 {
-    public string DBName { get; set; }
     public string Msg { get; set; } = string.Empty;
     public bool Check { get; set; }
     public bool IsActive { get; set; }

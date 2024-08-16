@@ -1,11 +1,9 @@
-﻿using Kader_System.DataAccesss.Context;
-using Kader_System.Domain.DTOs;
+﻿using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.Auth;
-using Kader_System.Services.IServices;
+using Kader_System.Services.IServices.AppServices;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -137,14 +135,13 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var obj = await _userManager.FindByIdAsync(id);
        
 
-        var full_path = Path.Combine(appPath, moduleName);
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         if (model.image != null)
-            _fileServer.RemoveFile(full_path, obj.ImagePath);
+            _fileServer.RemoveFile(moduleName, obj.ImagePath);
 
        
         obj.ImagePath = (model.image == null || model.image.Length == 0) ? " " :
-           await _fileServer.UploadFile(appPath, moduleNameWithType, model.image);
+           await _fileServer.UploadFile(moduleNameWithType, model.image);
         obj.UpdateDate = new DateTime().NowEg();
         obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
        
@@ -611,7 +608,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         if (model.image != null && model.image.Length > 0)
         {
-            user.ImagePath = await _fileServer.UploadFile(appPath, moduleNameWithType, model.image);
+            user.ImagePath = await _fileServer.UploadFile(moduleNameWithType, model.image);
         }
 
         // Manage user permissions

@@ -59,7 +59,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
             if (ModelState.IsValid)
             {
                 var serverPath = HttpContext.Items["ServerPath"]?.ToString();
-                var response = await contractService.CreateContractAsync(request,serverPath, Modules.Setting);
+                var response = await contractService.CreateContractAsync(request, Modules.Setting);
                 if(response.Check) return Ok(response);
                 else if(!response.Check) return BadRequest(response);
                 return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
@@ -79,8 +79,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         {
             if (ModelState.IsValid)
             {
-                var serverPath = HttpContext.Items["ServerPath"]?.ToString();
-                var response = await contractService.UpdateContractAsync(id, request, serverPath, Modules.Setting);
+                var response = await contractService.UpdateContractAsync(id, request, Modules.Setting);
                 if (response.Check) return Ok(response);
                 else if (!response.Check) return BadRequest(response);
 

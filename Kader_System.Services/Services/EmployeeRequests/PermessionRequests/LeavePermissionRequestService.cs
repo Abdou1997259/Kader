@@ -2,9 +2,10 @@
 using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
-using Kader_System.Domain.DTOs.Response;
+using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.HTTP;
 using Microsoft.EntityFrameworkCore;
@@ -21,7 +22,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
         #region Create
-        public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
             var newRequest = _mapper.Map<LeavePermissionRequest>(model);
             StatuesOfRequest statues = new()
@@ -31,7 +32,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
             await _unitOfWork.LeavePermissionRequest.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
             return new()
@@ -154,7 +155,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #endregion
 
         #region Update
-        public async Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(int id, DTOCreateLeavePermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        public async Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(int id, DTOCreateLeavePermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
 
             var leave = await _unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
@@ -169,15 +170,14 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 };
             }
             var mappedleave = _mapper.Map(model, leave);
-            _unitOfWork.LeavePermissionRequest.Update(mappedleave);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
 
 
-            if (!string.IsNullOrEmpty(leave.AttachmentPath))
+            if (model.Attachment is not null)
             {
-                _fileServer.RemoveFile(appPath, moduleName, leave.AttachmentPath);
+                _fileServer.RemoveFile(moduleName, leave.AttachmentPath);
                 leave.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
+                    await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
             }
 
             _unitOfWork.LeavePermissionRequest.Update(leave);

@@ -2,6 +2,7 @@
 using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.Interfaces;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.Services.EmployeeRequests.Requests;
@@ -13,7 +14,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
     [ApiController]
     //[Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
-    public class DelayPermissionController(IDelayPermissionService delayPermission , IRequestService  requestService, IWebHostEnvironment hostEnvironment, IFileServer fileServer) : ControllerBase
+    public class DelayPermissionController(IDelayPermissionService delayPermission, IRequestService requestService, IWebHostEnvironment hostEnvironment, IFileServer fileServer) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
         private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment;
@@ -45,9 +46,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> AddNewDelayPermissionRequest([FromForm] DTODelayPermissionRequest model)
         {
-            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
-
-            var response = await delayPermission.AddNewDelayPermissionRequest(model,serverPath , Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
+            var response = await delayPermission.AddNewDelayPermissionRequest(model, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -56,19 +55,6 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         }
         #endregion
 
-        //#region Read
-        //[HttpGet(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.GetAllDelayPermissionRequests)]
-        //public async Task<IActionResult> GetAllDelayPermissionRequests([FromQuery] GetAllFilltrationForEmployeeRequests model)
-        //{
-
-        //    var response = await delayPermission.GetAllDelayPermissionRequsts(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost);
-        //    if (response.Check)
-        //        return Ok(response);
-        //    else if (!response.Check)
-        //        return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-        //    return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
-        //}
-        //#endregion
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.UpdateDelayPermissionRequests)]
         [Permission(Permission.Edit, 19)]
@@ -76,7 +62,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         {
             var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
-            var response = await delayPermission.UpdateDelayPermissionRequest(id,model, serverPath, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
+            var response = await delayPermission.UpdateDelayPermissionRequest(id, model, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -92,6 +78,33 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         {
             var full_path = Path.Combine(_hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest);
             var response = await delayPermission.DeleteDelayPermissionRequest(id, full_path);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        #endregion
+
+        #region Status
+        [HttpPut(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.ApproveDelayPermissionRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> ApproveDelayPermissionRequests([FromRoute] int id)
+        {
+
+            var response = await delayPermission.ApproveRequest(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        [HttpPut(ApiRoutes.EmployeeRequests.DelayPermessionasRequests.RejectDelayPermissionRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> RejectDelayPermissionRequests([FromRoute] int id, [FromBody] GlobalEmployeeRequests model)
+        {
+
+            var response = await delayPermission.RejectRequest(id, model.reson);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

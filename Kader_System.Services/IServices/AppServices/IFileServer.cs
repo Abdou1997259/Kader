@@ -4,31 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kader_System.Domain.Interfaces
+namespace Kader_System.Services.IServices.AppServices
 {
     public interface IFileServer
     {
         /// <summary>
         /// Upload File on Server on wwwroot ,then return new saved fileName
         /// </summary>
-        /// <param name="rootPath"></param>
-        /// <param name="clinetName"></param>
+        /// <param name="moduleName"></param>
         /// <param name="file"></param>
         /// <returns>new file name with GUID</returns>
-        public Task<string> UploadFile(string appPath, string moduleName, IFormFile file);
+        public Task<string> UploadFile(string moduleName, IFormFile file);
         /// <summary>
         /// Remove File From wwwroot by filename
         /// </summary>
-        /// <param name="FolderPath"></param>
-        /// <param name="filename"></param>
-        public void RemoveFile(string FolderPath, string filename);
-        /// <summary>
-        /// Remove File From wwwroot by filename
-        /// </summary>
-        /// <param name="appPath"></param>
         /// <param name="moduleName"></param>
         /// <param name="fileName"></param>
-        public void RemoveFile(string appPath, string moduleName, string fileName);
+        public void RemoveFile(string moduleName, string fileName);
 
         /// <summary>
         /// Get File Path From wwwroot by filename
@@ -43,7 +35,7 @@ namespace Kader_System.Domain.Interfaces
         /// <param name="moduleName"></param>
         /// <param name="fileName"></param>
         /// <returns>true if file exist</returns>
-        public bool FileExist(string appPath,string moduleName, string fileName);
+        public bool FileExist(string moduleName, string fileName);
 
     }
 }

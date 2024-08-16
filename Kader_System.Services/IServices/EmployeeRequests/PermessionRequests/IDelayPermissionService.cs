@@ -7,15 +7,15 @@ namespace Kader_System.Services.IServices.EmployeeRequests.PermessionRequests
     {
 
         #region Read
-        public Task<Response<GetAllDelayRequestRespond>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host);
+        public Task<Response<GetAllDelayPermissionRequestResponse>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host);
         #endregion
-        public Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.DelayPermission);
+        public Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.DelayPermission);
         #region Delete
         public Task<Response<string>> DeleteDelayPermissionRequest(int id, string fullPath);
         #endregion
 
         #region Update
-        public Task<Response<DtoListOfDelayRequestReponse>> UpdateDelayPermissionRequest(int id, DTODelayPermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.DelayPermission);
+        public Task<Response<DtoListOfDelayRequestReponse>> UpdateDelayPermissionRequest(int id, DTODelayPermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.DelayPermission);
         #endregion
 
         #region GetById
@@ -25,6 +25,11 @@ namespace Kader_System.Services.IServices.EmployeeRequests.PermessionRequests
 
         #region ListOfDelayPermissionRequest
         public Task<Response<IEnumerable<DTODelayPermissionRequest>>> ListOfDelayPermissionRequest();
+        #endregion
+
+        #region Status
+        public Task<Response<string>> ApproveRequest(int requestId);
+        public Task<Response<string>> RejectRequest(int requestId, string resoan);
         #endregion
 
     }

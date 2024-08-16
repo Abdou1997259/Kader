@@ -1,16 +1,9 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
-using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
-using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
@@ -174,7 +167,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var newRequest = mapper.Map<SalaryIncreaseRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await fileserver.UploadFile(appPath, moduleNameWithType, model.Attachment);
+                await fileserver.UploadFile(moduleNameWithType, model.Attachment);
             await unitOfWork.SalaryIncreaseRequest.AddAsync(newRequest);
             var result = await unitOfWork.CompleteAsync();
             return new()
@@ -206,7 +199,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             {
                 var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
                 updatingModel.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await fileserver.UploadFile(appPath, moduleNameWithType, model.Attachment);
+                    await fileserver.UploadFile(moduleNameWithType, model.Attachment);
             }
             unitOfWork.SalaryIncreaseRequest.Update(result);
             await unitOfWork.CompleteAsync();

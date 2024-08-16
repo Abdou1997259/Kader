@@ -1,7 +1,5 @@
 using Kader_System.Api.Helpers;
 using Kader_System.Api.Helpers.SwaggerHelper;
-
-using Kader_System.DataAccess.DbMiddlewares;
 using Kader_System.DataAccess.Models;
 using Kader_System.DataAccess.Repositories;
 using Kader_System.DataAccess.Repositories.EmployeeRequests;
@@ -21,11 +19,13 @@ using Kader_System.Domain.Interfaces.Trans;
 using Kader_System.Domain.Options;
 using Kader_System.Domain.SwaggerFilter;
 using Kader_System.Services.IServices;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Trans;
 using Kader_System.Services.Services;
+using Kader_System.Services.Services.AppServices;
 using Kader_System.Services.Services.Auth;
 using Kader_System.Services.Services.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.Services.EmployeeRequests.Requests;
