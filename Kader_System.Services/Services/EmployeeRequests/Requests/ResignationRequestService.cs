@@ -3,6 +3,7 @@ using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 
 
@@ -163,7 +164,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var newRequest = mapper.Map<ResignationRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await fileserver.UploadFile(appPath, moduleNameWithType, model.Attachment);
+                await fileserver.UploadFile(moduleNameWithType, model.Attachment);
             await unitOfWork.ResignationRepository.AddAsync(newRequest);
             var result = await unitOfWork.CompleteAsync();
             return new()
@@ -223,7 +224,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             {
                 var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
                 updatingModel.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await fileserver.UploadFile(appPath, moduleNameWithType, model.Attachment);
+                    await fileserver.UploadFile(moduleNameWithType, model.Attachment);
             }
             unitOfWork.ResignationRepository.Update(result);
             await unitOfWork.CompleteAsync();

@@ -1,13 +1,9 @@
 using Kader_System.Domain.DTOs;
-using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
-using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
-using Kader_System.Services.IServices.HTTP;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
@@ -171,7 +167,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var newRequest = mapper.Map<AllowanceRequest>(model);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.attachment_file_name = (model.Attachment== null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
             await unitOfWork.AllowanceRequests.AddAsync(newRequest);
             var result = await unitOfWork.CompleteAsync();
             return new()
@@ -203,7 +199,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             {
                 var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
                 updatingModel.attachment_file_name = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
+                    await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
             }
             unitOfWork.AllowanceRequests.Update(result);
             await unitOfWork.CompleteAsync();

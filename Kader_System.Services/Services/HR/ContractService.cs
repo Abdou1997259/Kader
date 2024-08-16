@@ -1,8 +1,6 @@
 ﻿
 using Kader_System.Domain.DTOs;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using static Kader_System.Domain.Constants.SD.ApiRoutes;
+using Kader_System.Services.IServices.AppServices;
 
 namespace Kader_System.Services.Services.HR
 {
@@ -253,7 +251,7 @@ namespace Kader_System.Services.Services.HR
             };
         }
 
-        public async Task<Response<CreateContractRequest>> CreateContractAsync(CreateContractRequest model,string appPath,string moduleName)
+        public async Task<Response<CreateContractRequest>> CreateContractAsync(CreateContractRequest model, string moduleName)
         {
             var newContract = new HrContract()
             {
@@ -279,7 +277,7 @@ namespace Kader_System.Services.Services.HR
                 ;
             }
 
-            newContract.FileName = model.contract_file == null ? string.Empty : await _fileServer.UploadFile(appPath, moduleName, model.contract_file);
+            newContract.FileName = model.contract_file == null ? string.Empty : await _fileServer.UploadFile( moduleName, model.contract_file);
             if (model.contract_file != null) {
                 newContract.FileExtension = Path.GetExtension(model.contract_file.FileName);
             }
@@ -306,7 +304,7 @@ namespace Kader_System.Services.Services.HR
             throw new NotImplementedException();
         }
 
-        public async Task<Response<CreateContractRequest>> UpdateContractAsync(int id, CreateContractRequest model,string appPath,string moduleName)
+        public async Task<Response<CreateContractRequest>> UpdateContractAsync(int id, CreateContractRequest model,string  moduleName)
         {
             using var transaction = unitOfWork.BeginTransaction();
             {
@@ -327,12 +325,12 @@ namespace Kader_System.Services.Services.HR
 
                 if (model.contract_file != null)
                 {
-                    if (_fileServer.FileExist(appPath, moduleName, obj.FileName))
-                        _fileServer.RemoveFile(appPath, moduleName, obj.FileName);
+                    if (_fileServer.FileExist( moduleName, obj.FileName))
+                        _fileServer.RemoveFile( moduleName, obj.FileName);
                     obj.FileExtension = Path.GetExtension(model.contract_file.FileName);
 
                     obj.FileName = (model.contract_file.Length == 0) ? null
-                        : await _fileServer.UploadFile(appPath, moduleName, model.contract_file);
+                        : await _fileServer.UploadFile( moduleName, model.contract_file);
                 }
               
               
@@ -569,6 +567,11 @@ namespace Kader_System.Services.Services.HR
 
 
 
+        }
+
+        public Task<Response<CreateContractRequest>> CreateContractAsync(CreateContractRequest model, string appPath, string moduleName)
+        {
+            throw new NotImplementedException();
         }
     }
 }
