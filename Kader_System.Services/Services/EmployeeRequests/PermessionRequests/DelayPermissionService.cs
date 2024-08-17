@@ -9,6 +9,7 @@ using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.Services.EmployeeRequests.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using static Kader_System.Domain.Constants.SD.ApiRoutes.EmployeeRequests;
 
 namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 {
@@ -57,11 +58,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             var newRequest = _mapper.Map<DelayPermission>(model);
             StatuesOfRequest statues = new()
             {
-                ApporvalStatus = 1 // pending
+                ApporvalStatus = (int)RequestStatusTypes.Pending
             };
             newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-            newRequest.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
+            newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
             await _unitOfWork.DelayPermission.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
@@ -81,51 +82,54 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Delete
         public async Task<Response<string>> DeleteDelayPermissionRequest(int id, string fullPath)
         {
-            var obj = await unitOfWork.DelayPermission.GetByIdAsync(id);
-            if (obj is null)
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var _DelayPermissionRequest = await _unitOfWork.DelayPermission.GetByIdAsync(id);
+            var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
+            if (_DelayPermissionRequest != null)
             {
-                string resultMsg = sharLocalizer[Localization.NotFoundData];
-
-                return new()
+                var result = await _unitOfWork.DelayPermission.SoftDeleteAsync(_DelayPermissionRequest, DeletedBy: userId);
+                if (result > 0)
                 {
-                    Data = string.Empty,
-                    Error = resultMsg,
-                    Msg = resultMsg
-                };
+                    if (!string.IsNullOrWhiteSpace(_DelayPermissionRequest.AttachmentPath))
+                    {
+                        _fileServer.RemoveFile(fullPath, _DelayPermissionRequest.AttachmentPath);
+                    }
+                    msg = _sharLocalizer[Localization.Deleted];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = true,
+                    };
+                }
             }
-
-            unitOfWork.DelayPermission.Remove(obj);
-            if (await unitOfWork.CompleteAsync() > 0)
-                _fileServer.RemoveFile(fullPath, obj.AtachmentPath);
-
             return new()
             {
-                Check = true,
-                Data = string.Empty,
-                Msg = sharLocalizer[Localization.Deleted]
+                Check = false,
+                Data = null,
+                Msg = msg
             };
         }
         #endregion
 
         #region Read
-        public async Task<Response<GetAllDelayPermissionRequestResponse>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host)
+        public async Task<Response<GetAllDelayPermissionRequestRequestResponse>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host)
         {
             Expression<Func<DelayPermission, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
                 x => x.IsDeleted == false :
                 x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
 
             var totalRecords = await _unitOfWork.DelayPermission.CountAsync(filter: filter);
-            var items = (await _unitOfWork.DelayPermission.GetSpecificSelectAsync(filter, x => new ListOfDelayPermissionRequest
+            var items = (await _unitOfWork.DelayPermission.GetSpecificSelectAsync(filter, x => new ListOfDelayPermissionRequestResponse
             {
                 Id = x.Id,
                 EmployeeId = x.EmployeeId,
-                requet_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
                 HoursDelay = x.DelayHours,
                 EmployeeName = x.Employee.FirstNameEn,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,
                 Notes = x.Notes,
-                AtachmentPath = x.AtachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), x.AtachmentPath) : null
+                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), x.AttachmentPath) : null
             },
             orderBy: x => x.OrderBy(x => x.Id),
                 skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();
@@ -142,7 +146,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 .ToList();
             #endregion
 
-            var result = new GetAllDelayPermissionRequestResponse
+            var result = new GetAllDelayPermissionRequestRequestResponse
             {
                 TotalRecords = totalRecords,
                 Items = items,
@@ -187,9 +191,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<DtoListOfDelayRequestReponse>> UpdateDelayPermissionRequest(int id, DTODelayPermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
             var delay = await _unitOfWork.DelayPermission.GetByIdAsync(id);
-            if (delay == null)
+            if (delay == null || delay.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
-                var msg = _sharLocalizer[Localization.NotFound];
+                var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotApproval];
                 return new()
                 {
                     Check = false,
@@ -203,9 +207,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
             if (model.Attachment is not null)
             {
-                _fileServer.RemoveFile(moduleName, delay.AtachmentPath);
-                delay.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
+                _fileServer.RemoveFile(moduleName, delay.AttachmentPath);
+                delay.AttachmentPath = await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
             }
 
             _unitOfWork.DelayPermission.Update(delay);
@@ -266,18 +269,19 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             return new Response<string>()
             {
                 Check = false,
-                Msg = "Cannot approve "
+                  Msg = "Cannot approve , request is not pending or is deleted"
             };
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _context.HrDelayPermissions.Where(x => x.Id == requestId)
-                                 .ExecuteUpdateAsync(x => x.
-                                     SetProperty(p => p.StatuesOfRequest.ApporvalStatus, 3).
-                                     SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
-                                     SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId).
-                                     SetProperty(p => p.StatuesOfRequest.StatusMessage, resoan));
+            var result = await _context.HrDelayPermissions.Include(x => x.StatuesOfRequest).
+                                                  Where(x => x.Id == requestId && x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Pending)
+                                                 .ExecuteUpdateAsync(x => x.
+                                                 SetProperty(p => p.StatuesOfRequest.ApporvalStatus, (int)RequestStatusTypes.Rejected).
+                                                 SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
+                                                 SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId).
+                                                 SetProperty(p => p.StatuesOfRequest.StatusMessage, resoan));
             if (result > 0)
             {
                 return new Response<string>()

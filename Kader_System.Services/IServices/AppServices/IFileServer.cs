@@ -9,21 +9,21 @@ namespace Kader_System.Services.IServices.AppServices
     public interface IFileServer
     {
         /// <summary>
-        /// Upload File on Server on wwwroot ,then return new saved fileName
+        /// Upload file on server on wwwroot ,then return new saved fileName
         /// </summary>
         /// <param name="moduleName"></param>
         /// <param name="file"></param>
         /// <returns>new file name with GUID</returns>
         public Task<string> UploadFile(string moduleName, IFormFile file);
         /// <summary>
-        /// Remove File From wwwroot by filename
+        /// Remove file from wwwroot by filename
         /// </summary>
         /// <param name="moduleName"></param>
         /// <param name="fileName"></param>
         public void RemoveFile(string moduleName, string fileName);
 
         /// <summary>
-        /// Get File Path From wwwroot by filename
+        /// Get File Path from wwwroot by filename
         /// </summary>
         /// <param name="paths"></param>
         /// <returns></returns>

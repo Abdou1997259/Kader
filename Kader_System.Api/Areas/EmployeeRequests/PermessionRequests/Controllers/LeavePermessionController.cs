@@ -53,13 +53,30 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateLeavePermessionasRequests([FromRoute] int id, [FromForm] DTOCreateLeavePermissionRequest model)
         {
-            var response = await service.UpdateLeavePermissionRequest(id, model, Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LeavePermission);
+            var response = await service.UpdateLeavePermissionRequest(id, model, Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.LeavePermission);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
+        #endregion
+
+        #region Delete
+        [HttpDelete(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.DeleteLeavePermessionasRequests)]
+        [Permission(Permission.Delete, 19)]
+        public async Task<IActionResult> DeleteLeavePermessionasRequests(int id)
+        {
+            var response = await service.DeleteLeavePermissionRequest(id, Modules.EmployeeRequest);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        #endregion
+
+        #region Status
         [HttpPut(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.ApproveLeavePermessionasRequests)]
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> ApproveLeavePermessionasRequests([FromRoute] int id)
@@ -75,22 +92,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> RejectLeavePermessionasRequests([FromRoute] int id, [FromBody] GlobalEmployeeRequests model)
         {
-            var response = await service.RejectRequest(id,model.reson);
-            if (response.Check)
-                return Ok(response);
-            else if (!response.Check)
-                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
-        }
-        #endregion
-
-        #region Delete
-        [HttpDelete(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.DeleteLeavePermessionasRequests)]
-        [Permission(Permission.Delete, 19)]
-        public async Task<IActionResult> DeleteLeavePermessionasRequests(int id)
-        {
-            var full_path = Path.Combine(_hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest);
-            var response = await service.DeleteLeavePermissionRequest(id,full_path);
+            var response = await service.RejectRequest(id, model.reson);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

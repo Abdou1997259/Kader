@@ -1,19 +1,24 @@
+using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
+using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class AllowanceRequestService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
+    public class AllowanceRequestService(IUnitOfWork unitOfWork, KaderDbContext context, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
         private readonly IFileServer _fileServer = fileServer;
-
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly KaderDbContext _context = context;
 
 
         #region ListOfAllwanceRequest
@@ -44,25 +49,29 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
         #region PaginatedAllwanceRequest
-        public async Task<Response<GetAllowanceRequestResponse>> GetAllowanceRequest(GetAllFilterationAllowanceRequest model, string host)
+        public async Task<Response<GetAllowanceRequestRequestResponse>> GetAllowanceRequest(GetAllFilterationAllowanceRequest model, string host)
         {
             Expression<Func<AllowanceRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
-                     x => x.IsDeleted == false :
-                     x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus; var totalRecords = await unitOfWork.AllowanceRequests.CountAsync(filter: filter);
-            var data = await unitOfWork.AllowanceRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
-            var msg = sharLocalizer[Localization.NotFound];
-            if (data == null)
+                x => x.IsDeleted == false :
+                x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
+
+            var totalRecords = await _unitOfWork.AllowanceRequests.CountAsync(filter: filter);
+            var items = (await _unitOfWork.AllowanceRequests.GetSpecificSelectAsync(filter, x => new ListOfAllowanceRequestResponse
             {
-                return new()
-                {
-                    Check = false,
-                    Data = null,
-                    Msg = msg
-                };
-
-            }
-            var mappingResult = mapper.Map<List<DTOAllowanceRequestResponse>>(data);
-
+                Id = x.Id,
+                EmployeeId = x.EmployeeId,
+                request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                EmployeeName = x.Employee.FirstNameEn,
+                allowance_id = x.allowance_id,
+                allowance_type_id = x.allowance_type_id,
+                ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
+                reason = x.StatuesOfRequest.StatusMessage,
+                Notes = x.notes,
+                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.AllowanceRequest.ToString(), x.AttachmentPath) : null
+            },
+            orderBy: x => x.OrderBy(x => x.Id),
+                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();
+            #region Pagination
 
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
@@ -73,11 +82,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
-            var result = new GetAllowanceRequestResponse()
+            #endregion
+
+            var result = new GetAllowanceRequestRequestResponse
             {
                 TotalRecords = totalRecords,
-
-                Items = mappingResult,
+                Items = items,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -88,19 +98,18 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
                 Path = host,
                 PerPage = model.PageSize,
-                Links = pageLinks
-
+                Links = pageLinks,
             };
 
             if (result.TotalRecords is 0)
             {
-                string resultMsg = sharLocalizer[Localization.NotFoundData];
+                string resultMsg = _sharLocalizer[Localization.NotFoundData];
 
                 return new()
                 {
                     Data = new()
                     {
-                        Items = [],
+                        Items = []
                     },
                     Error = resultMsg,
                     Msg = resultMsg
@@ -118,7 +127,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
         #region AllwanceRequestGetById
-        public async Task<Response<DTOAllowanceRequestResponse>> GetById(int id)
+        public async Task<Response<ListOfAllowanceRequestResponse>> GetById(int id)
 
         {
             var result = await unitOfWork.AllowanceRequests.GetByIdAsync(id);
@@ -135,7 +144,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
             }
 
-            var mappingResult = mapper.Map<DTOAllowanceRequestResponse>(result);
+            var mappingResult = mapper.Map<ListOfAllowanceRequestResponse>(result);
 
             return new()
             {
@@ -148,28 +157,20 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddAllowanceRequest
-        public async Task<Response<GetAllowanceRequestResponse>> AddNewAllowanceRequest(DTOAllowanceRequest model,string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.AllowanceRequest)
+        public async Task<Response<GetAllowanceRequestRequestResponse>> AddNewAllowanceRequest(DTOAllowanceRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.AllowanceRequest)
         {
 
-            var IsEmpolyeeExisted = await unitOfWork.Employees.ExistAsync(model.EmployeeId);
-            if (!IsEmpolyeeExisted)
+            var newRequest = _mapper.Map<AllowanceRequest>(model);
+            StatuesOfRequest statues = new()
             {
-
-                var msg = $"{sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.NotFound]}";
-                return new()
-                {
-                    Check = false,
-                    Data = null,
-                    Msg = msg
-                };
-
-            }
-            var newRequest = mapper.Map<AllowanceRequest>(model);
+                ApporvalStatus = (int)RequestStatusTypes.Pending
+            };
+            newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-            newRequest.attachment_file_name = (model.Attachment== null || model.Attachment.Length == 0) ? null :
+            newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
-            await unitOfWork.AllowanceRequests.AddAsync(newRequest);
-            var result = await unitOfWork.CompleteAsync();
+            await _unitOfWork.AllowanceRequests.AddAsync(newRequest);
+            var result = await _unitOfWork.CompleteAsync();
             return new()
             {
                 Msg = sharLocalizer[Localization.Done],
@@ -181,73 +182,78 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
         #region UpdateAllowanceRequest
-        public async Task<Response<AllowanceRequest>> UpdateAllowanceRequest(int id, DTOAllowanceRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.AllowanceRequest)
+        public async Task<Response<AllowanceRequest>> UpdateAllowanceRequest(int id, DTOAllowanceRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.AllowanceRequest)
         {
-            var result = await unitOfWork.AllowanceRequests.GetByIdAsync(id);
-
-            if (result == null)
+            var allowance = await _unitOfWork.AllowanceRequests.GetByIdAsync(id);
+            if (allowance == null || allowance.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
+                var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotPending];
                 return new()
                 {
                     Check = false,
-                    Data = null,
-                    Msg = sharLocalizer[Localization.NotFound]
+                    Msg = msg,
+                    Data = null
                 };
             }
-            var updatingModel = mapper.Map(model, result);
+            var mappedleave = _mapper.Map(model, allowance);
+            var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
+
+
             if (model.Attachment is not null)
             {
-                var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-                updatingModel.attachment_file_name = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
+                _fileServer.RemoveFile(moduleName, allowance.AttachmentPath);
+                allowance.AttachmentPath = await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
             }
-            unitOfWork.AllowanceRequests.Update(result);
-            await unitOfWork.CompleteAsync();
 
+            _unitOfWork.AllowanceRequests.Update(allowance);
+            var result = await _unitOfWork.CompleteAsync();
             return new()
             {
-                Data = updatingModel,
-                Check = true
+                Msg = sharLocalizer[Localization.Done],
+                Check = true,
             };
-
 
         }
 
         #endregion
 
         #region DeleteAllowance
-        public async Task<Response<AllowanceRequest>> DeleteAllowanceRequest(int id)
+        public async Task<Response<AllowanceRequest>> DeleteAllowanceRequest(int id,string ModuleName)
         {
-            var allowanceRequest = await unitOfWork.AllowanceRequests.GetByIdAsync(id);
-            var msg = $"{sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.NotFound]}";
-            if (allowanceRequest == null)
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var _AllowanceRequests = await _unitOfWork.AllowanceRequests.GetByIdAsync(id);
+            var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
+            if (_AllowanceRequests != null)
             {
-
-                return new()
+                var result = await _unitOfWork.AllowanceRequests.SoftDeleteAsync(_AllowanceRequests, DeletedBy: userId);
+                if (result > 0)
                 {
-                    Check = false,
-                    Data = null,
-                    Msg = msg
-                };
+                    if (!string.IsNullOrWhiteSpace(_AllowanceRequests.AttachmentPath))
+                    {
+                        _fileServer.RemoveFile(ModuleName, _AllowanceRequests.AttachmentPath);
+                    }
+                    msg = _sharLocalizer[Localization.Deleted];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = true,
+                    };
+                }
             }
-            unitOfWork.AllowanceRequests.Remove(allowanceRequest);
-            await unitOfWork.CompleteAsync();
-            msg = sharLocalizer[Localization.Deleted];
-
             return new()
             {
-                Data = allowanceRequest,
-                Msg = msg,
-                Check = true,
+                Check = false,
+                Data = null,
+                Msg = msg
             };
 
         }
 
-    
 
-      
 
-      
+
+
+
 
 
 
@@ -257,7 +263,56 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
 
+        #region Status
+        public async Task<Response<string>> ApproveRequest(int requestId)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _context.AllowanceRequests.Where(x => x.Id == requestId)
+                                 .ExecuteUpdateAsync(x => x.
+                                   SetProperty(p => p.StatuesOfRequest.ApporvalStatus, (int)RequestStatusTypes.Approved).
+                                   SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
+                                   SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId)
 
+                                 );
+            if (result > 0)
+            {
+                return new Response<string>()
+                {
+                    Check = true,
+                    Msg = "Approved sucessfully"
+                };
+            }
+            return new Response<string>()
+            {
+                Check = false,
+                  Msg = "Cannot approve , request is not pending or is deleted"
+            };
+        }
+        public async Task<Response<string>> RejectRequest(int requestId, string resoan)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _context.AllowanceRequests.Include(x => x.StatuesOfRequest).
+                                                    Where(x => x.Id == requestId && x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Pending)
+                                                   .ExecuteUpdateAsync(x => x.
+                                                   SetProperty(p => p.StatuesOfRequest.ApporvalStatus, (int)RequestStatusTypes.Rejected).
+                                                   SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
+                                                   SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId).
+                                                   SetProperty(p => p.StatuesOfRequest.StatusMessage, resoan));
+            if (result > 0)
+            {
+                return new Response<string>()
+                {
+                    Check = true,
+                    Msg = "Rejected sucessfully"
+                };
+            }
+            return new Response<string>()
+            {
+                Check = false,
+                Msg = "Cannot approve"
+            };
+        }
+        #endregion
 
 
 

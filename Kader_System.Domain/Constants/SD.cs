@@ -659,6 +659,8 @@ public static class SD
         public const string User = "User";
         public const string ThisEmployeeWasDeleted = "ThisEmployeeWasDeleted";
         public const string NotFound = "NotFound";
+        public const string NotApproval = "The Request not Not Approval";
+        public const string NotPending = "The Request not Not pending";
         public const string Email = "Email";
         public const string PasswordNotmatch = "PasswordNotmatch";
         public const string Role = "Role";

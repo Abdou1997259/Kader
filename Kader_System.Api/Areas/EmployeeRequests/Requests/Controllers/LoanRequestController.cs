@@ -1,4 +1,5 @@
 ﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.AppServices;
@@ -48,9 +49,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateLoanRequestAsync([FromForm] DTOLoanRequest model)
         {
-            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
-
-            var response = await service.AddNewLoanRequest(model,serverPath,
+            var response = await service.AddNewLoanRequest(model,
 
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
@@ -68,9 +67,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateLoanRequestAsync([FromRoute] int id, [FromForm] DTOLoanRequest model)
         {
-            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
-
-            var response = await service.UpdateLoanRequest(id, model,serverPath,
+            var response = await service.UpdateLoanRequest(id, model,
                      Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
             if (response.Check)
                 return Ok(response);
@@ -78,9 +75,6 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
-
-  
-
         #endregion
 
         #region Delete
@@ -99,6 +93,33 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
 
+        #endregion
+
+
+
+        #region Status
+        [HttpPut(ApiRoutes.EmployeeRequests.LoanRequests.ApproveLoanRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> ApproveLoanRequests([FromRoute] int id)
+        {
+            var response = await service.ApproveRequest(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        [HttpPut(ApiRoutes.EmployeeRequests.LoanRequests.RejectLoanRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> RejectLoanRequests([FromRoute] int id, [FromBody] GlobalEmployeeRequests model)
+        {
+            var response = await service.RejectRequest(id, model.reson);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
         #endregion
     }
 }

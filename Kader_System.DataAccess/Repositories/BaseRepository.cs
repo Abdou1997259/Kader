@@ -257,9 +257,9 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
         return query.ToListAsync();
     }
 
-    public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted", bool IsDeleted = true)
+    public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted", bool IsDeleted = true, string DeletedBy = null)
     {
-        var result = context.SoftDeleteAsync(_entity, _softDeleteProperty,IsDeleted);
+        var result = context.SoftDeleteAsync(_entity, _softDeleteProperty,IsDeleted,DeletedBy);
         return result;
     }
 

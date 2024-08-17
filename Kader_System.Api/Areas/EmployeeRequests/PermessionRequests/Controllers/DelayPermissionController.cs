@@ -76,8 +76,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [Permission(Permission.Delete, 19)]
         public async Task<IActionResult> DeleteDelayPermissionRequests(int id)
         {
-            var full_path = Path.Combine(_hostEnvironment.WebRootPath, requestService.client_id, Modules.EmployeeRequest);
-            var response = await delayPermission.DeleteDelayPermissionRequest(id, full_path);
+            var response = await delayPermission.DeleteDelayPermissionRequest(id, Modules.EmployeeRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

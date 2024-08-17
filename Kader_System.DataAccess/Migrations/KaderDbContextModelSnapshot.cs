@@ -249,7 +249,7 @@ namespace Kader_System.DataAccess.Migrations
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
-                            ConcurrencyStamp = "e9bc4b69-f3ee-4db0-8c0b-6a91fa7c0e96",
+                            ConcurrencyStamp = "92aa665b-1f7f-4471-91af-fc4c48da2e11",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -263,10 +263,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHstNydckieU/OvHalIwXGOoyc5WVz1s4wxE0Yx0X06Vs02Tepqz+uUNKQZLSGx0/g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOop2IAqswVdffYUOtfRe63VKELcAjBqVDoz/pa3f/M8GUQMpgkrITZ9JNi9rG58bw==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c05acebd-dc39-4b03-b1ea-d7ecc8789e7f",
+                            SecurityStamp = "1b53a270-63a9-490c-b6e0-d46d3db6f77a",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -557,7 +557,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AtachmentPath")
+                    b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("DelayHours")
@@ -662,6 +662,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("AttachmentPath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -694,9 +697,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<double>("amount")
                         .HasColumnType("float");
-
-                    b.Property<string>("attachment_file_name")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("notes")
                         .HasColumnType("nvarchar(max)");
@@ -777,7 +777,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<string>("AttachmentFileName")
+                    b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")
@@ -831,10 +831,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AtachmentPath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AttachmentFileName")
+                    b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")

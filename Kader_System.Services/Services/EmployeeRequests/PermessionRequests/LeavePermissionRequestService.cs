@@ -27,7 +27,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             var newRequest = _mapper.Map<LeavePermissionRequest>(model);
             StatuesOfRequest statues = new()
             {
-                ApporvalStatus = 1 // pending
+                ApporvalStatus = (int)RequestStatusTypes.Pending
             };
             newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
@@ -48,35 +48,38 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Delete
         public async Task<Response<string>> DeleteLeavePermissionRequest(int id, string fullPath)
         {
-            var obj = await unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
-            if (obj is null)
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var leaveRequest = await _unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
+            var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
+            if (leaveRequest != null)
             {
-                string resultMsg = sharLocalizer[Localization.NotFoundData];
-
-                return new()
+                var result = await _unitOfWork.LeavePermissionRequest.SoftDeleteAsync(leaveRequest,DeletedBy : userId);
+                if (result > 0)
                 {
-                    Data = string.Empty,
-                    Error = resultMsg,
-                    Msg = resultMsg
-                };
+                    if (!string.IsNullOrWhiteSpace(leaveRequest.AttachmentPath))
+                    {
+                        _fileServer.RemoveFile(fullPath, leaveRequest.AttachmentPath);
+                    }
+                    msg = _sharLocalizer[Localization.Deleted];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = true,
+                    };
+                }
             }
-
-            unitOfWork.LeavePermissionRequest.Remove(obj);
-            await unitOfWork.CompleteAsync();
-            if (!string.IsNullOrWhiteSpace(obj.AttachmentPath))
-                _fileServer.RemoveFile(fullPath, obj.AttachmentPath);
-
             return new()
             {
-                Check = true,
-                Data = string.Empty,
-                Msg = sharLocalizer[Localization.Deleted]
+                Check = false,
+                Data = null,
+                Msg = msg
             };
+
         }
         #endregion
 
         #region Read
-        public async Task<Response<GetAllLeavePermissionRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
+        public async Task<Response<GetAllLeavePermissionRequestRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
         {
 
             Expression<Func<LeavePermissionRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
@@ -84,18 +87,18 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
 
             var totalRecords = await _unitOfWork.LeavePermissionRequest.CountAsync(filter: filter);
-            var items = (await _unitOfWork.LeavePermissionRequest.GetSpecificSelectAsync(filter, x => new ListOfLeavePermissionsReponse
+            var items = (await _unitOfWork.LeavePermissionRequest.GetSpecificSelectAsync(filter, x => new ListOfLeavePermissionsRequestResponse
             {
                 Id = x.Id,
                 EmployeeId = x.EmployeeId,
-                requet_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
                 EmployeeName = x.Employee.FirstNameEn,
                 LeaveTime = x.LeaveTime,
                 BackTime = x.BackTime,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,
                 Notes = x.Notes,
-                AtachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.LeavePermission.ToString(), x.AttachmentPath) : null
+                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.LeavePermission.ToString(), x.AttachmentPath) : null
             },
             orderBy: x => x.OrderBy(x => x.Id),
                 skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();
@@ -112,7 +115,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 .ToList();
             #endregion
 
-            var result = new GetAllLeavePermissionRequestResponse
+            var result = new GetAllLeavePermissionRequestRequestResponse
             {
                 TotalRecords = totalRecords,
                 Items = items,
@@ -159,9 +162,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         {
 
             var leave = await _unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
-            if (leave == null)
+            if (leave == null || leave.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
-                var msg = _sharLocalizer[Localization.NotFound];
+                var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotPending];
                 return new()
                 {
                     Check = false,
@@ -176,8 +179,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             if (model.Attachment is not null)
             {
                 _fileServer.RemoveFile(moduleName, leave.AttachmentPath);
-                leave.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
+                leave.AttachmentPath = await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
             }
 
             _unitOfWork.LeavePermissionRequest.Update(leave);
@@ -188,12 +190,16 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 Check = true,
             };
         }
+
+        #endregion
+
+        #region Status
         public async Task<Response<string>> ApproveRequest(int requestId)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
             var result = await _context.LeavePermissionsRequests.Where(x => x.Id == requestId)
                                  .ExecuteUpdateAsync(x => x.
-                                   SetProperty(p => p.StatuesOfRequest.ApporvalStatus, 2).
+                                   SetProperty(p => p.StatuesOfRequest.ApporvalStatus, (int)RequestStatusTypes.Approved).
                                    SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
                                    SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId)
 
@@ -209,18 +215,19 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             return new Response<string>()
             {
                 Check = false,
-                Msg = "Cannot approve "
+                  Msg = "Cannot approve , request is not pending or is deleted"
             };
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _context.LeavePermissionsRequests.Where(x => x.Id == requestId)
-                                 .ExecuteUpdateAsync(x => x.
-                                     SetProperty(p => p.StatuesOfRequest.ApporvalStatus, 3).
-                                     SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
-                                     SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId).
-                                     SetProperty(p => p.StatuesOfRequest.StatusMessage, resoan));
+            var result = await _context.LeavePermissionsRequests.Include(x => x.StatuesOfRequest).
+                                                  Where(x => x.Id == requestId && x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Pending)
+                                                 .ExecuteUpdateAsync(x => x.
+                                                 SetProperty(p => p.StatuesOfRequest.ApporvalStatus, (int)RequestStatusTypes.Rejected).
+                                                 SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
+                                                 SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId).
+                                                 SetProperty(p => p.StatuesOfRequest.StatusMessage, resoan));
             if (result > 0)
             {
                 return new Response<string>()
@@ -236,6 +243,5 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             };
         }
         #endregion
-
     }
 }

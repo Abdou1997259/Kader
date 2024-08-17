@@ -7,7 +7,7 @@ namespace Kader_System.Services.IServices.EmployeeRequests.PermessionRequests
     {
 
         #region Read
-        public Task<Response<GetAllDelayPermissionRequestResponse>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host);
+        public Task<Response<GetAllDelayPermissionRequestRequestResponse>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host);
         #endregion
         public Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.DelayPermission);
         #region Delete

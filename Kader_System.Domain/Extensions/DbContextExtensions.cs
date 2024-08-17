@@ -92,7 +92,7 @@ namespace Kader_System.Domain.Extensions
         /// <param name="_entity"></param>
         /// <param name="_softDeleteProperty"></param>
         /// <returns>number of rows affected</returns>
-        public static async Task<int> SoftDeleteAsync<T>(this DbContext _context, T _entity, string _softDeleteProperty = "IsDeleted", bool IsDeleted = true)
+        public static async Task<int> SoftDeleteAsync<T>(this DbContext _context, T _entity, string _softDeleteProperty = "IsDeleted", bool IsDeleted = true,string DeletedBy = null)
         {
             if (_entity is null)
                 return 0;
@@ -100,6 +100,7 @@ namespace Kader_System.Domain.Extensions
             var entry = _context.Entry(_entity);
             entry.Property(_softDeleteProperty).CurrentValue = IsDeleted;
             entry.Property("DeleteDate").CurrentValue = DateTime.Now;
+            entry.Property("DeleteBy").CurrentValue = DeletedBy;
             entry.State = EntityState.Modified;
             return await _context.SaveChangesAsync();
         }

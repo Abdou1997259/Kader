@@ -1,23 +1,26 @@
+using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class ContractTerminationRequestService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper)
+    public class ContractTerminationRequestService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, KaderDbContext context, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper)
         : IContractTerminationRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
         private readonly IFileServer _fileServer = fileServer;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly KaderDbContext _context = context;
 
-
-        #region ListOfLoanRequest
-        public async Task<Response<IEnumerable<DTOListOfContractTerminationResponse>>> ListOfContractTerminationRequest()
+        #region ListOfContractTerminationRequest
+        public async Task<Response<IEnumerable<ListOfContractTerminationRequestResponse>>> ListOfContractTerminationRequest()
         {
             var result = unitOfWork.ContractTerminationRequest.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = _sharLocalizer[Localization.NotFound];
@@ -31,7 +34,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 };
 
             }
-            var mappingResult = mapper.Map<IEnumerable<DTOListOfContractTerminationResponse>>(result);
+            var mappingResult = mapper.Map<IEnumerable<ListOfContractTerminationRequestResponse>>(result);
 
             return new()
             {
@@ -41,29 +44,28 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         #endregion
 
-        #region PaginatedLoanRequest
-        public async Task<Response<GetAllContractTermiantionResponse>> GetAllContractTerminationRequest(GetFilterationContractTerminationRequest model, string host)
+        #region PaginatedContractTerminationRequest
+        public async Task<Response<GetAllContractTermiantionRequestResponse>> GetAllContractTerminationRequest(GetFilterationContractTerminationRequest model, string host)
         {
             Expression<Func<ContractTerminationRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
-                     x => x.IsDeleted == false :
-                     x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus; var totalRecords = await unitOfWork.ContractTerminationRequest.CountAsync(filter: filter);
-            var data = await unitOfWork.ContractTerminationRequest.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id),take:model.PageSize
-                , skip: (model.PageNumber - 1)*model.PageSize
-                );
+           x => x.IsDeleted == false :
+           x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
 
-            var msg = _sharLocalizer[Localization.NotFound];
-            if (data == null)
+            var totalRecords = await _unitOfWork.ContractTerminationRequest.CountAsync(filter: filter);
+            var items = (await _unitOfWork.ContractTerminationRequest.GetSpecificSelectAsync(filter, x => new ListOfContractTerminationRequestResponse
             {
-                return new()
-                {
-                    Check = false,
-                    Data = null,
-                    Msg = msg
-                };
-
-            }
-            var mappingResult = mapper.Map<List<DTOListOfContractTerminationResponse>>(data);
-
+                Id = x.Id,
+                EmployeeId = x.EmployeeId,
+                request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                EmployeeName = x.Employee.FirstNameEn,
+                ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
+                reason = x.StatuesOfRequest.StatusMessage,
+                Notes = x.Notes,
+                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.TerminateContract.ToString(), x.AttachmentPath) : null
+            },
+            orderBy: x => x.OrderBy(x => x.Id),
+                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();
+            #region Pagination
 
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
@@ -74,11 +76,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
-            var result = new GetAllContractTermiantionResponse()
+            #endregion
+
+            var result = new GetAllContractTermiantionRequestResponse
             {
                 TotalRecords = totalRecords,
-
-                Items = mappingResult,
+                Items = items,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -89,13 +92,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
                 Path = host,
                 PerPage = model.PageSize,
-                Links = pageLinks
-
+                Links = pageLinks,
             };
 
             if (result.TotalRecords is 0)
             {
-                string resultMsg =_sharLocalizer[Localization.NotFoundData];
+                string resultMsg = _sharLocalizer[Localization.NotFoundData];
 
                 return new()
                 {
@@ -117,10 +119,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         #endregion
 
-        #region GetLoanRequetById
-        public async Task<Response<DTOListOfContractTerminationResponse>> GetById(int id)
+        #region GetContractTerminationRequestById
+        public async Task<Response<ListOfContractTerminationRequestResponse>> GetById(int id)
         {
-            var result =await unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
+            var result = await unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
             if (result == null)
             {
                 var msg = _sharLocalizer[Localization.NotFoundData];
@@ -133,7 +135,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
             }
 
-            var mappingResult = mapper.Map<DTOListOfContractTerminationResponse>(result);
+            var mappingResult = mapper.Map<ListOfContractTerminationRequestResponse>(result);
             return new()
             {
                 Data = mappingResult,
@@ -144,106 +146,145 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         #endregion
 
-        #region AddLoanRequest
-        public async Task<Response<ContractTerminationRequest>> AddNewContractTerminationRequest(DTOContractTerminationRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.TerminateContract)
+        #region AddContractTerminationRequest
+        public async Task<Response<ContractTerminationRequest>> AddNewContractTerminationRequest(DTOContractTerminationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.TerminateContract)
         {
-            var IsEmpolyeeExisted = await unitOfWork.Employees.ExistAsync(model.EmployeeId);
-            if (!IsEmpolyeeExisted)
+            var newRequest = _mapper.Map<ContractTerminationRequest>(model);
+            StatuesOfRequest statues = new()
             {
-
-                var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-                return new()
-                {
-                    Check = false,
-                    Data = null,
-                    Msg = msg
-                };
-
-            }
-            var newRequest = mapper.Map<ContractTerminationRequest>(model);
+                ApporvalStatus = (int)RequestStatusTypes.Pending
+            };
+            newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-            newRequest.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
+            newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
-            await unitOfWork.ContractTerminationRequest.AddAsync(newRequest);
-            var result = await unitOfWork.CompleteAsync();
+            await _unitOfWork.ContractTerminationRequest.AddAsync(newRequest);
+            var result = await _unitOfWork.CompleteAsync();
             return new()
             {
-                Msg = _sharLocalizer[Localization.Done],
+                Msg = sharLocalizer[Localization.Done],
                 Check = true,
             };
 
         }
         #endregion
 
-        #region DeleteLoanRequets
+        #region DeleteContractTerminationRequest
         public async Task<Response<ContractTerminationRequest>> DeleteContracTermniationRequest(int id, string fullPath)
         {
-            var loanRequest = await unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var _contractTerminationRequest = await _unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-            if (loanRequest == null)
+            if (_contractTerminationRequest != null)
             {
+                var result = await _unitOfWork.ContractTerminationRequest.SoftDeleteAsync(_contractTerminationRequest, DeletedBy: userId);
+                if (result > 0)
+                {
+                    if (!string.IsNullOrWhiteSpace(_contractTerminationRequest.AttachmentPath))
+                    {
+                        _fileServer.RemoveFile(fullPath, _contractTerminationRequest.AttachmentPath);
+                    }
+                    msg = _sharLocalizer[Localization.Deleted];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = true,
+                    };
+                }
+            }
+            return new()
+            {
+                Check = false,
+                Data = null,
+                Msg = msg
+            };
 
+        }
+        #endregion
+
+        #region UpdateContractTerminationRequest
+        public async Task<Response<ContractTerminationRequest>> UpdateContractTerminationRequest(int id, DTOContractTerminationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.TerminateContract)
+        {
+            var _contract = await _unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
+            if (_contract == null || _contract.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
+            {
+                var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotPending];
                 return new()
                 {
                     Check = false,
-                    Data = null,
-                    Msg = msg
+                    Msg = msg,
+                    Data = null
                 };
             }
-            if (!string.IsNullOrWhiteSpace(loanRequest.AttachmentFileName))
+            var mappedleave = _mapper.Map(model, _contract);
+            var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
+            if (model.Attachment is not null)
             {
-                _fileServer.RemoveFile(fullPath, loanRequest.AttachmentFileName);
+                _fileServer.RemoveFile(moduleName, _contract.AttachmentPath);
+                _contract.AttachmentPath = await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
             }
-            unitOfWork.ContractTerminationRequest.Remove(loanRequest);
-            await unitOfWork.CompleteAsync();
-            msg = _sharLocalizer[Localization.Deleted];
 
+            _unitOfWork.ContractTerminationRequest.Update(_contract);
+            var result = await _unitOfWork.CompleteAsync();
             return new()
             {
-                Data = loanRequest,
-                Msg = msg,
+                Msg = sharLocalizer[Localization.Done],
                 Check = true,
             };
 
+
         }
         #endregion
 
-        #region UpdateLoanRequest
-        public async Task<Response<ContractTerminationRequest>> UpdateContractTerminationRequest(int id, DTOContractTerminationRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.TerminateContract)
+        #region Status
+        public async Task<Response<string>> ApproveRequest(int requestId)
         {
-            var result = await unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _context.ContractTerminationRequests.Where(x => x.Id == requestId)
+                                 .ExecuteUpdateAsync(x => x.
+                                   SetProperty(p => p.StatuesOfRequest.ApporvalStatus, (int)RequestStatusTypes.Approved).
+                                   SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
+                                   SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId)
 
-            if (result == null)
+                                 );
+            if (result > 0)
             {
-                return new()
+                return new Response<string>()
                 {
-                    Check = false,
-                    Data = null,
-                    Msg = _sharLocalizer[Localization.NotFound]
+                    Check = true,
+                    Msg = "Approved sucessfully"
                 };
             }
-            var updatingModel = mapper.Map(model, result);
-            if (model.Attachment is not null)
+            return new Response<string>()
             {
-
-                var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-                updatingModel.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
-
-
-            }
-            unitOfWork.ContractTerminationRequest.Update(result);
-            await unitOfWork.CompleteAsync();
-
-            return new()
-            {
-                Data = updatingModel,
-                Check = true
+                Check = false,
+                  Msg = "Cannot approve , request is not pending or is deleted"
             };
-
-
+        }
+        public async Task<Response<string>> RejectRequest(int requestId, string resoan)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _context.ContractTerminationRequests.Include(x => x.StatuesOfRequest).
+                                                  Where(x => x.Id == requestId && x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Pending)
+                                                 .ExecuteUpdateAsync(x => x.
+                                                 SetProperty(p => p.StatuesOfRequest.ApporvalStatus, (int)RequestStatusTypes.Rejected).
+                                                 SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
+                                                 SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId).
+                                                 SetProperty(p => p.StatuesOfRequest.StatusMessage, resoan));
+            if (result > 0)
+            {
+                return new Response<string>()
+                {
+                    Check = true,
+                    Msg = "Rejected sucessfully"
+                };
+            }
+            return new Response<string>()
+            {
+                Check = false,
+                Msg = "Cannot approve"
+            };
         }
         #endregion
-
     }
 }

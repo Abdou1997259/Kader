@@ -13,7 +13,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.PermessionRequests
     {
          [Key]
         public int Id { get; set; }
-        public string? AtachmentPath { get; set; }
+        public string? AttachmentPath { get; set; }
         public string? Notes { get; set; }
         public int? DelayHours { get; set; }
         public int EmployeeId { get; set; }

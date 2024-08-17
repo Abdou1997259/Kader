@@ -75,5 +75,7 @@
     /// <param name="_entity"></param>
     /// <param name="_softDeleteProperty"></param>
     /// <returns>number of rows affected</returns>
-    public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted",bool IsDeleted = true);
+    public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted",bool IsDeleted = true,string DeletedBy = null);
+
+
 }

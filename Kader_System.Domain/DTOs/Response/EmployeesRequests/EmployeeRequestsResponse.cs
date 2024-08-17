@@ -9,21 +9,40 @@ namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
     public class EmployeeRequestsResponse
     {
         public int Id { get; set; }  
-        public int EmployeeId { get; set; }
+        public int? EmployeeId { get; set; }
         public string EmployeeName { get; set; }
-        public string? requet_date { get; set; }
+        public string? request_date { get; set; }
         public string? Notes { get; set; }
         public int? ApporvalStatus { get; set; }
         public string reason { get; set; }
-        public string? AtachmentPath { get; set; }
+        public string? AttachmentPath { get; set; }               
     }
-    public class ListOfLeavePermissionsReponse:EmployeeRequestsResponse
+    public class ListOfLeavePermissionsRequestResponse : EmployeeRequestsResponse
     {
         public TimeOnly LeaveTime { get; set; }
         public TimeOnly? BackTime { get; set; }
     }
-    public class ListOfDelayPermissionRequest: EmployeeRequestsResponse
+    public class ListOfDelayPermissionRequestResponse : EmployeeRequestsResponse
     {
         public int? HoursDelay { get; set; }
+    }  
+    public class ListOfAllowanceRequestResponse : EmployeeRequestsResponse
+    {
+        public int? allowance_id { get;set; }
+        public int? allowance_type_id { get;set; }
+    }
+    public class ListOfContractTerminationRequestResponse : EmployeeRequestsResponse
+    {
+
+    }  
+    public class ListOfResignationRequestResponse : EmployeeRequestsResponse
+    {
+
+    } 
+    public class ListOfLoanRequestResponse : EmployeeRequestsResponse
+    {
+        public int InstallmentsCount { get; set; }
+        public DateOnly StartDate { get; set; }
+        public double Amount { get; set; }
     }
 }

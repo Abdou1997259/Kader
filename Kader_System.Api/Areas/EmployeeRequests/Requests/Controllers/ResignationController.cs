@@ -1,4 +1,5 @@
 ﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
@@ -45,11 +46,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateResignationRequestAsync([FromForm] DTOResignationRequest model)
         {
-            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+            var response = await service.AddNewResignationRequest(model,
 
-            var response = await service.AddNewResignationRequest(model, serverPath,
-
-                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.ResignationRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -65,10 +64,8 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> UpdateResignationRequestAsync([FromRoute] int id, [FromForm] DTOResignationRequest model)
         {
-            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
-
-            var response = await service.UpdateResignationRequest(id, model, serverPath,
-                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+            var response = await service.UpdateResignationRequest(id, model,
+                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.ResignationRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -86,7 +83,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Delete, 19)]
         public async Task<IActionResult> DeleteResignationAsync(int id)
         {
-            var response = await service.DeleteResignationRequest(id);
+            var response = await service.DeleteResignationRequest(id,Modules.EmployeeRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -94,6 +91,32 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
 
+        #endregion
+
+
+        #region Status
+        [HttpPut(ApiRoutes.EmployeeRequests.ResignationRequests.ApproveResignationRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> ApproveResignationRequests([FromRoute] int id)
+        {
+            var response = await service.ApproveRequest(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        [HttpPut(ApiRoutes.EmployeeRequests.ResignationRequests.RejectResignationRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> RejectResignationRequests([FromRoute] int id, [FromBody] GlobalEmployeeRequests model)
+        {
+            var response = await service.RejectRequest(id, model.reson);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
         #endregion
     }
 }
