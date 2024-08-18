@@ -127,6 +127,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 EmployeeId = x.EmployeeId,
                 request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
                 HoursDelay = x.DelayHours,
+                ArrivalTime = x.Employee.Shift.Start_shift.AddHours(x.DelayHours.Value),
                 EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn : x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,
@@ -134,7 +135,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), x.AttachmentPath) : null
             },
             orderBy: x => x.OrderBy(x => x.Id),
-                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();
+                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest,Employee.Shift")).ToList();
             #region Pagination
 
             int page = 1;
