@@ -7,13 +7,14 @@ using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
+using Kader_System.Services.IServices.HTTP;
 using Microsoft.EntityFrameworkCore;
 
 
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class LoanRequesService(IUnitOfWork _unitOfWork,IStringLocalizer<SharedResource> _sharLocalizer, IFileServer _fileServer,IHttpContextAccessor _httpContextAccessor,KaderDbContext _context,IMapper _mapper) : ILoanRequestService
+    public class LoanRequesService(IUnitOfWork _unitOfWork,IStringLocalizer<SharedResource> _sharLocalizer,IRequestService _requestService, IFileServer _fileServer,IHttpContextAccessor _httpContextAccessor,KaderDbContext _context,IMapper _mapper) : ILoanRequestService
     {
 
         #region ListOfLoanRequest
@@ -58,7 +59,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 Amount = x.Amount,  
                 StartDate = x.StartDate,
                 request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
-                EmployeeName = x.Employee.FirstNameEn,
+                EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn : x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,
                 Notes = x.Notes,

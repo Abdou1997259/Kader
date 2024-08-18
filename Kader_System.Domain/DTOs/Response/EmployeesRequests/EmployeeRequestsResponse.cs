@@ -48,5 +48,12 @@ namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
     public class ListOfSalaryIncreaseRequestResponse : EmployeeRequestsResponse
     {
         public double Amount { get; set; }
+    } 
+    public class ListOfVacationRequestResponse : EmployeeRequestsResponse
+    {
+        public int DayCounts { get; set; }
+        public DateOnly StartDate { get; set; }
+        public int VacationTypeId { get; set; }
+        public string VacationTypeName { get; set; }
     }
 }

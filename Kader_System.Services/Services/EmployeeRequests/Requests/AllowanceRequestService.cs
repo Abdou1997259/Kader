@@ -6,12 +6,13 @@ using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
+using Kader_System.Services.IServices.HTTP;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class AllowanceRequestService(IUnitOfWork unitOfWork, KaderDbContext context, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
+    public class AllowanceRequestService(IUnitOfWork unitOfWork, KaderDbContext context,IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -19,6 +20,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly IFileServer _fileServer = fileServer;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
+        private readonly IRequestService _requestService = requestService;
 
 
         #region ListOfAllwanceRequest
@@ -61,7 +63,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 Id = x.Id,
                 EmployeeId = x.EmployeeId,
                 request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
-                EmployeeName = x.Employee.FirstNameEn,
+                EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn : x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr,
                 allowance_id = x.allowance_id,
                 allowance_type_id = x.allowance_type_id,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,

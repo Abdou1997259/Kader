@@ -2,10 +2,6 @@
 
 namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
 {
-    public class GetAllVacationRequestReponse : PaginationData<DtoListOfVacationRequestResponse>
-    {
-
-    }
     public class DtoListOfVacationRequestResponse
     {
        

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class SalaryIncreaseRequestService(IUnitOfWork unitOfWork, KaderDbContext context, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ISalaryIncreaseRequestService
+    public class SalaryIncreaseRequestService(IUnitOfWork unitOfWork, KaderDbContext context,IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ISalaryIncreaseRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -21,6 +21,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly IHttpContextService _contextService = contextService;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
+        private readonly IRequestService _requestService = requestService;
 
 
         #region ListOfIncreaseSalaryRequest
@@ -65,7 +66,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 Id = x.Id,
                 EmployeeId = x.EmployeeId,
                 request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
-                EmployeeName = x.employee.FirstNameEn,
+                EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.employee.FirstNameEn + " " + x.employee.FatherNameEn : x.employee.FirstNameAr + " " + x.employee.FatherNameAr,
                 Amount = x.Amount,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,

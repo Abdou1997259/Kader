@@ -9,7 +9,7 @@
         public DateOnly StartDate { get; set; }
 
         public string? Notes { get; set; }
-        public string? AttachmentFileName { get; set; }
+        public string? AttachmentPath { get; set; }
         public int VacationTypeId { get; set; }
         [ForeignKey(nameof(VacationTypeId))]
         public virtual HrVacationType VacationType { get; set; }

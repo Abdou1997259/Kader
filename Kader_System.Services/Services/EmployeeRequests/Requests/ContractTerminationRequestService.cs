@@ -5,11 +5,12 @@ using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
+using Kader_System.Services.IServices.HTTP;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class ContractTerminationRequestService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor, KaderDbContext context, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper)
+    public class ContractTerminationRequestService(IUnitOfWork unitOfWork,IRequestService requestService, IHttpContextAccessor httpContextAccessor, KaderDbContext context, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper)
         : IContractTerminationRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -18,6 +19,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly IFileServer _fileServer = fileServer;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
+        private readonly IRequestService _requestService = requestService;
 
         #region ListOfContractTerminationRequest
         public async Task<Response<IEnumerable<ListOfContractTerminationRequestResponse>>> ListOfContractTerminationRequest()
@@ -57,7 +59,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 Id = x.Id,
                 EmployeeId = x.EmployeeId,
                 request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
-                EmployeeName = x.Employee.FirstNameEn,
+                EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn : x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,
                 Notes = x.Notes,
