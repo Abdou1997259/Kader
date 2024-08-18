@@ -682,6 +682,7 @@ namespace Kader_System.Services.Services.HR
                 obj.IsActive = model.is_active;
                 obj.EmployeeImage = imageFile?.FileName;
                 obj.EmployeeImageExtension = imageFile?.FileExtension;
+                
                 obj.ListOfAttachments = employeeAttachments?.Select(f => new HrEmployeeAttachment
                 {
                     FileExtension = f.FileExtension,
@@ -712,6 +713,7 @@ namespace Kader_System.Services.Services.HR
                         NormalizedEmail = obj.Email.ToUpper(),
                         PhoneNumber = obj.Phone,
                         IsActive = true,
+                        CurrentTitleId=model.title_id,
                         PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, model.password),
                         Id = Guid.NewGuid().ToString(),
                         UserName = model.username,
@@ -728,9 +730,33 @@ namespace Kader_System.Services.Services.HR
 
                         });
                     }
+                    await unitOfWork.CompleteAsync();
+                    var existingUserPermissions = await unitOfWork.UserPermssionRepositroy
+         .GetSpecificSelectTrackingAsync(x => x.TitleId == model.title_id && x.UserId == newUser.Id, x => x);
+
+                    if (existingUserPermissions.Any())
+                    {
+                        unitOfWork.UserPermssionRepositroy.RemoveRange(existingUserPermissions);
+                        await unitOfWork.CompleteAsync();
+                    }
+
+                    var titlePermissions = await unitOfWork.TitlePermissionRepository
+                        .GetSpecificSelectTrackingAsync(
+                            x => x.TitleId == model.title_id,
+                            select: x => new UserPermission
+                            {
+                                UserId = newUser.Id,
+                                SubScreenId = x.SubScreenId,
+                                Permission = x.Permissions
+                            }
+                        );
+                    await unitOfWork.UserPermssionRepositroy.AddRangeAsync(titlePermissions);
+                    await unitOfWork.CompleteAsync();
+
                 }
 
                 await unitOfWork.CompleteAsync();
+
                 transaction.Commit();
                 return new()
                 {
