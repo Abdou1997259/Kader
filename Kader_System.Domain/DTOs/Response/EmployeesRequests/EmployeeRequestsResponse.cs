@@ -25,6 +25,7 @@ namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
     public class ListOfDelayPermissionRequestResponse : EmployeeRequestsResponse
     {
         public int? HoursDelay { get; set; }
+        public TimeOnly? ArrivalTime { get; set; }
     }  
     public class ListOfAllowanceRequestResponse : EmployeeRequestsResponse
     {
