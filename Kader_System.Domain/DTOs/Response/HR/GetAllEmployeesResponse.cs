@@ -68,6 +68,7 @@
         public string Vacation { get; set; }
 
         public string Job { get; set; }
+        public int title_id { get; set; }
 
         /// <summary>
         /// مقيم / مواطن

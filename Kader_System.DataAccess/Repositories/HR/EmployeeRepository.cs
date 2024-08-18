@@ -271,6 +271,10 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                     from salary in salaryGroup.DefaultIfEmpty()
                     join gender in context.Genders on emp.GenderId equals gender.Id into genderGroup
                     from gender in genderGroup.DefaultIfEmpty()
+                    join title in context.Titles 
+                    on u.CurrentTitleId equals title.Id into titleGroup
+                    from titlegroup in titleGroup.DefaultIfEmpty()
+
                     select new EmployeesData()
                     {
                         Management = lang == Localization.Arabic ? management.NameAr : management.NameEn,
@@ -295,6 +299,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                         Job = lang == Localization.Arabic ? job.NameAr : job.NameEn,
                         qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
                         note = emp.Note,
+                        title_id= titlegroup.Id,
                         Phone = emp.Phone,
                         job_name = lang == Localization.Arabic ? job.NameAr : job.NameEn,
                         vacation_days_count = vacation.TotalBalance,
