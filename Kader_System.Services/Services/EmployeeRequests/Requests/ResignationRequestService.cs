@@ -188,7 +188,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 {
                     if (!string.IsNullOrWhiteSpace(resignationRequest.AttachmentPath))
                     {
-                        _fileServer.RemoveFile(ModuleName, resignationRequest.AttachmentPath);
+                        _fileServer.RemoveFile(ModuleName, HrEmployeeRequestTypesEnums.ResignationRequest.ToString(), resignationRequest.AttachmentPath);
                     }
                     msg = _sharLocalizer[Localization.Deleted];
                     return new()

@@ -58,7 +58,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 {
                     if (!string.IsNullOrWhiteSpace(leaveRequest.AttachmentPath))
                     {
-                        _fileServer.RemoveFile(fullPath, leaveRequest.AttachmentPath);
+                        _fileServer.RemoveFile(fullPath,HrEmployeeRequestTypesEnums.LeavePermission.ToString(), leaveRequest.AttachmentPath);
                     }
                     msg = _sharLocalizer[Localization.Deleted];
                     return new()

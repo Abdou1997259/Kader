@@ -230,7 +230,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 {
                     if (!string.IsNullOrWhiteSpace(_AllowanceRequests.AttachmentPath))
                     {
-                        _fileServer.RemoveFile(ModuleName, _AllowanceRequests.AttachmentPath);
+                        _fileServer.RemoveFile(ModuleName, HrEmployeeRequestTypesEnums.AllowanceRequest.ToString(), _AllowanceRequests.AttachmentPath);
                     }
                     msg = _sharLocalizer[Localization.Deleted];
                     return new()

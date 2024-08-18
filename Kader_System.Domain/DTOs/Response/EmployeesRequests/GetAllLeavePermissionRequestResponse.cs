@@ -19,5 +19,7 @@ namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
     }
     public class GetAllResignationRequestResponse : PaginationData<ListOfResignationRequestResponse>
     {
+    } public class GetAllSalaryIncreaseRequestResponse : PaginationData<ListOfSalaryIncreaseRequestResponse>
+    {
     }
 }

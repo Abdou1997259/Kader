@@ -92,7 +92,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 {
                     if (!string.IsNullOrWhiteSpace(_DelayPermissionRequest.AttachmentPath))
                     {
-                        _fileServer.RemoveFile(fullPath, _DelayPermissionRequest.AttachmentPath);
+                        _fileServer.RemoveFile(fullPath, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), _DelayPermissionRequest.AttachmentPath);
                     }
                     msg = _sharLocalizer[Localization.Deleted];
                     return new()

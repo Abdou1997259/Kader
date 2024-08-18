@@ -23,9 +23,9 @@ namespace Kader_System.Services.Services.AppServices
         {
             return Path.Combine(paths);
         }
-        public void RemoveFile(string moduleName,string fileName)
+        public void RemoveFile(params string [] paths)
         {
-            var filePath = Path.Combine(serverPath,moduleName, fileName);
+            var filePath = Path.Combine(serverPath, Path.Combine(paths));
             if (File.Exists(filePath))
                 File.Delete(filePath);
         }

@@ -183,7 +183,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 {
                     if (!string.IsNullOrWhiteSpace(loanRequest.AttachmentPath))
                     {
-                        _fileServer.RemoveFile(fullPath, loanRequest.AttachmentPath);
+                        _fileServer.RemoveFile(fullPath, HrEmployeeRequestTypesEnums.LoanRequest.ToString(), loanRequest.AttachmentPath);
                     }
                     msg = _sharLocalizer[Localization.Deleted];
                     return new()

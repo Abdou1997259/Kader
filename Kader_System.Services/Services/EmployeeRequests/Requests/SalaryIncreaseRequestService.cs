@@ -1,16 +1,26 @@
-﻿using Kader_System.Domain.DTOs;
+﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
+using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
+using Kader_System.Services.IServices.HTTP;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class SalaryIncreaseRequestService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> localizer, IFileServer fileServer, IFileServer fileserver,
-    IMapper mapper) : ISalaryIncreaseRequestService
+    public class SalaryIncreaseRequestService(IUnitOfWork unitOfWork, KaderDbContext context, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ISalaryIncreaseRequestService
     {
- 
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
+        private readonly IMapper _mapper = mapper;
+        private readonly IFileServer _fileServer = fileServer;
+        private readonly IHttpContextService _contextService = contextService;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly KaderDbContext _context = context;
 
 
         #region ListOfIncreaseSalaryRequest
@@ -18,7 +28,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<IEnumerable<DTOSalaryIncreaseRequest>>> ListOfSalaryIncreaseRequest()
         {
             var result =  await unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
-            var msg = localizer[Localization.NotFound];
+            var msg = _sharLocalizer[Localization.NotFound];
             if (result == null)
             {
                 return new()
@@ -42,25 +52,29 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
         #region PaginatedSalaryIncrease
 
-        public async Task<Response<GetSalaryIncreseRequestResponse>> GetAllSalaryIncreaseRequest(GetAlFilterationForSalaryIncreaseRequest model, string host)
+        public async Task<Response<GetAllSalaryIncreaseRequestResponse>> GetAllSalaryIncreaseRequest(GetAlFilterationForSalaryIncreaseRequest model, string host)
         {
+
             Expression<Func<SalaryIncreaseRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
-                   x => x.IsDeleted == false :
-                   x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus; var totalRecords = await unitOfWork.SalaryIncreaseRequest.CountAsync(filter: filter);
-            var data = await unitOfWork.SalaryIncreaseRequest.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
-            var msg = localizer[Localization.NotFound];
-            if (data == null)
+                x => x.IsDeleted == false :
+                x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
+
+            var totalRecords = await _unitOfWork.SalaryIncreaseRequest.CountAsync(filter: filter);
+            var items = (await _unitOfWork.SalaryIncreaseRequest.GetSpecificSelectAsync(filter, x => new ListOfSalaryIncreaseRequestResponse
             {
-                return new()
-                {
-                    Check = false,
-                    Data = null,
-                    Msg = msg
-                };
-
-            }
-            var mappingResult = mapper.Map<List<DTOListOfSalaryIncreaseRepostory>>(data);
-
+                Id = x.Id,
+                EmployeeId = x.EmployeeId,
+                request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                EmployeeName = x.employee.FirstNameEn,
+                Amount = x.Amount,
+                ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
+                reason = x.StatuesOfRequest.StatusMessage,
+                Notes = x.Notes,
+                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.SalaryIncreaseRequest.ToString(), x.AttachmentPath) : null
+            },
+            orderBy: x => x.OrderBy(x => x.Id),
+                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "employee,StatuesOfRequest")).ToList();
+            #region Pagination
 
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
@@ -71,11 +85,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
-            var result = new GetSalaryIncreseRequestResponse()
+            #endregion
+
+            var result = new GetAllSalaryIncreaseRequestResponse
             {
                 TotalRecords = totalRecords,
-
-                Items = mappingResult,
+                Items = items,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -86,13 +101,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
                 Path = host,
                 PerPage = model.PageSize,
-                Links = pageLinks
-
+                Links = pageLinks,
             };
 
             if (result.TotalRecords is 0)
             {
-                string resultMsg = localizer[Localization.NotFoundData];
+                string resultMsg = _sharLocalizer[Localization.NotFoundData];
 
                 return new()
                 {
@@ -110,19 +124,18 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 Data = result,
                 Check = true
             };
-
         }
         #endregion
 
 
         #region SalaryIncreaseGetById
-        public async Task<Response<DTOListOfSalaryIncreaseRepostory>> GetById(int id)
+        public async Task<Response<ListOfSalaryIncreaseRequestResponse>> GetById(int id)
 
         {
             var result = await unitOfWork.SalaryIncreaseRequest.GetByIdAsync(id);
             if (result == null)
             {
-                var msg = localizer[Localization.NotFoundData];
+                var msg = _sharLocalizer[Localization.NotFoundData];
 
                 return new()
                 {
@@ -133,7 +146,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
             }
 
-            var mappingResult = mapper.Map<DTOListOfSalaryIncreaseRepostory>(result);
+            var mappingResult = mapper.Map<ListOfSalaryIncreaseRequestResponse>(result);
 
             return new()
             {
@@ -147,32 +160,22 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddSalaryIncrease
-        public async Task<Response<SalaryIncreaseRequest>> AddNewSalaryIncreaseRequest(DTOSalaryIncreaseRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.SalaryIncreaseRequest)
+        public async Task<Response<SalaryIncreaseRequest>> AddNewSalaryIncreaseRequest(DTOSalaryIncreaseRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.SalaryIncreaseRequest)
         {
-             
-        
-        var IsEmpolyeeExisted = await unitOfWork.Employees.ExistAsync(model.EmployeeId);
-            if (!IsEmpolyeeExisted)
+            var newRequest = _mapper.Map<SalaryIncreaseRequest>(model);
+            StatuesOfRequest statues = new()
             {
-
-                var msg = $"{localizer[Localization.Employee]} {localizer[Localization.NotFound]}";
-                return new()
-                {
-                    Check = false,
-                    Data = null,
-                    Msg = msg
-                };
-
-            }
-            var newRequest = mapper.Map<SalaryIncreaseRequest>(model);
+                ApporvalStatus = (int)RequestStatusTypes.Pending
+            };
+            newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-            newRequest.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await fileserver.UploadFile(moduleNameWithType, model.Attachment);
-            await unitOfWork.SalaryIncreaseRequest.AddAsync(newRequest);
-            var result = await unitOfWork.CompleteAsync();
+            newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
+                await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
+            await _unitOfWork.SalaryIncreaseRequest.AddAsync(newRequest);
+            var result = await _unitOfWork.CompleteAsync();
             return new()
             {
-                Msg = localizer[Localization.Done],
+                Msg = sharLocalizer[Localization.Done],
                 Check = true,
             };
 
@@ -181,73 +184,130 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
         #region UpdateSalaryIncrease
-        public async Task<Response<SalaryIncreaseRequest>> UpdateSalaryIncreaseRequest(int id, DTOSalaryIncreaseRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.SalaryIncreaseRequest)
+        public async Task<Response<SalaryIncreaseRequest>> UpdateSalaryIncreaseRequest(int id, DTOSalaryIncreaseRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.SalaryIncreaseRequest)
         {
-            var result = await unitOfWork.SalaryIncreaseRequest.GetByIdAsync(id);
-
-            if (result == null)
+            var salaryIncrease = await _unitOfWork.SalaryIncreaseRequest.GetByIdAsync(id);
+            if (salaryIncrease == null || salaryIncrease.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
+                var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotPending];
                 return new()
                 {
                     Check = false,
-                    Data = null,
-                    Msg = localizer[Localization.NotFound]
+                    Msg = msg,
+                    Data = null
                 };
             }
-            var updatingModel = mapper.Map(model, result);
+            var mappedsalaryIncrease = _mapper.Map(model, salaryIncrease);
+            var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
+
+
             if (model.Attachment is not null)
             {
-                var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-                updatingModel.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await fileserver.UploadFile(moduleNameWithType, model.Attachment);
+                _fileServer.RemoveFile(moduleName, salaryIncrease.AttachmentPath);
+                mappedsalaryIncrease.AttachmentPath = await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
             }
-            unitOfWork.SalaryIncreaseRequest.Update(result);
-            await unitOfWork.CompleteAsync();
 
+            _unitOfWork.SalaryIncreaseRequest.Update(mappedsalaryIncrease);
+            var result = await _unitOfWork.CompleteAsync();
             return new()
             {
-                Data = updatingModel,
-                Check = true
+                Msg = sharLocalizer[Localization.Done],
+                Check = true,
             };
-
 
         }
 
         #endregion
 
         #region DeleteSalaryIncrease
-        public async Task<Response<SalaryIncreaseRequest>> DeleteSalaryIncreaseRequest(int id)
+        public async Task<Response<SalaryIncreaseRequest>> DeleteSalaryIncreaseRequest(int id,string moduleName)
         {
-            var salaryIncrease = await unitOfWork.SalaryIncreaseRequest.GetByIdAsync(id);
-            var msg = $"{localizer[Localization.Employee]} {localizer[Localization.NotFound]}";
-            if (salaryIncrease == null)
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var salaryIncreaseRequest = await _unitOfWork.SalaryIncreaseRequest.GetByIdAsync(id);
+            var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
+            if (salaryIncreaseRequest != null)
             {
-
-                return new()
+                var result = await _unitOfWork.SalaryIncreaseRequest.SoftDeleteAsync(salaryIncreaseRequest, DeletedBy: userId);
+                if (result > 0)
                 {
-                    Check = false,
-                    Data = null,
-                    Msg = msg
-                };
+                    if (!string.IsNullOrWhiteSpace(salaryIncreaseRequest.AttachmentPath))
+                    {
+                        _fileServer.RemoveFile(moduleName, HrEmployeeRequestTypesEnums.SalaryIncreaseRequest.ToString(), salaryIncreaseRequest.AttachmentPath);
+                    }
+                    msg = _sharLocalizer[Localization.Deleted];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = true,
+                    };
+                }
             }
-            unitOfWork.SalaryIncreaseRequest.Remove(salaryIncrease);
-            await unitOfWork.CompleteAsync();
-            msg = localizer[Localization.Deleted];
-
             return new()
             {
-                Data = salaryIncrease,
-                Msg = msg,
-                Check = true,
+                Check = false,
+                Data = null,
+                Msg = msg
             };
 
         }
 
-      
 
-      
- 
+
+
+
         #endregion
+
+        #region Status
+        public async Task<Response<string>> ApproveRequest(int requestId)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _context.SalaryIncreaseRequests.Where(x => x.Id == requestId)
+                                 .ExecuteUpdateAsync(x => x.
+                                   SetProperty(p => p.StatuesOfRequest.ApporvalStatus, (int)RequestStatusTypes.Approved).
+                                   SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
+                                   SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId)
+
+                                 );
+            if (result > 0)
+            {
+                return new Response<string>()
+                {
+                    Check = true,
+                    Msg = "Approved sucessfully"
+                };
+            }
+            return new Response<string>()
+            {
+                Check = false,
+                Msg = "Cannot approve , request is not pending or is deleted"
+            };
+        }
+        public async Task<Response<string>> RejectRequest(int requestId, string resoan)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _context.SalaryIncreaseRequests.Include(x => x.StatuesOfRequest).
+                                                  Where(x => x.Id == requestId && x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Pending)
+                                                 .ExecuteUpdateAsync(x => x.
+                                                 SetProperty(p => p.StatuesOfRequest.ApporvalStatus, (int)RequestStatusTypes.Rejected).
+                                                 SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
+                                                 SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId).
+                                                 SetProperty(p => p.StatuesOfRequest.StatusMessage, resoan));
+            if (result > 0)
+            {
+                return new Response<string>()
+                {
+                    Check = true,
+                    Msg = "Rejected sucessfully"
+                };
+            }
+            return new Response<string>()
+            {
+                Check = false,
+                Msg = "Cannot approve"
+            };
+        }
+        #endregion
+
 
     }
 }

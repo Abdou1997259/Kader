@@ -16,11 +16,10 @@ namespace Kader_System.Services.IServices.AppServices
         /// <returns>new file name with GUID</returns>
         public Task<string> UploadFile(string moduleName, IFormFile file);
         /// <summary>
-        /// Remove file from wwwroot by filename
+         /// Remove file from wwwroot
         /// </summary>
-        /// <param name="moduleName"></param>
-        /// <param name="fileName"></param>
-        public void RemoveFile(string moduleName, string fileName);
+        /// <param name="paths"></param>
+        public void RemoveFile(params string[] paths);
 
         /// <summary>
         /// Get File Path from wwwroot by filename

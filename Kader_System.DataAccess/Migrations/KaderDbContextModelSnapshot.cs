@@ -249,7 +249,7 @@ namespace Kader_System.DataAccess.Migrations
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
-                            ConcurrencyStamp = "92aa665b-1f7f-4471-91af-fc4c48da2e11",
+                            ConcurrencyStamp = "b720f5bf-6721-48c0-a174-e04377d67a5b",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -263,10 +263,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOop2IAqswVdffYUOtfRe63VKELcAjBqVDoz/pa3f/M8GUQMpgkrITZ9JNi9rG58bw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECG9JJnmMzEyZteabODHpe0Kqzb1GiSAVxe0oARf0rdzWCC7nIDOfde2iM6I9u1Gzg==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1b53a270-63a9-490c-b6e0-d46d3db6f77a",
+                            SecurityStamp = "38b8a546-ee53-44e9-b258-c630bc35fd81",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -882,7 +882,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<string>("AttachmentFileName")
+                    b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")

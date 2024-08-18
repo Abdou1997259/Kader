@@ -182,7 +182,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 {
                     if (!string.IsNullOrWhiteSpace(_contractTerminationRequest.AttachmentPath))
                     {
-                        _fileServer.RemoveFile(fullPath, _contractTerminationRequest.AttachmentPath);
+                        _fileServer.RemoveFile(fullPath, HrEmployeeRequestTypesEnums.TerminateContract.ToString(), _contractTerminationRequest.AttachmentPath);
                     }
                     msg = _sharLocalizer[Localization.Deleted];
                     return new()
