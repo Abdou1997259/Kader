@@ -1190,35 +1190,35 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     public async Task<Response<GetMyProfileResponse>> GetMyProfile(string lang)
     {
-      var user=   _accessor!.HttpContext!.User as ClaimsPrincipal;
+          var userId=   _accessor!.HttpContext!.User.GetUserId();
 
-        var companies = await _unitOfWork.Companies.GetSpecificSelectAsQuerableAsync(x => user.GetCompaines().Splitter().Contains(x.Id), x => x);
-        var titles = await _unitOfWork.Titles.GetSpecificSelectAsync(x => user.GetTitles().Splitter().Contains(x.Id), x => x);
+         var user=await _unitOfWork.Users.GetFirstOrDefaultAsync(x=>x.Id==userId);
+
+        var companies = await _unitOfWork.Companies.GetSpecificSelectAsQuerableAsync(x => user.CompanyId.Splitter().Contains(x.Id), x => x);
+        var titles = await _unitOfWork.Titles.GetSpecificSelectAsync(x => user.TitleId.Splitter().Contains(x.Id), x => x);
     
         Kader_System.Domain.Models.Title title = null;
         var allTitles = await _unitOfWork.Titles.GetAllAsync();
         HrCompany cop = null;
-        if (!string.IsNullOrEmpty(user.GetCurrentTitle()))
-        {
-             title = await _unitOfWork.Titles.GetByIdAsync(int.Parse(user.GetCurrentTitle()));
-        }
-        if (!string.IsNullOrEmpty(user.GetCurrentCompany()))
-        {
-            var userComapny = int.Parse(user.GetCurrentCompany());
-            cop = await _unitOfWork.Companies.GetByIdAsync(userComapny);
-        }
+     
+       title = await _unitOfWork.Titles.GetByIdAsync(user.CurrentTitleId);
+        
+       
+     
+       cop = await _unitOfWork.Companies.GetByIdAsync(user.CurrentCompanyId);
+        
 
         var screens = await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
         var perm = await _permissionservice.GetPermissionsBySubScreen(lang);
-        var jwtSecurityToken =await  CreateJwtToken(await _userManager.FindByIdAsync(user.GetUserId()));
+        var jwtSecurityToken = await CreateJwtToken(await _userManager.FindByIdAsync(user.Id));
 
-        var email = user?.GetEmalil() ?? string.Empty;
-        var fullName = user?.GetFullName() ?? string.Empty;
+        var email = user.Email;
+        var fullName = user.FullName;
         var title2 = Localization.Arabic == lang ? title?.TitleNameAr ?? string.Empty : title?.TitleNameEn ?? string.Empty;
-        var mobile = user?.GetMobile() ?? string.Empty;
-        var image = user?.GetImage() ?? string.Empty;
-        var currentTitles = int.TryParse(user?.GetCurrentTitle(), out var titlesresult) ? titlesresult : 0;
-        var currentCompany = int.TryParse(user?.GetCurrentCompany(), out var company) ? company : 0;
+        var mobile = user.PhoneNumber;
+        var image = user.ImagePath;
+        var currentTitles = user.CurrentTitleId;
+        var currentCompany = user.CurrentCompanyId;
         var currentCompanyName = Localization.Arabic == lang ? cop?.NameAr ?? string.Empty : cop?.NameEn ?? string.Empty;
         var myPermissions = perm?.DynamicData;
         var screensResult = screens?.DataList;
