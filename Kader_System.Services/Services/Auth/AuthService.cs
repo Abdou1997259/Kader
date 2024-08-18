@@ -626,6 +626,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 x => x.TitleId == model.current_title,
                 select: x => new UserPermission
                 {
+                   TitleId=model.current_title.Value,
                     UserId = user.Id,
                     SubScreenId = x.SubScreenId,
                     Permission = x.Permissions

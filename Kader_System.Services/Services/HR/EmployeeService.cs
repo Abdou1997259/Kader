@@ -531,6 +531,7 @@ namespace Kader_System.Services.Services.HR
                         x => x.TitleId == model.title_id,
                         select: x => new UserPermission
                         {
+                            TitleId=model.title_id,
                             UserId = newUser.Id,
                             SubScreenId = x.SubScreenId,
                             Permission = x.Permissions
