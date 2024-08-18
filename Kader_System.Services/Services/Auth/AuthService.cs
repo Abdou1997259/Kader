@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.DTOs;
+﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.Auth;
@@ -12,6 +13,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                    IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
                    IFileServer fileServer,
                    RoleManager<ApplicationRole> roleManager,
+                   KaderDbContext db,
                    IMainScreenService mainScreenService
                 ) : IAuthService
 
@@ -28,6 +30,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     private readonly IFileServer _fileServer = fileServer;
     private readonly IPermessionStructureService _permissionservice = premissionsevice;
     private readonly IMainScreenService _mainScreenService = mainScreenService;
+    private readonly KaderDbContext _db = db;
     #region Authentication
 
     public async Task<Response<AuthLoginUserResponse>> LoginUserAsync(AuthLoginUserRequest model)
@@ -804,40 +807,39 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     private async Task<Response<string>> ProcessUserPermissions(string userId, int titleId, IEnumerable<Permissions> model, bool all)
     {
-        int userCounter = 0;
         foreach (var assignedPermission in model)
         {
             var userPermissionQuery = await _unitOfWork.UserPermssionRepositroy
-                .GetSpecificSelectAsync(x => x.TitleId == titleId && x.SubScreenId == assignedPermission.SubId, x => x);
+                .GetSpecificSelectTrackingAsync(x => x.TitleId == titleId && x.SubScreenId == assignedPermission.SubId, x => x);
 
             if (await _unitOfWork.SubMainScreens.ExistAsync(x => x.Id == assignedPermission.SubId))
             {
                 if (userPermissionQuery.Count() > 0)
                 {
                     _unitOfWork.UserPermssionRepositroy.RemoveRange(userPermissionQuery);
-
+                    await _unitOfWork.CompleteAsync();
+                   
                 }
 
-         
-
-
-                if (assignedPermission.title_permission.Count == 0 ||  assignedPermission.title_permission.Any(x => x == 0))
+                if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
                 {
                     continue;
                 }
                 else
                 {
-                    await _unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission
+                    var newPermission = new UserPermission
                     {
-
                         UserId = userId.ToString(),
-
                         TitleId = titleId,
                         SubScreenId = assignedPermission.SubId,
                         Permission = string.Join(',', assignedPermission.title_permission)
-                    });
-                }
+                    };
 
+                    // Detach any existing entity with the same Id
+                   
+
+                    await _unitOfWork.UserPermssionRepositroy.AddAsync(newPermission);
+                }
             }
             else
             {
@@ -847,12 +849,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                     Check = false,
                     Data = null,
                     Msg = msg
-
-
                 };
             }
-       
-      
         }
 
         await _unitOfWork.CompleteAsync();
@@ -860,10 +858,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         {
             Check = true,
             Data = null,
-          
-
-
         };
+
     }
 
 
