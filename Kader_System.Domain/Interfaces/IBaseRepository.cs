@@ -76,6 +76,15 @@
     /// <param name="_softDeleteProperty"></param>
     /// <returns>number of rows affected</returns>
     public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted",bool IsDeleted = true,string DeletedBy = null);
+    /// <summary>
+    /// Update approve or reject request of empoyee
+    /// </summary>
+    /// <param name="filter"></param>
+    /// <param name="status"></param>
+    /// <param name="userId"></param>
+    /// <param name="reason"></param>
+    /// <returns>number of rows affacted</returns>
+    public Task<int> UpdateApporvalStatus(Expression<Func<T, bool>> filter, RequestStatusTypes status, string userId, string reason = null);
 
 
 }
