@@ -46,9 +46,16 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<GetAllLoanRequestResponse>> GetAllLoanRequest(GetFilterationLoanRequest model, string host)
         {
 
-            Expression<Func<LoanRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
-                x => x.IsDeleted == false :
-                x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
+            #region ApprovalExpression
+            Expression<Func<LoanRequest, bool>> filter = x =>
+             x.IsDeleted == false &&
+             (model.ApporvalStatus == RequestStatusTypes.All || (model.ApporvalStatus == RequestStatusTypes.Approved ?
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved :
+             model.ApporvalStatus == RequestStatusTypes.ApprovedRejected ?
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved ||
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected :
+             model.ApporvalStatus == RequestStatusTypes.Rejected && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected));
+            #endregion
 
             var totalRecords = await _unitOfWork.LoanRequestRepository.CountAsync(filter: filter);
             var items = (await _unitOfWork.LoanRequestRepository.GetSpecificSelectAsync(filter, x => new ListOfLoanRequestResponse

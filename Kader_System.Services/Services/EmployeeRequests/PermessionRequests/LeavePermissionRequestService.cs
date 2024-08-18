@@ -83,9 +83,16 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<GetAllLeavePermissionRequestRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
         {
 
-            Expression<Func<LeavePermissionRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
-                x => x.IsDeleted == false :
-                x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
+            #region ApprovalExpression
+            Expression<Func<LeavePermissionRequest, bool>> filter = x =>
+             x.IsDeleted == false &&
+             (model.ApporvalStatus == RequestStatusTypes.All || (model.ApporvalStatus == RequestStatusTypes.Approved ?
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved :
+             model.ApporvalStatus == RequestStatusTypes.ApprovedRejected ?
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved ||
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected :
+             model.ApporvalStatus == RequestStatusTypes.Rejected && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected));
+            #endregion
 
             var totalRecords = await _unitOfWork.LeavePermissionRequest.CountAsync(filter: filter);
             var items = (await _unitOfWork.LeavePermissionRequest.GetSpecificSelectAsync(filter, x => new ListOfLeavePermissionsRequestResponse

@@ -53,26 +53,39 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedAllwanceRequest
         public async Task<Response<GetAllowanceRequestRequestResponse>> GetAllowanceRequest(GetAllFilterationAllowanceRequest model, string host)
         {
-            Expression<Func<AllowanceRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
-                x => x.IsDeleted == false :
-                x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
+            #region ApprovalExpression
+            Expression<Func<AllowanceRequest, bool>> filter = x =>
+             x.IsDeleted == false &&
+             (model.ApporvalStatus == RequestStatusTypes.All || (model.ApporvalStatus == RequestStatusTypes.Approved ?
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved :
+             model.ApporvalStatus == RequestStatusTypes.ApprovedRejected ?
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved ||
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected :
+             model.ApporvalStatus == RequestStatusTypes.Rejected && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected));
+            #endregion
 
-            var totalRecords = await _unitOfWork.AllowanceRequests.CountAsync(filter: filter);
-            var items = (await _unitOfWork.AllowanceRequests.GetSpecificSelectAsync(filter, x => new ListOfAllowanceRequestResponse
-            {
-                Id = x.Id,
-                EmployeeId = x.EmployeeId,
-                request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
-                EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn : x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr,
-                allowance_id = x.allowance_id,
-                allowance_type_id = x.allowance_type_id,
-                ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
-                reason = x.StatuesOfRequest.StatusMessage,
-                Notes = x.notes,
-                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.AllowanceRequest.ToString(), x.AttachmentPath) : null
-            },
-            orderBy: x => x.OrderBy(x => x.Id),
-                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();
+            var totalRecords = await _unitOfWork.AllowanceRequests.CountAsync(filter);
+
+            var items = await (from x in _context.AllowanceRequests.AsNoTracking().
+                                        Include(x => x.StatuesOfRequest).Where(filter)
+                               join emp in _context.Employees on x.EmployeeId equals emp.Id
+                               join allowance in _context.Allowances on x.allowance_id equals allowance.Id
+                               join allowance_type in _context.TransSalaryEffects on x.allowance_type_id equals allowance_type.Id
+                               select new ListOfAllowanceRequestResponse
+                               {
+                                   Id = x.Id,
+                                   EmployeeId = x.EmployeeId,
+                                   request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                                   EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn : x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr,
+                                   allowance_id = x.allowance_id,
+                                   allowance_type_id = x.allowance_type_id,
+                                   allowance_name = _requestService.GetRequestHeaderLanguage == Localization.English ? allowance.Name_en  : allowance.Name_ar,
+                                   allowance_type_name = _requestService.GetRequestHeaderLanguage == Localization.English ? allowance_type.NameInEnglish  : allowance_type.Name,
+                                   ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
+                                   reason = x.StatuesOfRequest.StatusMessage,
+                                   Notes = x.notes,
+                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), x.AttachmentPath) : null
+                               }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             #region Pagination
 
             int page = 1;

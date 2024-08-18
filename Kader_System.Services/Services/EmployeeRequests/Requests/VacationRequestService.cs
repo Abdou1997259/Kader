@@ -50,34 +50,39 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedLoanRequest
         public async Task<Response<GetAllVacationRequestReponse>> GetAllVacationRequest(GetFilterationVacationRequestRequest model, string host)
         {
-            Expression<Func<VacationRequests, bool>> filter = null;
-            if (model.ApporvalStatus == RequestStatusTypes.All)
-                filter = x => x.IsDeleted == false;
-            else if(model.ApporvalStatus == RequestStatusTypes.Approved)
-                filter =  x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
-            else if(model.ApporvalStatus == RequestStatusTypes.ApprovedRejected)
-                filter = x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved || x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected;
+            #region ApprovalExpression
+            Expression<Func<VacationRequests, bool>> filter = x =>
+             x.IsDeleted == false &&
+             (model.ApporvalStatus == RequestStatusTypes.All || (model.ApporvalStatus == RequestStatusTypes.Approved ?
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved :
+             model.ApporvalStatus == RequestStatusTypes.ApprovedRejected ?
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved ||
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected :
+             model.ApporvalStatus == RequestStatusTypes.Rejected && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected));
+            #endregion
 
+            var totalRecords = await _unitOfWork.VacationRequests.CountAsync(filter);
 
-            var totalRecords = await _unitOfWork.VacationRequests.CountAsync(filter: filter);
-            var items = (await _unitOfWork.VacationRequests.GetSpecificSelectAsync(filter, x => new ListOfVacationRequestResponse
-            {
-                Id = x.Id,
-                EmployeeId = x.EmployeeId,
-                request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
-                EmployeeName = x.Employee.FirstNameEn,
-                DayCounts = x.DayCounts,
-                StartDate = x.StartDate,
-                EndDate = x.StartDate.AddDays(x.DayCounts),
-                VacationTypeId = x.VacationTypeId,
-                VacationTypeName = _requestService.GetRequestHeaderLanguage == Localization.English ?x.VacationType.NameInEnglish : x.VacationType.Name,
-                ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
-                reason = x.StatuesOfRequest.StatusMessage,
-                Notes = x.Notes,
-                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.VacationRequest.ToString(), x.AttachmentPath) : null
-            },
-            orderBy: x => x.OrderBy(x => x.Id),
-                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest,VacationType")).ToList();
+            var items = await (from x in _context.HrVacationRequests.AsNoTracking().
+                                        Include(x => x.StatuesOfRequest).Where(filter)
+                                join emp in _context.Employees on x.EmployeeId equals emp.Id
+                                join vac in _context.VacationTypes on x.VacationTypeId equals vac.Id
+                                select new ListOfVacationRequestResponse
+                                {
+                                    Id = x.Id,
+                                    EmployeeId = x.EmployeeId,
+                                    request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                                    EmployeeName = x.Employee.FirstNameEn,
+                                    DayCounts = x.DayCounts,
+                                    StartDate = x.StartDate,
+                                    EndDate = x.StartDate.AddDays(x.DayCounts),
+                                    VacationTypeId = x.VacationTypeId,
+                                    VacationTypeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.VacationType.NameInEnglish : x.VacationType.Name,
+                                    ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
+                                    reason = x.StatuesOfRequest.StatusMessage,
+                                    Notes = x.Notes,
+                                    AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.VacationRequest.ToString(), x.AttachmentPath) : null
+                                }).OrderByDescending(x =>x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             #region Pagination
 
             int page = 1;

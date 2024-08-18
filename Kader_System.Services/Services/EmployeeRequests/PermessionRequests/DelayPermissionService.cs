@@ -10,6 +10,7 @@ using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.Services.EmployeeRequests.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using static Kader_System.Domain.Constants.SD.ApiRoutes.EmployeeRequests;
 
 namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
@@ -116,26 +117,37 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Read
         public async Task<Response<GetAllDelayPermissionRequestRequestResponse>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host)
         {
-            Expression<Func<DelayPermission, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
-                x => x.IsDeleted == false :
-                x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
+            #region ApprovalExpression
+            Expression<Func<DelayPermission, bool>> filter = x =>
+             x.IsDeleted == false &&
+             (model.ApporvalStatus == RequestStatusTypes.All || (model.ApporvalStatus == RequestStatusTypes.Approved ?
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved :
+             model.ApporvalStatus == RequestStatusTypes.ApprovedRejected ?
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved ||
+                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected :
+             model.ApporvalStatus == RequestStatusTypes.Rejected && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected));
+            #endregion
 
-            var totalRecords = await _unitOfWork.DelayPermission.CountAsync(filter: filter);
-            var items = (await _unitOfWork.DelayPermission.GetSpecificSelectAsync(filter, x => new ListOfDelayPermissionRequestResponse
-            {
-                Id = x.Id,
-                EmployeeId = x.EmployeeId,
-                request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
-                HoursDelay = x.DelayHours,
-                ArrivalTime = x.Employee.Shift.Start_shift.AddHours(x.DelayHours.Value),
-                EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn : x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr,
-                ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
-                reason = x.StatuesOfRequest.StatusMessage,
-                Notes = x.Notes,
-                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), x.AttachmentPath) : null
-            },
-            orderBy: x => x.OrderBy(x => x.Id),
-                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest,Employee.Shift")).ToList();
+            var totalRecords = await _unitOfWork.DelayPermission.CountAsync(filter);
+
+            var items = await (from x in _context.HrDelayPermissions.AsNoTracking().
+                                        Include(x => x.StatuesOfRequest).Where(filter)
+                               join emp in _context.Employees on x.EmployeeId equals emp.Id
+                               select new ListOfDelayPermissionRequestResponse
+                               {
+                                   Id = x.Id,
+                                   EmployeeId = x.EmployeeId,
+                                   request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                                   HoursDelay = x.DelayHours,
+                                   ArrivalTime = x.Employee.Shift.Start_shift.AddHours(x.DelayHours.Value),
+                                   EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn : x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr,
+                                   ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
+                                   reason = x.StatuesOfRequest.StatusMessage,
+                                   Notes = x.Notes,
+                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), x.AttachmentPath) : null
+                               }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+
+
             #region Pagination
 
             int page = 1;
