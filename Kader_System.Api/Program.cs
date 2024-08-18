@@ -30,6 +30,7 @@ using Kader_System.Services.Services.Auth;
 using Kader_System.Services.Services.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.Services.EmployeeRequests.Requests;
 using Kader_System.Services.Services.HR;
+using Kader_System.Services.Services.HTTP;
 using Kader_System.Services.Services.Setting;
 using Kader_System.Services.Services.Trans;
 using Microsoft.AspNetCore.Identity;
@@ -301,6 +302,7 @@ builder.Services.AddScoped<IPermessionStructureService, PermessionStructureServi
 builder.Services.AddScoped<IUserPermessionService, UserPermessionService>();
 builder.Services.AddScoped<ITitlePermessionService, TitlePermessionService>();
 builder.Services.AddScoped<IGetAllScreensService, GetAllScreensService>();
+builder.Services.AddScoped<IHttpContextService, HttpContextService>();
 #region Employee_Requests
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
 builder.Services.AddScoped<IVacationRequestService, VacationRequestService>();

@@ -51,7 +51,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
         public async Task<Response<GetSalaryIncreseRequestResponse>> GetAllSalaryIncreaseRequest(GetAlFilterationForSalaryIncreaseRequest model, string host)
         {
-            Expression<Func<SalaryIncreaseRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.None ?
+            Expression<Func<SalaryIncreaseRequest, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
                    x => x.IsDeleted == false :
                    x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus; var totalRecords = await unitOfWork.SalaryIncreaseRequest.CountAsync(filter: filter);
             var data = await unitOfWork.SalaryIncreaseRequest.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));

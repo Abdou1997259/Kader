@@ -8,9 +8,10 @@ namespace Kader_System.Domain.Constants.Enums
 {
     public enum RequestStatusTypes
     {
-        None = 0,
+        All = 0,
         Pending = 1,
         Approved = 2,
         Rejected = 3,
+
     }
 }

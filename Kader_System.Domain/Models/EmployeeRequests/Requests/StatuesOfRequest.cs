@@ -15,6 +15,6 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         [Column("ApprovedDate")]
         public DateTime? ApprovedDate { get; set; }
         [Column("ApprovedBy")]
-        public int? ApprovedBy { get; set; }
+        public string? ApprovedBy { get; set; }
     }
 }
