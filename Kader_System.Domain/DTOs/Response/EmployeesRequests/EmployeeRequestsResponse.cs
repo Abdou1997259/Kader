@@ -54,6 +54,7 @@ namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
     {
         public int DayCounts { get; set; }
         public DateOnly StartDate { get; set; }
+        public DateOnly EndDate { get; set; }
         public int VacationTypeId { get; set; }
         public string VacationTypeName { get; set; }
     }

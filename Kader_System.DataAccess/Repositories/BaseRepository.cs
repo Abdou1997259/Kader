@@ -335,24 +335,31 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     public async Task<int> UpdateApporvalStatus(Expression<Func<T, bool>> filter, RequestStatusTypes status,string userId, string reason = null)
     {
         var entity = await context.Set<T>()
-        .Where(filter)
-        .Select(e => new
-        {
-            Entity = e,
-            StatuesOfRequest = e.GetType().GetProperty("StatuesOfRequest").GetValue(e)
-        }).FirstOrDefaultAsync();
+         .Include(e => EF.Property<object>(e, "StatuesOfRequest"))
+         .Where(filter)
+         .FirstOrDefaultAsync();
 
-        if (entity == null || entity.StatuesOfRequest == null)
+
+        if (entity == null)
         {
-            return 0; 
+            return 0;
         }
-        var statuesOfRequest = entity.StatuesOfRequest;
+
+        var statuesOfRequest = entity.GetType().GetProperty("StatuesOfRequest")?.GetValue(entity);
+        if (statuesOfRequest == null)
+        {
+            return 0;
+        }
+
         statuesOfRequest.GetType().GetProperty("ApporvalStatus")?.SetValue(statuesOfRequest, (int)status);
         statuesOfRequest.GetType().GetProperty("StatusMessage")?.SetValue(statuesOfRequest, reason);
-        statuesOfRequest.GetType().GetProperty("ApprovedDate")?.SetValue(statuesOfRequest, DateTime.UtcNow);
+        statuesOfRequest.GetType().GetProperty("ApprovedDate")?.SetValue(statuesOfRequest, DateTime.Now);
         statuesOfRequest.GetType().GetProperty("ApprovedBy")?.SetValue(statuesOfRequest, userId);
-        context.Attach(entity.Entity);
-        context.Entry(entity.Entity).State = EntityState.Modified;
+
+        context.Attach(entity);
+        context.Entry(entity).State = EntityState.Modified;
+
         return await context.SaveChangesAsync();
+
     }
 }

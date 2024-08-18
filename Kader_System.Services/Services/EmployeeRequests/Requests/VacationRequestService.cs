@@ -50,9 +50,14 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedLoanRequest
         public async Task<Response<GetAllVacationRequestReponse>> GetAllVacationRequest(GetFilterationVacationRequestRequest model, string host)
         {
-            Expression<Func<VacationRequests, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
-             x => x.IsDeleted == false :
-             x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
+            Expression<Func<VacationRequests, bool>> filter = null;
+            if (model.ApporvalStatus == RequestStatusTypes.All)
+                filter = x => x.IsDeleted == false;
+            else if(model.ApporvalStatus == RequestStatusTypes.Approved)
+                filter =  x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
+            else if(model.ApporvalStatus == RequestStatusTypes.ApprovedRejected)
+                filter = x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved || x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected;
+
 
             var totalRecords = await _unitOfWork.VacationRequests.CountAsync(filter: filter);
             var items = (await _unitOfWork.VacationRequests.GetSpecificSelectAsync(filter, x => new ListOfVacationRequestResponse
@@ -63,6 +68,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 EmployeeName = x.Employee.FirstNameEn,
                 DayCounts = x.DayCounts,
                 StartDate = x.StartDate,
+                EndDate = x.StartDate.AddDays(x.DayCounts),
                 VacationTypeId = x.VacationTypeId,
                 VacationTypeName = _requestService.GetRequestHeaderLanguage == Localization.English ?x.VacationType.NameInEnglish : x.VacationType.Name,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
@@ -250,7 +256,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<string>> ApproveRequest(int requestId)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.DelayPermission.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+            var result = await _unitOfWork.VacationRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
             if (result > 0)
             {
                 return new Response<string>()
@@ -268,7 +274,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.DelayPermission.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId,resoan);
+            var result = await _unitOfWork.VacationRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId,resoan);
             if (result > 0)
             {
                 return new Response<string>()
