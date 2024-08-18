@@ -1,7 +1,11 @@
 ﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.Constants.Enums;
+using Kader_System.Domain.Models.EmployeeRequests.Requests;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using static Dapper.SqlMapper;
 
 namespace Kader_System.DataAccess.Repositories;
 
@@ -326,5 +330,29 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     public async Task<int> MaxInCloumn(Expression<Func<T, int>> selector)
     {
         return await dbSet.MaxAsync(selector);
+    }
+
+    public async Task<int> UpdateApporvalStatus(Expression<Func<T, bool>> filter, RequestStatusTypes status,string userId, string reason = null)
+    {
+        var entity = await context.Set<T>()
+        .Where(filter)
+        .Select(e => new
+        {
+            Entity = e,
+            StatuesOfRequest = e.GetType().GetProperty("StatuesOfRequest").GetValue(e)
+        }).FirstOrDefaultAsync();
+
+        if (entity == null || entity.StatuesOfRequest == null)
+        {
+            return 0; 
+        }
+        var statuesOfRequest = entity.StatuesOfRequest;
+        statuesOfRequest.GetType().GetProperty("ApporvalStatus")?.SetValue(statuesOfRequest, (int)status);
+        statuesOfRequest.GetType().GetProperty("StatusMessage")?.SetValue(statuesOfRequest, reason);
+        statuesOfRequest.GetType().GetProperty("ApprovedDate")?.SetValue(statuesOfRequest, DateTime.UtcNow);
+        statuesOfRequest.GetType().GetProperty("ApprovedBy")?.SetValue(statuesOfRequest, userId);
+        context.Attach(entity.Entity);
+        context.Entry(entity.Entity).State = EntityState.Modified;
+        return await context.SaveChangesAsync();
     }
 }

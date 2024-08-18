@@ -253,13 +253,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<string>> ApproveRequest(int requestId)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _context.HrResignationRequests.Where(x => x.Id == requestId)
-                                 .ExecuteUpdateAsync(x => x.
-                                   SetProperty(p => p.StatuesOfRequest.ApporvalStatus, (int)RequestStatusTypes.Approved).
-                                   SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
-                                   SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId)
-
-                                 );
+            var result = await _unitOfWork.DelayPermission.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
             if (result > 0)
             {
                 return new Response<string>()
@@ -277,13 +271,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _context.HrResignationRequests.Include(x => x.StatuesOfRequest).
-                                                  Where(x => x.Id == requestId && x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Pending)
-                                                 .ExecuteUpdateAsync(x => x.
-                                                 SetProperty(p => p.StatuesOfRequest.ApporvalStatus, (int)RequestStatusTypes.Rejected).
-                                                 SetProperty(p => p.StatuesOfRequest.ApprovedDate, DateTime.Now).
-                                                 SetProperty(p => p.StatuesOfRequest.ApprovedBy, userId).
-                                                 SetProperty(p => p.StatuesOfRequest.StatusMessage, resoan));
+            var result = await _unitOfWork.DelayPermission.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId,resoan);
             if (result > 0)
             {
                 return new Response<string>()
