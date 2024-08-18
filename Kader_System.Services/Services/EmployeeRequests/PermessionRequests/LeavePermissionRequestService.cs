@@ -100,7 +100,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 Id = x.Id,
                 EmployeeId = x.EmployeeId,
                 request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
-                EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ?  x.Employee.FirstNameEn +" " + x.Employee.FatherNameEn : x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr,
+                EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ?
+                                    x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn + " " + x.Employee.GrandFatherNameEn :
+                                     x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr + " " + x.Employee.GrandFatherNameAr,
                 LeaveTime = x.LeaveTime,
                 BackTime = x.BackTime,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,

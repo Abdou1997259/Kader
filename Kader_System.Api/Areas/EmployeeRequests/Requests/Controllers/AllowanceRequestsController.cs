@@ -23,7 +23,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         [HttpGet(ApiRoutes.EmployeeRequests.AllowanceRequests.GetAllowanceRequests)]
         [Permission(Permission.View, 19)]
-        public async Task<IActionResult> Get([FromRoute] GetAllFilterationAllowanceRequest  model) =>
+        public async Task<IActionResult> Get([FromQuery] GetAllFilterationAllowanceRequest  model) =>
             Ok(await service.GetAllowanceRequest(model, requestService.GetCurrentHost));
 
         [HttpGet(ApiRoutes.EmployeeRequests.AllowanceRequests.GetAllowanceRequestById)]

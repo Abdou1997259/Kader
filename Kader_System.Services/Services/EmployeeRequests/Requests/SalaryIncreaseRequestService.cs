@@ -73,7 +73,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 Id = x.Id,
                 EmployeeId = x.EmployeeId,
                 request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
-                EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.employee.FirstNameEn + " " + x.employee.FatherNameEn : x.employee.FirstNameAr + " " + x.employee.FatherNameAr,
+                EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ?
+                                    x.employee.FirstNameEn + " " + x.employee.FatherNameEn + " " + x.employee.GrandFatherNameEn :
+                                     x.employee.FirstNameAr + " " + x.employee.FatherNameAr + " " + x.employee.GrandFatherNameAr,
                 Amount = x.Amount,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,

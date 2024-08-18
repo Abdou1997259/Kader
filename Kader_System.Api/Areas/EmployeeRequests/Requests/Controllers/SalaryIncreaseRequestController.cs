@@ -22,7 +22,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Retrieve
         [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.GetAllSalaryIncreaseRequests)]
         [Permission(Permission.View, 19)]
-        public async Task<IActionResult> GetAllSalaryIncreaseRequests([FromRoute] GetAlFilterationForSalaryIncreaseRequest model) =>
+        public async Task<IActionResult> GetAllSalaryIncreaseRequests([FromQuery] GetAlFilterationForSalaryIncreaseRequest model) =>
             Ok(await increaseRequestService.GetAllSalaryIncreaseRequest(model, requestService.GetCurrentHost));
 
 
