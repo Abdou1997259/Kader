@@ -192,12 +192,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<ResignationRequest>> DeleteResignationRequest(int id,string ModuleName)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var resignationRequest = await _unitOfWork.ResignationRepository.GetByIdAsync(id);
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
+            var resignationRequest = await _unitOfWork.ResignationRepository.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
             if (resignationRequest != null)
             {
-                var result = await _unitOfWork.ResignationRepository.SoftDeleteAsync(resignationRequest, DeletedBy: userId);
-                if (result > 0)
+                if (resignationRequest.StatuesOfRequest.ApporvalStatus != 1)
                 {
                     if (!string.IsNullOrWhiteSpace(resignationRequest.AttachmentPath))
                     {

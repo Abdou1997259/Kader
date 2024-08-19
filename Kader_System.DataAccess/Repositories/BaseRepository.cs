@@ -16,7 +16,8 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     public async Task<T> GetByIdAsync(int id) =>
        (await dbSet.FindAsync(id))!;
 
-
+    public async Task<T> GetEntityWithIncludeAsync(Expression<Func<T,bool>> filter,string include) =>
+      (await dbSet.Include(include).FirstOrDefaultAsync(filter));
     public async Task<T> GetByIdWithNoTrackingAsync(int id)
     {
         return await dbSet.AsNoTracking().FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id);

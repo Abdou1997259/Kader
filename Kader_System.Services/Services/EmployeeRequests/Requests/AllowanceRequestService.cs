@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class AllowanceRequestService(IUnitOfWork unitOfWork, KaderDbContext context,IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
+    public class AllowanceRequestService(IUnitOfWork unitOfWork, KaderDbContext context, IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -84,12 +84,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                                    allowance_id = x.allowance_id,
                                    allowance_type_id = x.allowance_type_id,
                                    amount = x.amount,
-                                   allowance_name = _requestService.GetRequestHeaderLanguage == Localization.English ? allowance.Name_en  : allowance.Name_ar,
-                                   allowance_type_name = _requestService.GetRequestHeaderLanguage == Localization.English ? allowance_type.NameInEnglish  : allowance_type.Name,
+                                   allowance_name = _requestService.GetRequestHeaderLanguage == Localization.English ? allowance.Name_en : allowance.Name_ar,
+                                   allowance_type_name = _requestService.GetRequestHeaderLanguage == Localization.English ? allowance_type.NameInEnglish : allowance_type.Name,
                                    ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                                    reason = x.StatuesOfRequest.StatusMessage,
                                    Notes = x.notes,
-                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), x.AttachmentPath) : null
+                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.AllowanceRequest.ToString(), x.AttachmentPath) : null
                                }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             #region Pagination
 
@@ -238,13 +238,22 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region DeleteAllowance
-        public async Task<Response<AllowanceRequest>> DeleteAllowanceRequest(int id,string ModuleName)
+        public async Task<Response<AllowanceRequest>> DeleteAllowanceRequest(int id, string ModuleName)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var _AllowanceRequests = await _unitOfWork.AllowanceRequests.GetByIdAsync(id);
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
+            var _AllowanceRequests = await _unitOfWork.AllowanceRequests.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
             if (_AllowanceRequests != null)
             {
+                if (_AllowanceRequests.StatuesOfRequest.ApporvalStatus != 1)
+                {
+                    msg = _sharLocalizer[Localization.ApproveRejectDelte];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = true,
+                    };
+                }
                 var result = await _unitOfWork.AllowanceRequests.SoftDeleteAsync(_AllowanceRequests, DeletedBy: userId);
                 if (result > 0)
                 {
@@ -300,13 +309,13 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             return new Response<string>()
             {
                 Check = false,
-                  Msg = "Cannot approve , request is not pending or is deleted"
+                Msg = "Cannot approve , request is not pending or is deleted"
             };
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.AllowanceRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId,resoan);
+            var result = await _unitOfWork.AllowanceRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId, resoan);
             if (result > 0)
             {
                 return new Response<string>()

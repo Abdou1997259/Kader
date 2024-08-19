@@ -11,23 +11,23 @@
           int? take = null,
           Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!
          ) where TType : class;
-  
-      Task<IEnumerable<TType>> GetSpecificSelectAsync<TType>(
-        Expression<Func<T, bool>> filter,
-        Expression<Func<T, TType>> select,
-        string includeProperties = null!,
-        int? skip = null,
-        int? take = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!) where TType : class;   
-
-
-      Task<IQueryable<TType>> GetSpecificSelectAsQuerableAsync<TType>(
+    public Task<T> GetEntityWithIncludeAsync(Expression<Func<T, bool>> filter, string include);
+    Task<IEnumerable<TType>> GetSpecificSelectAsync<TType>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, TType>> select,
         string includeProperties = null!,
         int? skip = null,
         int? take = null,
         Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!) where TType : class;
+
+
+    Task<IQueryable<TType>> GetSpecificSelectAsQuerableAsync<TType>(
+      Expression<Func<T, bool>> filter,
+      Expression<Func<T, TType>> select,
+      string includeProperties = null!,
+      int? skip = null,
+      int? take = null,
+      Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!) where TType : class;
 
     Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> filter = null!,
      Func<IQueryable<T>, IOrderedQueryable<T>> orderBy = null!, Expression<Func<T, bool>> includeFilter = null!,
@@ -75,7 +75,7 @@
     /// <param name="_entity"></param>
     /// <param name="_softDeleteProperty"></param>
     /// <returns>number of rows affected</returns>
-    public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted",bool IsDeleted = true,string DeletedBy = null);
+    public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted", bool IsDeleted = true, string DeletedBy = null);
     /// <summary>
     /// Update approve or reject request of empoyee
     /// </summary>

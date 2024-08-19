@@ -651,6 +651,7 @@ public static class SD
         public const string News = "News";
         public const string Updated = "Updated";
         public const string Deleted = "Deleted";
+        public const string ApproveRejectDelte = "Cannot delete approve or reject request";
         public const string CurrentAndNewPasswordIsTheSame = "CurrentAndNewPasswordIsTheSame";
         public const string CurrentPasswordIsIncorrect = "CurrentPasswordIsIncorrect";
         public const string UserName = "UserName";

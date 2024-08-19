@@ -195,10 +195,19 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<VacationRequests>> DeleteVacationRequest(int id,string moduleName)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var vacationRequest = await _unitOfWork.VacationRequests.GetByIdAsync(id);
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
+            var vacationRequest = await _unitOfWork.VacationRequests.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
             if (vacationRequest != null)
             {
+                if (vacationRequest.StatuesOfRequest.ApporvalStatus != 1)
+                {
+                    msg = _sharLocalizer[Localization.ApproveRejectDelte];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = true,
+                    };
+                }
                 var result = await _unitOfWork.VacationRequests.SoftDeleteAsync(vacationRequest, DeletedBy: userId);
                 if (result > 0)
                 {
