@@ -60,7 +60,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         public async Task<IActionResult> UpdateAllowanceRequests([FromRoute] int id, [FromForm] DTOAllowanceRequest model)
         {
             var response = await service.UpdateAllowanceRequest(id, model,
-                 Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+                 Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.AllowanceRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

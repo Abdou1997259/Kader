@@ -55,7 +55,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
             var response = await service.AddNewVacationRequest(model,
 
-                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.VacationRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -74,7 +74,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
             var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
             var response = await service.UpdateVacationRequest(id, model,
-                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.VacationRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

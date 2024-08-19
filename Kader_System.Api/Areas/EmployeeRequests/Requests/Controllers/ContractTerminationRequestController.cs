@@ -54,7 +54,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
             var response = await service.AddNewContractTerminationRequest(model,
 
-                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.TerminateContract);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -73,7 +73,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
             var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
             var response = await service.UpdateContractTerminationRequest(id, model,
-                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.TerminateContract);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
