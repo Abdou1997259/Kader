@@ -615,6 +615,7 @@ public static class SD
         public const string EmployeeVacation = "EmployeeVacation";
         public const string DepartmentManager = "DepartmentManager";
         public const string Done = "Done";
+        public const string HaveContract = "HaveContract";
         public const string BalanceNotEnough = "BalanceNotEnough";
         public const string Error = "Error";
         public const string ThisAmountCannotBePaidFromTheMainTreasuryDueToItsAvailability = "ThisAmountCannotBePaidFromTheMainTreasuryDueToItsAvailability";

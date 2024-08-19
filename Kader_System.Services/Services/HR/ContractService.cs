@@ -1,6 +1,7 @@
 ﻿
 using Kader_System.Domain.DTOs;
 using Kader_System.Services.IServices.AppServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.HR
 {
@@ -253,6 +254,20 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<CreateContractRequest>> CreateContractAsync(CreateContractRequest model, string moduleName)
         {
+
+
+           var haveContract= await unitOfWork.Contracts.ExistAsync(x=>x.EmployeeId==model.employee_id);
+            if (haveContract)
+            {
+                var Msg = string.Format(shareLocalizer[Localization.HaveContract],
+                  shareLocalizer[Localization.Contract]);
+                return new()
+                {
+                    Check = false,
+                    Msg = Msg,
+                    Data = null
+                };
+            }
             var newContract = new HrContract()
             {
                 StartDate = model.start_date,

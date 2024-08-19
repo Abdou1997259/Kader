@@ -165,6 +165,9 @@
   <data name="Employee" xml:space="preserve">
     <value>Employee</value>
   </data>
+  <data name="HaveContract" xml:space="preserve">
+    <value>this {0} Employee already has a contract</value>
+  </data>
   <data name="InvalidSubId" xml:space="preserve">
     <value>Invalid Sub id </value>
   </data>
