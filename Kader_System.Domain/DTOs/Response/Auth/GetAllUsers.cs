@@ -14,6 +14,9 @@ namespace Kader_System.Domain.DTOs.Response.Auth
         public string Email { get; set; }   
         public string Phone { get; set; }
         public string JobName { get; set; } 
+        public int CurrentTitle { get; set; }
+
+     
 
        
 

@@ -17,6 +17,7 @@ namespace Kader_System.Domain.DTOs.Response.Setting
         public int sub_id { get; set; }
         public string sub_title { get; set; }
         public int TitleId {  get; set; }
+       
         public string actions { get; set; }
         public Dictionary<string,bool> permissions { get; set; }
         public string? url { get; set; }

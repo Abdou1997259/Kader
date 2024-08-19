@@ -225,6 +225,9 @@
   <data name="TitlePermisson" xml:space="preserve">
     <value>Please send the Title</value>
   </data>
+  <data name="TitleUser" xml:space="preserve">
+    <value> this title has already a user</value>
+  </data>
   <data name="Updated" xml:space="preserve">
     <value>Updated successfully</value>
   </data>

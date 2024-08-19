@@ -307,30 +307,48 @@ namespace Kader_System.Services.Services.Setting
 
         public async Task<Response<string>> DeleteTitleAsync(int id) // 1
         {
+
+
+            var isUserTakeThisTitle =await  unitOfWork.Users.GetFirstOrDefaultAsync(x=> x.CurrentTitleId == id);
+
+            if(isUserTakeThisTitle is not null)
+            {
+                string resultMsg = sharLocalizer[Localization.UserInTitle];
+
+                return new()
+                {
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
+
             var titleResult = await _context.Titles.Where(x => x.Id == id).ExecuteUpdateAsync(x => x.
-                  SetProperty(p => p.IsDeleted, true).
-                  SetProperty(p => p.DeleteDate, DateTime.Now));
+               SetProperty(p => p.IsDeleted, true).
+               SetProperty(p => p.DeleteDate, DateTime.Now));
+
+
+
             if (titleResult > 0)
             {
-                var users = _context.Users.AsNoTracking()
-                                .AsEnumerable()
-                                .Where(u => u.TitleId.Split(",", StringSplitOptions.None)
-                                .Contains(id.ToString()))
-                                .ToList();
+                //var users = _context.Users.AsNoTracking()
+                //                .AsEnumerable()
+                //                .Where(u => u.TitleId.Split(",", StringSplitOptions.None)
+                //                .Contains(id.ToString()))
+                //                .ToList();
 
 
 
 
-                foreach (var user in users)
-                {
-                    var userTitles = user.TitleId.Splitter(); // [1,2,3]
-                    userTitles.Remove(id); // [2,3]
-                    var removedUserTitles = string.Join(",", userTitles); // "2,3"
-                    user.TitleId = removedUserTitles; // "2,3"
-                    user.CurrentTitleId = id == user.CurrentTitleId ? userTitles.ElementAt(0) : user.CurrentTitleId; // = 2 shifted if current = 1 ,if current = 2 then will be = 2  
-                    _context.Users.Update(user);
-                    await _context.SaveChangesAsync();
-                }
+                //foreach (var user in users)
+                //{
+                //    var userTitles = user.TitleId.Splitter(); // [1,2,3]
+                //    userTitles.Remove(id); // [2,3]
+                //    var removedUserTitles = string.Join(",", userTitles); // "2,3"
+                //    user.TitleId = removedUserTitles; // "2,3"
+                //    user.CurrentTitleId = id == user.CurrentTitleId ? userTitles.ElementAt(0) : user.CurrentTitleId; // = 2 shifted if current = 1 ,if current = 2 then will be = 2  
+                //    _context.Users.Update(user);
+                //    await _context.SaveChangesAsync();
+                //}
                 return new Response<string>()
                 {
                     Check = true,
