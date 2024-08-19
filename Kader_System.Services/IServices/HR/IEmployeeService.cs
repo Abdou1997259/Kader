@@ -16,4 +16,5 @@ public interface IEmployeeService
     Task<Response<string>> DeleteEmployeeAsync(int id);
     Task<Response<EmployeesLookUps>> GetEmployeesLookUpsData(string lang);
     Task<Response<object>> GetEmployeesDataNameAndIdAsLookUp(string lang);
+
 }

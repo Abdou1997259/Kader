@@ -3,4 +3,7 @@
     public class GetAllFilterationFoVacationRequest : PaginationRequest
     {
     }
+    public class GetAllEmployeeNotesRequest : PaginationRequest
+    {
+    }
 }
