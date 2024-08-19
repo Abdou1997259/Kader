@@ -51,13 +51,15 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         {
             #region ApprovalExpression
             Expression<Func<ContractTerminationRequest, bool>> filter = x =>
-             x.IsDeleted == false &&
-             (model.ApporvalStatus == RequestStatusTypes.All || (model.ApporvalStatus == RequestStatusTypes.Approved ?
-                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved :
-             model.ApporvalStatus == RequestStatusTypes.ApprovedRejected ?
-                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved ||
-                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected :
-             model.ApporvalStatus == RequestStatusTypes.Rejected && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected));
+                x.IsDeleted == false &&
+                (model.ApporvalStatus == RequestStatusTypes.All ||
+                (model.ApporvalStatus == RequestStatusTypes.Approved && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved) ||
+                (model.ApporvalStatus == RequestStatusTypes.ApprovedRejected &&
+                    (x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved ||
+                     x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected)) ||
+                (model.ApporvalStatus == RequestStatusTypes.Rejected && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected) ||
+                (model.ApporvalStatus == RequestStatusTypes.Pending && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Pending));
+
             #endregion
 
             var totalRecords = await _unitOfWork.ContractTerminationRequest.CountAsync(filter: filter);

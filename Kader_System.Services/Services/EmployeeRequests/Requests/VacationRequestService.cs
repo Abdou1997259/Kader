@@ -49,16 +49,18 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
         #region PaginatedLoanRequest
         public async Task<Response<GetAllVacationRequestReponse>> GetAllVacationRequest(GetFilterationVacationRequestRequest model, string host)
-        {  
+        {
             #region ApprovalExpression
             Expression<Func<VacationRequests, bool>> filter = x =>
-             x.IsDeleted == false &&
-             (model.ApporvalStatus == RequestStatusTypes.All || (model.ApporvalStatus == RequestStatusTypes.Approved ?
-                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved :
-             model.ApporvalStatus == RequestStatusTypes.ApprovedRejected ?
-                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved ||
-                 x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected :
-             model.ApporvalStatus == RequestStatusTypes.Rejected && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected));
+                x.IsDeleted == false &&
+                (model.ApporvalStatus == RequestStatusTypes.All ||
+                (model.ApporvalStatus == RequestStatusTypes.Approved && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved) ||
+                (model.ApporvalStatus == RequestStatusTypes.ApprovedRejected &&
+                    (x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved ||
+                     x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected)) ||
+                (model.ApporvalStatus == RequestStatusTypes.Rejected && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected) ||
+                (model.ApporvalStatus == RequestStatusTypes.Pending && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Pending));
+
             #endregion
 
             var totalRecords = await _unitOfWork.VacationRequests.CountAsync(filter);
