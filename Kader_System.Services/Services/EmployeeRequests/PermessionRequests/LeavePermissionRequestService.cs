@@ -112,7 +112,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 Notes = x.Notes,
                 AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.LeavePermission.ToString(), x.AttachmentPath) : null
             },
-            orderBy: x => x.OrderBy(x => x.Id),
+            orderBy: x => x.OrderByDescending(x => x.Id),
                 skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();
             #region Pagination
 
