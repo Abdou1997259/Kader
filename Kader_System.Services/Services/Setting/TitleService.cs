@@ -384,15 +384,39 @@ namespace Kader_System.Services.Services.Setting
                                 Permissions = string.Join(',', assignedPermission.title_permission)
                             });
                         }
+                        var userWithTitle = await unitOfWork.Users.GetSpecificSelectAsync(x => x.CurrentTitleId != null, select: x => new { x.Id, x.CurrentTitleId });
+                        if (userWithTitle.Any())
+                        {
+                            foreach (var userIdtitle in userWithTitle)
+                            {
+                                var userpermssion = await unitOfWork.UserPermssionRepositroy.GetFirstOrDefaultAsync(x => x.UserId == userIdtitle.Id && x.TitleId == userIdtitle.CurrentTitleId && x.SubScreenId == assignedPermission.SubId);
+                                if (userpermssion is not null)
+                                    unitOfWork.UserPermssionRepositroy.Remove(userpermssion);
+
+                                await unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission
+                                {
+                                    UserId = userIdtitle.Id,
+                                    TitleId = userIdtitle.CurrentTitleId,
+                                    Permission = string.Join(',', assignedPermission.title_permission),
+                                    SubScreenId = assignedPermission.SubId
+                                });
+
+                                await unitOfWork.CompleteAsync();
+
+
+                            }
+
+                        }
+
                     }
                     else
                     {
-                        var userPermissionQuery = (await unitOfWork.TitlePermissionRepository
+                        var titlePermissionQuery = (await unitOfWork.TitlePermissionRepository
                            .GetSpecificSelectTrackingAsync(x => x.SubScreenId == assignedPermission.SubId, x => x, includeProperties: "ScreenSub,Title")).ToList();
 
-                        if (userPermissionQuery.Count() > 0)
+                        if (titlePermissionQuery.Count() > 0)
                         {
-                            unitOfWork.TitlePermissionRepository.RemoveRange(userPermissionQuery);
+                            unitOfWork.TitlePermissionRepository.RemoveRange(titlePermissionQuery);
                             await unitOfWork.CompleteAsync();
                         }
                         if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
@@ -413,9 +437,36 @@ namespace Kader_System.Services.Services.Setting
                             });
                             await unitOfWork.CompleteAsync();
                         }
+                        var userWithTitle =await unitOfWork.Users.GetSpecificSelectAsync(x => x.CurrentTitleId == id,select:x=>x.Id);
+                        if (userWithTitle.Any())
+                        {
+                            foreach(var userId in userWithTitle)
+                            {
+                               var userpermssion= await unitOfWork.UserPermssionRepositroy.GetFirstOrDefaultAsync(x => x.UserId == userId && x.TitleId==id&&x.SubScreenId==assignedPermission.SubId);
+                               if(userpermssion is not null)
+                                    unitOfWork.UserPermssionRepositroy.Remove(userpermssion);
 
+                            await    unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission
+                                {
+                                    UserId = userId,
+                                    TitleId = id,
+                                    Permission = string.Join(',', assignedPermission.title_permission),
+                                    SubScreenId = assignedPermission.SubId
+                                });
+
+                              await  unitOfWork.CompleteAsync();
+
+
+                            }
+
+                        }
+                          
 
                     }
+
+
+
+
 
                 }
                 else
