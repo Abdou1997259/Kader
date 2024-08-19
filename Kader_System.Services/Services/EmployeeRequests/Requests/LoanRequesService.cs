@@ -162,7 +162,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region AddLoanRequest
         public async Task<Response<LoanRequest>> AddNewLoanRequest(DTOLoanRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.LoanRequest)
         {
-            var newRequest = _mapper.Map<ResignationRequest>(model);
+            var newRequest = _mapper.Map<LoanRequest>(model);
             StatuesOfRequest statues = new()
             {
                 ApporvalStatus = (int)RequestStatusTypes.Pending
@@ -171,7 +171,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
-            await _unitOfWork.ResignationRepository.AddAsync(newRequest);
+            await _unitOfWork.LoanRequestRepository.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
             return new()
             {
