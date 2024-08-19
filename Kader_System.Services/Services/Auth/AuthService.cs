@@ -552,16 +552,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         }
 
         // Check if the current company exists
-        if (!validCompanyIds.Contains(model.current_company.Value))
-        {
-            var msg = _sharLocalizer[Localization.CurrentIsNotExitedInTitle];
-            return new Response<CreateUserResponse>
-            {
-                Check = false,
-                Msg = msg,
-                Data = null
-            };
-        }
+    
 
         // Set default title and company if not provided
         model.current_title ??= model.title_id.FirstOrDefault();
