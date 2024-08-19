@@ -40,7 +40,10 @@ namespace Kader_System.DataAccess.Repositories.Trans
                             Notes = trans.Notes,
                             EndDate = trans.StartDate.AddDays((int)trans.DaysCount - 1),
                             VacationType = lang==Localization.Arabic ? vacationType.NameAr: vacationType.NameEn,
-                            AddedDate = trans.Add_date
+                            AddedDate = trans.Add_date,
+                            TotalBalance=vacation.TotalBalance
+
+                           
 
                         };
 
