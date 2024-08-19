@@ -60,7 +60,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                     return new()
                     {
                         Msg = msg,
-                        Check = true,
+                        Check = false,
                     };
                 }
                 var result = await _unitOfWork.LeavePermissionRequest.SoftDeleteAsync(leaveRequest,DeletedBy : userId);

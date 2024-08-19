@@ -205,7 +205,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     return new()
                     {
                         Msg = msg,
-                        Check = true,
+                        Check = false,
                     };
                 }
                 var result = await _unitOfWork.VacationRequests.SoftDeleteAsync(vacationRequest, DeletedBy: userId);

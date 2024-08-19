@@ -198,17 +198,23 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             {
                 if (resignationRequest.StatuesOfRequest.ApporvalStatus != 1)
                 {
-                    if (!string.IsNullOrWhiteSpace(resignationRequest.AttachmentPath))
-                    {
-                        _fileServer.RemoveFile(ModuleName, HrEmployeeRequestTypesEnums.ResignationRequest.ToString(), resignationRequest.AttachmentPath);
-                    }
-                    msg = _sharLocalizer[Localization.Deleted];
+                    msg = _sharLocalizer[Localization.ApproveRejectDelte];
                     return new()
                     {
                         Msg = msg,
-                        Check = true,
+                        Check = false,
                     };
                 }
+                if (!string.IsNullOrWhiteSpace(resignationRequest.AttachmentPath))
+                {
+                    _fileServer.RemoveFile(ModuleName, HrEmployeeRequestTypesEnums.ResignationRequest.ToString(), resignationRequest.AttachmentPath);
+                }
+                msg = _sharLocalizer[Localization.Deleted];
+                return new()
+                {
+                    Msg = msg,
+                    Check = true,
+                };
             }
             return new()
             {
