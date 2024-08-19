@@ -16,15 +16,15 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     public async Task<T> GetByIdAsync(int id) =>
        (await dbSet.FindAsync(id))!;
 
-    public async Task<T> GetEntityWithIncludeAsync(Expression<Func<T,bool>> filter,string include) =>
+    public async Task<T> GetEntityWithIncludeAsync(Expression<Func<T, bool>> filter, string include) =>
       (await dbSet.Include(include).FirstOrDefaultAsync(filter));
     public async Task<T> GetByIdWithNoTrackingAsync(int id)
     {
         return await dbSet.AsNoTracking().FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id);
     }
-    
 
-  
+
+
     public async Task<IQueryable<TType>> GetSpecificSelectAsQuerableAsync<TType>(
         Expression<Func<T, bool>> filter,
         Expression<Func<T, TType>> select,
@@ -58,7 +58,7 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
         if (take.HasValue)
             query = query.Take(take.Value);
 
-        return  query.Select(select);
+        return query.Select(select);
     }
 
 
@@ -264,7 +264,7 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
 
     public Task<int> SoftDeleteAsync(T _entity, string _softDeleteProperty = "IsDeleted", bool IsDeleted = true, string DeletedBy = null)
     {
-        var result = context.SoftDeleteAsync(_entity, _softDeleteProperty,IsDeleted,DeletedBy);
+        var result = context.SoftDeleteAsync(_entity, _softDeleteProperty, IsDeleted, DeletedBy);
         return result;
     }
 
@@ -333,33 +333,28 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
         return await dbSet.MaxAsync(selector);
     }
 
-    public async Task<int> UpdateApporvalStatus(Expression<Func<T, bool>> filter, RequestStatusTypes status,string userId, string reason = null)
+    public async Task<int> UpdateApporvalStatus(Expression<Func<T, bool>> filter, RequestStatusTypes status, string userId, string reason = null)
     {
         var entity = await context.Set<T>()
-         .Include(e => EF.Property<object>(e, "StatuesOfRequest"))
-         .Where(filter)
-         .FirstOrDefaultAsync();
-
-
+      .Include(e => EF.Property<object>(e, nameof(StatuesOfRequest)))
+      .Where(filter)
+      .FirstOrDefaultAsync();
         if (entity == null)
-        {
             return 0;
-        }
 
-        var statuesOfRequest = entity.GetType().GetProperty("StatuesOfRequest")?.GetValue(entity);
+        var statuesOfRequest = entity.GetType().GetProperty(nameof(StatuesOfRequest))?.GetValue(entity);
+
         if (statuesOfRequest == null)
-        {
             return 0;
-        }
 
-        statuesOfRequest.GetType().GetProperty("ApporvalStatus")?.SetValue(statuesOfRequest, (int)status);
-        statuesOfRequest.GetType().GetProperty("StatusMessage")?.SetValue(statuesOfRequest, reason);
-        statuesOfRequest.GetType().GetProperty("ApprovedDate")?.SetValue(statuesOfRequest, DateTime.Now);
-        statuesOfRequest.GetType().GetProperty("ApprovedBy")?.SetValue(statuesOfRequest, userId);
 
+        var statuesOfRequestType = statuesOfRequest.GetType();
+        statuesOfRequestType.GetProperty(nameof(StatuesOfRequest.ApporvalStatus))?.SetValue(statuesOfRequest, (int)status);
+        statuesOfRequestType.GetProperty(nameof(StatuesOfRequest.StatusMessage))?.SetValue(statuesOfRequest, reason);
+        statuesOfRequestType.GetProperty(nameof(StatuesOfRequest.ApprovedDate))?.SetValue(statuesOfRequest, DateTime.Now);
+        statuesOfRequestType.GetProperty(nameof(StatuesOfRequest.ApprovedBy))?.SetValue(statuesOfRequest, userId);
         context.Attach(entity);
         context.Entry(entity).State = EntityState.Modified;
-
         return await context.SaveChangesAsync();
 
     }
