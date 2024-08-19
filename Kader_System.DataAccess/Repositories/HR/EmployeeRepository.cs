@@ -90,7 +90,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              ReligionId = employee.ReligionId,
                              SalaryPaymentWayId = employee.SalaryPaymentWayId,
                              ShiftId = employee.ShiftId,
-                             TotalSalary = employee.TotalSalary,
+                             TotalSalary = cGroup.FixedSalary +cGroup.HousingAllowance  ,
                              Username = usr.UserName,
                              EmployeeImage = $"{ReadRootPath.EmployeeImagesPath}{employee.EmployeeImage}",
                              qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
