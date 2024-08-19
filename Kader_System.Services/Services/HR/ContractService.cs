@@ -623,6 +623,7 @@ namespace Kader_System.Services.Services.HR
             }
             return new Response<GetContractForUserResponse>()
             {
+                Check=true,
                 Data = new GetContractForUserResponse
                 {
                     EmployeeName = Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn,
