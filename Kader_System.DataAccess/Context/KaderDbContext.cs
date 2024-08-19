@@ -238,6 +238,8 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             HasMany(x => x.StScreenSub).
             WithOne(x => x.ScreenCat).
             HasForeignKey(x => x.ScreenCatId);
+ 
+
 
         modelBuilder.Entity<SPUserPermissionsBySubScreen>(e =>
         {
