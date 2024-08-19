@@ -50,6 +50,17 @@ namespace Kader_System.Api.Areas.HR.Controllers
                 return BadRequest(response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
+        [HttpGet(ApiRoutes.Contract.GetContractByUser)]
+        public async Task<IActionResult> GetContractByUser(int empId)
+        {
+            var response = await contractService.GetContractByUser(empId,requestService.GetRequestHeaderLanguage);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return BadRequest(response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+
         #region Create
 
         [HttpPost(ApiRoutes.Contract.CreateContract)]

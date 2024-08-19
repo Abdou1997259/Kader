@@ -20,7 +20,9 @@
         public bool IsDeductedFromSalary { get; set; }
         public DateOnly StartCalculationDate { get; set; }
         public DateOnly EndCalculationDate { get; set; }
-
+        public int PaidInstallmentCount { get; set; }
+        public decimal PaidTotalBalance { get; set; }    
+        public decimal UnPaidTotalBalance { get; set; }
 
         public string? Notes { get; set; }
     }

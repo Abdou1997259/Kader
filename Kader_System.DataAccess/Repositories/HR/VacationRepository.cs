@@ -36,7 +36,7 @@ public class VacationRepository(KaderDbContext context) : BaseRepository<HrVacat
                         Name = lang == Localization.Arabic ? vac.NameAr : vac.NameEn,
                         ApplyAfterMonth = vac.ApplyAfterMonth,
                         CanTransfer = vac.CanTransfer,
-                        TotalBalance = vac.TotalBalance,
+                        TotalBalance = vac.TotalBalance - ec.Count??0,
                         VacationType = vt != null ? (lang == Localization.Arabic ? vt.Name : vt.NameInEnglish) : null,
                         AddedBy = u != null ? u.UserName : null,
                         EmployeesCount = ec.Count ?? 0

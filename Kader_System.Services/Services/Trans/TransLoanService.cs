@@ -174,6 +174,7 @@ namespace Kader_System.Services.Services.Trans
 
 
             var totalRecords = await _unitOfWork.LoanRepository.CountAsync(filter: filter);
+            
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
             if (model.PageNumber < 1)
@@ -208,14 +209,17 @@ namespace Kader_System.Services.Services.Trans
                          MonthlyDeducted = x.MonthlyDeducted,
                          InstallmentCount = x.InstallmentCount,
                          Notes = x.Notes,
+                         PaidInstallmentCount=x.TransLoanDetails.Where(x=>x.PaymentDate !=null&x.IsDeleted==false).Count(),
 
+                         PaidTotalBalance = x.TransLoanDetails.Where(x => x.PaymentDate != null & x.IsDeleted == false).Sum(x=>x.Amount),
+                         UnPaidTotalBalance= x.TransLoanDetails.Where(x => x.PaymentDate == null & x.IsDeleted == false).Sum(x => x.Amount),
 
                          PrevDedcutedAmount = x.PrevDedcutedAmount,
 
 
 
                      }, orderBy: x =>
-                       x.OrderByDescending(x => x.Id), includeProperties: "HrEmployee")).ToList(),
+                       x.OrderByDescending(x => x.Id), includeProperties: "HrEmployee,TransLoanDetails")).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,

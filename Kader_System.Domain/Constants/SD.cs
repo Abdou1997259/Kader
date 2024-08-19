@@ -241,6 +241,7 @@ public static class SD
             public const string GetContractById = "contract/getById/{id}";
             public const string GetContractLookups = "contract/getLookups";
             public const string DeleteContract = "contract/delete/{id}";
+            public const string GetContractByUser = "contract/getcontractbyuser/{empId}";
         }
         public class Allowance
         {
@@ -625,6 +626,7 @@ public static class SD
         public const string EmployeeVacation = "EmployeeVacation";
         public const string DepartmentManager = "DepartmentManager";
         public const string Done = "Done";
+        public const string HaveContract = "HaveContract";
         public const string BalanceNotEnough = "BalanceNotEnough";
         public const string Error = "Error";
         public const string ThisAmountCannotBePaidFromTheMainTreasuryDueToItsAvailability = "ThisAmountCannotBePaidFromTheMainTreasuryDueToItsAvailability";
