@@ -241,6 +241,7 @@ public static class SD
             public const string GetContractById = "contract/getById/{id}";
             public const string GetContractLookups = "contract/getLookups";
             public const string DeleteContract = "contract/delete/{id}";
+            public const string GetContractByUser = "contract/getcontractbyuser/{id}";
         }
         public class Allowance
         {

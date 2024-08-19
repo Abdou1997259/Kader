@@ -1,6 +1,7 @@
 ﻿
 using Kader_System.Domain.DTOs;
 using Kader_System.Services.IServices.AppServices;
+using Microsoft.AspNetCore.Mvc.Razor;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.HR
@@ -587,6 +588,57 @@ namespace Kader_System.Services.Services.HR
         public Task<Response<CreateContractRequest>> CreateContractAsync(CreateContractRequest model, string appPath, string moduleName)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<Response<GetContractForUserResponse>> GetContractByUser(int EmpId ,string lang)
+        {
+            var emp = await unitOfWork.Employees.GetByIdAsync(EmpId);
+            if (emp is null) {
+
+
+                var msg = shareLocalizer[Localization.IsNotExisted,shareLocalizer[Localization.Employee]];
+                return new Response<GetContractForUserResponse>()
+                {
+                    Msg = msg,
+                    Check = false,
+
+                };
+
+
+            }
+            var contract=await unitOfWork.Contracts.GetFirstOrDefaultAsync(x=>x.EmployeeId==EmpId);
+
+            if (contract == null) {
+
+
+                var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
+                return new Response<GetContractForUserResponse>()
+                {
+                    Msg = msg,
+                    Check = false,
+
+                };
+
+
+            }
+            return new Response<GetContractForUserResponse>()
+            {
+                Data = new GetContractForUserResponse
+                {
+                    EmployeeName = Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn,
+                    ContractFile = Path.Combine(SD.GoRootPath.GetSettingImagesPath, contract.FileName),
+                    SalaryFixed = contract.FixedSalary,
+                    SalaryTotal = contract.FixedSalary + contract.HousingAllowance,
+                    Active = contract.IsActive,
+                    StartDate = contract.StartDate,
+                    EndDate = contract.EndDate,
+                    AddedBy = contract.Added_by,
+                    HousingAllowance = contract.HousingAllowance,
+                    Id = contract.Id,
+
+                }
+            };
+
         }
     }
 }
