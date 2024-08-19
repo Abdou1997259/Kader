@@ -33,6 +33,7 @@ namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
         public int? allowance_type_id { get;set; }
         public string? allowance_name { get; set; }
         public string? allowance_type_name { get; set; }
+        public double amount { get; set; }
     }
     public class ListOfContractTerminationRequestResponse : EmployeeRequestsResponse
     {

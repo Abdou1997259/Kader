@@ -83,6 +83,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                                      x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr + " " + x.Employee.GrandFatherNameAr,
                                    allowance_id = x.allowance_id,
                                    allowance_type_id = x.allowance_type_id,
+                                   amount = x.amount,
                                    allowance_name = _requestService.GetRequestHeaderLanguage == Localization.English ? allowance.Name_en  : allowance.Name_ar,
                                    allowance_type_name = _requestService.GetRequestHeaderLanguage == Localization.English ? allowance_type.NameInEnglish  : allowance_type.Name,
                                    ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
