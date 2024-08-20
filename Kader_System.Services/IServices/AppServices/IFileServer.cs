@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace Kader_System.Services.IServices.AppServices
         /// <returns>new file name with GUID</returns>
         public Task<string> UploadFile(string moduleName, IFormFile file);
         /// <summary>
-         /// Remove file from wwwroot
+        /// Remove file from wwwroot
         /// </summary>
         /// <param name="paths"></param>
         public void RemoveFile(params string[] paths);
@@ -41,6 +42,18 @@ namespace Kader_System.Services.IServices.AppServices
         /// <param name="fileName"></param>
         /// <returns>true if file exist</returns>
         public bool FileExist(string moduleName, string fileName);
+        /// <summary>
+        /// Download file from wwwroot by content type of request
+        /// </summary>
+        ///param name="fileParts"
+        /// <returns>new FileStreamResult to download</returns>
+        public Task<FileStreamResult> DownloadFileAsync(params string[] fileParts);
+        /// <summary>
+        /// Get Content file of header request depand on file exentsion
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public string GetContentType(string path);
 
     }
 }

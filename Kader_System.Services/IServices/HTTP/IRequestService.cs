@@ -16,5 +16,6 @@ namespace Kader_System.Services.IServices.HTTP
         public string GetCurrentHost {  get; }
 
         public string client_id { get; }
+        public string GetHeaderContentFile {  get; }    
     }
 }

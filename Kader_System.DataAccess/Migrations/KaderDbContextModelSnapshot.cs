@@ -255,7 +255,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "a3370de2-331b-42db-b45f-c9c569b8bc07",
+                            ConcurrencyStamp = "4bd37a90-e1b2-4d60-b94a-e199e596e39f",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -269,10 +269,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJZ6CjvOEX8o9HTapUk+rKa59B/06gPuSmfHzQYBBQ2Fh3RxDbb7v8L3yHrsH940UQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEC54sXECoaW0uzQk7rCiSWMoi7FY+8Wi+33SMgXSNYCmlE0GJ3/doQV9UNXNy0/i1A==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "cadcb55a-1cef-4787-be66-268a0b5ac6de",
+                            SecurityStamp = "5be5552e-1deb-4c7d-831b-4c67f11dbef0",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -6625,7 +6625,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("company_years");
+                    b.ToTable("CompanyYears");
 
                     b.HasData(
                         new
