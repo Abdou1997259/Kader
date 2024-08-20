@@ -41,9 +41,9 @@ namespace Kader_System.DataAccess.Repositories.Trans
                             EndDate = trans.StartDate.AddDays((int)trans.DaysCount - 1),
                             VacationType = lang==Localization.Arabic ? vacationType.NameAr: vacationType.NameEn,
                             AddedDate = trans.Add_date,
-                            TotalBalance=vacation.TotalBalance
+                            TotalBalance=vacation.TotalBalance - (int)trans.DaysCount
 
-                           
+
 
                         };
 
