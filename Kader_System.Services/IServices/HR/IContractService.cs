@@ -1,4 +1,6 @@
-﻿namespace Kader_System.Services.IServices.HR;
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace Kader_System.Services.IServices.HR;
 
 public interface IContractService
 {
@@ -7,9 +9,8 @@ public interface IContractService
 
     Task<Response<GetAllContractsResponse>> GetAllEndContractsAsync(string lang,
         GetAlFilterationForContractRequest model, string host);
-
-
-    
+    Task<Response<FileResult>> GetFileStreamResultAsync(int contractId, string serverPath, string moduleName);
+   
     Task<Response<CreateContractRequest>> CreateContractAsync(CreateContractRequest model, string moduleName);
     Task<Response<GetContractByIdResponse>> GetContractByIdAsync(int id, string lang);
     Task<Response<object>> GetLookUps(string lang);

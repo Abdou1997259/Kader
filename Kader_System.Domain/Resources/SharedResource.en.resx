@@ -165,6 +165,12 @@
   <data name="Employee" xml:space="preserve">
     <value>Employee</value>
   </data>
+  <data name="FileHasNoDirectory" xml:space="preserve">
+    <value>File Has No Directory or not Exited</value>
+  </data>
+  <data name="HasNoDocument" xml:space="preserve">
+    <value>{0} has no document</value>
+  </data>
   <data name="HaveContract" xml:space="preserve">
     <value>this {0} Employee already has a contract</value>
   </data>

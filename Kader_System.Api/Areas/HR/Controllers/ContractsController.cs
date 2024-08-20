@@ -60,6 +60,17 @@ namespace Kader_System.Api.Areas.HR.Controllers
                 return BadRequest(response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
+        [HttpGet(ApiRoutes.Contract.DownloadDocument)]
+        public async Task<IActionResult> GetFileStreamResultAsync(int contractId)
+        {
+            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+            var response = await contractService.GetFileStreamResultAsync(contractId, serverPath, Modules.HR);
+            if (response.Check)
+                return response.Data;
+            else if (!response.Check)
+                return BadRequest(response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
 
         #region Create
 
@@ -70,7 +81,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
             if (ModelState.IsValid)
             {
                 var serverPath = HttpContext.Items["ServerPath"]?.ToString();
-                var response = await contractService.CreateContractAsync(request, Modules.Setting);
+                var response = await contractService.CreateContractAsync(request, Modules.HR);
                 if(response.Check) return Ok(response);
                 else if(!response.Check) return BadRequest(response);
                 return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);

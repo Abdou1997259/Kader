@@ -242,6 +242,7 @@ public static class SD
             public const string GetContractLookups = "contract/getLookups";
             public const string DeleteContract = "contract/delete/{id}";
             public const string GetContractByUser = "contract/getcontractbyuser/{empId}";
+            public const string DownloadDocument = "contract/downloaddocument/{contractId}";
         }
         public class Allowance
         {
@@ -681,7 +682,7 @@ public static class SD
         public const string Employee = "Employee";
         public const string Contract = "Contract";
         public const string TitleUser = "TitleUser";
-
+        public const string HasNoDocument = "HasNoDocument";
         public const string Calculated = "Calculated";
         public const string ContractNotFound = "ContractNotFound";
         public const string ContractDetail = "ContractDetail";
@@ -691,7 +692,7 @@ public static class SD
         public const string CanNotAssignAnyEmpToFindingComManager = "CanNotAssignAnyEmpToFindingComManager";
         public const string CanNotRemoveThisEmployeeAsHasAmountInHisTreasury = "CanNotRemoveThisEmployeeAsHasAmountInHisTreasury";
         public const string Request = "Request";
-
+        public const string FileHasNoDirectory = "FileHasNoDirectory";
         public const string Job = "Job";
         public const string Category = "Category";
         //public const string Item = "Item";
