@@ -668,6 +668,9 @@ namespace Kader_System.Services.Services.HR
                 {
                     employeeAttachments = ManageFilesHelper.UploadFiles(model.employee_attachments, GoRootPath.HRFilesPath);
                 }
+                int CurrentCompanyYearId = 0;
+                if (_accessor.HttpContext.User.GetUserId() is not null)
+                    CurrentCompanyYearId = (await unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == _accessor.HttpContext.User.GetUserId())).CompanyYearId;
                 obj.Address = model.address;
                 obj.AccountNo = model.account_no;
                 obj.Email = model.email;
@@ -701,6 +704,7 @@ namespace Kader_System.Services.Services.HR
                 obj.IsActive = model.is_active;
                 obj.EmployeeImage = imageFile?.FileName;
                 obj.EmployeeImageExtension = imageFile?.FileExtension;
+           
                 
                 obj.ListOfAttachments = employeeAttachments?.Select(f => new HrEmployeeAttachment
                 {
@@ -716,6 +720,7 @@ namespace Kader_System.Services.Services.HR
                 {
                     userExist.VisiblePassword = model.password;
                     userExist.Email = obj.Email;
+                    userExist.CompanyYearId = CurrentCompanyYearId;
                     userExist.NormalizedEmail = obj.Email.ToUpper();
                     userExist.PasswordHash =
                         new PasswordHasher<ApplicationUser>().HashPassword(userExist, model.password);
