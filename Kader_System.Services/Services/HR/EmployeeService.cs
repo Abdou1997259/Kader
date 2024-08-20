@@ -476,6 +476,10 @@ namespace Kader_System.Services.Services.HR
                     Check = false
                 };
             }
+            int CurrentCompanyYearId = 0;
+            if (_accessor.HttpContext.User.GetUserId() is not null)
+                    CurrentCompanyYearId = (await unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == _accessor.HttpContext.User.GetUserId())).CompanyYearId;
+
 
             using var transaction = unitOfWork.BeginTransaction();
             try
@@ -505,7 +509,7 @@ namespace Kader_System.Services.Services.HR
                 }).ToList();
                 await unitOfWork.Employees.AddAsync(newEmployee);
 
-
+                
                 var newUser = await unitOfWork.Users.AddAsync(new ApplicationUser()
                 {
                     UserName = model.username,
@@ -522,8 +526,8 @@ namespace Kader_System.Services.Services.HR
                     CurrentCompanyId=newEmployee.CompanyId,
                     TitleId=model.title_id.ToString(),
                     CurrentTitleId=model.title_id,
-                  
-                    FullName=newEmployee.FullNameAr,
+                    CompanyYearId= CurrentCompanyYearId,
+                    FullName =newEmployee.FullNameAr,
                     PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, model.password),
                     VisiblePassword = model.password,
                     CompanyId = model.CompanyId.ToString(),

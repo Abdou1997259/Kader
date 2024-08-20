@@ -5,6 +5,7 @@ using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.Auth;
 using Kader_System.Services.IServices.AppServices;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -159,7 +160,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         obj.Email = model.email;
         obj.FinancialYear = model.financial_year;
         obj.CompanyId = model.company_id.Concater();
-
+        obj.CompanyYearId = model.financial_year;
        obj.TitleId=model.title_id.Concater();
         obj.JobId = model.job_title;
         obj.IsActive = model.is_active;
@@ -595,6 +596,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         user.JobId = model.job_title;
         user.UserName = model.user_name;
         user.Add_date = DateTime.UtcNow;
+        user.CompanyYearId = model.financial_year;
         user.Added_by = _accessor.HttpContext?.User.GetUserId() ?? string.Empty;
         user.Id = Guid.NewGuid().ToString();
 
@@ -1049,7 +1051,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 CompanyId = obj.CurrentCompanyId,
                 Companys = obj.CompanyId.Splitter(),
                 CurrentTitle=obj.CurrentTitleId,
-                FinancialYear = obj.FinancialYear,
+                FinancialYear = obj.CompanyYearId,
                 Email = obj.Email,
                 JobTitle = obj.JobId,
                 TitleId = titleIdList,
@@ -1057,6 +1059,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Image = obj.ImagePath,
                 Password = null,
                 UserName = obj.UserName
+               
 
             },
             LookUps = lookups,
@@ -1083,26 +1086,9 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             Id=x.Id,
             TitleName=Localization.Arabic==lang?x.TitleNameAr:x.TitleNameEn
         });
-
-        var FinancalYear = new List<FinancalYear>
-        {
-            new FinancalYear
-            {
-                Id=1,
-                Year=2025
-            }
-            ,   new FinancalYear
-            {
-                Id=2,
-                Year=2022
-            }
-            ,   new FinancalYear
-            {
-                Id=3,
-                Year=2021
-            }
-
-        };
+      
+        var FinancalYear = await _unitOfWork.Users.GetCompanyYearsAsync();
+       
 
 
 
@@ -1111,7 +1097,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             Check= true,    
             Data = new()
             {
-                FinancalYear=FinancalYear,
+                FinancalYear= FinancalYear,
                 Companies=compaines,
                 Titles=titles,
                 Jobs=jobs
