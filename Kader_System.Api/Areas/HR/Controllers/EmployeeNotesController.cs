@@ -55,21 +55,6 @@ namespace Kader_System.Api.Areas.HR.Controllers
         #endregion
 
 
-        #region Update
-
-        [HttpPut(ApiRoutes.EmployeeNotes.UpdateEmployeeNotes)]
-        [Permission(Permission.Edit, 12)]
-        public async Task<IActionResult> UpdateEmployeeNotes([FromRoute] int id, CreateEmployeeNotes model)
-        {
-            var response = await _service.UpdateEmployeeNotesAsync(id, model);
-            if (response.Check)
-                return Ok(response);
-            else if (!response.Check)
-                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
-        }
-
-        #endregion
 
 
         #region Delete

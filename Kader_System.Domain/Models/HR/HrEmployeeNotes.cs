@@ -13,6 +13,6 @@ namespace Kader_System.Domain.Models.HR
         public string Notes { get; set; }
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
-        public HrEmployee Employee { get; set; } = default!;
+        public HrEmployee Employee { get; set; } = default!; 
     }
 }

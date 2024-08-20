@@ -27,6 +27,12 @@ namespace Kader_System.Services.IServices.AppServices
         /// <param name="paths"></param>
         /// <returns></returns>
         public string GetFilePath(params string[] paths);
+        /// <summary>
+        /// Get full file path with server path  from wwwroot  
+        /// </summary>
+        /// <param name="paths"></param>
+        /// <returns></returns>
+        public string GetFilePathWithServerPath(params string[] paths);
 
         /// <summary>
         /// check if file is exist or not
