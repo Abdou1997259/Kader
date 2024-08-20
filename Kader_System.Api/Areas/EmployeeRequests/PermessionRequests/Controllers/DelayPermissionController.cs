@@ -111,12 +111,16 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         }
         #endregion
 
-        //[HttpGet("DownloadFile")]
-        //[Permission(Permission.Edit, 19)]
-        //public async Task<IActionResult> DownloadFile()
-        //{
-            
-        //}
+        [HttpGet("DownloadFile")]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> DownloadFile()
+        {
+            var fileResult =await _fileServer.DownloadFileAsync(
+                Modules.EmployeeRequest, 
+                Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission.ToString(),
+                "19c3fe38-6314-4504-ade3-f6fe9651a66d.jpeg");
+            return fileResult;
+        }
 
     }
 }

@@ -9,20 +9,25 @@ namespace Kader_System.Services.Services.AppServices
     {
         private readonly string serverPath = string.Empty;
         private readonly IHttpContextService _httpContextService;
-        public FileServer(IHttpContextService httpContextService)
+        private readonly IRequestService _requestService;
+        public FileServer(IHttpContextService httpContextService, IRequestService requestService)
         {
             _httpContextService = httpContextService;
             serverPath = _httpContextService.GetPhysicalServerPath();
+            _requestService = requestService;
         }
 
-        public async Task<FileStreamResult> DownloadFile(string moduleName, string fileName,string contentType = "application/octet-stream")
+        public async Task<FileStreamResult> DownloadFileAsync(params string [] fileParts)
         {
-            var filePath = Path.Combine(serverPath, moduleName, fileName);
+            var filePath = Path.Combine(serverPath, Path.Combine(fileParts));
+            var fileName = Path.GetFileName(filePath);
             var memory = new MemoryStream();
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             if (stream != null)
             {
                 await stream.CopyToAsync(memory);
+                memory.Position = 0;
+                var contentType = GetContentType(filePath);
                 return new FileStreamResult(memory, contentType)
                 {
                     FileDownloadName = fileName,
@@ -40,7 +45,9 @@ namespace Kader_System.Services.Services.AppServices
 
         public string GetContentType(string path)
         {
-            throw new NotImplementedException();
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types.ContainsKey(ext) ? types[ext] : "application/octet-stream";
         }
 
         public string GetFilePath(params string[] paths)
@@ -96,7 +103,7 @@ namespace Kader_System.Services.Services.AppServices
             {".jpeg", "image/jpeg"},
             {".gif", "image/gif"},
             {".csv", "text/csv"}
-        };
+            };
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Kader_System.Services.IServices.AppServices
         /// <returns>new file name with GUID</returns>
         public Task<string> UploadFile(string moduleName, IFormFile file);
         /// <summary>
-         /// Remove file from wwwroot
+        /// Remove file from wwwroot
         /// </summary>
         /// <param name="paths"></param>
         public void RemoveFile(params string[] paths);
@@ -45,11 +45,9 @@ namespace Kader_System.Services.IServices.AppServices
         /// <summary>
         /// Download file from wwwroot by content type of request
         /// </summary>
-        /// <param name="moduleName"></param>
-        /// <param name="fileName"></param>
-        /// <param name="contentType"></param>
+        ///param name="fileParts"
         /// <returns>new FileStreamResult to download</returns>
-        public Task<FileStreamResult> DownloadFile(string moduleName, string fileName, string contentType = "application/octet-stream");
+        public Task<FileStreamResult> DownloadFileAsync(params string[] fileParts);
         /// <summary>
         /// Get Content file of header request depand on file exentsion
         /// </summary>

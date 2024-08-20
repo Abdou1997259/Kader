@@ -36,4 +36,13 @@ public class RequestService :IRequestService
             return acceptLanguageHeader.Split(',').FirstOrDefault() ?? "";
         }
     }
+
+    public string GetHeaderContentFile
+    {
+        get
+        {
+            var acceptLanguageHeader = _httpContextAccessor.HttpContext.Request.Headers.ContentType.ToString();
+            return acceptLanguageHeader ?? "";
+        }
+    }
 }
