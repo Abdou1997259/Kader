@@ -21,7 +21,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<SpCacluateSalary> SpCacluateSalariesModel { get; set; }
     public DbSet<UserPermission> UserPermissions { get; set; }
 
-
+    public DbSet<CompanyYear> CompanyYears { get; set; }
     public DbSet<SpCaclauateSalaryDetails> SpCaclauateSalaryDetailsModel { get; set; }
     public DbSet<SpCaclauateSalaryDetailedTrans> SpCaclauateSalaryDetailedTransModel { get; set; }
 
@@ -186,6 +186,11 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasMany(d => d.Employees)
             .WithOne(e => e.Department)
             .HasForeignKey(e => e.DepartmentId);
+        
+        modelBuilder.Entity<ApplicationUser>()
+       .HasOne(u => u.CompanyYear)
+       .WithMany(cy => cy.Users)
+       .HasForeignKey(u => u.CompanyYearId);
         #endregion
 
         #region Fluent Api
