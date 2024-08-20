@@ -681,6 +681,7 @@ public static class SD
         public const string IsNotExisted = "IsNotExisted";
         public const string Employee = "Employee";
         public const string Contract = "Contract";
+
         public const string TitleUser = "TitleUser";
         public const string HasNoDocument = "HasNoDocument";
         public const string Calculated = "Calculated";

@@ -462,6 +462,20 @@ namespace Kader_System.Services.Services.HR
                     Check = false
                 };
             }
+            if(await unitOfWork.Vacations.ExistAsync(model.vacation_id))
+            {
+
+                string emp = shareLocalizer[Localization.Employee];
+                string resultMsg = shareLocalizer[Localization.IsNotExisted, emp];
+
+
+                return new()
+                {
+                    Error = resultMsg,
+                    Msg = resultMsg,
+                    Check = false
+                };
+            }
 
             using var transaction = unitOfWork.BeginTransaction();
             try
