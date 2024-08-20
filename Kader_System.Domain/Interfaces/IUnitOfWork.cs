@@ -53,6 +53,7 @@ public interface IUnitOfWork : IDisposable
     IManagementRepository Managements { get; }
     ISectionRepository Sections { get; }
     IShiftRepository Shifts { get; }
+    IEmployeeNotesRepository EmployeeNotes { get; }
     IVacationDistributionRepository VacationDistributions { get; }
     IVacationRepository Vacations { get; }
     IVacationTypeRepository VacationTypes { get; }

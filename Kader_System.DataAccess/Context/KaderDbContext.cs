@@ -71,6 +71,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<TransSalaryEffect> TransSalaryEffects { get; set; }
     public DbSet<TransVacation> TransVacations { get; set; }
     public DbSet<HrJob> HrJobs { get; set; }
+    public DbSet<HrEmployeeNotes> HrEmployeeNotes { get; set; }
     public DbSet<AdvancedType> AdvancedTypes { get; set; }
     public DbSet<HrQualification> HrQualifications { get; set; }
     public DbSet<HrManagement> Managements { get; set; }

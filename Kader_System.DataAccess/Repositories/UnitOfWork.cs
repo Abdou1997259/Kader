@@ -105,6 +105,8 @@ public class UnitOfWork : IUnitOfWork
     public IActionsRepository ActionsRepo  { get; private set; }
     public string DatabaseName { get; set; }
 
+    public IEmployeeNotesRepository EmployeeNotes { get; private set; }
+
     public UnitOfWork(KaderDbContext context, IConfiguration config)
     {
         _context = context;
@@ -180,7 +182,7 @@ public class UnitOfWork : IUnitOfWork
         EmployeeRequests = new EmployeeRequestsRepository(_context);
         PermessionStructure = new PermessionStructureRepository(_context);  
         ActionsRepo = new ActionsRepository(_context);
-        DatabaseName = new SqlConnectionStringBuilder(_context.Database.GetConnectionString()).InitialCatalog;
+        EmployeeNotes = new EmployeeNotesRepository(_context); 
     }
 
     public IDatabaseTransaction BeginTransaction() =>

@@ -249,7 +249,7 @@ namespace Kader_System.DataAccess.Migrations
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
-                            ConcurrencyStamp = "d59ca47d-1b5d-448b-9d3b-f5055543d46b",
+                            ConcurrencyStamp = "3600d9a8-9ae8-43b4-9fbb-daf88341c0e4",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -263,10 +263,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEB49zfX8LUsGWz7l21NU9/KZn+HygEsO2OsA3U9ZjBHMOFjq1wKKPYtZ1NkwRqyjLg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEB6U5Mvj5wm2StgVFf61oEvdHo4/z8p7eeJQBx4MbkXFfghMezyzey2NxHX7xeTMJA==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "2ed13847-b35c-46ba-8114-1277c3bade6a",
+                            SecurityStamp = "c6acfe0e-882d-443a-a85a-b910da0d34df",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -1872,6 +1872,52 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("hr_employee_attachments");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.HR.HrEmployeeNotes", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("Add_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Added_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeleteBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Notes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdateBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("hr_employee_notes");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrEmployeeType", b =>
@@ -8098,6 +8144,17 @@ namespace Kader_System.DataAccess.Migrations
                 {
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
                         .WithMany("ListOfAttachments")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.HR.HrEmployeeNotes", b =>
+                {
+                    b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
+                        .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();

@@ -551,6 +551,16 @@ public static class SD
             public const string RestoreVacation = "Vacation/restore/{id}";
             public const string GetVacationById = "Vacation/getById/{id}";
             public const string DeleteVacation = "Vacation/delete/{id}";
+        } 
+        public class EmployeeNotes
+        {
+            public const string ListOfEmployeeNotes = "EmployeeNotes/getListOfEmployeeNotes";
+            public const string GetAllEmployeeNotes = "EmployeeNotes/getAll";
+            public const string CreateEmployeeNotes = "EmployeeNotes/create";
+            public const string UpdateEmployeeNotes = "EmployeeNotes/update/{id}";
+            public const string RestoreEmployeeNotes = "EmployeeNotes/restore/{id}";
+            public const string GetEmployeeNotesById = "EmployeeNotes/getById/{id}";
+            public const string DeleteEmployeeNotes = "EmployeeNotes/delete/{id}";
         }
         public class Shift
         {
@@ -712,6 +722,7 @@ public static class SD
         public const string Company = "Company";
         public const string Management = "Management";
         public const string Allowance = "Allowance";
+        public const string EmployeeNotes = "Employee Notes";
         public const string Benefit = "Benefit";
         public const string TitlePermisson = "TitlePermisson";
         public const string Qualification = "Qualification";

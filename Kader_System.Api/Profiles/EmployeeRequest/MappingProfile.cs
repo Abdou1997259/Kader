@@ -3,6 +3,7 @@ using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
+using Kader_System.Domain.Models.HR;
 
 namespace Kader_System.Services.Services
 {
@@ -12,6 +13,9 @@ namespace Kader_System.Services.Services
         {
 
             CreateMap<LoanRequest, DTOLoanRequest>().ReverseMap();
+            CreateMap<HrEmployeeNotes, EmployeeNotesData>()
+                       .ForMember(dest => dest.employee_id, opt => opt.MapFrom(src => src.EmployeeId))
+                       .ForMember(dest => dest.notes, opt => opt.MapFrom(src => src.Notes));
             CreateMap<CreateTransSalaryIncreaseRequest, TransSalaryIncrease>();
             CreateMap<DTOLeavePermissionRequest, LeavePermissionRequest>().ReverseMap();
             CreateMap<DTOAllowanceRequest, AllowanceRequest>();

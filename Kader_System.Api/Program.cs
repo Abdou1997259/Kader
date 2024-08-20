@@ -303,6 +303,7 @@ builder.Services.AddScoped<IUserPermessionService, UserPermessionService>();
 builder.Services.AddScoped<ITitlePermessionService, TitlePermessionService>();
 builder.Services.AddScoped<IGetAllScreensService, GetAllScreensService>();
 builder.Services.AddScoped<IHttpContextService, HttpContextService>();
+builder.Services.AddScoped<IEmployeeNotesServices, EmployeeNotesServices>();
 #region Employee_Requests
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
 builder.Services.AddScoped<IVacationRequestService, VacationRequestService>();
