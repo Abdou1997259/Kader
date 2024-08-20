@@ -656,7 +656,8 @@ namespace Kader_System.Services.Services.HR
                   {
                       new Items
                       {
-                             EmployeeName = Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn,
+                          Id=contract.Id,
+                       EmployeeName = Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn,
                       ContractFile = Path.Combine(SD.GoRootPath.GetSettingImagesPath, contract.FileName),
                       SalaryFixed = contract.FixedSalary,
                       SalaryTotal = contract.FixedSalary + contract.HousingAllowance,

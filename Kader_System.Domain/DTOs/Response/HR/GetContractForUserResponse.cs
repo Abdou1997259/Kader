@@ -16,7 +16,7 @@ namespace Kader_System.Domain.DTOs.Response.HR
         public string AddedBy { get; set; }
         public string ContractFile { get; set; }
         public double HousingAllowance { get; set; }
-        
+        public int Id { get; set; }
         public bool Active { get; set; }
         public DateOnly StartDate { get; set; }
         public string EmployeeName { get; set; }
