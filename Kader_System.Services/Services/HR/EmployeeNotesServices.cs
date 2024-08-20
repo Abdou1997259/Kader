@@ -122,6 +122,7 @@ namespace Kader_System.Services.Services.HR
         public async Task<Response<CreateEmployeeNotes>> UpdateEmployeeNotesAsync(int id, CreateEmployeeNotes model)
         {
             var employeeNotes = await unitOfWork.EmployeeNotes.GetByIdAsync(id);
+            employeeNotes.Notes = model.notes;
             unitOfWork.EmployeeNotes.Update(employeeNotes);
             await unitOfWork.CompleteAsync();
 
