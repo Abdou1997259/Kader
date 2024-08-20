@@ -50,10 +50,19 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<string>> DeleteLeavePermissionRequest(int id, string fullPath)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var leaveRequest = await _unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
+            var  leaveRequest = await _unitOfWork.LeavePermissionRequest.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
             if (leaveRequest != null)
             {
+                if (leaveRequest.StatuesOfRequest.ApporvalStatus != 1)
+                {
+                    msg = _sharLocalizer[Localization.ApproveRejectDelte];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = false,
+                    };
+                }
                 var result = await _unitOfWork.LeavePermissionRequest.SoftDeleteAsync(leaveRequest,DeletedBy : userId);
                 if (result > 0)
                 {

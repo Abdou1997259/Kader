@@ -13,9 +13,7 @@ namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests
         [Required(ErrorMessage = "please Insert Installment Count")]
         public int InstallmentsCount { get; set; }
         [Required(ErrorMessage = "please Insert Amount")]
-        public double Amount { get; set; }
-        [Required(ErrorMessage = "please Insert Notes ")]
-     
+        public double Amount { get; set; }     
         public string? Notes { get; set; }
         [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
 

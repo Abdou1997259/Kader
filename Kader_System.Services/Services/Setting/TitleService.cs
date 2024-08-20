@@ -307,30 +307,48 @@ namespace Kader_System.Services.Services.Setting
 
         public async Task<Response<string>> DeleteTitleAsync(int id) // 1
         {
+
+
+            var isUserTakeThisTitle =await  unitOfWork.Users.GetFirstOrDefaultAsync(x=> x.CurrentTitleId == id);
+
+            if(isUserTakeThisTitle is not null)
+            {
+                string resultMsg = sharLocalizer[Localization.UserInTitle];
+
+                return new()
+                {
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
+
             var titleResult = await _context.Titles.Where(x => x.Id == id).ExecuteUpdateAsync(x => x.
-                  SetProperty(p => p.IsDeleted, true).
-                  SetProperty(p => p.DeleteDate, DateTime.Now));
+               SetProperty(p => p.IsDeleted, true).
+               SetProperty(p => p.DeleteDate, DateTime.Now));
+
+
+
             if (titleResult > 0)
             {
-                var users = _context.Users.AsNoTracking()
-                                .AsEnumerable()
-                                .Where(u => u.TitleId.Split(",", StringSplitOptions.None)
-                                .Contains(id.ToString()))
-                                .ToList();
+                //var users = _context.Users.AsNoTracking()
+                //                .AsEnumerable()
+                //                .Where(u => u.TitleId.Split(",", StringSplitOptions.None)
+                //                .Contains(id.ToString()))
+                //                .ToList();
 
 
 
 
-                foreach (var user in users)
-                {
-                    var userTitles = user.TitleId.Splitter(); // [1,2,3]
-                    userTitles.Remove(id); // [2,3]
-                    var removedUserTitles = string.Join(",", userTitles); // "2,3"
-                    user.TitleId = removedUserTitles; // "2,3"
-                    user.CurrentTitleId = id == user.CurrentTitleId ? userTitles.ElementAt(0) : user.CurrentTitleId; // = 2 shifted if current = 1 ,if current = 2 then will be = 2  
-                    _context.Users.Update(user);
-                    await _context.SaveChangesAsync();
-                }
+                //foreach (var user in users)
+                //{
+                //    var userTitles = user.TitleId.Splitter(); // [1,2,3]
+                //    userTitles.Remove(id); // [2,3]
+                //    var removedUserTitles = string.Join(",", userTitles); // "2,3"
+                //    user.TitleId = removedUserTitles; // "2,3"
+                //    user.CurrentTitleId = id == user.CurrentTitleId ? userTitles.ElementAt(0) : user.CurrentTitleId; // = 2 shifted if current = 1 ,if current = 2 then will be = 2  
+                //    _context.Users.Update(user);
+                //    await _context.SaveChangesAsync();
+                //}
                 return new Response<string>()
                 {
                     Check = true,
@@ -384,15 +402,39 @@ namespace Kader_System.Services.Services.Setting
                                 Permissions = string.Join(',', assignedPermission.title_permission)
                             });
                         }
+                        var userWithTitle = await unitOfWork.Users.GetSpecificSelectAsync(x => x.CurrentTitleId != null, select: x => new { x.Id, x.CurrentTitleId });
+                        if (userWithTitle.Any())
+                        {
+                            foreach (var userIdtitle in userWithTitle)
+                            {
+                                var userpermssion = await unitOfWork.UserPermssionRepositroy.GetFirstOrDefaultAsync(x => x.UserId == userIdtitle.Id && x.TitleId == userIdtitle.CurrentTitleId && x.SubScreenId == assignedPermission.SubId);
+                                if (userpermssion is not null)
+                                    unitOfWork.UserPermssionRepositroy.Remove(userpermssion);
+
+                                await unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission
+                                {
+                                    UserId = userIdtitle.Id,
+                                    TitleId = userIdtitle.CurrentTitleId,
+                                    Permission = string.Join(',', assignedPermission.title_permission),
+                                    SubScreenId = assignedPermission.SubId
+                                });
+
+                                await unitOfWork.CompleteAsync();
+
+
+                            }
+
+                        }
+
                     }
                     else
                     {
-                        var userPermissionQuery = (await unitOfWork.TitlePermissionRepository
+                        var titlePermissionQuery = (await unitOfWork.TitlePermissionRepository
                            .GetSpecificSelectTrackingAsync(x => x.SubScreenId == assignedPermission.SubId, x => x, includeProperties: "ScreenSub,Title")).ToList();
 
-                        if (userPermissionQuery.Count() > 0)
+                        if (titlePermissionQuery.Count() > 0)
                         {
-                            unitOfWork.TitlePermissionRepository.RemoveRange(userPermissionQuery);
+                            unitOfWork.TitlePermissionRepository.RemoveRange(titlePermissionQuery);
                             await unitOfWork.CompleteAsync();
                         }
                         if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
@@ -413,9 +455,36 @@ namespace Kader_System.Services.Services.Setting
                             });
                             await unitOfWork.CompleteAsync();
                         }
+                        var userWithTitle =await unitOfWork.Users.GetSpecificSelectAsync(x => x.CurrentTitleId == id,select:x=>x.Id);
+                        if (userWithTitle.Any())
+                        {
+                            foreach(var userId in userWithTitle)
+                            {
+                               var userpermssion= await unitOfWork.UserPermssionRepositroy.GetFirstOrDefaultAsync(x => x.UserId == userId && x.TitleId==id&&x.SubScreenId==assignedPermission.SubId);
+                               if(userpermssion is not null)
+                                    unitOfWork.UserPermssionRepositroy.Remove(userpermssion);
 
+                            await    unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission
+                                {
+                                    UserId = userId,
+                                    TitleId = id,
+                                    Permission = string.Join(',', assignedPermission.title_permission),
+                                    SubScreenId = assignedPermission.SubId
+                                });
+
+                              await  unitOfWork.CompleteAsync();
+
+
+                            }
+
+                        }
+                          
 
                     }
+
+
+
+
 
                 }
                 else

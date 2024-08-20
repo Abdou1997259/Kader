@@ -1,22 +1,49 @@
 ﻿
 using Kader_System.Domain.DTOs;
 using Kader_System.Services.IServices.AppServices;
+using Kader_System.Services.IServices.HTTP;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.HR
 {
-    public class ContractService(
-        IUnitOfWork unitOfWork,
-        IStringLocalizer<SharedResource> shareLocalizer,
-        IFileServer _fileServer,
-        IMapper mapper) : IContractService
+    public class ContractService
+       : IContractService
     {
-        private HrContract _instanceContract;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IStringLocalizer<SharedResource> shareLocalizer;
+        private readonly IFileServer fileServer;
+        private readonly IHttpContextService httpContextService;
+        private readonly IMapper mapper;
+        private HrContract instanceContract;
+        private readonly string serverPath;
+
+        // Constructor
+        public ContractService(
+            IUnitOfWork _unitOfWork,
+            IStringLocalizer<SharedResource> _shareLocalizer,
+            IFileServer _fileServer,
+            IHttpContextService _httpContextService,
+            IMapper _mapper)
+        {
+            unitOfWork = _unitOfWork;
+            shareLocalizer = _shareLocalizer;
+            fileServer = _fileServer;
+            httpContextService = _httpContextService;
+            mapper = _mapper;
+            instanceContract = new HrContract(); // Initialize if needed
+            serverPath = _httpContextService.GetPhysicalServerPath(); // Initialize here
+        }
+
+
+
 
         public async Task<Response<IEnumerable<ListOfContractsResponse>>> ListOfContractsAsync(string lang)
         {
             var result =
                 await unitOfWork.Contracts.GetSpecificSelectAsync(null!
-                    , includeProperties: $"{nameof(_instanceContract.Employee)}",
+                    , includeProperties: $"{nameof(instanceContract.Employee)}",
                     select: x => new ListOfContractsResponse
                     {
                         Id = x.Id,
@@ -253,6 +280,20 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<CreateContractRequest>> CreateContractAsync(CreateContractRequest model, string moduleName)
         {
+
+
+           var haveContract= await unitOfWork.Contracts.ExistAsync(x=>x.EmployeeId==model.employee_id);
+            if (haveContract)
+            {
+                var Msg = string.Format(shareLocalizer[Localization.HaveContract],
+                  shareLocalizer[Localization.Contract]);
+                return new()
+                {
+                    Check = false,
+                    Msg = Msg,
+                    Data = null
+                };
+            }
             var newContract = new HrContract()
             {
                 StartDate = model.start_date,
@@ -277,7 +318,7 @@ namespace Kader_System.Services.Services.HR
                 ;
             }
 
-            newContract.FileName = model.contract_file == null ? string.Empty : await _fileServer.UploadFile( moduleName, model.contract_file);
+            newContract.FileName = model.contract_file == null ? string.Empty : await fileServer.UploadFile( moduleName, model.contract_file);
             if (model.contract_file != null) {
                 newContract.FileExtension = Path.GetExtension(model.contract_file.FileName);
             }
@@ -325,12 +366,12 @@ namespace Kader_System.Services.Services.HR
 
                 if (model.contract_file != null)
                 {
-                    if (_fileServer.FileExist( moduleName, obj.FileName))
-                        _fileServer.RemoveFile( moduleName, obj.FileName);
+                    if (fileServer.FileExist( moduleName, obj.FileName))
+                        fileServer.RemoveFile( moduleName, obj.FileName);
                     obj.FileExtension = Path.GetExtension(model.contract_file.FileName);
 
                     obj.FileName = (model.contract_file.Length == 0) ? null
-                        : await _fileServer.UploadFile( moduleName, model.contract_file);
+                        : await fileServer.UploadFile( moduleName, model.contract_file);
                 }
               
               
@@ -443,7 +484,7 @@ namespace Kader_System.Services.Services.HR
             {
 
                 var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync(c => c.Id == id,
-                    includeProperties: $"{nameof(_instanceContract.ListOfAllowancesDetails)}");
+                    includeProperties: $"{nameof(instanceContract.ListOfAllowancesDetails)}");
                 if (obj is null)
                 {
                     string resultMsg = string.Format(shareLocalizer[Localization.CannotBeFound],
@@ -573,5 +614,129 @@ namespace Kader_System.Services.Services.HR
         {
             throw new NotImplementedException();
         }
+
+        public async Task<Response<GetContractForUserResponse>> GetContractByUser(int EmpId ,string lang)
+        {
+            var emp = await unitOfWork.Employees.GetByIdAsync(EmpId);
+            if (emp is null) {
+
+
+                var msg = shareLocalizer[Localization.IsNotExisted,shareLocalizer[Localization.Employee]];
+                return new Response<GetContractForUserResponse>()
+                {
+                    Msg = msg,
+                    Check = false,
+
+                };
+
+
+            }
+            var contract=await unitOfWork.Contracts.GetFirstOrDefaultAsync(x=>x.EmployeeId==EmpId);
+
+            if (contract == null) {
+
+
+                var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
+                return new Response<GetContractForUserResponse>()
+                {
+                    Msg = msg,
+                    Check = false,
+
+                };
+
+
+            }
+            return new Response<GetContractForUserResponse>()
+            {
+                Check=true,
+                Data = new GetContractForUserResponse
+                {
+                    EmployeeName = Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn,
+                    ContractFile = Path.Combine(SD.GoRootPath.GetSettingImagesPath, contract.FileName),
+                    SalaryFixed = contract.FixedSalary,
+                    SalaryTotal = contract.FixedSalary + contract.HousingAllowance,
+                    Active = contract.IsActive,
+                    StartDate = contract.StartDate,
+                    EndDate = contract.EndDate,
+                    AddedBy = contract.Added_by,
+                    HousingAllowance = contract.HousingAllowance,
+                    Id = contract.Id,
+
+                }
+            };
+
+        }
+
+        public async Task<Response<FileResult>> GetFileStreamResultAsync(int contractId ,string serverPath,string moduleName)
+        {
+
+            var contract = await unitOfWork.Contracts.GetByIdAsync(contractId);
+            if (contract is null)
+            {
+                var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
+                return new Response<FileResult>
+                {
+                    Msg = msg,
+                    Check = false
+                };
+            }
+
+            if (string.IsNullOrEmpty(contract.FileName))
+            {
+                var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
+                return new Response<FileResult>
+                {
+                    Msg = msg,
+                    Check = false
+                };
+            }
+
+            var clientPath = Path.Combine(serverPath, moduleName);
+            var path = Path.Combine(clientPath, contract.FileName);
+
+            if (!System.IO.File.Exists(path))
+            {
+                var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
+                return new Response<FileResult>
+                {
+                    Msg = msg,
+                    Check = false
+                };
+            }
+
+            try
+            {
+                // Open the file stream
+
+
+                // Create the FileStreamResult
+                var fileBytes = await System.IO.File.ReadAllBytesAsync(path);
+
+                // Create and return the FileContentResult
+                var fileContentResult = new FileContentResult(fileBytes, "application/octet-stream")
+                {
+                    FileDownloadName = contract.FileName
+                };
+
+                // Return the FileStreamResult wrapped in your Response object
+                return new Response<FileResult>
+                {
+                    Data = fileContentResult,
+                    Check = true,
+                 // or any success message you want
+                };
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions (e.g., file access issues)
+                var msg = shareLocalizer[Localization.Error, shareLocalizer[Localization.Contract]];
+                return new Response<FileResult>
+                {
+                    Msg = $"{msg}: {ex.Message}",
+                    Check = false
+                };
+            }
+        }
+
     }
 }

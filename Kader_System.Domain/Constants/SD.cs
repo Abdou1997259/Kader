@@ -241,6 +241,8 @@ public static class SD
             public const string GetContractById = "contract/getById/{id}";
             public const string GetContractLookups = "contract/getLookups";
             public const string DeleteContract = "contract/delete/{id}";
+            public const string GetContractByUser = "contract/getcontractbyuser/{empId}";
+            public const string DownloadDocument = "contract/downloaddocument/{contractId}";
         }
         public class Allowance
         {
@@ -550,6 +552,16 @@ public static class SD
             public const string RestoreVacation = "Vacation/restore/{id}";
             public const string GetVacationById = "Vacation/getById/{id}";
             public const string DeleteVacation = "Vacation/delete/{id}";
+        } 
+        public class EmployeeNotes
+        {
+            public const string ListOfEmployeeNotes = "EmployeeNotes/getListOfEmployeeNotes";
+            public const string GetAllEmployeeNotes = "EmployeeNotes/getAll";
+            public const string CreateEmployeeNotes = "EmployeeNotes/create";
+            public const string UpdateEmployeeNotes = "EmployeeNotes/update/{id}";
+            public const string RestoreEmployeeNotes = "EmployeeNotes/restore/{id}";
+            public const string GetEmployeeNotesById = "EmployeeNotes/getById/{id}";
+            public const string DeleteEmployeeNotes = "EmployeeNotes/delete/{id}";
         }
         public class Shift
         {
@@ -615,6 +627,7 @@ public static class SD
         public const string EmployeeVacation = "EmployeeVacation";
         public const string DepartmentManager = "DepartmentManager";
         public const string Done = "Done";
+        public const string HaveContract = "HaveContract";
         public const string BalanceNotEnough = "BalanceNotEnough";
         public const string Error = "Error";
         public const string ThisAmountCannotBePaidFromTheMainTreasuryDueToItsAvailability = "ThisAmountCannotBePaidFromTheMainTreasuryDueToItsAvailability";
@@ -651,6 +664,7 @@ public static class SD
         public const string News = "News";
         public const string Updated = "Updated";
         public const string Deleted = "Deleted";
+        public const string ApproveRejectDelte = "Cannot delete approve or reject request";
         public const string CurrentAndNewPasswordIsTheSame = "CurrentAndNewPasswordIsTheSame";
         public const string CurrentPasswordIsIncorrect = "CurrentPasswordIsIncorrect";
         public const string UserName = "UserName";
@@ -667,8 +681,9 @@ public static class SD
         public const string IsNotExisted = "IsNotExisted";
         public const string Employee = "Employee";
         public const string Contract = "Contract";
-      
 
+        public const string TitleUser = "TitleUser";
+        public const string HasNoDocument = "HasNoDocument";
         public const string Calculated = "Calculated";
         public const string ContractNotFound = "ContractNotFound";
         public const string ContractDetail = "ContractDetail";
@@ -678,7 +693,7 @@ public static class SD
         public const string CanNotAssignAnyEmpToFindingComManager = "CanNotAssignAnyEmpToFindingComManager";
         public const string CanNotRemoveThisEmployeeAsHasAmountInHisTreasury = "CanNotRemoveThisEmployeeAsHasAmountInHisTreasury";
         public const string Request = "Request";
-
+        public const string FileHasNoDirectory = "FileHasNoDirectory";
         public const string Job = "Job";
         public const string Category = "Category";
         //public const string Item = "Item";
@@ -709,6 +724,7 @@ public static class SD
         public const string Company = "Company";
         public const string Management = "Management";
         public const string Allowance = "Allowance";
+        public const string EmployeeNotes = "Employee Notes";
         public const string Benefit = "Benefit";
         public const string TitlePermisson = "TitlePermisson";
         public const string Qualification = "Qualification";

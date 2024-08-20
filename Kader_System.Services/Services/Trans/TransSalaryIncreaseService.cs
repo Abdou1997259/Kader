@@ -202,7 +202,9 @@ namespace Kader_System.Services.Services.Trans
             var result = new GetAllSalaryIncreaseResponse
             {
                 TotalRecords = await _unitOfWork.TransSalaryIncrease.CountAsync(filter: filter),
-
+                //? (x.grouIcemp.Increase_type == 2
+                //                        ? (x.grouIcemp.Amount / 100) * g.Key.FixedSalary
+                //                        : x.grouIcemp.Amount)
                 Items = transSalaryIncreases
                     .AsEnumerable() // Switching to client-side evaluation for the next part
                     .Select(x => new TransSalaryIncreaseResponse
@@ -214,7 +216,7 @@ namespace Kader_System.Services.Services.Trans
                         PreviousSalary = x.PreviousSalary,
                         AddedBy = users.FirstOrDefault(u => u.Id == x.Added_by)?.UserName,
                         EmployeeName = x.EmployeeName,
-                        IncreaseValue = x.Amount,
+                        IncreaseValue = x.IncreaseType ==2 ?(x.Amount/100)*x.PreviousSalary:x.PreviousSalary,
                         SalaryIncreaseType = x.IncreaseType == 1 && lang == Localization.Arabic ? "قيمة" :
                                              x.IncreaseType == 2 && lang == Localization.Arabic ? "نسبة" :
                                              x.IncreaseType == 1 && lang == Localization.English ? "Value" :

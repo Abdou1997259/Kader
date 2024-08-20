@@ -86,10 +86,19 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<string>> DeleteDelayPermissionRequest(int id, string fullPath)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var _DelayPermissionRequest = await _unitOfWork.DelayPermission.GetByIdAsync(id);
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
+            var _DelayPermissionRequest = await _unitOfWork.DelayPermission.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
             if (_DelayPermissionRequest != null)
             {
+                if(_DelayPermissionRequest.StatuesOfRequest.ApporvalStatus != 1)
+                {
+                    msg = _sharLocalizer[Localization.ApproveRejectDelte];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = false,
+                    };
+                }
                 var result = await _unitOfWork.DelayPermission.SoftDeleteAsync(_DelayPermissionRequest, DeletedBy: userId);
                 if (result > 0)
                 {

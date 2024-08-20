@@ -893,7 +893,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 x.Email,
                 x.JobId,
                 x.PhoneNumber,
-                x.UserName
+                x.UserName,
+              
             },
             orderBy: x => x.OrderByDescending(x => x.Add_date)
         );
@@ -902,6 +903,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var items = users.Select(x => new ListOfUsersResponse
         {
             Id=x.Id,
+            CurrentTitle=x.CurrentTitleId,
             CompanyName = Localization.Arabic == lang
                 ? companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameAr
                 : companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameEn,

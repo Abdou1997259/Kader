@@ -37,6 +37,8 @@ public class TransAllowanceRepository(KaderDbContext context) : BaseRepository<T
                         Notes = trans.Notes,
                         SalaryEffect = lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
                         SalaryEffectId = trans.SalaryEffectId,
+                        IncreaseTypeName= lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
+
                     };
 
         if (filterSearch != null)

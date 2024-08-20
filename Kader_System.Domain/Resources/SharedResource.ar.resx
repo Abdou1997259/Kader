@@ -165,6 +165,15 @@
   <data name="Employee" xml:space="preserve">
     <value>الموظف</value>
   </data>
+  <data name="FileHasNoDirectory" xml:space="preserve">
+    <value>هذا الملف ليس له مسار او ليس موجود</value>
+  </data>
+  <data name="HasNoDocument" xml:space="preserve">
+    <value>ليس له وثيقة{0} </value>
+  </data>
+  <data name="HaveContract" xml:space="preserve">
+    <value>هذا {0} الموظف بالفعل له عقد </value>
+  </data>
   <data name="InvalidSubId" xml:space="preserve">
     <value>لاتوجد شاشه بهذا الرقم </value>
   </data>
@@ -224,6 +233,9 @@
   </data>
   <data name="TitlePermisson" xml:space="preserve">
     <value>من فضلك ارسل المسئولية</value>
+  </data>
+  <data name="TitleUser" xml:space="preserve">
+    <value>هذه المسئوليه بلفعل لديها مستخدمة </value>
   </data>
   <data name="Updated" xml:space="preserve">
     <value>تم التحديث بنجاح</value>
