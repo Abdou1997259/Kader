@@ -249,7 +249,7 @@ namespace Kader_System.DataAccess.Migrations
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
-                            ConcurrencyStamp = "828fc16c-a58b-4da7-b7eb-b5e2f6bff5ae",
+                            ConcurrencyStamp = "2cb52945-c3c7-42f1-97e0-28e78373708e",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -263,10 +263,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMtc6/3G57lLrmGM5MeoESp4TL1fFs15s84CUBtBMNLfN0syh0FpaJV8NBaMmxzzqw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEH4iKk2+6BliqDZSlIIUL1PTLHIJJ9UU9LHQcK/E5XMncWDBLS1Q3ETOBx4XV43QuQ==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ccc59b3d-adf8-4af4-a16f-fd3b5da8fd9f",
+                            SecurityStamp = "576121b0-c7bc-4962-ba25-2cf7b9cd50a5",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -1872,6 +1872,33 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("EmployeeId");
 
                     b.ToTable("hr_employee_attachments");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.HR.HrEmployeeAttendance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly>("AttendanceDate")
+                        .HasColumnType("date");
+
+                    b.Property<TimeOnly>("CheckIn")
+                        .HasColumnType("time");
+
+                    b.Property<TimeOnly>("CheckOut")
+                        .HasColumnType("time");
+
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("hr_Employee_attendance");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrEmployeeNotes", b =>
@@ -8144,6 +8171,17 @@ namespace Kader_System.DataAccess.Migrations
                 {
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
                         .WithMany("ListOfAttachments")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.HR.HrEmployeeAttendance", b =>
+                {
+                    b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
+                        .WithMany()
                         .HasForeignKey("EmployeeId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
