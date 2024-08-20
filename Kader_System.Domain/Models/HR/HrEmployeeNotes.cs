@@ -14,6 +14,5 @@ namespace Kader_System.Domain.Models.HR
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public HrEmployee Employee { get; set; } = default!; 
-        public ApplicationUser User { get; set; } = default!;
     }
 }

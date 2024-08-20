@@ -1,7 +1,9 @@
-﻿using Kader_System.Domain.DTOs;
+﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Services.IServices.AppServices;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.HR
 {
@@ -9,6 +11,7 @@ namespace Kader_System.Services.Services.HR
         IUnitOfWork unitOfWork,
         IStringLocalizer<SharedResource> shareLocalizer,
          IHttpContextAccessor _httpContextAccessor,
+         KaderDbContext _context,
          IFileServer fileServer,
     IMapper mapper) : IEmployeeNotesServices
     {
@@ -29,7 +32,7 @@ namespace Kader_System.Services.Services.HR
                 Data = model
             };
         }
-        public async Task<Response<GetAllEmployeeNotesResponse>> GetAllEmployeeNotesAsync(string lang ,GetAllEmployeeNotesRequest model, string host)
+        public async Task<Response<GetAllEmployeeNotesResponse>> GetAllEmployeeNotesAsync(string lang, GetAllEmployeeNotesRequest model, string host)
         {
             Expression<Func<HrEmployeeNotes, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
                                                                  x.EmployeeId == model.EmployeeId &&
@@ -43,27 +46,28 @@ namespace Kader_System.Services.Services.HR
             else
                 page = model.PageNumber;
             var pageLinks = Enumerable.Range(1, totalPages)
-                .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
-                .ToList();
+                .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber }).ToList();
+
             var result = new GetAllEmployeeNotesResponse
             {
                 TotalRecords = totalRecords,
+                Items = await (from x in _context.HrEmployeeNotes.AsNoTracking()
+                               join emp in _context.Employees on x.EmployeeId equals emp.Id
+                               join user in _context.Users on emp.UserId equals user.Id
+                               where x.IsDeleted == model.IsDeleted && x.EmployeeId == model.EmployeeId &&
+                               (string.IsNullOrEmpty(model.Word)|| x.Notes.Contains(model.Word))
+                               select new EmployeeNotesData
+                               {
 
-                Items = (await unitOfWork.EmployeeNotes.GetSpecificSelectAsync(filter: filter, includeProperties: "Employee,User",
-                    take: model.PageSize,
-                    skip: (model.PageNumber - 1) * model.PageSize,
-                    select: x => new EmployeeNotesData
-                    {
-                        Id = x.Id,
-                        employee_id = x.EmployeeId,
-                        employee_name = lang == Localization.English ? x.Employee.FirstNameEn + " " +
-                        x.Employee.FatherNameEn + " " + x.Employee.GrandFatherNameEn :
-                        x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr + " " + x.Employee.GrandFatherNameAr,
-                        notes = x.Notes,    
-                        added_date = DateOnly.FromDateTime(x.Add_date.Value),
-                        user_image_url = fileServer.GetFilePath(Modules.Auth,x.User.ImagePath)
-                    }, orderBy: x =>
-                        x.OrderByDescending(x => x.Id))).ToList(),
+                                   Id = x.Id,
+                                   employee_id = x.EmployeeId,
+                                   employee_name = lang == Localization.English ? x.Employee.FirstNameEn + " " +
+                                      x.Employee.FatherNameEn + " " + x.Employee.GrandFatherNameEn :
+                                      x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr + " " + x.Employee.GrandFatherNameAr,
+                                   notes = x.Notes,
+                                   added_date = DateOnly.FromDateTime(x.Add_date.Value),
+                                   user_image_url = fileServer.GetFilePath(Modules.Auth, user.ImagePath)
+                               }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -133,7 +137,7 @@ namespace Kader_System.Services.Services.HR
             {
                 var result = await unitOfWork.EmployeeNotes.SoftDeleteAsync(_employeeNotes, DeletedBy: userId);
                 if (result > 0)
-                {         
+                {
                     msg = shareLocalizer[Localization.Deleted];
                     return new()
                     {
