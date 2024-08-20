@@ -28,6 +28,34 @@ public static class ModelBuilderExtensions
                 NormalizedName = UserRole.RoleNameInEn.ToUpper(),
                 IsActive = true
             });
+                 modelBuilder.Entity<CompanyYear>().HasData(
+                        new CompanyYear
+                        {
+                            Id = 1,
+                            FinancialYear = "2022"
+                        },
+                        new CompanyYear
+                        {
+                            Id = 2,
+                            FinancialYear = "2023"
+                        },
+                        new CompanyYear
+                        {
+                            Id = 3,
+                            FinancialYear = "2024"
+                        },
+                        new CompanyYear
+                        {
+                            Id = 4,
+                            FinancialYear = "2025"
+                        },
+                        new CompanyYear
+                        {
+                            Id = 5,
+                            FinancialYear = "2026"
+                        }
+                );
+
 
         modelBuilder.Entity<ApplicationUser>()
             .HasData(
@@ -48,6 +76,7 @@ public static class ModelBuilderExtensions
                 CompanyId = "3,2,1",
                 NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                 EmailConfirmed = true,
+                CompanyYearId=1,
                 IsActive = true,
                 PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, SuperAdmin.Password),
                 VisiblePassword = SuperAdmin.Password

@@ -15,6 +15,11 @@ public partial class KaderAuthorizationContext : DbContext
 
     public virtual DbSet<Client> Clients { get; set; }
 
+  
+
+
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Client>(entity =>
