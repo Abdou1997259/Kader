@@ -3,7 +3,7 @@ using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Services.Services.AppServices
 {
-    public class FileServer: IFileServer
+    public class FileServer : IFileServer
     {
         private readonly string serverPath = string.Empty;
         private readonly IHttpContextService _httpContextService;
@@ -21,9 +21,17 @@ namespace Kader_System.Services.Services.AppServices
 
         public string GetFilePath(params string[] paths)
         {
+            if (paths.Any(p => p == null))
+                return null;
             return Path.Combine(paths);
         }
-        public void RemoveFile(params string [] paths)
+
+        public string GetFilePathWithServerPath(params string[] paths)
+        {
+            return Path.Combine(serverPath, Path.Combine(paths));
+        }
+
+        public void RemoveFile(params string[] paths)
         {
             var filePath = Path.Combine(serverPath, Path.Combine(paths));
             if (File.Exists(filePath))

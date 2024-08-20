@@ -1,5 +1,6 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
+using Kader_System.Services.IServices.AppServices;
 using Microsoft.AspNetCore.Http;
 
 namespace Kader_System.Services.Services.HR
@@ -8,6 +9,7 @@ namespace Kader_System.Services.Services.HR
         IUnitOfWork unitOfWork,
         IStringLocalizer<SharedResource> shareLocalizer,
          IHttpContextAccessor _httpContextAccessor,
+         IFileServer fileServer,
     IMapper mapper) : IEmployeeNotesServices
     {
         public async Task<Response<CreateEmployeeNotes>> CreateEmployeeNotesAsync(CreateEmployeeNotes model)
@@ -30,6 +32,7 @@ namespace Kader_System.Services.Services.HR
         public async Task<Response<GetAllEmployeeNotesResponse>> GetAllEmployeeNotesAsync(string lang ,GetAllEmployeeNotesRequest model, string host)
         {
             Expression<Func<HrEmployeeNotes, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
+                                                                 x.EmployeeId == model.EmployeeId &&
                                                            (string.IsNullOrEmpty(model.Word)
                                                             || x.Notes.Contains(model.Word));
             var totalRecords = await unitOfWork.EmployeeNotes.CountAsync(filter: filter);
@@ -46,7 +49,7 @@ namespace Kader_System.Services.Services.HR
             {
                 TotalRecords = totalRecords,
 
-                Items = (await unitOfWork.EmployeeNotes.GetSpecificSelectAsync(filter: filter, includeProperties: "Employee",
+                Items = (await unitOfWork.EmployeeNotes.GetSpecificSelectAsync(filter: filter, includeProperties: "Employee,User",
                     take: model.PageSize,
                     skip: (model.PageNumber - 1) * model.PageSize,
                     select: x => new EmployeeNotesData
@@ -57,6 +60,8 @@ namespace Kader_System.Services.Services.HR
                         x.Employee.FatherNameEn + " " + x.Employee.GrandFatherNameEn :
                         x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr + " " + x.Employee.GrandFatherNameAr,
                         notes = x.Notes,    
+                        added_date = DateOnly.FromDateTime(x.Add_date.Value),
+                        user_image_url = fileServer.GetFilePath(Modules.Auth,x.User.ImagePath)
                     }, orderBy: x =>
                         x.OrderByDescending(x => x.Id))).ToList(),
                 CurrentPage = model.PageNumber,
@@ -119,21 +124,6 @@ namespace Kader_System.Services.Services.HR
 
             };
         }
-        public async Task<Response<CreateEmployeeNotes>> UpdateEmployeeNotesAsync(int id, CreateEmployeeNotes model)
-        {
-            var employeeNotes = await unitOfWork.EmployeeNotes.GetByIdAsync(id);
-            employeeNotes.Notes = model.notes;
-            unitOfWork.EmployeeNotes.Update(employeeNotes);
-            await unitOfWork.CompleteAsync();
-
-            return new()
-            {
-                Msg = shareLocalizer[Localization.Done],
-                Check = true,
-                Data = model
-            };
-        }
-
         public async Task<Response<string>> DeleteEmployeeNotesAsync(int id)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();

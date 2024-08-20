@@ -10,5 +10,6 @@ namespace Kader_System.Domain.DTOs.Request.HR
     {
         public int EmployeeId { get; set; }
         public string notes { get; set; }
+         
     }
 }

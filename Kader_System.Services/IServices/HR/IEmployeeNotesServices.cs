@@ -11,7 +11,6 @@ public interface IEmployeeNotesServices
     public  Task<Response<GetAllEmployeeNotesResponse>> GetAllEmployeeNotesAsync(string lang, GetAllEmployeeNotesRequest model, string host);
 
     public  Task<Response<EmployeeNotesData>> GetEmployeeNotesByIdAsync(int id);
-    public  Task<Response<CreateEmployeeNotes>> UpdateEmployeeNotesAsync(int id, CreateEmployeeNotes model);
 
     public  Task<Response<string>> DeleteEmployeeNotesAsync(int id);
 }

@@ -249,7 +249,7 @@ namespace Kader_System.DataAccess.Migrations
                             Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
-                            ConcurrencyStamp = "3600d9a8-9ae8-43b4-9fbb-daf88341c0e4",
+                            ConcurrencyStamp = "af2f5eba-3170-4775-b064-1efaf7a27ca4",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -263,10 +263,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEB6U5Mvj5wm2StgVFf61oEvdHo4/z8p7eeJQBx4MbkXFfghMezyzey2NxHX7xeTMJA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDOhFwd3BpA9SfNMHuPCsZZaGmtQO9IbIiDxiuVaF3zp19swd+DYg/2WphAe6QvQ/g==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c6acfe0e-882d-443a-a85a-b910da0d34df",
+                            SecurityStamp = "02735db0-9230-419f-b980-d6a417b1b9ce",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -1913,9 +1913,14 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("hr_employee_notes");
                 });
@@ -8159,7 +8164,14 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Kader_System.Domain.Models.Auth.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.Navigation("Employee");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrFingerPrint", b =>
