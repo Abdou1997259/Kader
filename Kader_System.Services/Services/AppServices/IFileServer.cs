@@ -1,5 +1,7 @@
 ﻿using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.HTTP;
+using Microsoft.AspNetCore.Mvc;
+using System.Net.Http.Headers;
 
 namespace Kader_System.Services.Services.AppServices
 {
@@ -12,11 +14,33 @@ namespace Kader_System.Services.Services.AppServices
             _httpContextService = httpContextService;
             serverPath = _httpContextService.GetPhysicalServerPath();
         }
+
+        public async Task<FileStreamResult> DownloadFile(string moduleName, string fileName,string contentType = "application/octet-stream")
+        {
+            var filePath = Path.Combine(serverPath, moduleName, fileName);
+            var memory = new MemoryStream();
+            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            if (stream != null)
+            {
+                await stream.CopyToAsync(memory);
+                return new FileStreamResult(memory, contentType)
+                {
+                    FileDownloadName = fileName,
+                };
+            }
+            return null;
+        }
+
         //private readonly FileStream _fileStream;
         public bool FileExist(string moduleName, string fileName)
         {
             var filePath = Path.Combine(serverPath, moduleName, fileName);
             return File.Exists(filePath);
+        }
+
+        public string GetContentType(string path)
+        {
+            throw new NotImplementedException();
         }
 
         public string GetFilePath(params string[] paths)
@@ -54,6 +78,25 @@ namespace Kader_System.Services.Services.AppServices
             await file.CopyToAsync(fileStream);
             return newFileName;
             #endregion
+        }
+
+
+        private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+        {
+            {".txt", "text/plain"},
+            {".pdf", "application/pdf"},
+            {".doc", "application/vnd.ms-word"},
+            {".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
+            {".xls", "application/vnd.ms-excel"},
+            {".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
+            {".png", "image/png"},
+            {".jpg", "image/jpeg"},
+            {".jpeg", "image/jpeg"},
+            {".gif", "image/gif"},
+            {".csv", "text/csv"}
+        };
         }
     }
 }

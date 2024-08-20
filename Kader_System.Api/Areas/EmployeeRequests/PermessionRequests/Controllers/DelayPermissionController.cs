@@ -102,7 +102,6 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> RejectDelayPermissionRequests([FromRoute] int id, [FromBody] GlobalEmployeeRequests model)
         {
-
             var response = await delayPermission.RejectRequest(id, model.reson);
             if (response.Check)
                 return Ok(response);
@@ -111,6 +110,13 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
         #endregion
+
+        //[HttpGet("DownloadFile")]
+        //[Permission(Permission.Edit, 19)]
+        //public async Task<IActionResult> DownloadFile()
+        //{
+            
+        //}
 
     }
 }
