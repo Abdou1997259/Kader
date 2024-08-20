@@ -116,7 +116,7 @@ namespace Kader_System.Services.Services.HR
             if (exists)
             {
                 string resultMsg = string.Format(sharLocalizer[Localization.IsExist],
-                    sharLocalizer[Localization.Qualification]);
+                    sharLocalizer[Localization.Job]);
 
                 return new()
                 {
@@ -129,8 +129,8 @@ namespace Kader_System.Services.Services.HR
             {
                 NameEn = model.NameEn,
                 NameAr = model.NameAr,
-                //HasAdditionalTime = model.HasAdditionalTime,
-                //HasNeedLicense = model.HasNeedLicense
+               HasAdditionalTime = model.HasAdditionalTime ?? false,
+               HasNeedLicense = model.HasNeedLicense ??false,
             });
             await unitOfWork.CompleteAsync();
 
@@ -165,8 +165,8 @@ namespace Kader_System.Services.Services.HR
                     Id = id,
                     NameAr = obj.NameAr,
                     NameEn = obj.NameEn,
-                    //HasAdditionalTime = obj.HasAdditionalTime,
-                    //HasNeedLicense = obj.HasNeedLicense,
+                    HasAdditionalTime = obj.HasAdditionalTime??false,
+                    HasNeedLicense = obj.HasNeedLicense ?? false,
                     EmployeesCount =await unitOfWork.Employees.CountAsync(e=>e.JobId==id)
                 },
                 Check = true

@@ -710,21 +710,25 @@ namespace Kader_System.Services.Services.HR
 
 
                 // Create the FileStreamResult
-                var fileBytes = await System.IO.File.ReadAllBytesAsync(path);
+                var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                  
+                    var fileContentResult = new FileStreamResult(fileStream, "application/octet-stream")
+                    {
+                        FileDownloadName = contract.FileName
+                    };
+                    // Return the FileStreamResult wrapped in your Response object
+                        return new Response<FileResult>
+                        {
+                            Data = fileContentResult,
+                            Check = true,
+                            // or any success message you want
+                        };
+
+                   
 
                 // Create and return the FileContentResult
-                var fileContentResult = new FileContentResult(fileBytes, "application/octet-stream")
-                {
-                    FileDownloadName = contract.FileName
-                };
 
-                // Return the FileStreamResult wrapped in your Response object
-                return new Response<FileResult>
-                {
-                    Data = fileContentResult,
-                    Check = true,
-                 // or any success message you want
-                };
+              
             }
             catch (Exception ex)
             {
