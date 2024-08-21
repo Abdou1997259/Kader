@@ -57,7 +57,7 @@ namespace Kader_System.Domain.Extensions
         public static Dictionary<string, bool> CreateNewPermission(this string res, string mainActions, string userActions, string permNames)
         {
             // Split the input strings into arrays
-            var mainActionsArr = mainActions.Split(',').ToArray(); // [1,2,3,4]
+            var mainActionsArr = mainActions.Split(',').Distinct().ToArray(); // [1,2,3,4]
             var userActionsArr = userActions.Split(',').ToArray(); // [2,3]
             var permNamesArr = permNames.Split(',').ToArray(); // [view,add,edit,delete]
 
