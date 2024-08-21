@@ -78,9 +78,10 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                      Add_date = x.Add_date.ToGetFullyDate(),
                      Company_owner = x.CompanyOwner,
                      Company_type_name = lang == Localization.Arabic ? x.CompanyType.Name : x.CompanyType.NameInEnglish,
-                     Name = lang == Localization.Arabic ? x.NameAr : x.NameEn
+                     Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
+                     Employees_count = x.HrManagements.SelectMany(x => x.HrDepartments).SelectMany(x => x.Employees).Count()
                  }, orderBy: x =>
-                   x.OrderByDescending(x => x.Id))).ToList(),
+                   x.OrderByDescending(x => x.Id),includeProperties: "HrManagements.HrDepartments.Employees")).ToList(),
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,

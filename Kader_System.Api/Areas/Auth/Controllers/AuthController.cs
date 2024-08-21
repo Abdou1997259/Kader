@@ -93,7 +93,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     [HttpPost(ApiRoutes.User.AddUser)]
     [Permission(Permission.Add, 5)]
 
-    public async Task<IActionResult> CreatUser(CreateUserRequest model)
+    public async Task<IActionResult> CreateUser(CreateUserRequest model)
     {
         var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
