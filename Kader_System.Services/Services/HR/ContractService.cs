@@ -648,18 +648,27 @@ namespace Kader_System.Services.Services.HR
                 Check=true,
                 Data = new GetContractForUserResponse
                 {
-                    EmployeeName = Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn,
-                    ContractFile = Path.Combine(SD.GoRootPath.GetSettingImagesPath, contract.FileName),
-                    SalaryFixed = contract.FixedSalary,
-                    SalaryTotal = contract.FixedSalary + contract.HousingAllowance,
-                    Active = contract.IsActive,
-                    StartDate = contract.StartDate,
-                    EndDate = contract.EndDate,
-                    AddedBy = contract.Added_by,
-                    HousingAllowance = contract.HousingAllowance,
-                    Id = contract.Id,
+                  Id=contract.Id,
+                  Items=new List<Items>
+                  {
+                      new Items
+                      {
+                          Id=contract.Id,
+                       EmployeeName = Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn,
+                      ContractFile = Path.Combine(SD.GoRootPath.GetSettingImagesPath, contract.FileName),
+                      SalaryFixed = contract.FixedSalary,
+                      SalaryTotal = contract.FixedSalary + contract.HousingAllowance,
+                      Active = contract.IsActive,
+                      StartDate = contract.StartDate,
+                      EndDate = contract.EndDate,
+                      AddedBy = contract.Added_by,
+                      HousingAllowance = contract.HousingAllowance,
+                  }
+                      }
+                  }
+                  
 
-                }
+                
             };
 
         }

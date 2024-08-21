@@ -232,6 +232,7 @@ public static class SD
             public const string RestoreCompany = "company/restore/{id}";
             public const string GetCompanyById = "company/getById/{id}";
             public const string DeleteCompany = "company/delete/{id}";
+            public const string EmployeeOfCompany = "company/EmployeeOfCompany/{companyId}";
         }
         public class Contract
         {

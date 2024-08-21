@@ -468,10 +468,10 @@ namespace Kader_System.Services.Services.HR
                     Check = false
                 };
             }
-            if(await unitOfWork.Vacations.ExistAsync(model.vacation_id))
+            if(!await unitOfWork.Vacations.ExistAsync(model.vacation_id))
             {
 
-                string emp = shareLocalizer[Localization.Employee];
+                string emp = shareLocalizer[Localization.Vacation];
                 string resultMsg = shareLocalizer[Localization.IsNotExisted, emp];
 
 

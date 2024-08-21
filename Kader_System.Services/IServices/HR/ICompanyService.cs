@@ -10,4 +10,5 @@ public interface ICompanyService
     Task<Response<string>> UpdateActiveOrNotCompanyAsync(int id);
     Task<Response<object>> RestoreCompanyAsync(int id);
     Task<Response<string>> DeleteCompanyAsync(int id);
+    Task<Response<EmployeeOfCompanyPagination>> EmployeeOfCompany(int companyId, string lang, HrGetAllFiltrationsForCompaniesRequest model, string host);
 }
