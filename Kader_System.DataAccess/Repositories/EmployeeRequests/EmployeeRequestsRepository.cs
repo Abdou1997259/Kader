@@ -1,12 +1,6 @@
-﻿using Azure;
-using Kader_System.Domain;
-using Kader_System.Domain.Constants.Enums;
-using Kader_System.Domain.DTOs;
-using Kader_System.Domain.DTOs.Response;
-using Kader_System.Domain.DTOs.Response.Employee_Requests;
+﻿using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.Interfaces.EmployeeRequest;
 using Kader_System.Domain.Models.EmployeeRequests;
-using Microsoft.Extensions.Localization;
 
 namespace Kader_System.DataAccess.Repositories.EmployeeRequests
 {

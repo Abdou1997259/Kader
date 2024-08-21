@@ -1,27 +1,29 @@
-﻿using Kader_System.Domain.DTOs;
+﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
-using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
-using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
-using Kader_System.Domain.Interfaces;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
+using Kader_System.Domain.Models.EmployeeRequests.Requests;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
+using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.Services.EmployeeRequests.Requests;
-using System;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static Kader_System.Domain.Constants.SD.ApiRoutes.EmployeeRequests;
 
 namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 {
-    public class DelayPermissionService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IDelayPermissionService
+    public class DelayPermissionService(IUnitOfWork unitOfWork, KaderDbContext context,IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IDelayPermissionService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
         private readonly IFileServer _fileServer = fileServer;
-
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly KaderDbContext _context = context;
+        private readonly IRequestService _requestService = requestService;
 
         #region ListOfIncreaseSalaryRequest
 
@@ -50,17 +52,21 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #endregion
 
 
-         
+
 
         #region insert
 
-        public async Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
+        public async Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
             var newRequest = _mapper.Map<DelayPermission>(model);
-            newRequest.StatuesOfRequest.ApporvalStatus = 1; //pending
+            StatuesOfRequest statues = new()
+            {
+                ApporvalStatus = (int)RequestStatusTypes.Pending
+            };
+            newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-            newRequest.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
+            newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
+                await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             await _unitOfWork.DelayPermission.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
 
@@ -79,45 +85,82 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Delete
         public async Task<Response<string>> DeleteDelayPermissionRequest(int id, string fullPath)
         {
-            var obj = await unitOfWork.DelayPermission.GetByIdAsync(id);
-            if (obj is null)
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
+            var _DelayPermissionRequest = await _unitOfWork.DelayPermission.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
+            if (_DelayPermissionRequest != null)
             {
-                string resultMsg = sharLocalizer[Localization.NotFoundData];
-
-                return new()
+                if(_DelayPermissionRequest.StatuesOfRequest.ApporvalStatus != 1)
                 {
-                    Data = string.Empty,
-                    Error = resultMsg,
-                    Msg = resultMsg
-                };
+                    msg = _sharLocalizer[Localization.ApproveRejectDelte];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = false,
+                    };
+                }
+                var result = await _unitOfWork.DelayPermission.SoftDeleteAsync(_DelayPermissionRequest, DeletedBy: userId);
+                if (result > 0)
+                {
+                    if (!string.IsNullOrWhiteSpace(_DelayPermissionRequest.AttachmentPath))
+                    {
+                        _fileServer.RemoveFile(fullPath, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), _DelayPermissionRequest.AttachmentPath);
+                    }
+                    msg = _sharLocalizer[Localization.Deleted];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = true,
+                    };
+                }
             }
-
-            unitOfWork.DelayPermission.Remove(obj);
-            if (await unitOfWork.CompleteAsync() > 0)
-                _fileServer.RemoveFile(fullPath, obj.AtachmentPath);
-
             return new()
             {
-                Check = true,
-                Data = string.Empty,
-                Msg = sharLocalizer[Localization.Deleted]
+                Check = false,
+                Data = null,
+                Msg = msg
             };
         }
         #endregion
 
         #region Read
-        public async Task<Response<GetAllDelayRequestRespond>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host)
+        public async Task<Response<GetAllDelayPermissionRequestRequestResponse>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host)
         {
+            #region ApprovalExpression
+            Expression<Func<DelayPermission, bool>> filter = x =>
+                x.IsDeleted == false &&
+                (model.ApporvalStatus == RequestStatusTypes.All ||
+                (model.ApporvalStatus == RequestStatusTypes.Approved && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved) ||
+                (model.ApporvalStatus == RequestStatusTypes.ApprovedRejected &&
+                    (x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved ||
+                     x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected)) ||
+                (model.ApporvalStatus == RequestStatusTypes.Rejected && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected) ||
+                (model.ApporvalStatus == RequestStatusTypes.Pending && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Pending));
 
-            Expression<Func<DelayPermission, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
-                   x => x.IsDeleted == false :
-                   x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus;
+            #endregion
 
-            var totalRecords = await _unitOfWork.DelayPermission.CountAsync(filter: filter);
-            var items = await _unitOfWork.DelayPermission.GetSpecificSelectAsync(filter, x => x, orderBy: x => x.OrderBy(x => x.Id),
-                skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee"
-            );
-            var mappeditems = _mapper.Map<List<DtoListOfDelayRequestReponse>>(items);
+            var totalRecords = await _unitOfWork.DelayPermission.CountAsync(filter);
+
+            var items = await (from x in _context.HrDelayPermissions.AsNoTracking().
+                                        Include(x => x.StatuesOfRequest).Where(filter)
+                               join emp in _context.Employees on x.EmployeeId equals emp.Id
+                               select new ListOfDelayPermissionRequestResponse
+                               {
+                                   Id = x.Id,
+                                   EmployeeId = x.EmployeeId,
+                                   request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                                   HoursDelay = x.DelayHours,
+                                   ArrivalTime = x.Employee.Shift.Start_shift.AddHours(x.DelayHours.Value),
+                                   EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ?
+                                    x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn + " " + x.Employee.GrandFatherNameEn :
+                                     x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr + " " + x.Employee.GrandFatherNameAr,
+                                   ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
+                                   reason = x.StatuesOfRequest.StatusMessage,
+                                   Notes = x.Notes,
+                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), x.AttachmentPath) : null
+                               }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+
+
             #region Pagination
 
             int page = 1;
@@ -131,10 +174,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 .ToList();
             #endregion
 
-            var result = new GetAllDelayRequestRespond
+            var result = new GetAllDelayPermissionRequestRequestResponse
             {
                 TotalRecords = totalRecords,
-                Items =mappeditems,
+                Items = items,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -173,14 +216,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
         #region Update
 
-        public async Task<Response<DtoListOfDelayRequestReponse>> UpdateDelayPermissionRequest(int id,DTODelayPermissionRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
+        public async Task<Response<DtoListOfDelayRequestReponse>> UpdateDelayPermissionRequest(int id, DTODelayPermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
-       
-
-            var leave = await _unitOfWork.DelayPermission.GetByIdAsync(id);
-            if (leave == null)
+            var delay = await _unitOfWork.DelayPermission.GetByIdAsync(id);
+            if (delay == null || delay.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
-                var msg = _sharLocalizer[Localization.NotFound];
+                var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotApproval];
                 return new()
                 {
                     Check = false,
@@ -188,21 +229,17 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                     Data = null
                 };
             }
-            var mappedleave = _mapper.Map(model, leave);
-            _unitOfWork.DelayPermission.Update(mappedleave);
-            var full_path = Path.Combine(appPath, moduleName);
+            var mappedDelay = _mapper.Map(model, delay);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-              if (model.Attachment != null)
-                _fileServer.RemoveFile(full_path, leave.AtachmentPath);
-            leave.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
 
 
- 
-          
+            if (model.Attachment is not null)
+            {
+                _fileServer.RemoveFile(moduleName, delay.AttachmentPath);
+                delay.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
+            }
 
-
-            _unitOfWork.DelayPermission.Update(leave);
+            _unitOfWork.DelayPermission.Update(delay);
             var result = await _unitOfWork.CompleteAsync();
             return new()
             {
@@ -210,34 +247,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 Check = true,
             };
         }
-
-        //    var newRequest = _mapper.Map<DelayPermission>(model);
-        //    var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-
-        //    newRequest.AtachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-        //        await _fileServer.UploadFile(root, clientName, moduleNameWithType, model.Attachment);
-
-        //    var Oldrequest = await _unitOfWork.DelayPermission.GetByIdWithNoTrackingAsync(model.EmployeeId);
-        //    var full_path = Path.Combine(root, clientName, moduleName);
-        //    if (Oldrequest.AtachmentPath != null)
-        //        _fileServer.RemoveFile(full_path, Oldrequest.AtachmentPath);
-
-
-        //    _unitOfWork.DelayPermission.Update(newRequest);
-        //    var result = await _unitOfWork.CompleteAsync();
-        //    return new()
-        //    {
-        //        Msg = sharLocalizer[Localization.Done],
-        //        Check = true,
-        //    };
-        //}
-
-
-
         #endregion
 
         #region GetById
-        public  async Task<Response<DtoListOfDelayRequestReponse>> GetById(int id)
+        public async Task<Response<DtoListOfDelayRequestReponse>> GetById(int id)
         {
             var result = await unitOfWork.DelayPermission.GetByIdAsync(id);
             if (result == null)
@@ -262,10 +275,45 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
             };
         }
-
-
         #endregion
 
-
+        #region Status
+        public async Task<Response<string>> ApproveRequest(int requestId)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _unitOfWork.DelayPermission.UpdateApporvalStatus(x =>x.Id == requestId,RequestStatusTypes.Approved,userId);
+            if (result > 0)
+            {
+                return new Response<string>()
+                {
+                    Check = true,
+                    Msg = "Approved sucessfully"
+                };
+            }
+            return new Response<string>()
+            {
+                Check = false,
+                  Msg = "Cannot approve , request is not pending or is deleted"
+            };
+        }
+        public async Task<Response<string>> RejectRequest(int requestId, string resoan)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _unitOfWork.DelayPermission.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId, resoan);
+            if (result > 0)
+            {
+                return new Response<string>()
+                {
+                    Check = true,
+                    Msg = "Rejected sucessfully"
+                };
+            }
+            return new Response<string>()
+            {
+                Check = false,
+                Msg = "Cannot approve"
+            };
+        }
+        #endregion
     }
 }

@@ -126,12 +126,12 @@ namespace Kader_System.Services.Services.Setting
             GetFileNameAndExtension? activeIcon = null;
             if (model.ActiveIcon != null)
             {
-                activeIcon = ManageFilesHelper.UploadFile(model.ActiveIcon, GoRootPath.SettingImagesPath);
+                activeIcon = ManageFilesHelper.UploadFileAsync(model.ActiveIcon, GoRootPath.SettingImagesPath);
             }
             GetFileNameAndExtension? icon = null;
             if (model.Icon != null)
             {
-                icon = ManageFilesHelper.UploadFile(model.Icon, GoRootPath.SettingImagesPath);
+                icon = ManageFilesHelper.UploadFileAsync(model.Icon, GoRootPath.SettingImagesPath);
             }
 
 
@@ -200,12 +200,12 @@ namespace Kader_System.Services.Services.Setting
             GetFileNameAndExtension? activeIcon = null;
             if (model.ActiveIcon != null)
             {
-                activeIcon = ManageFilesHelper.UploadFile(model.ActiveIcon, GoRootPath.SettingImagesPath);
+                activeIcon = ManageFilesHelper.UploadFileAsync(model.ActiveIcon, GoRootPath.SettingImagesPath);
             }
             GetFileNameAndExtension? icon = null;
             if (model.Icon != null)
             {
-                icon = ManageFilesHelper.UploadFile(model.Icon, GoRootPath.SettingImagesPath);
+                icon = ManageFilesHelper.UploadFileAsync(model.Icon, GoRootPath.SettingImagesPath);
             }
 
             obj.ActiveIcon = activeIcon!.FileName;

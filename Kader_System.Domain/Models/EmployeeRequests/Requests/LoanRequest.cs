@@ -15,7 +15,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         public int InstallmentsCount { get; set; }
         public DateOnly  StartDate { get; set; }
         public double  Amount { get; set; }
-        public string? AttachmentFileName { get; set; }
+        public string? AttachmentPath { get; set; }
         public string? Notes { get; set; }
 
         public int? EmployeeId { get; set; }

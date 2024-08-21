@@ -2,7 +2,7 @@
 
 public static class ManageFilesHelper
 {
-    public static GetFileNameAndExtension UploadFile(IFormFile file, string path)
+    public static GetFileNameAndExtension UploadFileAsync(IFormFile file, string path)
     {
         string fileName = Guid.NewGuid() + "_" + file.FileName;
         string finalFilePath = Path.Combine(Directory.GetCurrentDirectory() + path, fileName);
@@ -18,7 +18,7 @@ public static class ManageFilesHelper
         };
     }
 
-    public static List<GetFileNameAndExtension> UploadFiles(IFormFileCollection files, string path)
+    public static List<GetFileNameAndExtension> UploadFileAsyncs(IFormFileCollection files, string path)
     {
         List<GetFileNameAndExtension> list = [];
         foreach (var file in files)
@@ -166,7 +166,7 @@ public static class ManageFilesHelper
             return null;
         }
     }
-    //public static List<GetFileNameAndExtension> UploadFiles(IFormFileCollection files, string path)
+    //public static List<GetFileNameAndExtension> UploadFileAsyncs(IFormFileCollection files, string path)
     //{
     //    List<GetFileNameAndExtension> list = new();
     //    foreach (var file in files)

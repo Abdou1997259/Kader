@@ -35,7 +35,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     }
     //[AllowAnonymous]
     //[HttpPost("upload")]
-    //public IActionResult UploadFile([FromForm] IFormFileCollection company_contracts)
+    //public IActionResult UploadFileAsync([FromForm] IFormFileCollection company_contracts)
     //{ // Combine the directory path and the file name
     //    string filePath = Path.Combine(Directory.GetCurrentDirectory() + GoRootPath.HRFilesPath, company_contracts[0].FileName);
     //    string uploadDirectory = Directory.GetCurrentDirectory() + GoRootPath.HRFilesPath;
@@ -43,7 +43,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     //    {
     //        if (file != null && file.Length > 0)
     //        {
-    //            ManageFilesHelper.UploadFile(file, GoRootPath.HRFilesPath);
+    //            ManageFilesHelper.UploadFileAsync(file, GoRootPath.HRFilesPath);
     //            //// Create the directory if it doesn't exist
     //            //if (!Directory.Exists(uploadDirectory))
     //            //{
@@ -72,7 +72,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
 
     [AllowAnonymous]
     [HttpPost("upload")]
-    public IActionResult UploadFile([FromBody] string image)
+    public IActionResult UploadFileAsync([FromBody] string image)
     {
         var ii = ManageFilesHelper.SaveBase64StringToFile(image, Directory.GetCurrentDirectory(), "test");
 

@@ -18,6 +18,7 @@
         public string SalaryEffect { get; set; } 
 
         public int EmployeeId { get; set; }
+        public string IncreaseTypeName { get; set; }    
 
         public string EmployeeName { get; set; } 
 

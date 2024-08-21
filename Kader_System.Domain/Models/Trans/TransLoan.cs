@@ -28,6 +28,7 @@
         public HrEmployee HrEmployee { get; set; } = default!;
         public int? CalculateSalaryId { get; set; }
         public int? CalculateSalaryDetailsId { get; set; }
+
         public ICollection<TransLoanDetails> TransLoanDetails { get; set; }
 
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Kader_System.Domain.DTOs.Response.Employee_Requests
+namespace Kader_System.Domain.Interfaces.HR
 {
-    public class GetAlVacationRequstsResponse : PaginationData<object>
+    public interface IEmployeeNotesRepository : IBaseRepository<HrEmployeeNotes>
     {
     }
 }

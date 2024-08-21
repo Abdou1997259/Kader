@@ -1,6 +1,8 @@
 using Kader_System.Api.Helpers;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.Interfaces;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
@@ -51,9 +53,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         {
             var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
-            var response = await service.AddNewVacationRequest(model, serverPath,
+            var response = await service.AddNewVacationRequest(model,
 
-                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.VacationRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -71,8 +73,8 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         {
             var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
-            var response = await service.UpdateVacationRequest(id, model, serverPath,
-                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+            var response = await service.UpdateVacationRequest(id, model,
+                     Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.VacationRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -90,7 +92,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Delete, 19)]
         public async Task<IActionResult> DeleteVacationAsync(int id)
         {
-            var response = await service.DeleteVacationRequest(id);
+            var response = await service.DeleteVacationRequest(id,Modules.EmployeeRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -100,6 +102,29 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #endregion
 
-
+        #region Status
+        [HttpPut(ApiRoutes.EmployeeRequests.VacationRequests.ApproveVacationRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> ApproveVacationRequests([FromRoute] int id)
+        {
+            var response = await service.ApproveRequest(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        [HttpPut(ApiRoutes.EmployeeRequests.VacationRequests.RejectVacationRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> RejectLeavePermessionasRequests([FromRoute] int id, [FromBody] GlobalEmployeeRequests model)
+        {
+            var response = await service.RejectRequest(id, model.reson);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        #endregion
     }
 }

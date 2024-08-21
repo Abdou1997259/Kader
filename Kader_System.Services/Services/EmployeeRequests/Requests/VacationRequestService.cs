@@ -1,23 +1,31 @@
+using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
+using Kader_System.Services.IServices.HTTP;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class VacationRequestService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, 
-        IFileServer fileServer, IMapper mapper) : IVacationRequestService
+    public class VacationRequestService(IUnitOfWork unitOfWork, KaderDbContext context, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IVacationRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
         private readonly IFileServer _fileServer = fileServer;
+        private readonly IHttpContextService _contextService = contextService;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly KaderDbContext _context = context;
+        private readonly IRequestService _requestService =requestService;
         #region ListOfLoanRequest
-        public async Task<Response<IEnumerable<DtoListOfVacationRequestResponse>>> ListOfVacationRequest()
+        public async Task<Response<IEnumerable<DTOVacationRequest>>> ListOfVacationRequest()
         {
-            var result = await unitOfWork.VacationRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var result = await unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = _sharLocalizer[Localization.NotFound];
             if (result == null)
             {
@@ -29,7 +37,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 };
 
             }
-            var mappingResult = mapper.Map<IEnumerable<DtoListOfVacationRequestResponse>>(result);
+            var mappingResult = mapper.Map<IEnumerable<DTOVacationRequest>>(result);
 
             return new()
             {
@@ -42,24 +50,44 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedLoanRequest
         public async Task<Response<GetAllVacationRequestReponse>> GetAllVacationRequest(GetFilterationVacationRequestRequest model, string host)
         {
-            Expression<Func<VacationRequests, bool>> filter = model.ApporvalStatus == RequestStatusTypes.All ?
-                   x => x.IsDeleted == false :
-                   x => x.IsDeleted == false && x.StatuesOfRequest.ApporvalStatus == (int)model.ApporvalStatus; var totalRecords = await unitOfWork.VacationRequests.CountAsync(filter: filter);
-            var data = await unitOfWork.VacationRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id), take: model.PageSize,
-                     skip: (model.PageNumber - 1) * model.PageSize);
-            var msg = _sharLocalizer[Localization.NotFound];
-            if (data == null)
-            {
-                return new()
-                {
-                    Check = false,
-                    Data = null,
-                    Msg = msg
-                };
+            #region ApprovalExpression
+            Expression<Func<VacationRequests, bool>> filter = x =>
+                x.IsDeleted == false &&
+                (model.ApporvalStatus == RequestStatusTypes.All ||
+                (model.ApporvalStatus == RequestStatusTypes.Approved && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved) ||
+                (model.ApporvalStatus == RequestStatusTypes.ApprovedRejected &&
+                    (x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved ||
+                     x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected)) ||
+                (model.ApporvalStatus == RequestStatusTypes.Rejected && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Rejected) ||
+                (model.ApporvalStatus == RequestStatusTypes.Pending && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Pending));
 
-            }
-            var mappingResult = mapper.Map<List<DtoListOfVacationRequestResponse>>(data);
+            #endregion
 
+            var totalRecords = await _unitOfWork.VacationRequests.CountAsync(filter);
+
+            var items = await (from x in _context.HrVacationRequests.AsNoTracking().
+                                        Include(x => x.StatuesOfRequest).Where(filter)
+                                join emp in _context.Employees on x.EmployeeId equals emp.Id
+                                join vac in _context.VacationTypes on x.VacationTypeId equals vac.Id
+                                select new ListOfVacationRequestResponse
+                                {
+                                    Id = x.Id,
+                                    EmployeeId = x.EmployeeId,
+                                    request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                                    EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? 
+                                    x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn + " " + x.Employee.GrandFatherNameEn :
+                                     x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr + " " + x.Employee.GrandFatherNameAr,
+                                    DayCounts = x.DayCounts,
+                                    StartDate = x.StartDate,
+                                    EndDate = x.StartDate.AddDays(x.DayCounts),
+                                    VacationTypeId = x.VacationTypeId,
+                                    VacationTypeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.VacationType.NameInEnglish : x.VacationType.Name,
+                                    ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
+                                    reason = x.StatuesOfRequest.StatusMessage,
+                                    Notes = x.Notes,
+                                    AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.VacationRequest.ToString(), x.AttachmentPath) : null
+                                }).OrderByDescending(x =>x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+            #region Pagination
 
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
@@ -70,11 +98,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
-            var result = new GetAllVacationRequestReponse()
+            #endregion
+
+            var result = new GetAllVacationRequestReponse
             {
                 TotalRecords = totalRecords,
-
-                Items = mappingResult,
+                Items = items,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -85,8 +114,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
                 Path = host,
                 PerPage = model.PageSize,
-                Links = pageLinks
-
+                Links = pageLinks,
             };
 
             if (result.TotalRecords is 0)
@@ -114,7 +142,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region GetLoanRequetById
-        public async Task<Response<DtoListOfVacationRequestResponse>> GetById(int id)
+        public async Task<Response<ListOfVacationRequestResponse>> GetById(int id)
         {
             var result = await unitOfWork.VacationRequests.GetByIdAsync(id);
             if (result == null)
@@ -129,7 +157,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
             }
 
-            var mappingResult = mapper.Map<DtoListOfVacationRequestResponse>(result);
+            var mappingResult = mapper.Map<ListOfVacationRequestResponse>(result);
             return new()
             {
                 Data = mappingResult,
@@ -141,30 +169,22 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddLoanRequest
-        public async Task<Response<VacationRequests>> AddNewVacationRequest(DTOVacationRequest model , string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.VacationRequest)
+        public async Task<Response<VacationRequests>> AddNewVacationRequest(DTOVacationRequest model , string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.VacationRequest)
         {
-            var IsEmpolyeeExisted = await unitOfWork.Employees.ExistAsync(model.EmployeeId);
-            if (!IsEmpolyeeExisted)
+            var newRequest = _mapper.Map<VacationRequests>(model);
+            StatuesOfRequest statues = new()
             {
-
-                var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-                return new()
-                {
-                    Check = false,
-                    Data = null,
-                    Msg = msg
-                };
-
-            }
-            var newRequest = mapper.Map<VacationRequests>(model);
+                ApporvalStatus = (int)RequestStatusTypes.Pending
+            };
+            newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-            newRequest.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
-            await unitOfWork.VacationRequests.AddAsync(newRequest);
-            var result = await unitOfWork.CompleteAsync();
+            newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
+                await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
+            await _unitOfWork.VacationRequests.AddAsync(newRequest);
+            var result = await _unitOfWork.CompleteAsync();
             return new()
             {
-                Msg = _sharLocalizer[Localization.Done],
+                Msg = sharLocalizer[Localization.Done],
                 Check = true,
             };
 
@@ -172,69 +192,121 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region DeleteLoanRequets
-        public async Task<Response<VacationRequests>> DeleteVacationRequest(int id)
+        public async Task<Response<VacationRequests>> DeleteVacationRequest(int id,string moduleName)
         {
-            var loanRequest = await unitOfWork.VacationRequests.GetByIdAsync(id);
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-            if (loanRequest == null)
+            var vacationRequest = await _unitOfWork.VacationRequests.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
+            if (vacationRequest != null)
             {
-
-                return new()
+                if (vacationRequest.StatuesOfRequest.ApporvalStatus != 1)
                 {
-                    Check = false,
-                    Data = null,
-                    Msg = msg
-                };
+                    msg = _sharLocalizer[Localization.ApproveRejectDelte];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = false,
+                    };
+                }
+                var result = await _unitOfWork.VacationRequests.SoftDeleteAsync(vacationRequest, DeletedBy: userId);
+                if (result > 0)
+                {
+                    if (!string.IsNullOrWhiteSpace(vacationRequest.AttachmentPath))
+                    {
+                        _fileServer.RemoveFile(moduleName, HrEmployeeRequestTypesEnums.VacationRequest.ToString(), vacationRequest.AttachmentPath);
+                    }
+                    msg = _sharLocalizer[Localization.Deleted];
+                    return new()
+                    {
+                        Msg = msg,
+                        Check = true,
+                    };
+                }
             }
-            unitOfWork.VacationRequests.Remove(loanRequest);
-            await unitOfWork.CompleteAsync();
-            msg = _sharLocalizer[Localization.Deleted];
-
             return new()
             {
-                Data = loanRequest,
-                Msg = msg,
-                Check = true,
+                Check = false,
+                Data = null,
+                Msg = msg
             };
-
         }
         #endregion
 
         #region UpdateLoanRequest
-        public async Task<Response<VacationRequests>> UpdateVacationRequest(int id, DTOVacationRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.VacationRequest)
+        public async Task<Response<VacationRequests>> UpdateVacationRequest(int id, DTOVacationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.VacationRequest)
         {
-            var result = await unitOfWork.VacationRequests.GetByIdAsync(id);
-
-            if (result == null)
+            var vacation = await _unitOfWork.VacationRequests.GetByIdAsync(id);
+            if (vacation == null || vacation.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
+                var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotPending];
                 return new()
                 {
                     Check = false,
-                    Data = null,
-                    Msg = _sharLocalizer[Localization.NotFound]
+                    Msg = msg,
+                    Data = null
                 };
             }
-            var updatingModel = mapper.Map(model, result);
+            var mappedvacation = _mapper.Map(model, vacation);
+            var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
+
+
             if (model.Attachment is not null)
             {
-                var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-                updatingModel.AttachmentFileName = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                    await _fileServer.UploadFile(appPath, moduleNameWithType, model.Attachment);
+                _fileServer.RemoveFile(moduleName, vacation.AttachmentPath);
+                vacation.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
-            unitOfWork.VacationRequests.Update(result);
-            await unitOfWork.CompleteAsync();
 
+            _unitOfWork.VacationRequests.Update(vacation);
+            var result = await _unitOfWork.CompleteAsync();
             return new()
             {
-                Data = updatingModel,
-                Check = true
+                Msg = sharLocalizer[Localization.Done],
+                Check = true,
             };
-
 
         }
 
 
 
+        #endregion
+
+        #region Status
+        public async Task<Response<string>> ApproveRequest(int requestId)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _unitOfWork.VacationRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+            if (result > 0)
+            {
+                return new Response<string>()
+                {
+                    Check = true,
+                    Msg = "Approved sucessfully"
+                };
+            }
+            return new Response<string>()
+            {
+                Check = false,
+                Msg = "Cannot approve , request is not pending or is deleted"
+            };
+        }
+        public async Task<Response<string>> RejectRequest(int requestId, string resoan)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var result = await _unitOfWork.VacationRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId,resoan);
+            if (result > 0)
+            {
+                return new Response<string>()
+                {
+                    Check = true,
+                    Msg = "Rejected sucessfully"
+                };
+            }
+            return new Response<string>()
+            {
+                Check = false,
+                Msg = "Cannot approve"
+            };
+        }
         #endregion
     }
 }

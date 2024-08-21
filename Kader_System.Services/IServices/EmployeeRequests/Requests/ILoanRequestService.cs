@@ -14,10 +14,13 @@ namespace Kader_System.Services.IServices.EmployeeRequests.Requests
     {
 
         public Task<Response<GetAllLoanRequestResponse>> GetAllLoanRequest(GetFilterationLoanRequest model,string host);
-        public Task<Response<LoanRequest>> AddNewLoanRequest(DTOLoanRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.LoanRequest);
-        public Task<Response<LoanRequest>> UpdateLoanRequest(int id, DTOLoanRequest model, string appPath, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.LoanRequest);
+        public Task<Response<LoanRequest>> AddNewLoanRequest(DTOLoanRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.LoanRequest);
+        public Task<Response<LoanRequest>> UpdateLoanRequest(int id, DTOLoanRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.LoanRequest);
         public Task<Response<LoanRequest>> DeleteLoanRequest(int id,string path);
-        public Task<Response<DTOListOfLoanRequestResponse>> GetById(int id);    
-        public Task<Response<IEnumerable<DTOListOfLoanRequestResponse>>> ListOfLoanRequest();    
+        public Task<Response<ListOfLoanRequestResponse>> GetById(int id);    
+        public Task<Response<IEnumerable<ListOfLoanRequestResponse>>> ListOfLoanRequest();
+        public  Task<Response<string>> RejectRequest(int requestId, string resoan);
+        public  Task<Response<string>> ApproveRequest(int requestId);
+
     }
 }

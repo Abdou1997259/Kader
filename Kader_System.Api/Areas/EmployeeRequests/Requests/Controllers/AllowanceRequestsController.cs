@@ -1,10 +1,9 @@
 using Kader_System.Api.Helpers;
+using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
-using Kader_System.Domain.DTOs.Response.EmployeesRequests;
-using Kader_System.Domain.Interfaces;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
-using Kader_System.Services.Services.EmployeeRequests.Requests;
 namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 {
     [Area(Modules.EmployeeRequest)]
@@ -45,9 +44,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> CreateAllowanceRequests([FromForm] DTOAllowanceRequest model)
         {
-            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
-
-            var response = await service.AddNewAllowanceRequest(model,serverPath,
+            var response = await service.AddNewAllowanceRequest(model,
                 Modules.EmployeeRequest,Domain.Constants.Enums.HrEmployeeRequestTypesEnums.AllowanceRequest);
             if (response.Check)
                 return Ok(response);
@@ -60,12 +57,10 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.AllowanceRequests.UpdateAllowanceRequests)]
         [Permission(Permission.Edit, 19)]
-        public async Task<IActionResult> UpdateAllowanceRequests([FromQuery] int id, [FromForm] DTOAllowanceRequest model)
+        public async Task<IActionResult> UpdateAllowanceRequests([FromRoute] int id, [FromForm] DTOAllowanceRequest model)
         {
-            var serverPath = HttpContext.Items["ServerPath"]?.ToString();
-
-            var response = await service.UpdateAllowanceRequest(id, model,serverPath,
-                 Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.LoanRequest);
+            var response = await service.UpdateAllowanceRequest(id, model,
+                 Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.AllowanceRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -78,9 +73,9 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         [HttpDelete(ApiRoutes.EmployeeRequests.AllowanceRequests.DeleteAllowanceRequests)]
         [Permission(Permission.Delete, 19)]
-        public async Task<IActionResult> DeleteSalaryIncreaseRequest(int id)
+        public async Task<IActionResult> DeleteAllowanceRequests(int id)
         {
-            var response = await service.DeleteAllowanceRequest(id);
+            var response = await service.DeleteAllowanceRequest(id, Modules.EmployeeRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -90,6 +85,29 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #endregion
 
-
+        #region Status
+        [HttpPut(ApiRoutes.EmployeeRequests.AllowanceRequests.ApproveAllowanceRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> ApproveAllowanceRequests([FromRoute] int id)
+        {
+            var response = await service.ApproveRequest(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }  
+        [HttpPut(ApiRoutes.EmployeeRequests.AllowanceRequests.RejectAllowanceRequests)]
+        [Permission(Permission.Edit, 19)]
+        public async Task<IActionResult> RejectAllowanceRequests([FromRoute] int id, [FromBody] GlobalEmployeeRequests model)
+        {
+            var response = await service.RejectRequest(id,model.reson);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        #endregion
     }
 }

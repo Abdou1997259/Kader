@@ -4,4 +4,8 @@
     {
         public RequestStatusTypes ApporvalStatus {  get; set; }  
     }
+    public class GlobalEmployeeRequests
+    {
+        public string reson { get; set; }
+    }
 }

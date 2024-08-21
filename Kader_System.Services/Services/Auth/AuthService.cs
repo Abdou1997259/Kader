@@ -3,9 +3,9 @@ using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.Auth;
-using Kader_System.Services.IServices;
+using Kader_System.Services.IServices.AppServices;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using Microsoft.Identity.Client;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -14,6 +14,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                    IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
                    IFileServer fileServer,
                    RoleManager<ApplicationRole> roleManager,
+                   KaderDbContext db,
                    IMainScreenService mainScreenService
                 ) : IAuthService
 
@@ -30,6 +31,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     private readonly IFileServer _fileServer = fileServer;
     private readonly IPermessionStructureService _permissionservice = premissionsevice;
     private readonly IMainScreenService _mainScreenService = mainScreenService;
+    private readonly KaderDbContext _db = db;
     #region Authentication
 
     public async Task<Response<AuthLoginUserResponse>> LoginUserAsync(AuthLoginUserRequest model)
@@ -137,14 +139,13 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var obj = await _userManager.FindByIdAsync(id);
        
 
-        var full_path = Path.Combine(appPath, moduleName);
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         if (model.image != null)
-            _fileServer.RemoveFile(full_path, obj.ImagePath);
+            _fileServer.RemoveFile(moduleName, obj.ImagePath);
 
        
         obj.ImagePath = (model.image == null || model.image.Length == 0) ? " " :
-           await _fileServer.UploadFile(appPath, moduleNameWithType, model.image);
+           await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
         obj.UpdateDate = new DateTime().NowEg();
         obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
        
@@ -159,7 +160,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         obj.Email = model.email;
         obj.FinancialYear = model.financial_year;
         obj.CompanyId = model.company_id.Concater();
-
+        obj.CompanyYearId = model.financial_year;
        obj.TitleId=model.title_id.Concater();
         obj.JobId = model.job_title;
         obj.IsActive = model.is_active;
@@ -507,7 +508,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     //    if (request.image != null)
     //        _fileServer.RemoveFile(full_path, mappeduser.ImagePath);
     //    mappeduser.ImagePath = (request.image == null || request.image.Length == 0) ? null :
-    //       await _fileServer.UploadFile(root, clientName, moduleNameWithType, request.image);
+    //       await _fileServer.UploadFileAsync(root, clientName, moduleNameWithType, request.image);
 
     //    _unitOfWork.Users.Update(mappeduser);
     //    await _unitOfWork.CompleteAsync();
@@ -595,6 +596,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         user.JobId = model.job_title;
         user.UserName = model.user_name;
         user.Add_date = DateTime.UtcNow;
+        user.CompanyYearId = model.financial_year;
         user.Added_by = _accessor.HttpContext?.User.GetUserId() ?? string.Empty;
         user.Id = Guid.NewGuid().ToString();
 
@@ -602,7 +604,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         if (model.image != null && model.image.Length > 0)
         {
-            user.ImagePath = await _fileServer.UploadFile(appPath, moduleNameWithType, model.image);
+            user.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
         }
 
         // Manage user permissions
@@ -798,40 +800,39 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     private async Task<Response<string>> ProcessUserPermissions(string userId, int titleId, IEnumerable<Permissions> model, bool all)
     {
-        int userCounter = 0;
         foreach (var assignedPermission in model)
         {
             var userPermissionQuery = await _unitOfWork.UserPermssionRepositroy
-                .GetSpecificSelectAsync(x => x.TitleId == titleId && x.SubScreenId == assignedPermission.SubId, x => x);
+                .GetSpecificSelectTrackingAsync(x => x.TitleId == titleId && x.SubScreenId == assignedPermission.SubId, x => x);
 
             if (await _unitOfWork.SubMainScreens.ExistAsync(x => x.Id == assignedPermission.SubId))
             {
                 if (userPermissionQuery.Count() > 0)
                 {
                     _unitOfWork.UserPermssionRepositroy.RemoveRange(userPermissionQuery);
-
+                    await _unitOfWork.CompleteAsync();
+                   
                 }
 
-         
-
-
-                if (assignedPermission.title_permission.Count == 0 ||  assignedPermission.title_permission.Any(x => x == 0))
+                if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
                 {
                     continue;
                 }
                 else
                 {
-                    await _unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission
+                    var newPermission = new UserPermission
                     {
-
                         UserId = userId.ToString(),
-
                         TitleId = titleId,
                         SubScreenId = assignedPermission.SubId,
                         Permission = string.Join(',', assignedPermission.title_permission)
-                    });
-                }
+                    };
 
+                    // Detach any existing entity with the same Id
+                   
+
+                    await _unitOfWork.UserPermssionRepositroy.AddAsync(newPermission);
+                }
             }
             else
             {
@@ -841,12 +842,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                     Check = false,
                     Data = null,
                     Msg = msg
-
-
                 };
             }
-       
-      
         }
 
         await _unitOfWork.CompleteAsync();
@@ -854,10 +851,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         {
             Check = true,
             Data = null,
-          
-
-
         };
+
     }
 
 
@@ -900,7 +895,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 x.Email,
                 x.JobId,
                 x.PhoneNumber,
-                x.UserName
+                x.UserName,
+              
             },
             orderBy: x => x.OrderByDescending(x => x.Add_date)
         );
@@ -909,6 +905,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var items = users.Select(x => new ListOfUsersResponse
         {
             Id=x.Id,
+            CurrentTitle=x.CurrentTitleId,
             CompanyName = Localization.Arabic == lang
                 ? companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameAr
                 : companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameEn,
@@ -1054,7 +1051,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 CompanyId = obj.CurrentCompanyId,
                 Companys = obj.CompanyId.Splitter(),
                 CurrentTitle=obj.CurrentTitleId,
-                FinancialYear = obj.FinancialYear,
+                FinancialYear = obj.CompanyYearId,
                 Email = obj.Email,
                 JobTitle = obj.JobId,
                 TitleId = titleIdList,
@@ -1062,6 +1059,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Image = obj.ImagePath,
                 Password = null,
                 UserName = obj.UserName
+               
 
             },
             LookUps = lookups,
@@ -1088,26 +1086,9 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             Id=x.Id,
             TitleName=Localization.Arabic==lang?x.TitleNameAr:x.TitleNameEn
         });
-
-        var FinancalYear = new List<FinancalYear>
-        {
-            new FinancalYear
-            {
-                Id=1,
-                Year=2025
-            }
-            ,   new FinancalYear
-            {
-                Id=2,
-                Year=2022
-            }
-            ,   new FinancalYear
-            {
-                Id=3,
-                Year=2021
-            }
-
-        };
+      
+        var FinancalYear = await _unitOfWork.Users.GetCompanyYearsAsync();
+       
 
 
 
@@ -1116,7 +1097,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             Check= true,    
             Data = new()
             {
-                FinancalYear=FinancalYear,
+                FinancalYear= FinancalYear,
                 Companies=compaines,
                 Titles=titles,
                 Jobs=jobs

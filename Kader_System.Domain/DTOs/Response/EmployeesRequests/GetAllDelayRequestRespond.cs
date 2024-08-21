@@ -20,7 +20,7 @@ namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
         public string? Notes { get; set; }
         public string? Atachment { get; set; }
         public double HoursDelay { get; set; }
-        public DateTime? requet_date { get; set; }
+        public DateTime? request_date { get; set; }
 
 
 

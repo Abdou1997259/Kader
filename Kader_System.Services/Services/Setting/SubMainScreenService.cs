@@ -1,21 +1,17 @@
-﻿using Kader_System.DataAccess.Repositories;
-using Kader_System.DataAccesss.Context;
-using Kader_System.Domain.Dtos.Response;
+﻿using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
-using Kader_System.Domain.Models.EmployeeRequests;
-using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
+using Kader_System.Services.IServices.AppServices;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository, Domain.Interfaces.IFileServer fileServer) : ISubMainScreenService
+public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository,IFileServer fileServer) : ISubMainScreenService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
     private readonly ILoggingRepository _loggingRepository = loggingRepository;
-    private readonly Domain.Interfaces.IFileServer _fileServer = fileServer;
+    private readonly IFileServer _fileServer = fileServer;
 
 
     #region Sub main screen
@@ -197,7 +193,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         //exists = await _unitOfWork.SubMainScreens.ExistAsync(x => x.Screen_sub_title_ar.Trim() == model.Screen_sub_title_ar
         //|| x.Screen_sub_title_en.Trim() == model.Screen_sub_title_en.Trim());
         //newRequest.Screen_sub_image = (model.Screen_sub_image == null || model.Screen_sub_image.Length == 0) ? null :
-        //      await _fileServer.UploadFile(appPath, moduleName, model.Screen_sub_image);
+        //      await _fileServer.UploadFileAsync(appPath, moduleName, model.Screen_sub_image);
         //await _unitOfWork.SubMainScreens.AddAsync(newRequest);
 
         //if (exists)

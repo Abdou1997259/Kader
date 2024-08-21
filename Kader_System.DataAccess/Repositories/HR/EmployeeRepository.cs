@@ -90,9 +90,9 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              ReligionId = employee.ReligionId,
                              SalaryPaymentWayId = employee.SalaryPaymentWayId,
                              ShiftId = employee.ShiftId,
-                             TotalSalary = employee.TotalSalary,
+                             TotalSalary = cGroup.FixedSalary +cGroup.HousingAllowance  ,
                              Username = usr.UserName,
-                             EmployeeImage = $"{ReadRootPath.EmployeeImagesPath}{employee.EmployeeImage}",
+                             EmployeeImage = Path.Combine(Modules.Employees, employee.EmployeeImage),
                              qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
                              company_name = lang == Localization.Arabic ? com.NameAr : com.NameEn,
                              management_name = lang == Localization.Arabic ? man.NameAr : man.NameEn,
@@ -238,7 +238,10 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
     {
 
         var employees = context.Employees.Where(filter);
-
+        var loanCounts = _context.Loans
+            .GroupBy(l => l.EmployeeId)
+            .Select(g => new { EmployeeId = g.Key, Count = g.Count() })
+            .ToList();
 
         var query = from emp in employees
                     join department in context.Departments on emp.DepartmentId equals department.Id into depGroup
@@ -271,9 +274,13 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                     from salary in salaryGroup.DefaultIfEmpty()
                     join gender in context.Genders on emp.GenderId equals gender.Id into genderGroup
                     from gender in genderGroup.DefaultIfEmpty()
-                    join title in context.Titles 
+                    join title in context.Titles
                     on u.CurrentTitleId equals title.Id into titleGroup
                     from titlegroup in titleGroup.DefaultIfEmpty()
+                    join l in _context.Loans
+                    on emp.Id equals l.EmployeeId
+                    into loanGroup
+                    from lgroup in loanGroup.DefaultIfEmpty()
 
                     select new EmployeesData()
                     {
@@ -313,7 +320,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                         company_name = lang == Localization.Arabic ? company.NameAr : company.NameEn,
                         Company = lang == Localization.Arabic ? company.NameAr : company.NameEn,
                         Shift = lang == Localization.Arabic ? shift.Name_ar : shift.Name_en,
-                        employee_loans_count = 0,
+                        employee_loans_count = loanCounts.Count,
                         SalaryPaymentWay = lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
                         Gender = lang == Localization.Arabic ? gender.Name : gender.NameInEnglish,
                     };

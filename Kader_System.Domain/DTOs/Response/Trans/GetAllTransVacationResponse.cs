@@ -19,6 +19,7 @@
         public string? Notes { get; set; }
         public string? AddedBy { get; set; }
         public string? VacationType { get; set; }
+        public int ? TotalBalance { get; set; }
 
     }
 }

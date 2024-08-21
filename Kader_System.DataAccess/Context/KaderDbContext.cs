@@ -21,7 +21,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<SpCacluateSalary> SpCacluateSalariesModel { get; set; }
     public DbSet<UserPermission> UserPermissions { get; set; }
 
-
+    public DbSet<CompanyYear> CompanyYears { get; set; }
     public DbSet<SpCaclauateSalaryDetails> SpCaclauateSalaryDetailsModel { get; set; }
     public DbSet<SpCaclauateSalaryDetailedTrans> SpCaclauateSalaryDetailedTransModel { get; set; }
 
@@ -47,6 +47,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrContract> Contracts { get; set; }
     public DbSet<HrContractAllowancesDetail> ContractAllowancesDetails { get; set; }
     public DbSet<HrDeduction> Deductions { get; set; }
+    public DbSet<HrEmployeeAttendance> EmployeeAttendances { get; set; }
     public DbSet<HrDepartment> Departments { get; set; }
     public DbSet<HrEmployee> Employees { get; set; }
     public DbSet<HrEmployeeAttachment> EmployeeAttachments { get; set; }
@@ -71,6 +72,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<TransSalaryEffect> TransSalaryEffects { get; set; }
     public DbSet<TransVacation> TransVacations { get; set; }
     public DbSet<HrJob> HrJobs { get; set; }
+    public DbSet<HrEmployeeNotes> HrEmployeeNotes { get; set; }
     public DbSet<AdvancedType> AdvancedTypes { get; set; }
     public DbSet<HrQualification> HrQualifications { get; set; }
     public DbSet<HrManagement> Managements { get; set; }
@@ -185,6 +187,11 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasMany(d => d.Employees)
             .WithOne(e => e.Department)
             .HasForeignKey(e => e.DepartmentId);
+        
+        modelBuilder.Entity<ApplicationUser>()
+       .HasOne(u => u.CompanyYear)
+       .WithMany(cy => cy.Users)
+       .HasForeignKey(u => u.CompanyYearId);
         #endregion
 
         #region Fluent Api

@@ -1,10 +1,11 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Domain.Models.HR;
+using Kader_System.Services.IServices.AppServices;
 using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.HR;
 
-public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : ICompanyService
+public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : ICompanyService
 {
     private HrCompany _instance;
 
@@ -197,12 +198,18 @@ public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
         List<GetFileNameAndExtension> getFileNameAnds = [];
         if (model.Company_contracts is not null && model.Company_contracts.Any())
         {
-            getFileNameAnds = ManageFilesHelper.UploadFiles(model.Company_contracts, GoRootPath.HRFilesPath);
+            HrDirectoryTypes directoryTypes = new();
+            directoryTypes = HrDirectoryTypes.CompanyContracts;
+            var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+            getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.Company_contracts);
         }
         List<GetFileNameAndExtension> getLicenseFileNameAnds = [];
         if (model.Company_licenses is not null && model.Company_licenses.Any())
         {
-            getLicenseFileNameAnds = ManageFilesHelper.UploadFiles(model.Company_licenses, GoRootPath.HRFilesPath);
+            HrDirectoryTypes directoryTypes = new();
+            directoryTypes = HrDirectoryTypes.CompanyLicesnses;
+            var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+            getLicenseFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.Company_licenses);
         }
 
         await unitOfWork.Companies.AddAsync(new()
@@ -262,16 +269,19 @@ public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
 
             if (obj.ListOfsContract.Any())
             {
-                ManageFilesHelper.RemoveFiles(obj.ListOfsContract
-                    .Select(l => GoRootPath.HRFilesPath + l.CompanyContracts).ToList());
+                HrDirectoryTypes directoryTypes = new();
+                directoryTypes = HrDirectoryTypes.CompanyContracts;
+                var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+                _fileServer.RemoveDirectory(directoryName);
                 unitOfWork.CompanyContracts.RemoveRange(obj.ListOfsContract);
             }
 
             if (obj.Licenses.Any())
             {
-                ManageFilesHelper.RemoveFiles(obj.Licenses.Select(l => GoRootPath.HRFilesPath + l.LicenseName)
-                    .ToList());
-                unitOfWork.CompanyLicenses.RemoveRange(obj.Licenses);
+                HrDirectoryTypes directoryTypes = new();
+                directoryTypes = HrDirectoryTypes.CompanyLicesnses;
+                var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+                _fileServer.RemoveDirectory(directoryName); unitOfWork.CompanyLicenses.RemoveRange(obj.Licenses);
             }
 
 
@@ -284,25 +294,17 @@ public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
             List<GetFileNameAndExtension> getFileNameAnds = [];
             if (model.company_contracts is not null && model.company_contracts.Any())
             {
-                foreach (var file in model.company_contracts)
-                {
-                    getFileNameAnds.Add(ManageFilesHelper.UploadFile(file, GoRootPath.HRFilesPath)); 
-                }
-               
+                getFileNameAnds = await _fileServer.UploadFilesAsync(Modules.CompanyContracts, model.company_contracts);
             }
             List<GetFileNameAndExtension> getLicenseFileNameAnds = [];
             if (model.company_licenses is not null && model.company_licenses.Any())
             {
-                foreach (var file in model.company_licenses)
-                {
-                    getLicenseFileNameAnds.Add(ManageFilesHelper.UploadFile(file, GoRootPath.HRFilesPath));
-                }
-              //  getLicenseFileNameAnds = ManageFilesHelper.UploadFiles(model.company_licenses, GoRootPath.HRFilesPath);
+                getLicenseFileNameAnds = await _fileServer.UploadFilesAsync(Modules.CompanyLicesnses, model.company_licenses);
             }
 
             if (getFileNameAnds.Any())
             {
-               await unitOfWork.CompanyLicenses.AddRangeAsync(getLicenseFileNameAnds.Select(l=>new CompanyLicense()
+                await unitOfWork.CompanyLicenses.AddRangeAsync(getLicenseFileNameAnds.Select(l => new CompanyLicense()
                 {
                     LicenseName = l.FileName,
                     LicenseExtension = l.FileExtension,
@@ -314,7 +316,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
                 await unitOfWork.CompanyContracts.AddRangeAsync(getLicenseFileNameAnds.Select(l => new HrCompanyContract()
                 {
                     CompanyContracts = l.FileName,
-                    CompanyContractsExtension =l.FileExtension,
+                    CompanyContractsExtension = l.FileExtension,
                     CompanyId = id
                 }).ToList());
             }
@@ -430,8 +432,72 @@ public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
         }
     }
 
+    public async Task<Response<EmployeeOfCompanyPagination>> EmployeeOfCompany(int companyId, string lang, HrGetAllFiltrationsForCompaniesRequest model, string host)
+    {
+
+
+        Expression<Func<EmployeeOfCompanyResponse, bool>> filter = x =>
+                 (string.IsNullOrEmpty(model.Word) || x.nationality_name.Contains(model.Word) || x.employee_name.Contains(model.Word)
+                  || x.management_name == model.Word);
+
+
+        var totalRecords = (await unitOfWork.Companies.GetEmployeeOfCompany(companyId, lang, filter, null, null)).Count();
+        int page = 1;
+        int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize))
+            ;
+        if (model.PageNumber < 1)
+            page = 1;
+        else
+            page = model.PageNumber;
+        var pageLinks = Enumerable.Range(1, totalPages)
+            .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+            .ToList();
+
+
+        var result = new EmployeeOfCompanyPagination
+        {
+            TotalRecords = totalRecords,
+
+            Items = (await unitOfWork.Companies.GetEmployeeOfCompany(companyId, lang, filter, model.PageSize, skip: (model.PageNumber - 1) * model.PageSize)).ToList()
+         ,
+            CurrentPage = model.PageNumber,
+            FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+            From = (page - 1) * model.PageSize + 1,
+            To = Math.Min(page * model.PageSize, totalRecords),
+            LastPage = totalPages,
+            LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+            PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+            NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+            Path = host,
+            PerPage = model.PageSize,
+            Links = pageLinks
+        };
+
+        if (result.TotalRecords is 0)
+        {
+            string resultMsg = shareLocalizer[Localization.NotFoundData];
+
+            return new()
+            {
+                Data = new()
+                {
+                    Items = []
+                },
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+
+        return new()
+        {
+            Data = result,
+            Check = true
+        };
+    }
+
     #endregion
 }
+
 
 
   
