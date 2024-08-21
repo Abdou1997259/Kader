@@ -140,7 +140,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
        
 
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
-        if (model.image != null)
+        if (obj.ImagePath != null)
             _fileServer.RemoveFile(moduleName, obj.ImagePath);
 
        
