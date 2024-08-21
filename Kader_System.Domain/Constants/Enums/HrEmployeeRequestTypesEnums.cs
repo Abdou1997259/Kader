@@ -23,6 +23,15 @@ namespace Kader_System.Domain.Constants.Enums
         #endregion
         None = 0
     }
+    public enum HrDirectoryTypes
+    {
+        CompanyContracts = 1,
+        CompanyLicesnses = 2,
+        Contracts = 3,
+        Attachments = 4,
+    }
+
+
     public enum UsereEnum
     {
         None = 0,

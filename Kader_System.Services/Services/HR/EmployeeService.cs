@@ -1,10 +1,12 @@
 ﻿using Kader_System.Domain.DTOs;
+using Kader_System.Services.IServices.AppServices;
 
 namespace Kader_System.Services.Services.HR
 {
     public class EmployeeService(IUnitOfWork unitOfWork,
         IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper,
-          IHttpContextAccessor _accessor 
+          IHttpContextAccessor _accessor ,
+          IFileServer fileServer
     , UserManager<ApplicationUser> userManager) : IEmployeeService
     {
         private HrEmployee _instanceEmployee;
@@ -58,6 +60,10 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<GetEmployeeByIdResponse>> GetEmployeeByIdAsync(int id, string lang)
         {
+            HrDirectoryTypes directoryTypes = new();
+            directoryTypes = HrDirectoryTypes.Attachments;
+            var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+
             Expression<Func<HrEmployee, bool>> filter = x => x.Id == id;
             var obj = await unitOfWork.Employees.GetFirstOrDefaultAsync(filter,
                 includeProperties: $"{nameof(_instanceEmployee.Management)},{nameof(_instanceEmployee.Job)}," +
@@ -123,7 +129,7 @@ namespace Kader_System.Services.Services.HR
                     ShiftId = obj.ShiftId,
                     TotalSalary = obj.TotalSalary,
                     Username = obj.User!.UserName,
-                    EmployeeImage = $"{ReadRootPath.EmployeeImagesPath}{obj.EmployeeImage}",
+                    EmployeeImage = fileServer.GetFilePath(Modules.Employees,obj.EmployeeImage),
                     qualification_name = lang == Localization.Arabic ? obj.Qualification!.NameAr : obj.Qualification!.NameEn,
                     company_name = lang == Localization.Arabic ? obj.Company!.NameAr : obj.Company!.NameEn,
                     management_name = lang == Localization.Arabic ? obj.Management!.NameAr : obj.Management!.NameEn,
@@ -489,14 +495,17 @@ namespace Kader_System.Services.Services.HR
                 GetFileNameAndExtension imageFile = new();
                 if (model.employee_image != null)
                 {
-                    imageFile = ManageFilesHelper.UploadFile(model.employee_image, GoRootPath.EmployeeImagesPath);
+                    imageFile.FileName = await fileServer.UploadFileAsync(Modules.Employees, model.employee_image);
+                    imageFile.FileExtension = Path.GetExtension(imageFile.FileName);        
                 }
 
                 List<GetFileNameAndExtension> employeeAttachments = [];
                 if (model.employee_attachments is not null && model.employee_attachments.Any())
                 {
-                    employeeAttachments =
-                        ManageFilesHelper.UploadFiles(model.employee_attachments, GoRootPath.HRFilesPath);
+                    HrDirectoryTypes directoryTypes = new();
+                    directoryTypes = HrDirectoryTypes.Attachments;
+                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+                    employeeAttachments =await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
                 }
 
                 newEmployee.EmployeeImage = imageFile?.FileName;
@@ -645,13 +654,15 @@ namespace Kader_System.Services.Services.HR
             {
                 if (!string.IsNullOrEmpty(obj.EmployeeImage))
                 {
-                    string file = Path.Combine(GoRootPath.EmployeeImagesPath, obj.EmployeeImage);
-                    ManageFilesHelper.RemoveFile(file);
+                    fileServer.RemoveFile(Modules.Employees, obj.EmployeeImage);
                 }
 
                 if (obj.ListOfAttachments.Any())
                 {
-                    ManageFilesHelper.RemoveFiles(obj.ListOfAttachments.Select(f => Path.Combine(GoRootPath.HRFilesPath, f.FileName)).ToList());
+                    HrDirectoryTypes directoryTypes = new();
+                    directoryTypes = HrDirectoryTypes.Attachments;
+                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+                    fileServer.RemoveDirectory(directoryName);
                     unitOfWork.EmployeeAttachments.RemoveRange(obj.ListOfAttachments);
                 }
 
@@ -660,13 +671,17 @@ namespace Kader_System.Services.Services.HR
                 GetFileNameAndExtension imageFile = new();
                 if (model.employee_image != null)
                 {
-                    imageFile = ManageFilesHelper.UploadFile(model.employee_image, GoRootPath.EmployeeImagesPath);
+                    imageFile.FileName = await fileServer.UploadFileAsync(Modules.Employees, model.employee_image);
+                    imageFile.FileExtension = Path.GetExtension(imageFile.FileName);        
                 }
 
                 List<GetFileNameAndExtension> employeeAttachments = [];
                 if (model.employee_attachments is not null && model.employee_attachments.Any())
                 {
-                    employeeAttachments = ManageFilesHelper.UploadFiles(model.employee_attachments, GoRootPath.HRFilesPath);
+                    HrDirectoryTypes directoryTypes = new();
+                    directoryTypes = HrDirectoryTypes.Attachments;
+                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+                    employeeAttachments = await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
                 }
                 int CurrentCompanyYearId = 0;
                 if (_accessor.HttpContext.User.GetUserId() is not null)

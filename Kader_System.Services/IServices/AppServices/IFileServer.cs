@@ -15,12 +15,25 @@ namespace Kader_System.Services.IServices.AppServices
         /// <param name="moduleName"></param>
         /// <param name="file"></param>
         /// <returns>new file name with GUID</returns>
-        public Task<string> UploadFile(string moduleName, IFormFile file);
+        public Task<string> UploadFileAsync(string moduleName, IFormFile file);
+        /// <summary>
+        /// Upload collection files on server on wwwroot ,then return new saved fileNames
+        /// </summary>
+        /// <param name="moduleName"></param>
+        /// <param name="files"></param>
+        /// <returns>new file name with GUID</returns>
+        public Task<List<GetFileNameAndExtension>> UploadFilesAsync(string moduleName, IFormFileCollection files);
         /// <summary>
         /// Remove file from wwwroot
         /// </summary>
         /// <param name="paths"></param>
         public void RemoveFile(params string[] paths);
+
+        /// <summary>
+        /// Remove all files in Directory from wwwroot
+        /// </summary>
+        /// <param name="paths"></param>
+        public void RemoveDirectory(string folderName);
 
         /// <summary>
         /// Get File Path from wwwroot by filename

@@ -171,7 +171,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             await _unitOfWork.ContractTerminationRequest.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
             return new()
@@ -244,7 +244,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             if (model.Attachment is not null)
             {
                 _fileServer.RemoveFile(moduleName, _contract.AttachmentPath);
-                _contract.AttachmentPath = await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
+                _contract.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
 
             _unitOfWork.ContractTerminationRequest.Update(_contract);

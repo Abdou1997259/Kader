@@ -317,8 +317,10 @@ namespace Kader_System.Services.Services.HR
 
                 ;
             }
-
-            newContract.FileName = model.contract_file == null ? string.Empty : await fileServer.UploadFile( moduleName, model.contract_file);
+            HrDirectoryTypes directoryTypes = new();
+            directoryTypes = HrDirectoryTypes.Contracts;
+            var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+            newContract.FileName = model.contract_file == null ? string.Empty : await fileServer.UploadFileAsync(directoryName, model.contract_file);
             if (model.contract_file != null) {
                 newContract.FileExtension = Path.GetExtension(model.contract_file.FileName);
             }
@@ -364,18 +366,7 @@ namespace Kader_System.Services.Services.HR
                     };
                 }
 
-                if (model.contract_file != null)
-                {
-                    if (fileServer.FileExist( moduleName, obj.FileName))
-                        fileServer.RemoveFile( moduleName, obj.FileName);
-                    obj.FileExtension = Path.GetExtension(model.contract_file.FileName);
-
-                    obj.FileName = (model.contract_file.Length == 0) ? null
-                        : await fileServer.UploadFile( moduleName, model.contract_file);
-                }
-              
-              
-
+             
                 obj.EmployeeId = model.employee_id;
                 obj.EndDate = model.end_date;
                 obj.StartDate = model.start_date;
@@ -453,7 +444,13 @@ namespace Kader_System.Services.Services.HR
 
                     if (model.contract_file != null)
                     {
-                        contractFile = ManageFilesHelper.UploadFile(model.contract_file, GoRootPath.HRFilesPath);
+                        HrDirectoryTypes directoryTypes = new();
+                        directoryTypes = HrDirectoryTypes.Contracts;
+                        var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+                        if (fileServer.FileExist(directoryName, obj.FileName))
+                            fileServer.RemoveFile(directoryName, obj.FileName);
+                        contractFile.FileName = await fileServer.UploadFileAsync(directoryName, model.contract_file);
+                        contractFile.FileExtension = Path.GetExtension(contractFile.FileName);  
                     }
                     obj.FileName = contractFile?.FileName;
                     obj.FileExtension = contractFile?.FileExtension;

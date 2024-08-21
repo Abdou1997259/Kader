@@ -87,7 +87,7 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 6;
-}).AddEntityFrameworkStores<KaderDbContext>();
+}).AddEntityFrameworkStores<KaderDbContext>().AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews().AddJsonOptions(x =>
 {

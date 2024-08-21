@@ -176,7 +176,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             await _unitOfWork.ResignationRepository.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
             return new()
@@ -248,7 +248,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             if (model.Attachment is not null)
             {
                 _fileServer.RemoveFile(moduleName, resignation.AttachmentPath);
-                resignation.AttachmentPath = await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
+                resignation.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
 
             _unitOfWork.ResignationRepository.Update(resignation);

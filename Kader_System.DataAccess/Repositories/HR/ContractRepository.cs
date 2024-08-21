@@ -19,7 +19,9 @@ public class ContractRepository(KaderDbContext context) : BaseRepository<HrContr
                 .Include(d => d.ListOfAllowancesDetails)
                 .ThenInclude(a => a.Allowance)
                 .AsQueryable();
-
+        HrDirectoryTypes directoryTypes = new();
+        directoryTypes = HrDirectoryTypes.Contracts;
+        var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
         if (contractFilter != null)
         {
             contractsData = contractsData.Where(contractFilter);
@@ -48,7 +50,7 @@ public class ContractRepository(KaderDbContext context) : BaseRepository<HrContr
                 EndDate = groupedContract.Contract.EndDate,
                 HousingAllowance = groupedContract.Contract.HousingAllowance,
                 AddedByUser = groupedContract.UsersData.FirstOrDefault()!.UserName,
-                ContractFile = $"{ReadRootPath.HRFilesPath}{groupedContract.Contract.FileName}",
+                ContractFile = groupedContract.Contract.FileName != null ? Path.Combine(directoryName, groupedContract.Contract.FileName) : null,
                 Details = groupedContract.Contract.ListOfAllowancesDetails.Select(a => new GetAllContractDetailsResponse()
                 {
                     Id=a.Id,
@@ -91,6 +93,9 @@ public class ContractRepository(KaderDbContext context) : BaseRepository<HrContr
 
     public GetContractDataByIdResponse GetContractById(int id, string lang)
     {
+        HrDirectoryTypes directoryTypes = new();
+        directoryTypes = HrDirectoryTypes.Contracts;
+        var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
         var contractsData = context.Contracts
             .Include(e => e.Employee)
             .Include(d => d.ListOfAllowancesDetails)
@@ -113,7 +118,7 @@ public class ContractRepository(KaderDbContext context) : BaseRepository<HrContr
                 StartDate = groupedContract.Contract.StartDate,
                 EndDate = groupedContract.Contract.EndDate,
                 HousingAllowance = groupedContract.Contract.HousingAllowance,
-                ContractFile = $"{ReadRootPath.HRFilesPath}{groupedContract.Contract.FileName}",
+                ContractFile = groupedContract.Contract.FileName != null ? Path.Combine(directoryName, groupedContract.Contract.FileName) : null,
                 FileName = $"{groupedContract.Contract.FileName}",
                 AddedByUser = groupedContract.UsersData.FirstOrDefault()!.UserName,
                 Details = groupedContract.Contract.ListOfAllowancesDetails.Select(a => new GetAllContractDetailsResponse()

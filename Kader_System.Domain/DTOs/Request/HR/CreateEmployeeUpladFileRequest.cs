@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.DTOs.Request.HR
 {
-    public class CreateEmployeeUploadFileRequest
+    public class CreateEmployeeUploadFileAsyncRequest
     {
         [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
         public IFormFile? EmployeeImageFile { get; set; } = default!;

@@ -54,6 +54,9 @@ public static class SD
         public const string Trans = "Trans";
         public const string V1 = "v1";
         public const string Bearer = "Bearer";
+        public const string CompanyContracts = "Company Contracts";
+        public const string CompanyLicesnses = "Company Licesnses";
+        public const string Employees = "Employees";
 
     }
     public static class SuperAdmin

@@ -17,7 +17,7 @@ namespace Kader_System.Services.Services.AppServices
             _requestService = requestService;
         }
 
-        public async Task<FileStreamResult> DownloadFileAsync(params string [] fileParts)
+        public async Task<FileStreamResult> DownloadFileAsync(params string[] fileParts)
         {
             var filePath = Path.Combine(serverPath, Path.Combine(fileParts));
             var fileName = Path.GetFileName(filePath);
@@ -68,7 +68,16 @@ namespace Kader_System.Services.Services.AppServices
             if (File.Exists(filePath))
                 File.Delete(filePath);
         }
-        public async Task<string> UploadFile(string moduleName, IFormFile file)
+
+        public void RemoveDirectory(string folderName)
+        {
+            var directoryPath = Path.Combine(serverPath, folderName);
+            if(Directory.Exists(directoryPath)) 
+                Directory.Delete(directoryPath, true);
+
+        }
+
+        public async Task<string> UploadFileAsync(string moduleName, IFormFile file)
         {
             #region Directory_Validation
             var clientPath = Path.Combine(serverPath, moduleName);
@@ -87,11 +96,21 @@ namespace Kader_System.Services.Services.AppServices
             #endregion
         }
 
+        public async Task<List<GetFileNameAndExtension>> UploadFilesAsync(string moduleName, IFormFileCollection files)
+        {
+            List<GetFileNameAndExtension> fileNames = new();
+            foreach (var file in files)
+            {
+                var fileName = await UploadFileAsync(moduleName, file);
+                fileNames.Add(new GetFileNameAndExtension { FileName = fileName,FileExtension = Path.GetExtension(fileName) });
+            }
+            return fileNames;
+        }
 
         private Dictionary<string, string> GetMimeTypes()
         {
             return new Dictionary<string, string>
-        {
+            {
             {".txt", "text/plain"},
             {".pdf", "application/pdf"},
             {".doc", "application/vnd.ms-word"},
