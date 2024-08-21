@@ -39,6 +39,17 @@ public class CompaniesController(ICompanyService service, IRequestService reques
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
 
+    [HttpGet(ApiRoutes.Company.EmployeeOfCompany)]
+    [Permission(Permission.View, 8)]
+    public async Task<IActionResult> EmployeeOfCompany(int companyId,[FromQuery] HrGetAllFiltrationsForCompaniesRequest model)
+    {
+        var response = await service.EmployeeOfCompany(companyId, requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost);
+        if (response.Check)
+            return Ok(response);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    }
     #endregion
 
 

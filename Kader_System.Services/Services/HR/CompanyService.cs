@@ -1,13 +1,15 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Domain.Models.HR;
+using Kader_System.Services.IServices.AppServices;
 using Microsoft.Extensions.Hosting;
+using System.Reflection;
 
 namespace Kader_System.Services.Services.HR;
 
-public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : ICompanyService
+public class CompanyService(IUnitOfWork unitOfWork,IFileServer fileServer, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : ICompanyService
 {
     private HrCompany _instance;
-
+    private readonly IFileServer _fileServer= fileServer;
 
 
     #region Retrieve
@@ -77,9 +79,10 @@ public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
                      Add_date = x.Add_date.ToGetFullyDate(),
                      Company_owner = x.CompanyOwner,
                      Company_type_name = lang == Localization.Arabic ? x.CompanyType.Name : x.CompanyType.NameInEnglish,
-                     Name = lang == Localization.Arabic ? x.NameAr : x.NameEn
+                     Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
+                     Employees_count=x.HrManagements.SelectMany(x=>x.HrDepartments).SelectMany(x=>x.Employees).Count()                   
                  }, orderBy: x =>
-                   x.OrderByDescending(x => x.Id))).ToList(),
+                   x.OrderByDescending(x => x.Id),includeProperties: "HrManagements.HrDepartments.Employees")).ToList(),
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,
@@ -197,12 +200,20 @@ public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
         List<GetFileNameAndExtension> getFileNameAnds = [];
         if (model.Company_contracts is not null && model.Company_contracts.Any())
         {
-            getFileNameAnds = ManageFilesHelper.UploadFiles(model.Company_contracts, GoRootPath.HRFilesPath);
+            foreach (var file in model.Company_contracts)
+            {
+                getFileNameAnds.Add(new() { FileName = await _fileServer.UploadFile(Modules.HR, file), FileExtension = Path.GetExtension(file.FileName) });
+
+            }
         }
         List<GetFileNameAndExtension> getLicenseFileNameAnds = [];
         if (model.Company_licenses is not null && model.Company_licenses.Any())
         {
-            getLicenseFileNameAnds = ManageFilesHelper.UploadFiles(model.Company_licenses, GoRootPath.HRFilesPath);
+             foreach (var file in model.Company_licenses)
+            {
+                getFileNameAnds.Add(new() { FileName = await _fileServer.UploadFile(Modules.HR, file), FileExtension = Path.GetExtension(file.FileName) });
+
+            }
         }
 
         await unitOfWork.Companies.AddAsync(new()
@@ -259,19 +270,55 @@ public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
         try
         {
 
-
+            List<GetFileNameAndExtension> getFileNameAnds = [];
             if (obj.ListOfsContract.Any())
             {
-                ManageFilesHelper.RemoveFiles(obj.ListOfsContract
-                    .Select(l => GoRootPath.HRFilesPath + l.CompanyContracts).ToList());
-                unitOfWork.CompanyContracts.RemoveRange(obj.ListOfsContract);
+          
+                if (model.company_contracts is not null && model.company_contracts.Any())
+                {
+                    foreach (var file in obj.ListOfsContract)
+                    {
+                        
+                        _fileServer.RemoveFile(Modules.HR, file.CompanyContracts);
+                       
+
+                    }
+                    foreach(var file in model.company_contracts)
+                    {
+                        getFileNameAnds.Add(new() { FileName = await _fileServer.UploadFile(Modules.HR, file), FileExtension = Path.GetExtension(file.FileName) });
+
+                    }
+                }
+            
             }
+            List<GetFileNameAndExtension> getLicNameExtentions = [];
 
             if (obj.Licenses.Any())
             {
                 ManageFilesHelper.RemoveFiles(obj.Licenses.Select(l => GoRootPath.HRFilesPath + l.LicenseName)
                     .ToList());
                 unitOfWork.CompanyLicenses.RemoveRange(obj.Licenses);
+            }
+
+            if (obj.Licenses.Any())
+            {
+
+                if (model.company_licenses is not null && model.company_licenses.Any())
+                {
+                    foreach (var file in obj.Licenses)
+                    {
+
+                        _fileServer.RemoveFile(Modules.HR, file.LicenseName);
+
+
+                    }
+                    foreach (var file in model.company_contracts)
+                    {
+                        getFileNameAnds.Add(new() { FileName = await _fileServer.UploadFile(Modules.HR, file), FileExtension = Path.GetExtension(file.FileName) });
+
+                    }
+                }
+
             }
 
 
@@ -281,7 +328,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
             obj.CompanyTypeId = model.Company_type;
 
 
-            List<GetFileNameAndExtension> getFileNameAnds = [];
+   
             if (model.company_contracts is not null && model.company_contracts.Any())
             {
                 foreach (var file in model.company_contracts)
@@ -428,6 +475,69 @@ public class CompanyService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
                 Msg = shareLocalizer[Localization.Deleted]
             };
         }
+    }
+
+    public async Task<Response<EmployeeOfCompanyPagination>> EmployeeOfCompany(int companyId, string lang, HrGetAllFiltrationsForCompaniesRequest model, string host)
+    {
+
+
+        Expression<Func<EmployeeOfCompanyResponse, bool>> filter = x =>
+                 (string.IsNullOrEmpty(model.Word) || x.nationality_name.Contains(model.Word) || x.employee_name.Contains(model.Word)
+                  || x.management_name == model.Word);
+                
+
+        var totalRecords = (await unitOfWork.Companies.GetEmployeeOfCompany(companyId,lang,filter,null,null)).Count();
+        int page = 1;
+        int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize))
+            ;
+        if (model.PageNumber < 1)
+            page = 1;
+        else
+            page = model.PageNumber;
+        var pageLinks = Enumerable.Range(1, totalPages)
+            .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+            .ToList();
+
+
+        var result = new EmployeeOfCompanyPagination
+        {
+            TotalRecords = totalRecords,
+           
+            Items = (await unitOfWork.Companies.GetEmployeeOfCompany(companyId,lang,filter, model.PageSize,skip: (model.PageNumber - 1) * model.PageSize)).ToList()
+         ,
+            CurrentPage = model.PageNumber,
+            FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+            From = (page - 1) * model.PageSize + 1,
+            To = Math.Min(page * model.PageSize, totalRecords),
+            LastPage = totalPages,
+            LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+            PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+            NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+            Path = host,
+            PerPage = model.PageSize,
+            Links = pageLinks
+        };
+
+        if (result.TotalRecords is 0)
+        {
+            string resultMsg = shareLocalizer[Localization.NotFoundData];
+
+            return new()
+            {
+                Data = new()
+                {
+                    Items = []
+                },
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+
+        return new()
+        {
+            Data = result,
+            Check = true
+        };
     }
 
     #endregion
