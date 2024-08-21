@@ -176,7 +176,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         }
 
         mainScreenmap.Screen_main_image = (model.Screen_main_image == null || model.Screen_main_image.Length == 0) ? null
-           : await _fileServer.UploadFile(moduleName, model.Screen_main_image);
+           : await _fileServer.UploadFileAsync(moduleName, model.Screen_main_image);
 
         await _unitOfWork.MainScreens.AddAsync(mainScreenmap);
 
@@ -247,7 +247,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
 
             obj.Screen_main_image = (model.Screen_main_image.Length == 0) ? null
-                : await _fileServer.UploadFile( moduleName, model.Screen_main_image);
+                : await _fileServer.UploadFileAsync( moduleName, model.Screen_main_image);
         }
 
 

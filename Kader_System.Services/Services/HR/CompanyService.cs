@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Kader_System.Services.Services.HR;
 
-public class CompanyService(IUnitOfWork unitOfWork,IFileServer fileServer, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : ICompanyService
+public class CompanyService(IUnitOfWork unitOfWork,IFileServer _fileServer, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : ICompanyService
 {
     private HrCompany _instance;
     private readonly IFileServer _fileServer= fileServer;
@@ -200,20 +200,12 @@ public class CompanyService(IUnitOfWork unitOfWork,IFileServer fileServer, IStri
         List<GetFileNameAndExtension> getFileNameAnds = [];
         if (model.Company_contracts is not null && model.Company_contracts.Any())
         {
-            foreach (var file in model.Company_contracts)
-            {
-                getFileNameAnds.Add(new() { FileName = await _fileServer.UploadFile(Modules.HR, file), FileExtension = Path.GetExtension(file.FileName) });
-
-            }
+            getFileNameAnds = ManageFilesHelper.UploadFiles(model.Company_contracts, GoRootPath.HRFilesPath);
         }
         List<GetFileNameAndExtension> getLicenseFileNameAnds = [];
         if (model.Company_licenses is not null && model.Company_licenses.Any())
         {
-             foreach (var file in model.Company_licenses)
-            {
-                getFileNameAnds.Add(new() { FileName = await _fileServer.UploadFile(Modules.HR, file), FileExtension = Path.GetExtension(file.FileName) });
-
-            }
+            getLicenseFileNameAnds = ManageFilesHelper.UploadFiles(model.Company_licenses, GoRootPath.HRFilesPath);
         }
 
         await unitOfWork.Companies.AddAsync(new()
@@ -282,22 +274,19 @@ public class CompanyService(IUnitOfWork unitOfWork,IFileServer fileServer, IStri
                         _fileServer.RemoveFile(Modules.HR, file.CompanyContracts);
                        
 
-                    }
-                    foreach(var file in model.company_contracts)
-                    {
-                        getFileNameAnds.Add(new() { FileName = await _fileServer.UploadFile(Modules.HR, file), FileExtension = Path.GetExtension(file.FileName) });
-
-                    }
-                }
-            
+            if (obj.ListOfsContract.Any())
+            {
+                ManageFilesHelper.RemoveFiles(obj.ListOfsContract
+                    .Select(l => GoRootPath.HRFilesPath + l.CompanyContracts).ToList());
+                unitOfWork.CompanyContracts.RemoveRange(obj.ListOfsContract);
             }
-            List<GetFileNameAndExtension> getLicNameExtentions = [];
 
             if (obj.Licenses.Any())
             {
-                ManageFilesHelper.RemoveFiles(obj.Licenses.Select(l => GoRootPath.HRFilesPath + l.LicenseName)
-                    .ToList());
-                unitOfWork.CompanyLicenses.RemoveRange(obj.Licenses);
+                HrDirectoryTypes directoryTypes = new();
+                directoryTypes = HrDirectoryTypes.CompanyLicesnses;
+                var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+                _fileServer.RemoveDirectory(directoryName); unitOfWork.CompanyLicenses.RemoveRange(obj.Licenses);
             }
 
             if (obj.Licenses.Any())
@@ -331,20 +320,12 @@ public class CompanyService(IUnitOfWork unitOfWork,IFileServer fileServer, IStri
    
             if (model.company_contracts is not null && model.company_contracts.Any())
             {
-                foreach (var file in model.company_contracts)
-                {
-                    getFileNameAnds.Add(ManageFilesHelper.UploadFile(file, GoRootPath.HRFilesPath)); 
-                }
-               
+                getFileNameAnds = await _fileServer.UploadFilesAsync(Modules.CompanyContracts, model.company_contracts);           
             }
             List<GetFileNameAndExtension> getLicenseFileNameAnds = [];
             if (model.company_licenses is not null && model.company_licenses.Any())
             {
-                foreach (var file in model.company_licenses)
-                {
-                    getLicenseFileNameAnds.Add(ManageFilesHelper.UploadFile(file, GoRootPath.HRFilesPath));
-                }
-              //  getLicenseFileNameAnds = ManageFilesHelper.UploadFiles(model.company_licenses, GoRootPath.HRFilesPath);
+                getLicenseFileNameAnds = await _fileServer.UploadFilesAsync(Modules.CompanyLicesnses, model.company_licenses);
             }
 
             if (getFileNameAnds.Any())

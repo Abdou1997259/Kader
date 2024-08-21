@@ -66,7 +66,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
-                await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
+                await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             await _unitOfWork.DelayPermission.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
 
@@ -236,7 +236,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             if (model.Attachment is not null)
             {
                 _fileServer.RemoveFile(moduleName, delay.AttachmentPath);
-                delay.AttachmentPath = await _fileServer.UploadFile(moduleNameWithType, model.Attachment);
+                delay.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
 
             _unitOfWork.DelayPermission.Update(delay);

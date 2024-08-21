@@ -145,7 +145,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
        
         obj.ImagePath = (model.image == null || model.image.Length == 0) ? " " :
-           await _fileServer.UploadFile(moduleNameWithType, model.image);
+           await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
         obj.UpdateDate = new DateTime().NowEg();
         obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
        
@@ -508,7 +508,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     //    if (request.image != null)
     //        _fileServer.RemoveFile(full_path, mappeduser.ImagePath);
     //    mappeduser.ImagePath = (request.image == null || request.image.Length == 0) ? null :
-    //       await _fileServer.UploadFile(root, clientName, moduleNameWithType, request.image);
+    //       await _fileServer.UploadFileAsync(root, clientName, moduleNameWithType, request.image);
 
     //    _unitOfWork.Users.Update(mappeduser);
     //    await _unitOfWork.CompleteAsync();
@@ -604,7 +604,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         if (model.image != null && model.image.Length > 0)
         {
-            user.ImagePath = await _fileServer.UploadFile(moduleNameWithType, model.image);
+            user.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
         }
 
         // Manage user permissions
