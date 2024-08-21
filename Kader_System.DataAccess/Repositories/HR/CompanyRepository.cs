@@ -27,7 +27,7 @@ public class CompanyRepository(KaderDbContext context) : BaseRepository<HrCompan
                         id = companyId,
                         employee_name = Localization.Arabic == lang ? e.FullNameAr : e.FullNameEn,
                         job_name = Localization.Arabic == lang ? j.NameAr : j.NameEn,
-                        management_name = Localization.Arabic == lang ? m.NameAr : j.NameEn,
+                        management_name = Localization.Arabic == lang ? m.NameAr : m.NameEn,
                         nationality_name = Localization.Arabic == lang ? n.Name : n.NameInEnglish,
 
                     };
