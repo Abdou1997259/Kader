@@ -233,8 +233,8 @@ namespace Kader_System.Services.Services.HR
                 Check = true,
                 Data = new()
                 {
-                    //HasAdditionalTime = obj.HasAdditionalTime,
-                    //HasNeedLicense = obj.HasNeedLicense,
+                    HasAdditionalTime = obj.HasAdditionalTime.Value,
+                    HasNeedLicense = obj.HasNeedLicense.Value,
                     Id = obj.Id,
                     NameAr = obj.NameAr,
                     NameEn = obj.NameEn

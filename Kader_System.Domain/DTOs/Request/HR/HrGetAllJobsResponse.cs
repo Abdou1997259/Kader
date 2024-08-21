@@ -9,5 +9,6 @@
         public bool HasNeedLicense { get; set; }
         public bool? HasAdditionalTime { get; set; }
         public int? EmployeesCount { get; set; }
+        public string ? AddedBy { get; set; }   
     }
 }
