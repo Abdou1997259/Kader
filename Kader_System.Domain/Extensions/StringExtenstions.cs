@@ -64,6 +64,8 @@ namespace Kader_System.Domain.Extensions
             // Create the action-to-permission map using LINQ
             var actionToPermNameMap = mainActionsArr
                 .Select((actionId, index) => new { actionId, permName = permNamesArr[index] })
+                
+
                 .ToDictionary(x => x.actionId, x => x.permName);
 
             // Create the result dictionary using LINQ
