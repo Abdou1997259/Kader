@@ -146,14 +146,11 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
 
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
-
-        if (model.image != null || model.image.Length != 0)
+        if (model.image is not null)
         {
             _fileServer.RemoveFile(moduleName, obj.ImagePath);
             obj.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
         }
-        else
-            obj.ImagePath = null;
         obj.UpdateDate = new DateTime().NowEg();
         obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
 
