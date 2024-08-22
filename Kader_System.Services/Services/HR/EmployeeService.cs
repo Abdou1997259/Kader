@@ -108,7 +108,7 @@ namespace Kader_System.Services.Services.HR
                     BirthDate = obj.BirthDate,
                     ChildrenNumber = obj.ChildrenNumber,
                     DepartmentId = obj.DepartmentId,
-                   
+                    title_id=obj.User.CurrentTitleId,
                     Email = obj.Email,
                     EmployeeImageExtension = obj.EmployeeImageExtension,
                     EmployeeTypeId = obj.EmployeeTypeId,

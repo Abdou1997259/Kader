@@ -23,6 +23,7 @@ public class CompanyContractResponse
 
     public string? Contract { get; set; }
     public int company_contract_id {  get; set; }   
+    public string file_name { get; set; }
 
     public string file_extension { get;set; }
     public DateTime? add_date { get; set; } 
@@ -33,7 +34,8 @@ public class CompanyLicenseResponse
 
     public string License { get; set; }
      
-    public int company_license_id { get; set; } 
+    public int company_license_id { get; set; }
+    public string file_name { get; set; }
     public string file_extension { get;set; }
     public DateTime? add_date { get; set; } 
 }

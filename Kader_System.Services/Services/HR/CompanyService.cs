@@ -1,6 +1,8 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Domain.Models.HR;
 using Kader_System.Services.IServices.AppServices;
+using Kader_System.Services.Services.AppServices;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.HR;
@@ -116,7 +118,86 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             Check = true
         };
     }
+    public async Task<Response<FileResult>> DownloadCompanyContract(int id)
+    {
+        var contractAttachment = await unitOfWork.CompanyContracts.GetByIdAsync(id);
+        if (contractAttachment is null)
+        {
+            var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
+            return new Response<FileResult>
+            {
+                Msg = msg,
+                Check = false
+            };
+        }
 
+        if (string.IsNullOrEmpty(contractAttachment.CompanyContracts))
+        {
+            var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
+            return new Response<FileResult>
+            {
+                Msg = msg,
+                Check = false
+            };
+        }
+        HrDirectoryTypes directoryTypes = new();
+        directoryTypes = HrDirectoryTypes.Contracts;
+        var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+
+
+        if (!_fileServer.FileExist(directoryName, contractAttachment.CompanyContracts))
+        {
+            var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
+            return new Response<FileResult>
+            {
+                Data = null,
+                Msg = msg,
+                Check = false
+            };
+        }
+
+
+        try
+        {
+            // Open the file stream
+
+
+            // Create the FileStreamResult
+            var fileStream = await _fileServer.DownloadFileAsync(directoryName, contractAttachment.CompanyContracts);
+
+
+            // Return the FileStreamResult wrapped in your Response object
+            return new Response<FileResult>
+            {
+                Data = fileStream,
+                Check = true,
+                // or any success message you want
+            };
+
+
+
+            // Create and return the FileContentResult
+
+
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., file access issues)
+            var msg = shareLocalizer[Localization.Error, shareLocalizer[Localization.Contract]];
+            return new Response<FileResult>
+            {
+                Msg = $"{msg}: {ex.Message}",
+                Check = false
+            };
+        }
+
+        throw new NotImplementedException();
+    }
+
+    public Task<Response<FileResult>> DownloadCompanylicense(int id)
+    {
+        throw new NotImplementedException();
+    }
 
     public async Task<Response<HrGetCompanyByIdResponse>> GetCompanyByIdAsync(int id, string lang)
      {
@@ -159,6 +240,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 {
                     Contract = _fileServer.GetFilePath(directoryCompanyContractsName, c.CompanyContracts),
                     company_contract_id = c.Id,
+                   file_name=c.CompanyContracts,
                     add_date = c.Add_date,
                     file_extension = c.CompanyContractsExtension
 
@@ -169,6 +251,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                     
                     License = _fileServer.GetFilePath(directoryCompanyLicesnsesName, l.LicenseName),
                     company_license_id = l.Id,
+                    file_name=l.LicenseName,
                     add_date = l.Add_date,
                     file_extension = l.LicenseExtension
 
@@ -509,6 +592,8 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             Check = true
         };
     }
+
+   
 
     #endregion
 }

@@ -38,6 +38,18 @@ public class CompaniesController(ICompanyService service, IRequestService reques
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
+    [HttpGet(ApiRoutes.Company.DownloadCompanyContract)]
+    [Permission(Permission.View, 8)]
+    public async Task<IActionResult> DownloadCompanyContract(int id)
+    {
+        var response = await service.DownloadCompanyContract(id);
+        if (response.Check)
+            return Ok(response.Data);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    }
+
 
     [HttpGet(ApiRoutes.Company.EmployeeOfCompany)]
     [Permission(Permission.View, 8)]

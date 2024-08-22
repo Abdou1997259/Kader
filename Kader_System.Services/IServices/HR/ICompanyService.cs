@@ -1,4 +1,6 @@
-﻿namespace Kader_System.Services.IServices.HR;
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace Kader_System.Services.IServices.HR;
 
 public interface ICompanyService
 {
@@ -10,5 +12,8 @@ public interface ICompanyService
     Task<Response<string>> UpdateActiveOrNotCompanyAsync(int id);
     Task<Response<object>> RestoreCompanyAsync(int id);
     Task<Response<string>> DeleteCompanyAsync(int id);
+    Task<Response<FileResult>> DownloadCompanyContract(int id);
+ 
+    Task<Response<FileResult>> DownloadCompanylicense(int id);
     Task<Response<EmployeeOfCompanyPagination>> EmployeeOfCompany(int companyId, string lang, HrGetAllFiltrationsForCompaniesRequest model, string host);
 }

@@ -233,6 +233,8 @@ public static class SD
             public const string GetCompanyById = "company/getById/{id}";
             public const string DeleteCompany = "company/delete/{id}";
             public const string EmployeeOfCompany = "company/EmployeeOfCompany/{companyId}";
+            public const string DownloadCompanyContract = "company/download_company_contract/{id}";
+            public const string DownloadCompanyLicense = "company/download_company_license/{id}";
         }
         public class Contract
         {
