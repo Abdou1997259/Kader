@@ -22,11 +22,19 @@ public class CompanyContractResponse
 
     public int Id { get; set; }
     public string? Contract { get; set; }
+    public int company_contract_id {  get; set; }   
+    public int company_license_id { get; set; } 
+    public string file_extension { get;set; }
+    public DateTime? add_date { get; set; } 
 }
 
 public class CompanyLicenseResponse
 {
     public int Id { get; set; }
     public string License { get; set; }
+    public int company_contract_id { get; set; }
+    public int company_license_id { get; set; }
+    public string file_extension { get; set; }
+    public DateTime? add_date { get; set; }
 }
 

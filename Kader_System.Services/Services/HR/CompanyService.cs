@@ -81,7 +81,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                      Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
                      Employees_count = x.HrManagements.SelectMany(x => x.HrDepartments).SelectMany(x => x.Employees).Count()
                  }, orderBy: x =>
-                   x.OrderByDescending(x => x.Id),includeProperties: "HrManagements.HrDepartments.Employees")).ToList(),
+                   x.OrderByDescending(x => x.Id), includeProperties: "HrManagements.HrDepartments.Employees")).ToList(),
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,
@@ -141,6 +141,10 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             };
         }
 
+        var directoryCompanyContractsTypes = HrDirectoryTypes.CompanyContracts;
+        var directoryCompanyLicesnsesTypes = HrDirectoryTypes.CompanyLicesnses;
+        var directoryCompanyContractsName = directoryCompanyContractsTypes.GetModuleNameWithType(Modules.HR);
+        var directoryCompanyLicesnsesName = directoryCompanyLicesnsesTypes.GetModuleNameWithType(Modules.HR);
         return new()
         {
             Data = new()
@@ -153,18 +157,28 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 Company_type_name = lang == Localization.Arabic ? obj.CompanyType!.Name : obj.CompanyType!.NameInEnglish,
                 Company_licenses = obj.ListOfsContract.Select(c => new CompanyContractResponse()
                 {
-                    Contract = $"{ReadRootPath.HRFilesPath}{c.CompanyContracts}",
-                    Id = c.Id
+                    Contract = _fileServer.GetFilePath(directoryCompanyContractsName, c.CompanyContracts),
+                    Id = c.Id,
+                    company_contract_id = c.Id,
+                    add_date = c.Add_date,
+                    file_extension = c.CompanyContractsExtension
+
                 }).ToList(),
                 Company_contracts = obj.Licenses.Select(l => new CompanyLicenseResponse()
                 {
                     Id = l.Id,
-                    License = $"{ReadRootPath.HRFilesPath}{l.LicenseName}",
+                    License = _fileServer.GetFilePath(directoryCompanyLicesnsesName, l.LicenseName),
+                    company_license_id = l.Id,
+                    add_date = l.Add_date,
+                    file_extension =l.LicenseExtension
+
+
 
                 }).ToList(),
                 employees_count = employeesCount,
                 managements_count = managementsCount,
                 departments_count = departmentsCount,
+
 
             },
             Check = true
@@ -501,4 +515,4 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
 
 
 
-  
+
