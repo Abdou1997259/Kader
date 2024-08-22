@@ -9,8 +9,8 @@ public class HrGetCompanyByIdResponse
     public int Company_type { get; set; }
     public string Company_type_name { get; set; }
 
-    public List<CompanyContractResponse> Company_licenses { get; set; }
-    public List<CompanyLicenseResponse> Company_contracts { get; set; }
+    public List< CompanyLicenseResponse> Company_licenses { get; set; }
+    public List<CompanyContractResponse> Company_contracts { get; set; }
 
     public int employees_count { get; set; }
     public int managements_count { get; set; }
@@ -20,21 +20,21 @@ public class HrGetCompanyByIdResponse
 public class CompanyContractResponse
 {
 
-    public int Id { get; set; }
+
     public string? Contract { get; set; }
     public int company_contract_id {  get; set; }   
-    public int company_license_id { get; set; } 
+
     public string file_extension { get;set; }
     public DateTime? add_date { get; set; } 
 }
 
 public class CompanyLicenseResponse
 {
-    public int Id { get; set; }
+
     public string License { get; set; }
-    public int company_contract_id { get; set; }
-    public int company_license_id { get; set; }
-    public string file_extension { get; set; }
-    public DateTime? add_date { get; set; }
+     
+    public int company_license_id { get; set; } 
+    public string file_extension { get;set; }
+    public DateTime? add_date { get; set; } 
 }
 
