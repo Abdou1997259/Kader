@@ -673,7 +673,7 @@ namespace Kader_System.Services.Services.HR
 
         }
 
-        public async Task<Response<FileResult>> GetFileStreamResultAsync(int contractId ,string serverPath,string moduleName)
+        public async Task<Response<FileResult>> GetFileStreamResultAsync(int contractId,string moduleName)
         {
 
             var contract = await unitOfWork.Contracts.GetByIdAsync(contractId);
@@ -701,7 +701,6 @@ namespace Kader_System.Services.Services.HR
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
            
        
-            var path = Path.Combine(directoryName, contract.FileName);
             if (!fileServer.FileExist(directoryName, contract.FileName))
             {
                 var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
@@ -720,7 +719,7 @@ namespace Kader_System.Services.Services.HR
 
 
                 // Create the FileStreamResult
-                   var fileStream = await fileServer.DownloadFileAsync(path);
+                   var fileStream = await fileServer.DownloadFileAsync(directoryName,contract.FileName);
                   
                    
                     // Return the FileStreamResult wrapped in your Response object

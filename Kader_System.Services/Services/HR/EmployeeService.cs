@@ -312,6 +312,7 @@ namespace Kader_System.Services.Services.HR
                     {
                         Id = x.Id,
                         Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
+                        HasNeedLicense=   x.HasNeedLicense
 
                     });
                 var vacations = await unitOfWork.Vacations.GetSpecificSelectAsync(
