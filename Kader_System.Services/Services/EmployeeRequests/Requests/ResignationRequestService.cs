@@ -248,6 +248,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 _fileServer.RemoveFile(moduleName, resignation.AttachmentPath);
                 resignation.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
+            else
+            {
+                _fileServer.RemoveFile(moduleName, resignation.AttachmentPath);
+                resignation.AttachmentPath = null;
+            }
 
             _unitOfWork.ResignationRepository.Update(resignation);
             var result = await _unitOfWork.CompleteAsync();

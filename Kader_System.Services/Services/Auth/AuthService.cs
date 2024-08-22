@@ -151,6 +151,11 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             _fileServer.RemoveFile(moduleName, obj.ImagePath);
             obj.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
         }
+        if(model.image is null && obj?.ImagePath != null)
+        {
+            _fileServer.RemoveFile(moduleName, obj.ImagePath);
+            obj.ImagePath = null;
+        }
         obj.UpdateDate = new DateTime().NowEg();
         obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
 

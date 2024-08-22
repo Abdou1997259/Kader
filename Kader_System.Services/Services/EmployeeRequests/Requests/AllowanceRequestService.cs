@@ -222,6 +222,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 _fileServer.RemoveFile(moduleName, allowance.AttachmentPath);
                 allowance.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
+            else
+            {
+                _fileServer.RemoveFile(moduleName, allowance.AttachmentPath);
+                allowance.AttachmentPath = null;
+            }
 
             _unitOfWork.AllowanceRequests.Update(allowance);
             var result = await _unitOfWork.CompleteAsync();
