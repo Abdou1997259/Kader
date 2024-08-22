@@ -231,16 +231,22 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
 
 
+            #region UpdateFile
             if (model.Attachment is not null)
             {
-                _fileServer.RemoveFile(moduleName, delay.AttachmentPath);
+                if (delay.AttachmentPath != null)
+                    _fileServer.RemoveFile(moduleName, delay.AttachmentPath);
                 delay.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
             else
             {
-                _fileServer.RemoveFile(moduleName, delay.AttachmentPath);
+                if (delay.AttachmentPath != null)
+                    _fileServer.RemoveFile(moduleName, delay.AttachmentPath);
                 delay.AttachmentPath = null;
             }
+
+            #endregion
+
 
             _unitOfWork.DelayPermission.Update(delay);
             var result = await _unitOfWork.CompleteAsync();
