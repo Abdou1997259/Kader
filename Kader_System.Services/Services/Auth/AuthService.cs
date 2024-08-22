@@ -124,10 +124,10 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         };
     }
 
-    public async Task<Response<UpdateUserRequest>> UpdateUserAsync(string id, string lang,
-        UpdateUserRequest model, string appPath, string moduleName, UsereEnum userenum = UsereEnum.None)
+
     public async Task<Response<UpdateUserRequest>> UpdateUserAsync(string id,string lang, 
         UpdateUserRequest model, string moduleName, HrDirectoryTypes userenum = HrDirectoryTypes.User)
+
     {
         if (id == null)
         {
@@ -887,8 +887,9 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     }
 
 
-    public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model,string host,string lang)
-    {
+
+    public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model,string host,string lang, string moduleName, HrDirectoryTypes userenum = HrDirectoryTypes.User)
+    { 
         Expression<Func<ApplicationUser, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
             (string.IsNullOrEmpty(model.Word) || x.Email.Contains(model.Word) ||
            (string.IsNullOrEmpty(model.Word) || x.UserName.Contains(model.Word) ||
@@ -927,7 +928,9 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 x.JobId,
                 x.PhoneNumber,
                 x.UserName,
-              
+
+                x.ImagePath
+
             },
             orderBy: x => x.OrderByDescending(x => x.Add_date)
         );
@@ -949,7 +952,11 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 ? jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameAr
                 : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
             Phone = x.PhoneNumber,
-            UserName=x.UserName
+
+            UserName=x.UserName,
+            Image=Path.Combine(folderPath,x.ImagePath ?? "")
+           
+
         }).ToList();
 
         var result = new GetAllUsersResponse
@@ -1047,7 +1054,9 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         };
     }
 
-    public async Task<Response<GetUserByIdResponse>> GetUserById(string id,string lang)
+
+    public async Task<Response<GetUserByIdResponse>> GetUserById(string id,string lang ,string moduleName, HrDirectoryTypes hrDirectory)
+
     {
 
 
@@ -1065,6 +1074,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Msg = resultMsg
             };
         }
+
+
    var lookups = await UsersGetLookups(lang);
         var trimmedTitleId = obj.TitleId.Trim(',').Trim();
 
