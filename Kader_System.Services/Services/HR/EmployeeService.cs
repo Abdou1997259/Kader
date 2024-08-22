@@ -321,6 +321,10 @@ namespace Kader_System.Services.Services.HR
                         Id = x.Id,
                         Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
                     });
+
+
+
+
                 var qualifications = await unitOfWork.Qualifications.GetSpecificSelectAsync(
                     filter: filter => filter.IsDeleted == false
                     , select: x => new
@@ -328,6 +332,8 @@ namespace Kader_System.Services.Services.HR
                         Id = x.Id,
                         Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
                     });
+
+
                 var managements = await unitOfWork.Managements.GetSpecificSelectAsync(
                     filter: filter => filter.IsDeleted == false
                     , select: x => new
@@ -336,6 +342,10 @@ namespace Kader_System.Services.Services.HR
                         Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
                         CompanyId = x.CompanyId,
                     });
+
+
+
+
                 var nationalities = await unitOfWork.Nationalities.GetSpecificSelectAsync(
                     filter: filter => filter.IsDeleted == false
                     , select: x => new

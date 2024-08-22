@@ -696,20 +696,23 @@ namespace Kader_System.Services.Services.HR
                     Check = false
                 };
             }
-
-            var clientPath = Path.Combine(serverPath, moduleName);
-            var path = Path.Combine(clientPath, contract.FileName);
-
-            if (!System.IO.File.Exists(path))
+            HrDirectoryTypes directoryTypes = new();
+            directoryTypes = HrDirectoryTypes.Contracts;
+            var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+           
+       
+            var path = Path.Combine(directoryName, contract.FileName);
+            if (!fileServer.FileExist(directoryName, contract.FileName))
             {
                 var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
                 return new Response<FileResult>
                 {
-                    Data=null,
+                    Data = null,
                     Msg = msg,
                     Check = false
                 };
             }
+           
 
             try
             {
@@ -717,16 +720,13 @@ namespace Kader_System.Services.Services.HR
 
 
                 // Create the FileStreamResult
-                var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                   var fileStream = await fileServer.DownloadFileAsync(path);
                   
-                    var fileContentResult = new FileStreamResult(fileStream, "application/octet-stream")
-                    {
-                        FileDownloadName = contract.FileName
-                    };
+                   
                     // Return the FileStreamResult wrapped in your Response object
                         return new Response<FileResult>
                         {
-                            Data = fileContentResult,
+                            Data = fileStream,
                             Check = true,
                             // or any success message you want
                         };
