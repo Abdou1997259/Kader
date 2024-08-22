@@ -4,6 +4,7 @@ using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.Auth;
 using Kader_System.Services.IServices.AppServices;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 
@@ -15,7 +16,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                    IFileServer fileServer,
                    RoleManager<ApplicationRole> roleManager,
                    KaderDbContext db,
-                   IMainScreenService mainScreenService
+                   IMainScreenService mainScreenService,
+                   IHttpContextAccessor httpContextAccessor
                 ) : IAuthService
 
 {
@@ -32,6 +34,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     private readonly IPermessionStructureService _permissionservice = premissionsevice;
     private readonly IMainScreenService _mainScreenService = mainScreenService;
     private readonly KaderDbContext _db = db;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+
     #region Authentication
 
     public async Task<Response<AuthLoginUserResponse>> LoginUserAsync(AuthLoginUserRequest model)
@@ -53,8 +57,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Check = false
             };
         var passwordValid = await _userManager.CheckPasswordAsync(user, model.Password);
-    
-           
+
+
         if (!passwordValid)
             return new()
             {
@@ -105,10 +109,10 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             UserName = user.UserName!,
             Email = user.Email!,
             RoleNames = currentUserRoles,
-            Token = "Bearer" + " " +  new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+            Token = "Bearer" + " " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             ExpiresOn = jwtSecurityToken.ValidTo,
-            
-            
+
+
         };
         return new Response<AuthLoginUserResponse>
         {
@@ -120,7 +124,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         };
     }
 
-    public async Task<Response<UpdateUserRequest>> UpdateUserAsync(string id,string lang, 
+    public async Task<Response<UpdateUserRequest>> UpdateUserAsync(string id, string lang,
         UpdateUserRequest model, string appPath, string moduleName, UsereEnum userenum = UsereEnum.None)
     {
         if (id == null)
@@ -137,37 +141,37 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         }
         string err = _sharLocalizer[Localization.Error];
         var obj = await _userManager.FindByIdAsync(id);
-       
+
 
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
         if (obj.ImagePath != null)
             _fileServer.RemoveFile(moduleName, obj.ImagePath);
 
-       
+
         obj.ImagePath = (model.image == null || model.image.Length == 0) ? " " :
            await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
         obj.UpdateDate = new DateTime().NowEg();
         obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
-       
+
         obj.PhoneNumber = model.phone;
         obj.UserName = model.user_name;
 
         if (model.password != null)
         {
-            obj.VisiblePassword= model.password;
+            obj.VisiblePassword = model.password;
         }
         obj.FullName = model.full_name;
         obj.Email = model.email;
         obj.FinancialYear = model.financial_year;
         obj.CompanyId = model.company_id.Concater();
         obj.CompanyYearId = model.financial_year;
-       obj.TitleId=model.title_id.Concater();
+        obj.TitleId = model.title_id.Concater();
         obj.JobId = model.job_title;
         obj.IsActive = model.is_active;
         obj.CurrentTitleId = model.current_title ?? 1;
         obj.CurrentCompanyId = model.current_company ?? 3;
         _unitOfWork.Users.Update(obj);
-      await  _unitOfWork.CompleteAsync();
+        await _unitOfWork.CompleteAsync();
 
         return new Response<UpdateUserRequest>()
         {
@@ -275,16 +279,17 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     public async Task<Response<AuthSetNewPasswordRequest>> SetNewPasswordToSpecificUserAsync(AuthSetNewPasswordRequest model)
     {
+        var userId = _httpContextAccessor.HttpContext.User.GetUserId();
         string err = _sharLocalizer[Localization.Error];
 
         using var transaction = _unitOfWork.BeginTransaction();
 
-        var user = await _userManager.FindByIdAsync(model.UserId);
+        var user = await _userManager.FindByIdAsync(userId);
 
         if (user is null)
         {
             string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                _sharLocalizer[Localization.User], model.UserId);
+                _sharLocalizer[Localization.User], userId);
 
             return new Response<AuthSetNewPasswordRequest>()
             {
@@ -294,9 +299,33 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             };
         }
 
+        if (user.VisiblePassword != model.OldPassword)
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.OldPasswordDoesnotMatch],
+                          _sharLocalizer[Localization.User], userId);
+            return new Response<AuthSetNewPasswordRequest>()
+            {
+                Data = model,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+        if (model.NewPassword != model.ConfirmPassword)
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.NewPasswordDoesnotMatch],
+                                     _sharLocalizer[Localization.User], userId);
+            return new Response<AuthSetNewPasswordRequest>()
+            {
+                Data = model,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
+
+
+
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
-
         user.VisiblePassword = model.NewPassword;
         _unitOfWork.Users.Update(user);
         await _unitOfWork.CompleteAsync();
@@ -425,7 +454,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             };
         }
     }
-    
+
 
     private string GetUserId() =>
         _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
@@ -443,7 +472,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             var ddd = _roleManager.GetClaimsAsync(dd!).Result;
             roleClaims.AddRange(ddd);
         }
-        
+
         var userClaims = _userManager.GetClaimsAsync(user!).Result;
         listOfUserClaims.AddRange(userClaims);
 
@@ -553,7 +582,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         }
 
         // Check if the current company exists
-    
+
 
         // Set default title and company if not provided
         model.current_title ??= model.title_id.FirstOrDefault();
@@ -622,7 +651,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 x => x.TitleId == model.current_title,
                 select: x => new UserPermission
                 {
-                   TitleId=model.current_title.Value,
+                    TitleId = model.current_title.Value,
                     UserId = user.Id,
                     SubScreenId = x.SubScreenId,
                     Permission = x.Permissions
@@ -668,14 +697,14 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     }
 
 
-    public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int? titleId, IEnumerable<Permissions> model,string lang)
+    public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int? titleId, IEnumerable<Permissions> model, string lang)
     {
-        if (titleId == 0 || titleId ==null )
+        if (titleId == 0 || titleId == null)
         {
             var msg = _sharLocalizer[Localization.TitlePermisson];
             return new Response<string>
             {
-                Msg=msg,
+                Msg = msg,
                 Check = false,
                 Data = "",
             };
@@ -697,13 +726,13 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             var missingActionsExist = titlePermissions.Except(actionIdsForSubId);
 
             // Process the result
-            if (missingActionsExist.Any() && missingActionsExist.Any(x=>x!=0))
+            if (missingActionsExist.Any() && missingActionsExist.Any(x => x != 0))
             {
-                var permssions = await _unitOfWork.ActionsRepo.GetSpecificSelectAsync(x=>missingActionsExist.Any(u=>u==x.Id),x=>x);
+                var permssions = await _unitOfWork.ActionsRepo.GetSpecificSelectAsync(x => missingActionsExist.Any(u => u == x.Id), x => x);
                 var subscrren = await _unitOfWork.SubMainScreens.GetByIdAsync(sub.SubId);
                 string name = Localization.Arabic == lang ? subscrren.Screen_sub_title_ar : subscrren.Screen_sub_title_en;
                 string nameofpermissions = "";
-                foreach(var per in permssions)
+                foreach (var per in permssions)
                 {
                     nameofpermissions += Localization.Arabic == lang ? per.Name + " " : per.NameInEnglish + " ";
                 }
@@ -713,20 +742,20 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 return new Response<string>()
                 {
                     Check = false,
-                    Msg=msg,
-                    Data=null
+                    Msg = msg,
+                    Data = null
 
                 };
-              
+
             }
         }
 
-            var userPermissions = model.Select(x => new UserPermission
+        var userPermissions = model.Select(x => new UserPermission
         {
             UserId = id,
             Permission = string.Join(',', x.title_permission),
             SubScreenId = x.SubId,
-            TitleId = titleId?? 0
+            TitleId = titleId ?? 0
         }).ToList();
 
         // Process Title Permissions
@@ -751,12 +780,12 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 }
                 else
                 {
-                        await _unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
-                {
-                    TitleId = titleId ?? 0,
-                    SubScreenId = assignedPermission.SubId,
-                    Permissions = assignedPermission.title_permission.Concater()
-                });
+                    await _unitOfWork.TitlePermissionRepository.AddAsync(new TitlePermission
+                    {
+                        TitleId = titleId ?? 0,
+                        SubScreenId = assignedPermission.SubId,
+                        Permissions = assignedPermission.title_permission.Concater()
+                    });
                 }
 
 
@@ -780,7 +809,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         await _unitOfWork.CompleteAsync();
 
         // Process User Permissions
-      var result=    await ProcessUserPermissions(id, titleId??0, model, all);
+        var result = await ProcessUserPermissions(id, titleId ?? 0, model, all);
         if (!result.Check)
         {
             return new Response<string>
@@ -811,7 +840,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 {
                     _unitOfWork.UserPermssionRepositroy.RemoveRange(userPermissionQuery);
                     await _unitOfWork.CompleteAsync();
-                   
+
                 }
 
                 if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
@@ -829,7 +858,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                     };
 
                     // Detach any existing entity with the same Id
-                   
+
 
                     await _unitOfWork.UserPermssionRepositroy.AddAsync(newPermission);
                 }
@@ -856,19 +885,19 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     }
 
 
-    public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model,string host,string lang)
+    public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model, string host, string lang)
     {
         Expression<Func<ApplicationUser, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-            (string.IsNullOrEmpty(model.Word) || x.Email.Contains(model.Word)||
-           (string.IsNullOrEmpty(model.Word) || x.UserName.Contains(model.Word)||
+            (string.IsNullOrEmpty(model.Word) || x.Email.Contains(model.Word) ||
+           (string.IsNullOrEmpty(model.Word) || x.UserName.Contains(model.Word) ||
            (string.IsNullOrEmpty(model.Word) || x.FullName.Contains(model.Word)
-    
+
 
            ))
 
             );
-        var companise =await _unitOfWork.Companies.GetAllAsync();
-        var jobs=await _unitOfWork.Jobs.GetAllAsync();
+        var companise = await _unitOfWork.Companies.GetAllAsync();
+        var jobs = await _unitOfWork.Jobs.GetAllAsync();
         var totalRecords = await _unitOfWork.Users.CountAsync(filter: filter);
         int page = 1;
         int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
@@ -896,7 +925,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 x.JobId,
                 x.PhoneNumber,
                 x.UserName,
-              
+
             },
             orderBy: x => x.OrderByDescending(x => x.Add_date)
         );
@@ -904,8 +933,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         // Perform the in-memory transformations
         var items = users.Select(x => new ListOfUsersResponse
         {
-            Id=x.Id,
-            CurrentTitle=x.CurrentTitleId,
+            Id = x.Id,
+            CurrentTitle = x.CurrentTitleId,
             CompanyName = Localization.Arabic == lang
                 ? companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameAr
                 : companise.FirstOrDefault(c => c.Id == x.CurrentCompanyId)?.NameEn,
@@ -915,7 +944,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 ? jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameAr
                 : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
             Phone = x.PhoneNumber,
-            UserName=x.UserName
+            UserName = x.UserName
         }).ToList();
 
         var result = new GetAllUsersResponse
@@ -972,7 +1001,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 x.JobId,
                 x.PhoneNumber,
                 x.UserName,
-               
+
             },
             orderBy: x => x.OrderByDescending(x => x.Id)
         );
@@ -990,8 +1019,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 ? jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameAr
                 : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
             Phone = x.PhoneNumber,
-            Id=x.Id,
-            UserName=x.UserName
+            Id = x.Id,
+            UserName = x.UserName
         }).ToList();
 
         if (!result.Any())
@@ -1013,10 +1042,10 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         };
     }
 
-    public async Task<Response<GetUserByIdResponse>> GetUserById(string id,string lang)
+    public async Task<Response<GetUserByIdResponse>> GetUserById(string id, string lang)
     {
-       
-       
+
+
         var obj = await _userManager.FindByIdAsync(id.ToString());
         var companise = await _unitOfWork.Companies.GetByIdAsync(obj.CurrentCompanyId);
         var jobs = await _unitOfWork.Jobs.GetByIdAsync(obj.JobId);
@@ -1031,7 +1060,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Msg = resultMsg
             };
         }
-   var lookups = await UsersGetLookups(lang);
+        var lookups = await UsersGetLookups(lang);
         var trimmedTitleId = obj.TitleId.Trim(',').Trim();
 
         // Split the string by comma, trim each part, and parse to int
@@ -1050,7 +1079,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Phone = obj?.PhoneNumber ?? " ",
                 CompanyId = obj.CurrentCompanyId,
                 Companys = obj.CompanyId.Splitter(),
-                CurrentTitle=obj.CurrentTitleId,
+                CurrentTitle = obj.CurrentTitleId,
                 FinancialYear = obj.CompanyYearId,
                 Email = obj.Email,
                 JobTitle = obj.JobId,
@@ -1059,7 +1088,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Image = obj.ImagePath,
                 Password = null,
                 UserName = obj.UserName
-               
+
 
             },
             LookUps = lookups,
@@ -1069,38 +1098,38 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     public async Task<Response<UsersLookups>> UsersGetLookups(string lang)
     {
-        var jobs =( await _unitOfWork.Jobs.GetAllAsync()).Select(x=>new JobsLookups
+        var jobs = (await _unitOfWork.Jobs.GetAllAsync()).Select(x => new JobsLookups
         {
-            Id=x.Id,
-            JobName=Localization.Arabic==lang? x.NameAr: x.NameEn
+            Id = x.Id,
+            JobName = Localization.Arabic == lang ? x.NameAr : x.NameEn
         });
 
-        var compaines = (await _unitOfWork.Companies.GetAllAsync()).Select(x=>new CompanyLookup
+        var compaines = (await _unitOfWork.Companies.GetAllAsync()).Select(x => new CompanyLookup
         {
-            Id = x.Id,  
-            CompnayName=Localization.Arabic ==lang? x.NameAr: x.NameEn  
+            Id = x.Id,
+            CompnayName = Localization.Arabic == lang ? x.NameAr : x.NameEn
         });
 
-        var titles =( await _unitOfWork.Titles.GetAllAsync()).Select(x=>new TitleLookups
+        var titles = (await _unitOfWork.Titles.GetAllAsync()).Select(x => new TitleLookups
         {
-            Id=x.Id,
-            TitleName=Localization.Arabic==lang?x.TitleNameAr:x.TitleNameEn
+            Id = x.Id,
+            TitleName = Localization.Arabic == lang ? x.TitleNameAr : x.TitleNameEn
         });
-      
+
         var FinancalYear = await _unitOfWork.Users.GetCompanyYearsAsync();
-       
+
 
 
 
         return new Response<UsersLookups>()
         {
-            Check= true,    
+            Check = true,
             Data = new()
             {
-                FinancalYear= FinancalYear,
-                Companies=compaines,
-                Titles=titles,
-                Jobs=jobs
+                FinancalYear = FinancalYear,
+                Companies = compaines,
+                Titles = titles,
+                Jobs = jobs
 
             }
         };
@@ -1123,7 +1152,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             };
         }
         obj.IsDeleted = true;
- 
+
         obj.DeleteDate = new DateTime().NowEg();
         obj.DeleteBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
 
@@ -1169,23 +1198,23 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     public async Task<Response<GetMyProfileResponse>> GetMyProfile(string lang)
     {
-          var userId=   _accessor!.HttpContext!.User.GetUserId();
+        var userId = _accessor!.HttpContext!.User.GetUserId();
 
-         var user=await _unitOfWork.Users.GetFirstOrDefaultAsync(x=>x.Id==userId);
+        var user = await _unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == userId);
 
         var companies = await _unitOfWork.Companies.GetSpecificSelectAsQuerableAsync(x => user.CompanyId.Splitter().Contains(x.Id), x => x);
         var titles = await _unitOfWork.Titles.GetSpecificSelectAsync(x => user.TitleId.Splitter().Contains(x.Id), x => x);
-    
+
         Kader_System.Domain.Models.Title title = null;
         var allTitles = await _unitOfWork.Titles.GetAllAsync();
         HrCompany cop = null;
-     
-       title = await _unitOfWork.Titles.GetByIdAsync(user.CurrentTitleId);
-        
-       
-     
-       cop = await _unitOfWork.Companies.GetByIdAsync(user.CurrentCompanyId);
-        
+
+        title = await _unitOfWork.Titles.GetByIdAsync(user.CurrentTitleId);
+
+
+
+        cop = await _unitOfWork.Companies.GetByIdAsync(user.CurrentCompanyId);
+
 
         var screens = await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
         var perm = await _permissionservice.GetPermissionsBySubScreen(lang);
@@ -1204,7 +1233,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var aptoken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
         // Fetch companies asynchronously
-        var companiesList = ( companies).Select(x => new Companys
+        var companiesList = (companies).Select(x => new Companys
         {
 
             id = x.Id,
@@ -1219,10 +1248,10 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             Title = title2,
             Mobile = mobile,
             Image = image,
-            Titles=allTitles.Select(x=>new TitleLookups
+            Titles = allTitles.Select(x => new TitleLookups
             {
-                Id=x.Id,
-                TitleName=Localization.Arabic==lang? x.TitleNameAr:x.TitleNameEn
+                Id = x.Id,
+                TitleName = Localization.Arabic == lang ? x.TitleNameAr : x.TitleNameEn
             }),
             user = new Domain.DTOs.Response.Auth.User
             {
@@ -1246,13 +1275,13 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     public async Task<Response<string>> ChangeTitle(int title)
     {
-        var userId =(_accessor!.HttpContext!.User as ClaimsPrincipal).GetUserId();
-        var user =await _userManager.FindByIdAsync(userId);
+        var userId = (_accessor!.HttpContext!.User as ClaimsPrincipal).GetUserId();
+        var user = await _userManager.FindByIdAsync(userId);
         if (!user.TitleId.Splitter().Contains(title))
         {
             var msg = _sharLocalizer[Localization.UserInTitle];
             return new()
-            {  
+            {
                 Msg = msg,
                 Data = null,
                 Check = false
@@ -1260,12 +1289,12 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         }
         var oldpermissions = await _unitOfWork.UserPermssionRepositroy.GetSpecificSelectAsync(x => x.UserId == userId, x => x);
 
-       
-      
-        _unitOfWork.UserPermssionRepositroy.RemoveRange(oldpermissions);
-        var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetSpecificSelectAsync(x=>x.TitleId==title,x=>x);
 
-        if(!titlepermissions.Any() )
+
+        _unitOfWork.UserPermssionRepositroy.RemoveRange(oldpermissions);
+        var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetSpecificSelectAsync(x => x.TitleId == title, x => x);
+
+        if (!titlepermissions.Any())
         {
             var msg = _sharLocalizer[Localization.UserPermission];
             return new()
@@ -1284,7 +1313,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         });
 
         user.CurrentTitleId = title;
-         _unitOfWork.Users.Update(user);
+        _unitOfWork.Users.Update(user);
         await _unitOfWork.UserPermssionRepositroy.AddRangeAsync(userpermission);
         await _unitOfWork.CompleteAsync();
         return new()
@@ -1293,7 +1322,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             Data = "Updated"
         };
 
-       
+
     }
     public async Task<Response<string>> ChangeCompany(int company)
     {
@@ -1309,14 +1338,14 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Check = false
             };
         }
-      
 
-  
-   
-        user.CurrentCompanyId=company;
+
+
+
+        user.CurrentCompanyId = company;
         _unitOfWork.Users.Update(user);
         await _unitOfWork.CompleteAsync();
-     
+
 
         return new()
         {
@@ -1327,10 +1356,10 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     }
 
-    public async  Task<Response<IEnumerable<TitleLookups>>> GetTitleLookUps(string id,string lang)
+    public async Task<Response<IEnumerable<TitleLookups>>> GetTitleLookUps(string id, string lang)
     {
-        var user =await _unitOfWork.Users.GetFirstOrDefaultAsync(x=>x.Id==id);
-        if(user is null)
+        var user = await _unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == id);
+        if (user is null)
         {
             var msg = _sharLocalizer[Localization.NotFound];
             return new()
@@ -1340,10 +1369,10 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Data = null,
             };
         }
-        var titles=await _unitOfWork.Titles.GetSpecificSelectAsync(x=>user.TitleId.Splitter().Contains(x.Id),x=>x);
+        var titles = await _unitOfWork.Titles.GetSpecificSelectAsync(x => user.TitleId.Splitter().Contains(x.Id), x => x);
         return new()
         {
-            Check=true,
+            Check = true,
             Data = titles.Select(x => new TitleLookups
             {
                 Id = x.Id,
