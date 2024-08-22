@@ -121,7 +121,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     }
 
     public async Task<Response<UpdateUserRequest>> UpdateUserAsync(string id,string lang, 
-        UpdateUserRequest model, string appPath, string moduleName, UsereEnum userenum = UsereEnum.None)
+        UpdateUserRequest model, string moduleName, HrDirectoryTypes userenum = HrDirectoryTypes.User)
     {
         if (id == null)
         {
@@ -523,7 +523,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     //}
     public async Task<Response<CreateUserResponse>> CreateUserAsync(CreateUserRequest model,
-     string appPath, string moduleName, UsereEnum userenum = UsereEnum.None)
+     string moduleName, HrDirectoryTypes hrDirectoryTypes= HrDirectoryTypes.User)
     {
         // Check if user already exists
         if (await _unitOfWork.Users.ExistAsync(x => x.UserName == model.user_name))
@@ -601,7 +601,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         user.Id = Guid.NewGuid().ToString();
 
         // Upload user image
-        var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
+        var moduleNameWithType = hrDirectoryTypes.GetModuleNameWithType(moduleName);
         if (model.image != null && model.image.Length > 0)
         {
             user.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
@@ -856,7 +856,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     }
 
 
-    public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model,string host,string lang)
+    public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model,string host,string lang, string moduleName, HrDirectoryTypes userenum = HrDirectoryTypes.User)
     {
         Expression<Func<ApplicationUser, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
             (string.IsNullOrEmpty(model.Word) || x.Email.Contains(model.Word)||
@@ -896,11 +896,14 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 x.JobId,
                 x.PhoneNumber,
                 x.UserName,
-              
+                x.ImagePath
             },
             orderBy: x => x.OrderByDescending(x => x.Add_date)
         );
 
+
+       var folderPath= userenum.GetModuleNameWithType(moduleName);
+   
         // Perform the in-memory transformations
         var items = users.Select(x => new ListOfUsersResponse
         {
@@ -915,7 +918,9 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 ? jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameAr
                 : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
             Phone = x.PhoneNumber,
-            UserName=x.UserName
+            UserName=x.UserName,
+            Image=Path.Combine(folderPath,x.ImagePath ?? "")
+           
         }).ToList();
 
         var result = new GetAllUsersResponse
@@ -1013,7 +1018,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         };
     }
 
-    public async Task<Response<GetUserByIdResponse>> GetUserById(string id,string lang)
+    public async Task<Response<GetUserByIdResponse>> GetUserById(string id,string lang ,string moduleName, HrDirectoryTypes hrDirectory)
     {
        
        
@@ -1031,6 +1036,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Msg = resultMsg
             };
         }
+
    var lookups = await UsersGetLookups(lang);
         var trimmedTitleId = obj.TitleId.Trim(',').Trim();
 
@@ -1041,6 +1047,10 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             .Where(x => int.TryParse(x, out _)) // Optional: Ensure only valid integers are included
             .Select(int.Parse)
             .ToList();
+
+
+        var pathOfModule = hrDirectory.GetModuleNameWithType(moduleName);
+        var theFullPath = Path.Combine(_fileServer.GetFilePath(pathOfModule), obj.ImagePath);
         return new()
         {
             Data = new()
@@ -1056,7 +1066,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 JobTitle = obj.JobId,
                 TitleId = titleIdList,
                 IsActive = obj.IsActive,
-                Image = obj.ImagePath,
+                Image = theFullPath ,
                 Password = null,
                 UserName = obj.UserName
                
@@ -1167,7 +1177,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         };
     }
 
-    public async Task<Response<GetMyProfileResponse>> GetMyProfile(string lang)
+    public async Task<Response<GetMyProfileResponse>> GetMyProfile(string lang, string moduleName, HrDirectoryTypes hrDirectory)
     {
           var userId=   _accessor!.HttpContext!.User.GetUserId();
 
@@ -1195,7 +1205,11 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var fullName = user.FullName;
         var title2 = Localization.Arabic == lang ? title?.TitleNameAr ?? string.Empty : title?.TitleNameEn ?? string.Empty;
         var mobile = user.PhoneNumber;
-        var image = user.ImagePath;
+
+
+        var pathFolder = hrDirectory.GetModuleNameWithType(moduleName);
+        var fullPath = Path.Combine(pathFolder, user.ImagePath);
+        var image = fullPath;
         var currentTitles = user.CurrentTitleId;
         var currentCompany = user.CurrentCompanyId;
         var currentCompanyName = Localization.Arabic == lang ? cop?.NameAr ?? string.Empty : cop?.NameEn ?? string.Empty;

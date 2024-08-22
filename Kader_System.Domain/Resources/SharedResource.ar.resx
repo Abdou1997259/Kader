@@ -210,6 +210,9 @@
   <data name="PaidSuccessfuly" xml:space="preserve">
     <value>تم الدفع بنجاح</value>
   </data>
+  <data name="PathNotFound" xml:space="preserve">
+    <value>هذا الملف ليس له مسار</value>
+  </data>
   <data name="Qualification" xml:space="preserve">
     <value>المؤهل</value>
   </data>

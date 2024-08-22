@@ -97,7 +97,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     {
         var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
-        var response =  await _service.CreateUserAsync(model, serverPath, Modules.Auth, Domain.Constants.Enums.UsereEnum.Users);
+        var response =  await _service.CreateUserAsync(model, Modules.Auth, HrDirectoryTypes.User);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -113,7 +113,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
         var response = await _service.UpdateUserAsync(id, requestService.GetRequestHeaderLanguage,  model,
-            serverPath, Modules.Auth, Domain.Constants.Enums.UsereEnum.Users);
+             Modules.Auth, HrDirectoryTypes.User);
 
         if (response.Check)
             return Ok(response);
@@ -180,7 +180,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     [Permission(Permission.View, 5)]
     public async Task<IActionResult> GetAllUsers([FromQuery] FilterationUsersRequest filterationUsersRequest)
     {
-        var response = await _service.GetAllUsers(filterationUsersRequest,requestService.GetCurrentHost,requestService.GetRequestHeaderLanguage);
+        var response = await _service.GetAllUsers(filterationUsersRequest,requestService.GetCurrentHost,requestService.GetRequestHeaderLanguage, Modules.Auth, HrDirectoryTypes.User);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -191,7 +191,10 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     [Permission(Permission.View, 5)]
     public async Task<IActionResult> GetUsersById(string id)
     {
-        var response = await _service.GetUserById(id, requestService.GetRequestHeaderLanguage);
+       
+
+   
+        var response = await _service.GetUserById(id, requestService.GetRequestHeaderLanguage, Modules.Auth, HrDirectoryTypes.User);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -244,7 +247,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     public async Task<IActionResult> GetMyProfile()
     {
         
-        var response = await _service.GetMyProfile( requestService.GetRequestHeaderLanguage);
+        var response = await _service.GetMyProfile( requestService.GetRequestHeaderLanguage, Modules.Auth, HrDirectoryTypes.User);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

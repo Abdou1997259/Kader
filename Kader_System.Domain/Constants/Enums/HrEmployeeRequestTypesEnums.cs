@@ -29,6 +29,7 @@ namespace Kader_System.Domain.Constants.Enums
         CompanyLicesnses = 2,
         Contracts = 3,
         Attachments = 4,
+        User = 5,
     }
 
 

@@ -622,6 +622,7 @@ public static class SD
         public const string SalaryMoreThanInstallment = "SalaryMoreThanInstallment";
         public const string Notification = "Notification";
         public const string IsNotExistedIn = "IsNotExistedIn";
+        public const string PathNotFound = "PathNotFound";
         public const string CanNotAddingToNotThereIsProjectAndDepartment = "CanNotAddingToNotThereIsProjectAndDepartment";
         public const string CalculatedAready = "CalculatedAready";
         public const string CannotUpdateTaskStatus = "CannotUpdateTaskStatus";

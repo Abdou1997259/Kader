@@ -1,5 +1,8 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Services.IServices.AppServices;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.HR
 {
@@ -377,7 +380,7 @@ namespace Kader_System.Services.Services.HR
                         Id = x.Id,
                         Name = lang == Localization.Arabic ? x.Name : x.NameInEnglish,
                     });
-
+                   
 
                 var titles = await unitOfWork.Titles.GetSpecificSelectAsync(
           filter: filter => filter.IsDeleted == false
@@ -386,6 +389,40 @@ namespace Kader_System.Services.Services.HR
               Id = x.Id,
               Name = lang == Localization.Arabic ? x.TitleNameAr : x.TitleNameEn,
           });
+
+
+                var bytes = Encoding.UTF8.GetBytes(" Employee 1 ");
+
+
+                var docs = new List<object>()
+        {
+              new
+              {
+                  id=1,
+                  document_name="file",
+                  number=41,
+                  doc_file=new FileContentResult(bytes ,"application/pdf"),
+
+              },
+              new
+              {
+                  id=2,
+                  document_name="file2",
+                  number=42,
+                  doc_file=new FileContentResult(bytes ,"application/pdf"),
+
+              },
+               new
+              {
+                  id=3,
+                  document_name="file3",
+                  number=43,
+                  doc_file=new FileContentResult(bytes ,"application/pdf"),
+
+              }
+
+
+        };
 
                 return new Response<EmployeesLookUps>()
                 {
@@ -409,6 +446,7 @@ namespace Kader_System.Services.Services.HR
                         shifts = shifts.ToArray(),
                         vacations = vacations.ToArray(),
                         titles= titles.ToArray(),
+                        emp_docs= docs.ToArray()
                     }
                 };
             }

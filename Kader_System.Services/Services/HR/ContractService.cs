@@ -661,7 +661,7 @@ namespace Kader_System.Services.Services.HR
                       Active = contract.IsActive,
                       StartDate = contract.StartDate,
                       EndDate = contract.EndDate,
-                      AddedBy = contract.Added_by,
+                      AddedBy =( await unitOfWork.Users.GetFirstOrDefaultAsync(x=>x.Id==contract.Added_by )).FullName,
                       HousingAllowance = contract.HousingAllowance,
                   }
                       }
@@ -705,6 +705,7 @@ namespace Kader_System.Services.Services.HR
                 var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
                 return new Response<FileResult>
                 {
+                    Data=null,
                     Msg = msg,
                     Check = false
                 };
