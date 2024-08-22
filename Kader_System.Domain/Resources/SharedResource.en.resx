@@ -210,6 +210,9 @@
   <data name="PaidSuccessfuly" xml:space="preserve">
     <value>Paid Successfuly</value>
   </data>
+  <data name="PathNotFound" xml:space="preserve">
+    <value>Path Not Found</value>
+  </data>
   <data name="Qualification" xml:space="preserve">
     <value>Qualification</value>
   </data>

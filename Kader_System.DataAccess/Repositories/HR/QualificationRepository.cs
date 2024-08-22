@@ -42,6 +42,7 @@ public class QualificationRepository(KaderDbContext context) : BaseRepository<Hr
                 EmployeesCount = group.Count(x => x.QualificationEmployee.Employee != null),
                 AddedByUser = group.FirstOrDefault()!.User!.UserName,
             });
+        var groupedQuery2 = query.ToQueryString();
         if (take.HasValue)
             groupedQuery = groupedQuery.Take(take.Value);
         if (skip.HasValue)

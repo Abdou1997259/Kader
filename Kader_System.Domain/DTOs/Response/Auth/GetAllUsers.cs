@@ -15,10 +15,12 @@ namespace Kader_System.Domain.DTOs.Response.Auth
         public string Phone { get; set; }
         public string JobName { get; set; } 
         public int CurrentTitle { get; set; }
+        public string Image { get; set; }   
 
-     
 
-       
+
+
+
 
     }
 }

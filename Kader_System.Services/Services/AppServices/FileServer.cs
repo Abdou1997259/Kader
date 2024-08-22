@@ -10,11 +10,13 @@ namespace Kader_System.Services.Services.AppServices
         private readonly string serverPath = string.Empty;
         private readonly IHttpContextService _httpContextService;
         private readonly IRequestService _requestService;
-        public FileServer(IHttpContextService httpContextService, IRequestService requestService)
+        private readonly IStringLocalizer<SharedResource> _stringLocalizer;
+        public FileServer(IHttpContextService httpContextService, IRequestService requestService,IStringLocalizer<SharedResource> stringLocalizer)
         {
             _httpContextService = httpContextService;
             serverPath = _httpContextService.GetPhysicalServerPath();
             _requestService = requestService;
+            _stringLocalizer = stringLocalizer; 
         }
 
         public async Task<FileStreamResult> DownloadFileAsync(params string[] fileParts)
@@ -53,7 +55,7 @@ namespace Kader_System.Services.Services.AppServices
         public string GetFilePath(params string[] paths)
         {
             if (paths.Any(p => p == null))
-                return null;
+                return _stringLocalizer[Localization.PathNotFound];
             return Path.Combine(paths);
         }
 

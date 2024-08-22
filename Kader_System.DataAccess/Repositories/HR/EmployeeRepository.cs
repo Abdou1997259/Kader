@@ -323,6 +323,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                         employee_loans_count = loanCounts.Count,
                         SalaryPaymentWay = lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
                         Gender = lang == Localization.Arabic ? gender.Name : gender.NameInEnglish,
+                     
                     };
 
         if (filterSearch != null)
