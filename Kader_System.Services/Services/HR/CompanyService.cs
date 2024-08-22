@@ -119,7 +119,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
 
 
     public async Task<Response<HrGetCompanyByIdResponse>> GetCompanyByIdAsync(int id, string lang)
-    {
+     {
         var obj = await unitOfWork.Companies.GetFirstOrDefaultAsync(filter => filter.Id == id,
             includeProperties: $"{nameof(_instance.CompanyType)},{nameof(_instance.ListOfsContract)}," +
                               $"{nameof(_instance.Licenses)}");
@@ -155,22 +155,22 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 Company_owner = obj.CompanyOwner,
                 Company_type = obj.CompanyTypeId,
                 Company_type_name = lang == Localization.Arabic ? obj.CompanyType!.Name : obj.CompanyType!.NameInEnglish,
-                Company_licenses = obj.ListOfsContract.Select(c => new CompanyContractResponse()
+                Company_contracts = obj.ListOfsContract.Select(c => new CompanyContractResponse()
                 {
                     Contract = _fileServer.GetFilePath(directoryCompanyContractsName, c.CompanyContracts),
-                    Id = c.Id,
                     company_contract_id = c.Id,
                     add_date = c.Add_date,
                     file_extension = c.CompanyContractsExtension
 
+
                 }).ToList(),
-                Company_contracts = obj.Licenses.Select(l => new CompanyLicenseResponse()
+                Company_licenses = obj.Licenses.Select(l => new CompanyLicenseResponse()
                 {
-                    Id = l.Id,
+                    
                     License = _fileServer.GetFilePath(directoryCompanyLicesnsesName, l.LicenseName),
                     company_license_id = l.Id,
                     add_date = l.Add_date,
-                    file_extension =l.LicenseExtension
+                    file_extension = l.LicenseExtension
 
 
 
