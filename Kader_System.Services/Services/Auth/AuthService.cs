@@ -146,10 +146,15 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
 
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
-        if (model.image is not null)
+        if (model.image is not null && obj?.ImagePath != null)
         {
             _fileServer.RemoveFile(moduleName, obj.ImagePath);
             obj.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
+        }
+        if(model.image is null && obj?.ImagePath != null)
+        {
+            _fileServer.RemoveFile(moduleName, obj.ImagePath);
+            obj.ImagePath = null;
         }
         obj.UpdateDate = new DateTime().NowEg();
         obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
@@ -1088,7 +1093,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
 
         var pathOfModule = hrDirectory.GetModuleNameWithType(moduleName);
-        var theFullPath = Path.Combine(_fileServer.GetFilePath(pathOfModule), obj.ImagePath);
+        var theFullPath = _fileServer.GetFilePath(pathOfModule, obj.ImagePath);
         return new()
         {
             Data = new()

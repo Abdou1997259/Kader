@@ -253,6 +253,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 _fileServer.RemoveFile(moduleName, vacation.AttachmentPath);
                 vacation.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
+            else
+            {
+                _fileServer.RemoveFile(moduleName, vacation.AttachmentPath);
+                vacation.AttachmentPath = null;
+            }
 
             _unitOfWork.VacationRequests.Update(vacation);
             var result = await _unitOfWork.CompleteAsync();

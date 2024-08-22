@@ -244,6 +244,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 _fileServer.RemoveFile(moduleName, _contract.AttachmentPath);
                 _contract.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
+            else
+            {
+                _fileServer.RemoveFile(moduleName, _contract.AttachmentPath);
+                _contract.AttachmentPath = null;
+            }
 
             _unitOfWork.ContractTerminationRequest.Update(_contract);
             var result = await _unitOfWork.CompleteAsync();

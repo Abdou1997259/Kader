@@ -200,7 +200,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 _fileServer.RemoveFile(moduleName, leave.AttachmentPath);
                 leave.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
-
+            else
+            {
+                _fileServer.RemoveFile(moduleName, leave.AttachmentPath);
+                leave.AttachmentPath = null;
+            }
             _unitOfWork.LeavePermissionRequest.Update(leave);
             var result = await _unitOfWork.CompleteAsync();
             return new()
