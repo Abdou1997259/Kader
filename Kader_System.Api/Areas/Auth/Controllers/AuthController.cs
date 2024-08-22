@@ -133,7 +133,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
 
-    [HttpPut(ApiRoutes.User.SetNewPasswordToSpecificUser)]
+    [HttpPost(ApiRoutes.User.SetNewPasswordToSpecificUser)]
     public async Task<IActionResult> SetNewPasswordToSpecificUserAsync(AuthSetNewPasswordRequest model)
     {
         var response = await _service.SetNewPasswordToSpecificUserAsync(model);

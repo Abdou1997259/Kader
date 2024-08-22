@@ -643,6 +643,8 @@ public static class SD
         public const string ItIsNecessaryThatAmountMoreThanZero = "ItIsNecessaryThatAmountMoreThanZero";
         public const string Used = "Used";
         public const string CannotBeFound = "CannotBeFound";
+        public const string OldPasswordDoesnotMatch = "Old password doesn't match with current password.";
+        public const string NewPasswordDoesnotMatch = "The new password and the confirmed password do not match.";
         public const string UserInTitle = "UserInTitle";
         public const string UserPermission = "UserPermission";
         public const string UserInCompany = "UserInCompany";
