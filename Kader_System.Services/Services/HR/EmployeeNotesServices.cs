@@ -47,24 +47,22 @@ namespace Kader_System.Services.Services.HR
                 page = model.PageNumber;
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber }).ToList();
-
+            var db = _context.Database.GetDbConnection().Database;
             var result = new GetAllEmployeeNotesResponse
             {
                 TotalRecords = totalRecords,
                 Items = await (from x in _context.HrEmployeeNotes.AsNoTracking()
                                join emp in _context.Employees on x.EmployeeId equals emp.Id
-                               join user in _context.Users on emp.UserId equals user.Id
+                               join user in _context.Users on x.Added_by equals user.Id
                                where x.IsDeleted == model.IsDeleted && x.EmployeeId == model.EmployeeId &&
-                               (string.IsNullOrEmpty(model.Word)|| x.Notes.Contains(model.Word))
+                               (string.IsNullOrEmpty(model.Word) || x.Notes.Contains(model.Word))
                                select new EmployeeNotesData
                                {
-
                                    Id = x.Id,
                                    employee_id = x.EmployeeId,
-                                   employee_name = lang == Localization.English ? x.Employee.FirstNameEn + " " +
-                                      x.Employee.FatherNameEn + " " + x.Employee.GrandFatherNameEn :
-                                      x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr + " " + x.Employee.GrandFatherNameAr,
+                                   employee_name = lang == Localization.English ? x.Employee.FullNameEn : x.Employee.FullNameAr,
                                    notes = x.Notes,
+                                   AddedBy = user.FullName,
                                    added_date = DateOnly.FromDateTime(x.Add_date.Value),
                                    user_image_url = fileServer.GetFilePath(Modules.Auth, user.ImagePath)
                                }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync(),

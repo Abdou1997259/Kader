@@ -74,9 +74,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                                     Id = x.Id,
                                     EmployeeId = x.EmployeeId,
                                     request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
-                                    EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? 
-                                    x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn + " " + x.Employee.GrandFatherNameEn :
-                                     x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr + " " + x.Employee.GrandFatherNameAr,
+                                    EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FullNameEn : x.Employee.FullNameAr,
                                     DayCounts = x.DayCounts,
                                     StartDate = x.StartDate,
                                     EndDate = x.StartDate.AddDays(x.DayCounts),

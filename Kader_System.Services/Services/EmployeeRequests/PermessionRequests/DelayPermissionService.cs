@@ -151,9 +151,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                                    request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
                                    HoursDelay = x.DelayHours,
                                    ArrivalTime = x.Employee.Shift.Start_shift.AddHours(x.DelayHours.Value),
-                                   EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ?
-                                    x.Employee.FirstNameEn + " " + x.Employee.FatherNameEn + " " + x.Employee.GrandFatherNameEn :
-                                     x.Employee.FirstNameAr + " " + x.Employee.FatherNameAr + " " + x.Employee.GrandFatherNameAr,
+                                   EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FullNameEn : x.Employee.FullNameAr,
                                    ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                                    reason = x.StatuesOfRequest.StatusMessage,
                                    Notes = x.Notes,

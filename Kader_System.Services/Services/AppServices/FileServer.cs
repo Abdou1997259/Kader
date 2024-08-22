@@ -61,6 +61,8 @@ namespace Kader_System.Services.Services.AppServices
 
         public string GetFilePathWithServerPath(params string[] paths)
         {
+            if (paths.Any(p => p == null))
+                return _stringLocalizer[Localization.PathNotFound];
             return Path.Combine(serverPath, Path.Combine(paths));
         }
 
