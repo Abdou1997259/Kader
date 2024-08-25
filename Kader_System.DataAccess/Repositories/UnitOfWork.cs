@@ -4,6 +4,7 @@ using Kader_System.DataAccess.Repositories.EmployeeRequests.Requests;
 using Kader_System.Domain.Interfaces.EmployeeRequest;
 using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
 using Kader_System.Domain.Interfaces.EmployeeRequest.Request;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
 
 namespace Kader_System.DataAccess.Repositories;
@@ -12,6 +13,7 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly KaderDbContext _context;
     protected readonly IConfiguration _config;
+    private readonly IWebHostEnvironment _env;
 
     public IAdvancedTypesRepository AdvancedTypesRepository { get; private set; }
 

@@ -442,6 +442,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
                 _fileServer.RemoveDirectory(directoryName);
                 unitOfWork.CompanyContracts.RemoveRange(obj.ListOfsContract);
+               
             }
 
             if (obj.Licenses.Any())
@@ -449,7 +450,8 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 HrDirectoryTypes directoryTypes = new();
                 directoryTypes = HrDirectoryTypes.CompanyLicesnses;
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-                _fileServer.RemoveDirectory(directoryName); unitOfWork.CompanyLicenses.RemoveRange(obj.Licenses);
+                _fileServer.RemoveDirectory(directoryName); 
+                unitOfWork.CompanyLicenses.RemoveRange(obj.Licenses);
             }
 
 

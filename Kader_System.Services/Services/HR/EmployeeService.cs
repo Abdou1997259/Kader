@@ -86,6 +86,8 @@ namespace Kader_System.Services.Services.HR
                     Msg = resultMsg
                 };
             }
+            var empFiles = await unitOfWork.EmployeeAttachments.GetSpecificSelectAsync(x => x.EmployeeId == id, x => x);
+
 
             return new()
             {
@@ -125,7 +127,13 @@ namespace Kader_System.Services.Services.HR
                     NationalId = obj.NationalId,
                     NationalityId = obj.NationalityId,
                     Phone = obj.Phone,
-                    
+                    employee_attachments =obj.ListOfAttachments.Select(s=>new EmployeeAttachmentForEmp
+                    {
+                        Id=s.Id,
+                        file_path=fileServer.GetFilePath(s.FileName),
+                        FileName=s.FileName,
+                        Extention=s.FileExtension
+                    }).ToList(),
                     QualificationId = obj.QualificationId,
                     ReligionId = obj.ReligionId,
                     SalaryPaymentWayId = obj.SalaryPaymentWayId,
@@ -152,6 +160,8 @@ namespace Kader_System.Services.Services.HR
 
         public Response<GetEmployeeByIdResponse> GetEmployeeById(int id, string lang)
         {
+          
+
             return unitOfWork.Employees.GetEmployeeByIdAsync(id, lang);
         }
         public async Task<Response<GetAllEmployeesResponse>> GetAllEmployeesAsync(string lang,
@@ -553,10 +563,11 @@ namespace Kader_System.Services.Services.HR
                 {
                     HrDirectoryTypes directoryTypes = new();
                     directoryTypes = HrDirectoryTypes.Attachments;
+
                     var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
                     employeeAttachments =await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
                 }
-
+                
                 newEmployee.EmployeeImage = imageFile?.FileName;
                 newEmployee.EmployeeImageExtension = imageFile?.FileExtension;
                 newEmployee.ListOfAttachments = employeeAttachments.Select(f => new HrEmployeeAttachment

@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.DTOs.Response.HR;
+﻿using Kader_System.Domain.Constants.Enums;
+using Kader_System.Domain.DTOs.Response.HR;
 using System.Text.RegularExpressions;
 
 namespace Kader_System.DataAccess.Repositories.HR;
@@ -7,10 +8,14 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
 {
 
     private readonly KaderDbContext _context = context;
+  
     public Response<GetEmployeeByIdResponse> GetEmployeeByIdAsync(int id, string lang)
     {
         try
         {
+            HrDirectoryTypes directoryTypes = new();
+            directoryTypes = HrDirectoryTypes.Attachments;
+            var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
             var employeeAllowances = context.TransAllowances.Where(e => e.EmployeeId == id && !e.IsDeleted);
             var employeeVacations = context.TransVacations.Where(e => e.EmployeeId == id && !e.IsDeleted);
 
@@ -75,7 +80,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              EmployeeTypeId = employee.EmployeeTypeId,
                              FingerPrintCode = employee.FingerPrintCode,
                              FingerPrintId = employee.FingerPrintId,
-                             FixedSalary = cGroup ==null? employee.FixedSalary :cGroup.FixedSalary,
+                             FixedSalary = cGroup == null ? employee.FixedSalary : cGroup.FixedSalary,
                              GenderId = employee.GenderId,
                              HiringDate = employee.HiringDate,
                              ImmediatelyDate = employee.ImmediatelyDate,
@@ -90,8 +95,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              ReligionId = employee.ReligionId,
                              SalaryPaymentWayId = employee.SalaryPaymentWayId,
                              ShiftId = employee.ShiftId,
-                             TotalSalary = cGroup.FixedSalary +cGroup.HousingAllowance  ,
-                             Username = usr.UserName,
+                             TotalSalary = cGroup.FixedSalary == null ? 0 : cGroup.FixedSalary + cGroup.HousingAllowance == null ? cGroup.HousingAllowance : cGroup.HousingAllowance,                            
                              EmployeeImage = Path.Combine(Modules.Employees, employee.EmployeeImage),
                              qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
                              company_name = lang == Localization.Arabic ? com.NameAr : com.NameEn,
@@ -110,7 +114,15 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              note = employee.Note,
                              shift_name = lang == Localization.Arabic ? sh.Name_ar : sh.Name_en,
                              allowances_sum = employeeAllowances.Any() ? employeeAllowances.AsEnumerable().Sum(a => a.Amount) : 0,
-                             employee_loans_sum = 0
+                             employee_loans_sum = 0,
+                             employee_attachments=employee.ListOfAttachments.Select(s=>new EmployeeAttachmentForEmp
+                             {
+                                 FileName=s.FileName,
+                                 Extention=s.FileExtension,
+                                 Id=s.Id,
+                                 file_path = s.FileName != null ? Path.Combine(directoryName, s.FileName) : null,
+                             }).ToList()
+                             
                          };
             if (result?.FirstOrDefault()?.Id == null || result?.FirstOrDefault()?.Id == 0)
             {
@@ -305,11 +317,10 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                         Religion = lang == Localization.Arabic ? relegion.Name : relegion.NameInEnglish,
                         Job = lang == Localization.Arabic ? job.NameAr : job.NameEn,
                         qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
-                        note = emp.Note,
-                        title_id= titlegroup.Id,
+                        title_id = titlegroup.Id,
                         Phone = emp.Phone,
                         job_name = lang == Localization.Arabic ? job.NameAr : job.NameEn,
-                        vacation_days_count = vacation.TotalBalance,
+                        vacation_days_count = vacation.TotalBalance==null? 0:vacation.TotalBalance,
                         Username = u.UserName,
                         Vacation = lang == Localization.Arabic ? vacation.NameAr : vacation.NameEn,
                         department_name = lang == Localization.Arabic ? department.NameAr : department.NameEn,
@@ -323,7 +334,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                         employee_loans_count = loanCounts.Count,
                         SalaryPaymentWay = lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
                         Gender = lang == Localization.Arabic ? gender.Name : gender.NameInEnglish,
-                     
+
                     };
 
         if (filterSearch != null)
