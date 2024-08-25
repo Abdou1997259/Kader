@@ -4,6 +4,7 @@ using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.Services.AppServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Kader_System.Services.Services.HR;
 
@@ -183,20 +184,89 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         catch (Exception ex)
         {
             // Handle exceptions (e.g., file access issues)
-            var msg = shareLocalizer[Localization.Error, shareLocalizer[Localization.Contract]];
+         
             return new Response<FileResult>
             {
-                Msg = $"{msg}: {ex.Message}",
+                Msg = $": {ex.Message}",
                 Check = false
             };
         }
 
-        throw new NotImplementedException();
+       
     }
 
-    public Task<Response<FileResult>> DownloadCompanylicense(int id)
+    public async Task<Response<FileResult>> DownloadCompanylicense(int id)
     {
-        throw new NotImplementedException();
+        var licenseAttachment = await unitOfWork.CompanyLicenses.GetByIdAsync(id);
+        if (licenseAttachment is null)
+        {
+            var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
+            return new Response<FileResult>
+            {
+                Msg = msg,
+                Check = false
+            };
+        }
+
+        if (string.IsNullOrEmpty(licenseAttachment.LicenseName))
+        {
+            var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
+            return new Response<FileResult>
+            {
+                Msg = msg,
+                Check = false
+            };
+        }
+        HrDirectoryTypes directoryTypes = new();
+        directoryTypes = HrDirectoryTypes.CompanyContracts;
+        var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+
+
+        if (!_fileServer.FileExist(directoryName, licenseAttachment.LicenseName))
+        {
+            var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
+            return new Response<FileResult>
+            {
+                Data = null,
+                Msg = msg,
+                Check = false
+            };
+        }
+
+
+        try
+        {
+            // Open the file stream
+
+
+            // Create the FileStreamResult
+            var fileStream = await _fileServer.DownloadFileAsync(directoryName, licenseAttachment.LicenseName);
+
+
+            // Return the FileStreamResult wrapped in your Response object
+            return new Response<FileResult>
+            {
+                Data = fileStream,
+                Check = true,
+                // or any success message you want
+            };
+
+
+
+            // Create and return the FileContentResult
+
+
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., file access issues)
+         
+            return new Response<FileResult>
+            {
+                Msg = $": {ex.Message}",
+                Check = false
+            };
+        }
     }
 
     public async Task<Response<HrGetCompanyByIdResponse>> GetCompanyByIdAsync(int id, string lang)

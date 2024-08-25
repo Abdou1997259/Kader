@@ -49,6 +49,17 @@ public class CompaniesController(ICompanyService service, IRequestService reques
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
+    [HttpGet(ApiRoutes.Company.DownloadCompanyLicense)]
+    [Permission(Permission.View, 8)]
+    public async Task<IActionResult> DownloadCompanylicense(int id)
+    {
+        var response = await service.DownloadCompanylicense(id);
+        if (response.Check)
+            return Ok(response.Data);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    }
 
 
     [HttpGet(ApiRoutes.Company.EmployeeOfCompany)]
