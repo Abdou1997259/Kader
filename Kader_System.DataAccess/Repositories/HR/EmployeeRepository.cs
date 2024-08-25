@@ -115,7 +115,8 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              shift_name = lang == Localization.Arabic ? sh.Name_ar : sh.Name_en,
                              allowances_sum = employeeAllowances.Any() ? employeeAllowances.AsEnumerable().Sum(a => a.Amount) : 0,
                              employee_loans_sum = 0,
-                             employee_attachments=employee.ListOfAttachments.Select(s=>new EmployeeAttachmentForEmp
+                            title_id= usr.CurrentTitleId,
+                             employee_attachments =employee.ListOfAttachments.Select(s=>new EmployeeAttachmentForEmp
                              {
                                  FileName=s.FileName,
                                  Extention=s.FileExtension,
