@@ -236,16 +236,21 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
 
 
+            #region UpdateFile
             if (model.Attachment is not null)
             {
-                _fileServer.RemoveFile(moduleName, loan.AttachmentPath);
+                if (loan.AttachmentPath != null)
+                    _fileServer.RemoveFile(moduleName, loan.AttachmentPath);
                 loan.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
             else
             {
-                _fileServer.RemoveFile(moduleName, loan.AttachmentPath);
+                if (loan.AttachmentPath != null)
+                    _fileServer.RemoveFile(moduleName, loan.AttachmentPath);
                 loan.AttachmentPath = null;
             }
+
+            #endregion
 
             _unitOfWork.LoanRequestRepository.Update(loan);
             var result = await _unitOfWork.CompleteAsync();

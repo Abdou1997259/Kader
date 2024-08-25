@@ -239,16 +239,21 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             }
             var mappedleave = _mapper.Map(model, _contract);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
+            #region UpdateFile
             if (model.Attachment is not null)
             {
-                _fileServer.RemoveFile(moduleName, _contract.AttachmentPath);
+                if (_contract.AttachmentPath != null)
+                    _fileServer.RemoveFile(moduleName, _contract.AttachmentPath);
                 _contract.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
             else
             {
-                _fileServer.RemoveFile(moduleName, _contract.AttachmentPath);
+                if (_contract.AttachmentPath != null)
+                    _fileServer.RemoveFile(moduleName, _contract.AttachmentPath);
                 _contract.AttachmentPath = null;
             }
+
+            #endregion
 
             _unitOfWork.ContractTerminationRequest.Update(_contract);
             var result = await _unitOfWork.CompleteAsync();

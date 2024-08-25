@@ -194,17 +194,22 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             var mappedleave = _mapper.Map(model, leave);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
 
-
+            #region UpdateFile
             if (model.Attachment is not null)
             {
-                _fileServer.RemoveFile(moduleName, leave.AttachmentPath);
+                if (leave.AttachmentPath != null)
+                    _fileServer.RemoveFile(moduleName, leave.AttachmentPath);
                 leave.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
             else
             {
-                _fileServer.RemoveFile(moduleName, leave.AttachmentPath);
+                if (leave.AttachmentPath != null)
+                    _fileServer.RemoveFile(moduleName, leave.AttachmentPath);
                 leave.AttachmentPath = null;
             }
+
+            #endregion
+
             _unitOfWork.LeavePermissionRequest.Update(leave);
             var result = await _unitOfWork.CompleteAsync();
             return new()

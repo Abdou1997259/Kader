@@ -125,7 +125,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     }
 
 
-    public async Task<Response<UpdateUserRequest>> UpdateUserAsync(string id,string lang, 
+    public async Task<Response<UpdateUserRequest>> UpdateUserAsync(string id, string lang,
         UpdateUserRequest model, string moduleName, HrDirectoryTypes userenum = HrDirectoryTypes.User)
 
     {
@@ -146,14 +146,16 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
 
         var moduleNameWithType = userenum.GetModuleNameWithType(moduleName);
-        if (model.image is not null && obj?.ImagePath != null)
+        if (model.image is not null)
         {
-            _fileServer.RemoveFile(moduleName, obj.ImagePath);
+            if (obj?.ImagePath != null)
+                _fileServer.RemoveFile(moduleName, obj.ImagePath);
             obj.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
         }
-        if(model.image is null && obj?.ImagePath != null)
+        else
         {
-            _fileServer.RemoveFile(moduleName, obj.ImagePath);
+            if (obj?.ImagePath != null)
+                _fileServer.RemoveFile(moduleName, obj.ImagePath);
             obj.ImagePath = null;
         }
         obj.UpdateDate = new DateTime().NowEg();
@@ -558,7 +560,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     //}
     public async Task<Response<CreateUserResponse>> CreateUserAsync(CreateUserRequest model,
-     string moduleName, HrDirectoryTypes hrDirectoryTypes= HrDirectoryTypes.User)
+     string moduleName, HrDirectoryTypes hrDirectoryTypes = HrDirectoryTypes.User)
     {
         // Check if user already exists
         if (await _unitOfWork.Users.ExistAsync(x => x.UserName == model.user_name))
@@ -892,8 +894,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
 
 
-    public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model,string host,string lang, string moduleName, HrDirectoryTypes userenum = HrDirectoryTypes.User)
-    { 
+    public async Task<Response<GetAllUsersResponse>> GetAllUsers(FilterationUsersRequest model, string host, string lang, string moduleName, HrDirectoryTypes userenum = HrDirectoryTypes.User)
+    {
         Expression<Func<ApplicationUser, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
             (string.IsNullOrEmpty(model.Word) || x.Email.Contains(model.Word) ||
            (string.IsNullOrEmpty(model.Word) || x.UserName.Contains(model.Word) ||
@@ -940,8 +942,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         );
 
 
-       var folderPath= userenum.GetModuleNameWithType(moduleName);
-   
+        var folderPath = userenum.GetModuleNameWithType(moduleName);
+
         // Perform the in-memory transformations
         var items = users.Select(x => new ListOfUsersResponse
         {
@@ -957,9 +959,9 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
             Phone = x.PhoneNumber,
 
-            UserName=x.UserName,
-            Image=Path.Combine(folderPath,x.ImagePath ?? "")
-           
+            UserName = x.UserName,
+            Image = Path.Combine(folderPath, x.ImagePath ?? "")
+
 
         }).ToList();
 
@@ -1059,7 +1061,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     }
 
 
-    public async Task<Response<GetUserByIdResponse>> GetUserById(string id,string lang ,string moduleName, HrDirectoryTypes hrDirectory)
+    public async Task<Response<GetUserByIdResponse>> GetUserById(string id, string lang, string moduleName, HrDirectoryTypes hrDirectory)
 
     {
 
@@ -1080,7 +1082,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         }
 
 
-   var lookups = await UsersGetLookups(lang);
+        var lookups = await UsersGetLookups(lang);
         var trimmedTitleId = obj.TitleId.Trim(',').Trim();
 
         // Split the string by comma, trim each part, and parse to int
@@ -1109,7 +1111,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 JobTitle = obj.JobId,
                 TitleId = titleIdList,
                 IsActive = obj.IsActive,
-                Image = theFullPath ,
+                Image = theFullPath,
                 Password = null,
                 UserName = obj.UserName
 

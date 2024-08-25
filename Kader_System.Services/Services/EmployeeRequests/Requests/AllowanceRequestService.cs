@@ -216,17 +216,21 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var mappedleave = _mapper.Map(model, allowance);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
 
-
+            #region UpdateFile
             if (model.Attachment is not null)
             {
-                _fileServer.RemoveFile(moduleName, allowance.AttachmentPath);
+                if (allowance.AttachmentPath != null)
+                    _fileServer.RemoveFile(moduleName, allowance.AttachmentPath);
                 allowance.AttachmentPath = await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             }
             else
             {
-                _fileServer.RemoveFile(moduleName, allowance.AttachmentPath);
+                if (allowance.AttachmentPath != null)
+                    _fileServer.RemoveFile(moduleName, allowance.AttachmentPath);
                 allowance.AttachmentPath = null;
             }
+
+            #endregion
 
             _unitOfWork.AllowanceRequests.Update(allowance);
             var result = await _unitOfWork.CompleteAsync();
