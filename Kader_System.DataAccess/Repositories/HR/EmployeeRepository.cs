@@ -18,15 +18,16 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
             var employeeAllowances = context.TransAllowances.Where(e => e.EmployeeId == id && !e.IsDeleted);
             var employeeVacations = context.TransVacations.Where(e => e.EmployeeId == id && !e.IsDeleted);
-
-
+        
             var result = from employee in context.Employees
+
+                         join user in context.Users on employee.UserId equals user.Id into userGroup
+                         from usr in userGroup.DefaultIfEmpty()
                          join department in context.Departments on employee.DepartmentId equals department.Id into deptGroup
                          from dept in deptGroup.DefaultIfEmpty()
                          join management in context.Managements on employee.ManagementId equals management.Id into manGroup
                          from man in manGroup.DefaultIfEmpty()
-                         join user in context.Users on employee.UserId equals user.Id into userGroup
-                         from usr in userGroup.DefaultIfEmpty()
+                         
                          join qualification in context.HrQualifications on employee.QualificationId equals qualification.Id into
                              qualGroup
                          from qual in qualGroup.DefaultIfEmpty()
@@ -115,16 +116,21 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              shift_name = lang == Localization.Arabic ? sh.Name_ar : sh.Name_en,
                              allowances_sum = employeeAllowances.Any() ? employeeAllowances.AsEnumerable().Sum(a => a.Amount) : 0,
                              employee_loans_sum = 0,
-                            title_id= usr.CurrentTitleId,
-                             employee_attachments =employee.ListOfAttachments.Select(s=>new EmployeeAttachmentForEmp
+                             title_id = usr.CurrentTitleId ==null ? 0:usr.CurrentTitleId,
+                             employee_attachments = employee.ListOfAttachments.Select(s => new EmployeeAttachmentForEmp
                              {
-                                 FileName=s.FileName,
-                                 Extention=s.FileExtension,
-                                 Id=s.Id,
+                                 FileName = s.FileName,
+                                 Extention = s.FileExtension,
+                                 Id = s.Id,
                                  file_path = s.FileName != null ? Path.Combine(directoryName, s.FileName) : null,
                              }).ToList()
-                             
+
                          };
+
+
+           
+
+
             if (result?.FirstOrDefault()?.Id == null || result?.FirstOrDefault()?.Id == 0)
             {
                 return new()
@@ -257,8 +263,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
             .ToList();
 
         var query = from emp in employees
-                    join department in context.Departments on emp.DepartmentId equals department.Id into depGroup
-                    from department in depGroup.DefaultIfEmpty()
+                   
                     join u in context.Users on emp.Added_by equals u.Id into userGroup
                     from u in userGroup.DefaultIfEmpty()
                     join management in context.Managements on emp.ManagementId equals management.Id into mgmtGroup
@@ -283,6 +288,8 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                     from company in companyGroup.DefaultIfEmpty()
                     join shift in context.Shifts on emp.ShiftId equals shift.Id into shiftGroup
                     from shift in shiftGroup.DefaultIfEmpty()
+                    join department in context.Departments on emp.DepartmentId equals department.Id into depGroup
+                    from department in depGroup.DefaultIfEmpty()
                     join salary in context.SalaryPaymentWays on emp.SalaryPaymentWayId equals salary.Id into salaryGroup
                     from salary in salaryGroup.DefaultIfEmpty()
                     join gender in context.Genders on emp.GenderId equals gender.Id into genderGroup
@@ -337,7 +344,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                         Gender = lang == Localization.Arabic ? gender.Name : gender.NameInEnglish,
 
                     };
-
+       
         if (filterSearch != null)
             query = query.Where(filterSearch);
         if (take.HasValue)

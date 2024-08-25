@@ -160,9 +160,10 @@ namespace Kader_System.Services.Services.HR
 
         public Response<GetEmployeeByIdResponse> GetEmployeeById(int id, string lang)
         {
-          
+            var emp= unitOfWork.Employees.GetEmployeeByIdAsync(id, lang);
 
-            return unitOfWork.Employees.GetEmployeeByIdAsync(id, lang);
+
+            return emp;
         }
         public async Task<Response<GetAllEmployeesResponse>> GetAllEmployeesAsync(string lang,
             GetAllEmployeesFilterRequest model, string host)
