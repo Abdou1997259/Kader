@@ -98,6 +98,7 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     }
 
     #endregion
+
     #region Restore
 
     [HttpPut(ApiRoutes.Company.RestoreCompany)]

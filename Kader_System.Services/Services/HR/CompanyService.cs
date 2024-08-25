@@ -141,7 +141,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             };
         }
         HrDirectoryTypes directoryTypes = new();
-        directoryTypes = HrDirectoryTypes.Contracts;
+        directoryTypes = HrDirectoryTypes.CompanyContracts;
         var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
 
 
