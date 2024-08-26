@@ -67,8 +67,17 @@ namespace Kader_System.Services.Services.Trans
 
             var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
             var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == empolyee.Id, x => x)).FirstOrDefault();
-
+            if (contract is null)
+            {
+                string resultMsg = $" {_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.ContractNotFound]}";
+                return new()
+                {
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
             double? salary = contract?.FixedSalary;
+
 
 
             if (empolyee is null)

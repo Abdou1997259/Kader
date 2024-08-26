@@ -188,6 +188,18 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<CreateTransBenefitRequest>> CreateTransBenefitAsync(CreateTransBenefitRequest model)
         {
+
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+            if (contract is null)
+            {
+                string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
+
+                return new()
+                {
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
             var newTrans = mapper.Map<TransBenefit>(model);
 
             if (!string.IsNullOrEmpty(model.Attachment))

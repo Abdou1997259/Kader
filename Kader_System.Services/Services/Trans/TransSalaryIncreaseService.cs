@@ -260,6 +260,17 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<CreateTransSalaryIncreaseRequest>> CreateTransSalaryIncreaseAsync(CreateTransSalaryIncreaseRequest model, string lang)
         {
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.Employee_id, x => x)).FirstOrDefault();
+            if (contract is null)
+            {
+                string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
+
+                return new()
+                {
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
+            }
             var newTrans = _mapper.Map<TransSalaryIncrease>(model);
             newTrans.transactionDate=model.TransactionDate;
             var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.EmployeeId == model.Employee_id)).FixedSalary;

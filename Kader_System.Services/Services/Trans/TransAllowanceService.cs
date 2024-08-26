@@ -211,6 +211,17 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
     #region Create
     public async Task<Response<CreateTransAllowanceRequest>> CreateTransAllowanceAsync(CreateTransAllowanceRequest model)
     {
+        var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+        if (contract is null)
+        {
+            string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
+
+            return new()
+            {
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
 
         var newTrans = mapper.Map<TransAllowance>(model);
         await unitOfWork.TransAllowances.AddAsync(newTrans);
