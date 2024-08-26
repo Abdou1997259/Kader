@@ -402,7 +402,10 @@ namespace Kader_System.Services.Services.HR
                         Id = x.Id,
                         Name = lang == Localization.Arabic ? x.Name : x.NameInEnglish,
                     });
-                   
+         
+
+
+
 
                 var titles = await unitOfWork.Titles.GetSpecificSelectAsync(
           filter: filter => filter.IsDeleted == false
@@ -415,7 +418,7 @@ namespace Kader_System.Services.Services.HR
 
                 var bytes = Encoding.UTF8.GetBytes(" Employee 1 ");
 
-
+        
                 var docs = new List<object>()
         {
               new
