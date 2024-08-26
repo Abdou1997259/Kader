@@ -121,6 +121,8 @@ public class DeductionService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
             };
         }
 
+        
+
         await _unitOfWork.Deductions.AddAsync(new()
         {
             Name_en = model.Name_en,
