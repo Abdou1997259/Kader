@@ -86,6 +86,8 @@ namespace Kader_System.Services.Services.HR
                     Msg = resultMsg
                 };
             }
+            var empFiles = await unitOfWork.EmployeeAttachments.GetSpecificSelectAsync(x => x.EmployeeId == id, x => x);
+
 
             return new()
             {
@@ -125,7 +127,13 @@ namespace Kader_System.Services.Services.HR
                     NationalId = obj.NationalId,
                     NationalityId = obj.NationalityId,
                     Phone = obj.Phone,
-                    
+                    employee_attachments =obj.ListOfAttachments.Select(s=>new EmployeeAttachmentForEmp
+                    {
+                        Id=s.Id,
+                        file_path=fileServer.GetFilePath(s.FileName),
+                        FileName=s.FileName,
+                        Extention=s.FileExtension
+                    }).ToList(),
                     QualificationId = obj.QualificationId,
                     ReligionId = obj.ReligionId,
                     SalaryPaymentWayId = obj.SalaryPaymentWayId,
@@ -152,7 +160,10 @@ namespace Kader_System.Services.Services.HR
 
         public Response<GetEmployeeByIdResponse> GetEmployeeById(int id, string lang)
         {
-            return unitOfWork.Employees.GetEmployeeByIdAsync(id, lang);
+            var emp= unitOfWork.Employees.GetEmployeeByIdAsync(id, lang);
+
+
+            return emp;
         }
         public async Task<Response<GetAllEmployeesResponse>> GetAllEmployeesAsync(string lang,
             GetAllEmployeesFilterRequest model, string host)
@@ -178,6 +189,7 @@ namespace Kader_System.Services.Services.HR
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
+
             var result = new GetAllEmployeesResponse
             {
                 TotalRecords = totalRecords,
@@ -391,7 +403,10 @@ namespace Kader_System.Services.Services.HR
                         Id = x.Id,
                         Name = lang == Localization.Arabic ? x.Name : x.NameInEnglish,
                     });
-                   
+         
+
+
+
 
                 var titles = await unitOfWork.Titles.GetSpecificSelectAsync(
           filter: filter => filter.IsDeleted == false
@@ -404,7 +419,7 @@ namespace Kader_System.Services.Services.HR
 
                 var bytes = Encoding.UTF8.GetBytes(" Employee 1 ");
 
-
+        
                 var docs = new List<object>()
         {
               new
@@ -553,10 +568,11 @@ namespace Kader_System.Services.Services.HR
                 {
                     HrDirectoryTypes directoryTypes = new();
                     directoryTypes = HrDirectoryTypes.Attachments;
+
                     var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
                     employeeAttachments =await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
                 }
-
+                
                 newEmployee.EmployeeImage = imageFile?.FileName;
                 newEmployee.EmployeeImageExtension = imageFile?.FileExtension;
                 newEmployee.ListOfAttachments = employeeAttachments.Select(f => new HrEmployeeAttachment

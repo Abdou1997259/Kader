@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.DTOs.Response.HR;
+﻿using Kader_System.Domain.Constants.Enums;
+using Kader_System.Domain.DTOs.Response.HR;
 using System.Text.RegularExpressions;
 
 namespace Kader_System.DataAccess.Repositories.HR;
@@ -7,21 +8,26 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
 {
 
     private readonly KaderDbContext _context = context;
+  
     public Response<GetEmployeeByIdResponse> GetEmployeeByIdAsync(int id, string lang)
     {
         try
         {
+            HrDirectoryTypes directoryTypes = new();
+            directoryTypes = HrDirectoryTypes.Attachments;
+            var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
             var employeeAllowances = context.TransAllowances.Where(e => e.EmployeeId == id && !e.IsDeleted);
             var employeeVacations = context.TransVacations.Where(e => e.EmployeeId == id && !e.IsDeleted);
-
-
+        
             var result = from employee in context.Employees
+
+                         join user in context.Users on employee.UserId equals user.Id into userGroup
+                         from usr in userGroup.DefaultIfEmpty()
                          join department in context.Departments on employee.DepartmentId equals department.Id into deptGroup
                          from dept in deptGroup.DefaultIfEmpty()
                          join management in context.Managements on employee.ManagementId equals management.Id into manGroup
                          from man in manGroup.DefaultIfEmpty()
-                         join user in context.Users on employee.UserId equals user.Id into userGroup
-                         from usr in userGroup.DefaultIfEmpty()
+                         
                          join qualification in context.HrQualifications on employee.QualificationId equals qualification.Id into
                              qualGroup
                          from qual in qualGroup.DefaultIfEmpty()
@@ -75,7 +81,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              EmployeeTypeId = employee.EmployeeTypeId,
                              FingerPrintCode = employee.FingerPrintCode,
                              FingerPrintId = employee.FingerPrintId,
-                             FixedSalary = cGroup ==null? employee.FixedSalary :cGroup.FixedSalary,
+                             FixedSalary = cGroup == null ? employee.FixedSalary : cGroup.FixedSalary,
                              GenderId = employee.GenderId,
                              HiringDate = employee.HiringDate,
                              ImmediatelyDate = employee.ImmediatelyDate,
@@ -90,8 +96,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              ReligionId = employee.ReligionId,
                              SalaryPaymentWayId = employee.SalaryPaymentWayId,
                              ShiftId = employee.ShiftId,
-                             TotalSalary = cGroup.FixedSalary +cGroup.HousingAllowance  ,
-                             Username = usr.UserName,
+                             TotalSalary = cGroup.FixedSalary == null ? 0 : cGroup.FixedSalary + cGroup.HousingAllowance == null ? cGroup.HousingAllowance : cGroup.HousingAllowance,                            
                              EmployeeImage = Path.Combine(Modules.Employees, employee.EmployeeImage),
                              qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
                              company_name = lang == Localization.Arabic ? com.NameAr : com.NameEn,
@@ -110,8 +115,22 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              note = employee.Note,
                              shift_name = lang == Localization.Arabic ? sh.Name_ar : sh.Name_en,
                              allowances_sum = employeeAllowances.Any() ? employeeAllowances.AsEnumerable().Sum(a => a.Amount) : 0,
-                             employee_loans_sum = 0
+                             employee_loans_sum = 0,
+                             title_id = usr.CurrentTitleId ==null ? 0:usr.CurrentTitleId,
+                             employee_attachments = employee.ListOfAttachments.Select(s => new EmployeeAttachmentForEmp
+                             {
+                                 FileName = s.FileName,
+                                 Extention = s.FileExtension,
+                                 Id = s.Id,
+                                 file_path = s.FileName != null ? Path.Combine(directoryName, s.FileName) : null,
+                             }).ToList()
+
                          };
+
+
+           
+
+
             if (result?.FirstOrDefault()?.Id == null || result?.FirstOrDefault()?.Id == 0)
             {
                 return new()
@@ -244,8 +263,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
             .ToList();
 
         var query = from emp in employees
-                    join department in context.Departments on emp.DepartmentId equals department.Id into depGroup
-                    from department in depGroup.DefaultIfEmpty()
+
                     join u in context.Users on emp.Added_by equals u.Id into userGroup
                     from u in userGroup.DefaultIfEmpty()
                     join management in context.Managements on emp.ManagementId equals management.Id into mgmtGroup
@@ -260,8 +278,8 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                     from fingerPrint in fingerPrintGroup.DefaultIfEmpty()
                     join nationality in context.Nationalities on emp.NationalityId equals nationality.Id into nationalityGroup
                     from nationality in nationalityGroup.DefaultIfEmpty()
-                    join relegion in context.Relegions on emp.ReligionId equals relegion.Id into relegionGroup
-                    from relegion in relegionGroup.DefaultIfEmpty()
+                    join religion in context.Relegions on emp.ReligionId equals religion.Id into religionGroup
+                    from religion in religionGroup.DefaultIfEmpty()
                     join qual in context.HrQualifications on emp.QualificationId equals qual.Id into qualGroup
                     from qual in qualGroup.DefaultIfEmpty()
                     join vacation in context.Vacations on emp.VacationId equals vacation.Id into vacationGroup
@@ -270,70 +288,67 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                     from company in companyGroup.DefaultIfEmpty()
                     join shift in context.Shifts on emp.ShiftId equals shift.Id into shiftGroup
                     from shift in shiftGroup.DefaultIfEmpty()
+                    join department in context.Departments on emp.DepartmentId equals department.Id into depGroup
+                    from department in depGroup.DefaultIfEmpty()
                     join salary in context.SalaryPaymentWays on emp.SalaryPaymentWayId equals salary.Id into salaryGroup
                     from salary in salaryGroup.DefaultIfEmpty()
                     join gender in context.Genders on emp.GenderId equals gender.Id into genderGroup
                     from gender in genderGroup.DefaultIfEmpty()
-                    join title in context.Titles
-                    on u.CurrentTitleId equals title.Id into titleGroup
-                    from titlegroup in titleGroup.DefaultIfEmpty()
-                    join l in _context.Loans
-                    on emp.Id equals l.EmployeeId
-                    into loanGroup
-                    from lgroup in loanGroup.DefaultIfEmpty()
-
+                    join title in context.Titles on u.CurrentTitleId equals title.Id into titleGroup
+                    from title in titleGroup.DefaultIfEmpty()
+                    join l in _context.Loans on emp.Id equals l.EmployeeId into loanGroup
+                    from l in loanGroup.DefaultIfEmpty()
+                    orderby emp.Id
                     select new EmployeesData()
                     {
-                        Management = lang == Localization.Arabic ? management.NameAr : management.NameEn,
-                        Address = emp.Address,
+                        Management = lang == Localization.Arabic ? (management != null ? management.NameAr : "") : (management != null ? management.NameEn : ""),
+                        Address = emp.Address != null ? emp.Address : "",
                         BirthDate = emp.BirthDate,
-                        ChildrenNumber = emp.ChildrenNumber,
-                        Department = lang == Localization.Arabic ? department.NameAr : department.NameEn,
-                        Email = emp.Email,
-                        MaritalStatus = lang == Localization.Arabic ? marital.Name : marital.NameInEnglish,
-                        EmployeeType = lang == Localization.Arabic ? empType.Name : empType.NameInEnglish,
-                        FingerPrint = lang == Localization.Arabic ? fingerPrint.NameAr : fingerPrint.NameEn,
-                        FingerPrintCode = emp.FingerPrintCode,
-                        FullName = lang == Localization.Arabic ? emp.FullNameAr : emp.FullNameEn,
+                        ChildrenNumber = emp.ChildrenNumber != null ? emp.ChildrenNumber : 0,
+                        Department = lang == Localization.Arabic ? (department != null ? department.NameAr : "") : (department != null ? department.NameEn : ""),
+                        Email = emp.Email != null ? emp.Email : "",
+                        MaritalStatus = lang == Localization.Arabic ? (marital != null ? marital.Name : "") : (marital != null ? marital.NameInEnglish : ""),
+                        EmployeeType = lang == Localization.Arabic ? (empType != null ? empType.Name : "") : (empType != null ? empType.NameInEnglish : ""),
+                        FingerPrint = lang == Localization.Arabic ? (fingerPrint != null ? fingerPrint.NameAr : "") : (fingerPrint != null ? fingerPrint.NameEn : ""),
+                        FingerPrintCode = emp.FingerPrintCode != null ? emp.FingerPrintCode : "",
+                        FullName = lang == Localization.Arabic ? (emp.FullNameAr != null ? emp.FullNameAr : "") : (emp.FullNameEn != null ? emp.FullNameEn : ""),
                         HiringDate = emp.HiringDate,
                         ImmediatelyDate = emp.ImmediatelyDate,
                         IsActive = emp.IsActive,
-                        JobNumber = emp.JobNumber,
-                        NationalId = emp.NationalId,
-                        Nationality = lang == Localization.Arabic ? nationality.Name : nationality.NameInEnglish,
-                        religion_name = lang == Localization.Arabic ? relegion.Name : relegion.NameInEnglish,
-                        Religion = lang == Localization.Arabic ? relegion.Name : relegion.NameInEnglish,
-                        Job = lang == Localization.Arabic ? job.NameAr : job.NameEn,
-                        qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
-                        note = emp.Note,
-                        title_id= titlegroup.Id,
-                        Phone = emp.Phone,
-                        job_name = lang == Localization.Arabic ? job.NameAr : job.NameEn,
-                        vacation_days_count = vacation.TotalBalance,
-                        Username = u.UserName,
-                        Vacation = lang == Localization.Arabic ? vacation.NameAr : vacation.NameEn,
-                        department_name = lang == Localization.Arabic ? department.NameAr : department.NameEn,
-                        management_name = lang == Localization.Arabic ? management.NameAr : management.NameEn,
-                        nationality_name = lang == Localization.Arabic ? nationality.Name : nationality.NameInEnglish,
-                        marital_status_name = lang == Localization.Arabic ? marital.Name : marital.NameInEnglish,
+                        JobNumber = emp.JobNumber != null ? emp.JobNumber : " ",
+                        NationalId = emp.NationalId != null ? emp.NationalId : " ",
+                        Nationality = lang == Localization.Arabic ? (nationality != null ? nationality.Name : "") : (nationality != null ? nationality.NameInEnglish : ""),
+                        Religion = lang == Localization.Arabic ? (religion != null ? religion.Name : "") : (religion != null ? religion.NameInEnglish : ""),
+                        Job = lang == Localization.Arabic ? (job != null ? job.NameAr : "") : (job != null ? job.NameEn : ""),
+                        qualification_name = lang == Localization.Arabic ? (qual != null ? qual.NameAr : "") : (qual != null ? qual.NameEn : ""),
+                        title_id = u != null ? u.CurrentTitleId : 0,
+                        Phone = emp.Phone != null ? emp.Phone : "",
+                        vacation_days_count = vacation != null ? (vacation.TotalBalance != null ? vacation.TotalBalance : 0) : 0,
+                        Username = u != null ? u.UserName : "",
+                        Vacation = lang == Localization.Arabic ? (vacation != null ? vacation.NameAr : "") : (vacation != null ? vacation.NameEn : ""),
+                        department_name = lang == Localization.Arabic ? (department != null ? department.NameAr : "") : (department != null ? department.NameEn : ""),
+                        management_name = lang == Localization.Arabic ? (management != null ? management.NameAr : "") : (management != null ? management.NameEn : ""),
+                        marital_status_name = lang == Localization.Arabic ? (marital != null ? marital.Name : "") : (marital != null ? marital.NameInEnglish : ""),
                         Id = emp.Id,
-                        company_name = lang == Localization.Arabic ? company.NameAr : company.NameEn,
-                        Company = lang == Localization.Arabic ? company.NameAr : company.NameEn,
-                        Shift = lang == Localization.Arabic ? shift.Name_ar : shift.Name_en,
-                        employee_loans_count = loanCounts.Count,
-                        SalaryPaymentWay = lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
-                        Gender = lang == Localization.Arabic ? gender.Name : gender.NameInEnglish,
-                     
+                        company_name = lang == Localization.Arabic ? (company != null ? company.NameAr : "") : (company != null ? company.NameEn : ""),
+                        Shift = lang == Localization.Arabic ? (shift != null ? shift.Name_ar : "") : (shift != null ? shift.Name_en : ""),
+                        employee_loans_count = l != null ? loanCounts.Count  : 0,
+                        SalaryPaymentWay = lang == Localization.Arabic ? (salary != null ? salary.Name : "") : (salary != null ? salary.NameInEnglish : ""),
+                        Gender = lang == Localization.Arabic ? (gender != null ? gender.Name : "") : (gender != null ? gender.NameInEnglish : "")
                     };
+
 
         if (filterSearch != null)
             query = query.Where(filterSearch);
-        if (take.HasValue)
-            query = query.Take(take.Value);
+
         if (skip.HasValue)
             query = query.Skip(skip.Value);
-
-        return query.ToList();
+        if (take.HasValue)
+            query = query.Take(take.Value);
+      
+        var stquery=query.ToQueryString();
+        var data = query.ToList();
+        return data;
 
     }
 

@@ -21,7 +21,7 @@ public class CompanyContractResponse
 {
 
 
-    public string? Contract { get; set; }
+    public string? file_path { get; set; }
     public int company_contract_id {  get; set; }   
     public string file_name { get; set; }
 
@@ -32,7 +32,7 @@ public class CompanyContractResponse
 public class CompanyLicenseResponse
 {
 
-    public string License { get; set; }
+    public string file_path { get; set; }
      
     public int company_license_id { get; set; }
     public string file_name { get; set; }

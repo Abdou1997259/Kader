@@ -104,7 +104,8 @@ namespace Kader_System.Domain.DTOs.Response.HR
         public double allowances_sum { get; set; }
         public double employee_loans_sum { get; set; }
         public int title_id { get; set; }   
-        
+        public  List<EmployeeAttachmentForEmp> employee_attachments { get; set; }
+
     }
 
 
@@ -112,5 +113,13 @@ namespace Kader_System.Domain.DTOs.Response.HR
     {
         public GetEmployeeByIdResponse EmployeeData { get; set; }
         public object LookUps { get; set; }
+    }
+    public class EmployeeAttachmentForEmp
+    {
+        public int Id { get; set; }
+
+        public string FileName { get; set; }
+        public string? Extention { get; set; }
+        public string? file_path { get; set; }
     }
 }
