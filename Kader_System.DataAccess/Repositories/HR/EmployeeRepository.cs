@@ -256,161 +256,97 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
        )
     {
 
-        //var employees = context.Employees.Where(filter);
-        //var loanCounts = _context.Loans
-        //    .GroupBy(l => l.EmployeeId)
-        //    .Select(g => new { EmployeeId = g.Key, Count = g.Count() })
-        //    .ToList();
+        var employees = context.Employees.Where(filter);
+        var loanCounts = _context.Loans
+            .GroupBy(l => l.EmployeeId)
+            .Select(g => new { EmployeeId = g.Key, Count = g.Count() })
+            .ToList();
 
-        //var query = from emp in employees
+        var query = from emp in employees
 
-        //            join u in context.Users on emp.Added_by equals u.Id into userGroup
-        //            from u in userGroup.DefaultIfEmpty()
-        //            join management in context.Managements on emp.ManagementId equals management.Id into mgmtGroup
-        //            from management in mgmtGroup.DefaultIfEmpty()
-        //            join job in context.HrJobs on emp.JobId equals job.Id into jobGroup
-        //            from job in jobGroup.DefaultIfEmpty()
-        //            join marital in context.MaritalStatus on emp.MaritalStatusId equals marital.Id into maritalGroup
-        //            from marital in maritalGroup.DefaultIfEmpty()
-        //            join empType in context.EmployeeTypes on emp.EmployeeTypeId equals empType.Id into empTypeGroup
-        //            from empType in empTypeGroup.DefaultIfEmpty()
-        //            join fingerPrint in context.FingerPrints on emp.FingerPrintId equals fingerPrint.Id into fingerPrintGroup
-        //            from fingerPrint in fingerPrintGroup.DefaultIfEmpty()
-        //            join nationality in context.Nationalities on emp.NationalityId equals nationality.Id into nationalityGroup
-        //            from nationality in nationalityGroup.DefaultIfEmpty()
-        //            join relegion in context.Relegions on emp.ReligionId equals relegion.Id into relegionGroup
-        //            from relegion in relegionGroup.DefaultIfEmpty()
-        //            join qual in context.HrQualifications on emp.QualificationId equals qual.Id into qualGroup
-        //            from qual in qualGroup.DefaultIfEmpty()
-        //            join vacation in context.Vacations on emp.VacationId equals vacation.Id into vacationGroup
-        //            from vacation in vacationGroup.DefaultIfEmpty()
-        //            join company in context.Companys on emp.CompanyId equals company.Id into companyGroup
-        //            from company in companyGroup.DefaultIfEmpty()
-        //            join shift in context.Shifts on emp.ShiftId equals shift.Id into shiftGroup
-        //            from shift in shiftGroup.DefaultIfEmpty()
-        //            join department in context.Departments on emp.DepartmentId equals department.Id into depGroup
-        //            from department in depGroup.DefaultIfEmpty()
-        //            join salary in context.SalaryPaymentWays on emp.SalaryPaymentWayId equals salary.Id into salaryGroup
-        //            from salary in salaryGroup.DefaultIfEmpty()
-        //            join gender in context.Genders on emp.GenderId equals gender.Id into genderGroup
-        //            from gender in genderGroup.DefaultIfEmpty()
-        //            join title in context.Titles
-        //            on u.CurrentTitleId equals title.Id into titleGroup
-        //            from titlegroup in titleGroup.DefaultIfEmpty()
-        //            join l in _context.Loans
-        //            on emp.Id equals l.EmployeeId
-        //            into loanGroup
-        //            from lgroup in loanGroup.DefaultIfEmpty()
-
-        //            select new EmployeesData()
-        //            {
-        //                //Management = lang == Localization.Arabic ? management.NameAr : management.NameEn,
-        //                //Address = emp.Address,
-        //                //BirthDate = emp.BirthDate,
-        //                //ChildrenNumber = emp.ChildrenNumber,
-        //                //Department = lang == Localization.Arabic ? department.NameAr : department.NameEn,
-        //                //Email = emp.Email,
-        //                //MaritalStatus = lang == Localization.Arabic ? marital.Name : marital.NameInEnglish,
-        //                //EmployeeType = lang == Localization.Arabic ? empType.Name : empType.NameInEnglish,
-        //                //FingerPrint = lang == Localization.Arabic ? fingerPrint.NameAr : fingerPrint.NameEn,
-        //                //FingerPrintCode = emp.FingerPrintCode,
-        //                //FullName = lang == Localization.Arabic ? emp.FullNameAr : emp.FullNameEn,
-        //                //HiringDate = emp.HiringDate,
-        //                //ImmediatelyDate = emp.ImmediatelyDate,
-        //                //IsActive = emp.IsActive,
-        //                //JobNumber = emp.JobNumber==null ? " " :emp.JobNumber,
-        //                //NationalId = emp.NationalId ==null ? " ":emp.NationalId,
-        //                //Nationality = lang == Localization.Arabic ? nationality.Name : nationality.NameInEnglish,
-        //                //religion_name = lang == Localization.Arabic ? relegion.Name : relegion.NameInEnglish,
-        //                //Religion = lang == Localization.Arabic ? relegion.Name : relegion.NameInEnglish,
-        //                //Job = lang == Localization.Arabic ? job.NameAr : job.NameEn,
-        //                //qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
-        //                //title_id = titlegroup.Id,
-        //                //Phone = emp.Phone,
-        //                job_name = lang == Localization.Arabic ? job.NameAr : job.NameEn,
-        //                vacation_days_count = vacation.TotalBalance == null ? 0 : vacation.TotalBalance,
-        //                Username = u.UserName,
-        //                Vacation = lang == Localization.Arabic ? vacation.NameAr : vacation.NameEn,
-        //                department_name = lang == Localization.Arabic ? department.NameAr : department.NameEn,
-        //                management_name = lang == Localization.Arabic ? management.NameAr : management.NameEn,
-        //                //nationality_name = lang == Localization.Arabic ? nationality.Name : nationality.NameInEnglish,
-        //                marital_status_name = lang == Localization.Arabic ? marital.Name : marital.NameInEnglish,
-        //                Id = emp.Id,
-        //                company_name = lang == Localization.Arabic ? company.NameAr : company.NameEn,
-        //                Company = lang == Localization.Arabic ? company.NameAr : company.NameEn,
-        //                Shift = lang == Localization.Arabic ? shift.Name_ar : shift.Name_en,
-        //                employee_loans_count = loanCounts.Count,
-        //                SalaryPaymentWay = lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
-        //                Gender = lang == Localization.Arabic ? gender.Name : gender.NameInEnglish,
-
-        //            };
-        var query = _context.Employees.Include(x => x.User)
-             .Include(x => x.TransLoans)
-             .ThenInclude(x => x.TransLoanDetails)
-             .Include(x => x.Nationality)
-             .Include(x => x.Job)
-             .Include(x => x.Shift)
-             .Include(x => x.Management)
-             .ThenInclude(x => x.Company)
-             .Include(x => x.Vacation)
-             .Include(x => x.Gender)
-             .Include(x => x.MaritalStatus)
-             .Include(x => x.EmployeeType)
-             .Include(x => x.FingerPrint)
-             .Include(x=>x.Religion)
-             .Include(x=>x.Qualification)
-             .Include(x=>x.SalaryPaymentWay)
-             
-             .Select(x => new EmployeesData
-             {
-                 Management = lang == Localization.Arabic ? (x.Management != null ? x.Management.NameAr : "") : (x.Management != null ? x.Management.NameEn : ""),
-                 Address = x.Address != null ? x.Address : "",
-                 BirthDate = x.BirthDate,
-                 ChildrenNumber = x.ChildrenNumber != null ? x.ChildrenNumber : 0,
-                 Department = lang == Localization.Arabic ? (x.Department != null ? x.Department.NameAr : "") : (x.Department != null ? x.Department.NameEn : ""),
-                 Email = x.Email != null ? x.Email : "",
-                 MaritalStatus = lang == Localization.Arabic ? (x.MaritalStatus != null ? x.MaritalStatus.Name : "") : (x.MaritalStatus != null ? x.MaritalStatus.NameInEnglish : ""),
-                 EmployeeType = lang == Localization.Arabic ? (x.EmployeeType != null ? x.EmployeeType.Name : "") : (x.EmployeeType != null ? x.EmployeeType.NameInEnglish : ""),
-                 FingerPrint = lang == Localization.Arabic ? (x.FingerPrint != null ? x.FingerPrint.NameAr : "") : (x.FingerPrint != null ? x.FingerPrint.NameEn : ""),
-                 FingerPrintCode = x.FingerPrintCode != null ? x.FingerPrintCode : "",
-                 FullName = lang == Localization.Arabic ? (x.FullNameAr != null ? x.FullNameAr : "") : (x.FullNameEn != null ? x.FullNameEn : ""),
-                 HiringDate = x.HiringDate,
-                 ImmediatelyDate = x.ImmediatelyDate,
-                 IsActive = x.IsActive,
-                 JobNumber = x.JobNumber != null ? x.JobNumber : " ",
-                 NationalId = x.NationalId != null ? x.NationalId : " ",
-                 Nationality = lang == Localization.Arabic ? (x.Nationality != null ? x.Nationality.Name : "") : (x.Nationality != null ? x.Nationality.NameInEnglish : ""),
-                 religion_name = lang == Localization.Arabic ? (x.Religion != null ? x.Religion.Name : "") : (x.Religion != null ? x.Religion.NameInEnglish : ""),
-                 Religion = lang == Localization.Arabic ? (x.Religion != null ? x.Religion.Name : "") : (x.Religion != null ? x.Religion.NameInEnglish : ""),
-                 Job = lang == Localization.Arabic ? (x.Job != null ? x.Job.NameAr : "") : (x.Job != null ? x.Job.NameEn : ""),
-                 qualification_name = lang == Localization.Arabic ? (x.Qualification != null ? x.Qualification.NameAr : "") : (x.Qualification != null ? x.Qualification.NameEn : ""),
-                 title_id = x.User != null ? x.User.CurrentTitleId : 0,
-                 Phone = x.Phone != null ? x.Phone : "",
-                 job_name = lang == Localization.Arabic ? (x.Job != null ? x.Job.NameAr : "") : (x.Job != null ? x.Job.NameEn : ""),
-                 vacation_days_count = x.Vacation != null ? (x.Vacation.TotalBalance != null ? x.Vacation.TotalBalance : 0) : 0,
-                 Username = x.User != null ? x.User.UserName : "",
-                 Vacation = lang == Localization.Arabic ? (x.Vacation != null ? x.Vacation.NameAr : "") : (x.Vacation != null ? x.Vacation.NameEn : ""),
-                 department_name = lang == Localization.Arabic ? (x.Department != null ? x.Department.NameAr : "") : (x.Department != null ? x.Department.NameEn : ""),
-                 management_name = lang == Localization.Arabic ? (x.Management != null ? x.Management.NameAr : "") : (x.Management != null ? x.Management.NameEn : ""),
-                 marital_status_name = lang == Localization.Arabic ? (x.MaritalStatus != null ? x.MaritalStatus.Name : "") : (x.MaritalStatus != null ? x.MaritalStatus.NameInEnglish : ""),
-                 Id = x.Id,
-                 company_name = lang == Localization.Arabic ? (x.Company != null ? x.Company.NameAr : "") : (x.Company != null ? x.Company.NameEn : ""),
-                 Company = lang == Localization.Arabic ? (x.Company != null ? x.Company.NameAr : "") : (x.Company != null ? x.Company.NameEn : ""),
-                 Shift = lang == Localization.Arabic ? (x.Shift != null ? x.Shift.Name_ar : "") : (x.Shift != null ? x.Shift.Name_en : ""),
-                 employee_loans_count = x.TransLoans != null ? x.TransLoans.Count : 0,
-                 SalaryPaymentWay = lang == Localization.Arabic ? (x.SalaryPaymentWay != null ? x.SalaryPaymentWay.Name : "") : (x.SalaryPaymentWay != null ? x.SalaryPaymentWay.NameInEnglish : ""),
-                 Gender = lang == Localization.Arabic ? (x.Gender != null ? x.Gender.Name : "") : (x.Gender != null ? x.Gender.NameInEnglish : "")
+                    join u in context.Users on emp.Added_by equals u.Id into userGroup
+                    from u in userGroup.DefaultIfEmpty()
+                    join management in context.Managements on emp.ManagementId equals management.Id into mgmtGroup
+                    from management in mgmtGroup.DefaultIfEmpty()
+                    join job in context.HrJobs on emp.JobId equals job.Id into jobGroup
+                    from job in jobGroup.DefaultIfEmpty()
+                    join marital in context.MaritalStatus on emp.MaritalStatusId equals marital.Id into maritalGroup
+                    from marital in maritalGroup.DefaultIfEmpty()
+                    join empType in context.EmployeeTypes on emp.EmployeeTypeId equals empType.Id into empTypeGroup
+                    from empType in empTypeGroup.DefaultIfEmpty()
+                    join fingerPrint in context.FingerPrints on emp.FingerPrintId equals fingerPrint.Id into fingerPrintGroup
+                    from fingerPrint in fingerPrintGroup.DefaultIfEmpty()
+                    join nationality in context.Nationalities on emp.NationalityId equals nationality.Id into nationalityGroup
+                    from nationality in nationalityGroup.DefaultIfEmpty()
+                    join religion in context.Relegions on emp.ReligionId equals religion.Id into religionGroup
+                    from religion in religionGroup.DefaultIfEmpty()
+                    join qual in context.HrQualifications on emp.QualificationId equals qual.Id into qualGroup
+                    from qual in qualGroup.DefaultIfEmpty()
+                    join vacation in context.Vacations on emp.VacationId equals vacation.Id into vacationGroup
+                    from vacation in vacationGroup.DefaultIfEmpty()
+                    join company in context.Companys on emp.CompanyId equals company.Id into companyGroup
+                    from company in companyGroup.DefaultIfEmpty()
+                    join shift in context.Shifts on emp.ShiftId equals shift.Id into shiftGroup
+                    from shift in shiftGroup.DefaultIfEmpty()
+                    join department in context.Departments on emp.DepartmentId equals department.Id into depGroup
+                    from department in depGroup.DefaultIfEmpty()
+                    join salary in context.SalaryPaymentWays on emp.SalaryPaymentWayId equals salary.Id into salaryGroup
+                    from salary in salaryGroup.DefaultIfEmpty()
+                    join gender in context.Genders on emp.GenderId equals gender.Id into genderGroup
+                    from gender in genderGroup.DefaultIfEmpty()
+                    join title in context.Titles on u.CurrentTitleId equals title.Id into titleGroup
+                    from title in titleGroup.DefaultIfEmpty()
+                    join l in _context.Loans on emp.Id equals l.EmployeeId into loanGroup
+                    from l in loanGroup.DefaultIfEmpty()
+                    orderby emp.Id
+                    select new EmployeesData()
+                    {
+                        Management = lang == Localization.Arabic ? (management != null ? management.NameAr : "") : (management != null ? management.NameEn : ""),
+                        Address = emp.Address != null ? emp.Address : "",
+                        BirthDate = emp.BirthDate,
+                        ChildrenNumber = emp.ChildrenNumber != null ? emp.ChildrenNumber : 0,
+                        Department = lang == Localization.Arabic ? (department != null ? department.NameAr : "") : (department != null ? department.NameEn : ""),
+                        Email = emp.Email != null ? emp.Email : "",
+                        MaritalStatus = lang == Localization.Arabic ? (marital != null ? marital.Name : "") : (marital != null ? marital.NameInEnglish : ""),
+                        EmployeeType = lang == Localization.Arabic ? (empType != null ? empType.Name : "") : (empType != null ? empType.NameInEnglish : ""),
+                        FingerPrint = lang == Localization.Arabic ? (fingerPrint != null ? fingerPrint.NameAr : "") : (fingerPrint != null ? fingerPrint.NameEn : ""),
+                        FingerPrintCode = emp.FingerPrintCode != null ? emp.FingerPrintCode : "",
+                        FullName = lang == Localization.Arabic ? (emp.FullNameAr != null ? emp.FullNameAr : "") : (emp.FullNameEn != null ? emp.FullNameEn : ""),
+                        HiringDate = emp.HiringDate,
+                        ImmediatelyDate = emp.ImmediatelyDate,
+                        IsActive = emp.IsActive,
+                        JobNumber = emp.JobNumber != null ? emp.JobNumber : " ",
+                        NationalId = emp.NationalId != null ? emp.NationalId : " ",
+                        Nationality = lang == Localization.Arabic ? (nationality != null ? nationality.Name : "") : (nationality != null ? nationality.NameInEnglish : ""),
+                        Religion = lang == Localization.Arabic ? (religion != null ? religion.Name : "") : (religion != null ? religion.NameInEnglish : ""),
+                        Job = lang == Localization.Arabic ? (job != null ? job.NameAr : "") : (job != null ? job.NameEn : ""),
+                        qualification_name = lang == Localization.Arabic ? (qual != null ? qual.NameAr : "") : (qual != null ? qual.NameEn : ""),
+                        title_id = u != null ? u.CurrentTitleId : 0,
+                        Phone = emp.Phone != null ? emp.Phone : "",
+                        vacation_days_count = vacation != null ? (vacation.TotalBalance != null ? vacation.TotalBalance : 0) : 0,
+                        Username = u != null ? u.UserName : "",
+                        Vacation = lang == Localization.Arabic ? (vacation != null ? vacation.NameAr : "") : (vacation != null ? vacation.NameEn : ""),
+                        department_name = lang == Localization.Arabic ? (department != null ? department.NameAr : "") : (department != null ? department.NameEn : ""),
+                        management_name = lang == Localization.Arabic ? (management != null ? management.NameAr : "") : (management != null ? management.NameEn : ""),
+                        marital_status_name = lang == Localization.Arabic ? (marital != null ? marital.Name : "") : (marital != null ? marital.NameInEnglish : ""),
+                        Id = emp.Id,
+                        company_name = lang == Localization.Arabic ? (company != null ? company.NameAr : "") : (company != null ? company.NameEn : ""),
+                        Shift = lang == Localization.Arabic ? (shift != null ? shift.Name_ar : "") : (shift != null ? shift.Name_en : ""),
+                        employee_loans_count = l != null ? loanCounts.Count  : 0,
+                        SalaryPaymentWay = lang == Localization.Arabic ? (salary != null ? salary.Name : "") : (salary != null ? salary.NameInEnglish : ""),
+                        Gender = lang == Localization.Arabic ? (gender != null ? gender.Name : "") : (gender != null ? gender.NameInEnglish : "")
+                    };
 
 
-             }).OrderBy(x => x.Id) // Specify ordering here
-     .AsSplitQuery(); ;
         if (filterSearch != null)
             query = query.Where(filterSearch);
-        if (take.HasValue)
-            query = query.Take(take.Value);
+
         if (skip.HasValue)
             query = query.Skip(skip.Value);
-        var stquery = query.ToQueryString();
+        if (take.HasValue)
+            query = query.Take(take.Value);
+      
+        var stquery=query.ToQueryString();
         var data = query.ToList();
         return data;
 

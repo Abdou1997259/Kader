@@ -189,6 +189,7 @@ namespace Kader_System.Services.Services.HR
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
+
             var result = new GetAllEmployeesResponse
             {
                 TotalRecords = totalRecords,
