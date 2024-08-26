@@ -255,6 +255,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
         int? take = null, string lang = "ar"
        )
     {
+        
 
         var employees = context.Employees.Where(filter);
         var loanCounts = _context.Loans
@@ -341,6 +342,14 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                         Gender = lang == Localization.Arabic ? (gender != null ? gender.Name : "") : (gender != null ? gender.NameInEnglish : "")
                     };
 
+        //Expression<Func<EmployeesData, bool>> filterSearch = x =>
+        //        (string.IsNullOrEmpty(model.Word)
+        //         || x.FullName.Contains(model.Word)
+        //         || x.Job.Contains(model.Word)
+        //         || x.Department.Contains(model.Word)
+        //         || x.Nationality.Contains(model.Word)
+        //         || x.Company.Contains(model.Word)
+        //         || x.Management.Contains(model.Word));
 
         if (filterSearch != null)
             query = query.Where(filterSearch);

@@ -194,12 +194,12 @@ namespace Kader_System.Services.Services.HR
 
             Expression<Func<EmployeesData, bool>> filterSearch = x =>
                 (string.IsNullOrEmpty(model.Word)
-                 || x.FullName.Contains(model.Word)
-                 || x.Job.Contains(model.Word)
-                 || x.Department.Contains(model.Word)
-                 || x.Nationality.Contains(model.Word)
-                 || x.Company.Contains(model.Word)
-                 || x.Management.Contains(model.Word));
+                 || x.FullName.Contains(model.Word));
+                 //|| x.Job.Contains(model.Word)
+                 //|| x.Department.Contains(model.Word)
+                 //|| x.Nationality.Contains(model.Word)
+                 //|| x.Company.Contains(model.Word)
+                 //|| x.Management.Contains(model.Word));
 
             var totalRecords = await unitOfWork.Employees.CountAsync(filter: filter);
             int page = 1;
