@@ -34,7 +34,8 @@ namespace Kader_System.Api.Areas.HR.Controllers
             var response =  employeeService.GetEmployeeById(id,requestService.GetRequestHeaderLanguage);
 
             var lookUps =await employeeService.GetEmployeesLookUpsData(requestService.GetRequestHeaderLanguage);
-
+            var screenLookup = await employeeService.GetDocuments(id);
+            response.LookUpsScreen = screenLookup.Data;
             response.LookUps=lookUps.Data;
 
             if (response.Check)

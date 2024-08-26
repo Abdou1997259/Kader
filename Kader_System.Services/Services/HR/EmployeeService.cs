@@ -60,7 +60,29 @@ namespace Kader_System.Services.Services.HR
             };
         }
 
+        public async Task<Response<object>> GetDocuments(int empId)
+        {
+            HrDirectoryTypes directoryTypes = new();
+            directoryTypes = HrDirectoryTypes.Attachments;
 
+            var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+           var pathOfroot=fileServer.GetFilePath(directoryName);
+            var attachments = unitOfWork.EmployeeAttachments.GetSpecificSelectAsync(x => x.EmployeeId == empId, x => new
+            {
+                id=x.Id,
+                file_name = x.FileName,
+                file_extention=x.FileExtension,
+                file_path=Path.Combine(pathOfroot, x.FileName),
+            });
+
+
+            return new Response<object>
+            {
+                Data= attachments,
+            };
+
+
+        }
         public async Task<Response<GetEmployeeByIdResponse>> GetEmployeeByIdAsync(int id, string lang)
         {
             HrDirectoryTypes directoryTypes = new();
@@ -417,38 +439,6 @@ namespace Kader_System.Services.Services.HR
           });
 
 
-                var bytes = Encoding.UTF8.GetBytes(" Employee 1 ");
-
-        
-                var docs = new List<object>()
-        {
-              new
-              {
-                  id=1,
-                  document_name="file",
-                  number=41,
-                  doc_file=new FileContentResult(bytes ,"application/pdf"),
-
-              },
-              new
-              {
-                  id=2,
-                  document_name="file2",
-                  number=42,
-                  doc_file=new FileContentResult(bytes ,"application/pdf"),
-
-              },
-               new
-              {
-                  id=3,
-                  document_name="file3",
-                  number=43,
-                  doc_file=new FileContentResult(bytes ,"application/pdf"),
-
-              }
-
-
-        };
 
                 return new Response<EmployeesLookUps>()
                 {
@@ -472,7 +462,7 @@ namespace Kader_System.Services.Services.HR
                         shifts = shifts.ToArray(),
                         vacations = vacations.ToArray(),
                         titles= titles.ToArray(),
-                        emp_docs= docs.ToArray()
+                      
                     }
                 };
             }
@@ -1020,6 +1010,8 @@ namespace Kader_System.Services.Services.HR
                 };
             }
         }
+
+     
         #endregion
 
 

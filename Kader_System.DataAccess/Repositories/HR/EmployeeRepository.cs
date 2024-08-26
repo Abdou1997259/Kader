@@ -298,6 +298,10 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                     from title in titleGroup.DefaultIfEmpty()
                     join l in _context.Loans on emp.Id equals l.EmployeeId into loanGroup
                     from l in loanGroup.DefaultIfEmpty()
+                    join att in _context.EmployeeAttachments
+                    on emp.Id equals att.EmployeeId
+                    into attagroup
+                    from attaGroup in attagroup.DefaultIfEmpty()
                     orderby emp.Id
                     select new EmployeesData()
                     {

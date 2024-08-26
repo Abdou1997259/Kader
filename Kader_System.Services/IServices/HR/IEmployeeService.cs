@@ -14,7 +14,8 @@ public interface IEmployeeService
     Task<Response<CreateEmployeeRequest>> RestoreEmployeeAsync(int id);
     Task<Response<string>> UpdateActiveOrNotEmployeeAsync(int id);
     Task<Response<string>> DeleteEmployeeAsync(int id);
-    Task<Response<EmployeesLookUps>> GetEmployeesLookUpsData(string lang);
+    Task<Response<EmployeesLookUps>> GetEmployeesLookUpsData(string lang );
     Task<Response<object>> GetEmployeesDataNameAndIdAsLookUp(string lang);
+    Task<Response<object>> GetDocuments(int empId);
 
 }
