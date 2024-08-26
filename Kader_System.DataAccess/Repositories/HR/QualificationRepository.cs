@@ -35,6 +35,7 @@ public class QualificationRepository(KaderDbContext context) : BaseRepository<Hr
 
         var groupedQuery= query
             .GroupBy(x => new { x.QualificationEmployee.Qualification.Id, x.QualificationEmployee.Qualification.NameAr, x.QualificationEmployee.Qualification.NameEn })
+         
             .Select(group => new QualificationData()
             {
                 Id = group.Key.Id,
@@ -43,10 +44,17 @@ public class QualificationRepository(KaderDbContext context) : BaseRepository<Hr
                 AddedByUser = group.FirstOrDefault()!.User!.UserName,
             });
         var groupedQuery2 = query.ToQueryString();
-        if (take.HasValue)
-            groupedQuery = groupedQuery.Take(take.Value);
+        //if (take.HasValue)
+        //    groupedQuery = groupedQuery.Take(take.Value);
+        //if (skip.HasValue)
+        //    groupedQuery = groupedQuery.Skip(skip.Value);
+
+        //After Modify 
         if (skip.HasValue)
             groupedQuery = groupedQuery.Skip(skip.Value);
+        if (take.HasValue)
+            groupedQuery = groupedQuery.Take(take.Value);
+
         return groupedQuery.ToList();
 
     }

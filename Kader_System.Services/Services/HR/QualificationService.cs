@@ -1,4 +1,6 @@
 ﻿using Kader_System.Domain.DTOs;
+using Kader_System.Domain.DTOs.Response.EmployeesRequests;
+using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Services.Services.HR;
 
@@ -40,13 +42,15 @@ public class QualificationService(IUnitOfWork unitOfWork, IStringLocalizer<Share
         };
     }
 
-    public async Task<Response<HrGetAllQualificationsResponse>> GetAllQualificationsAsync(string lang, HrGetAllFiltrationsForQualificationsRequest model,string host)
+    public async Task<Response<HrGetAllQualificationsResponse>> GetAllQualificationsAsync(string lang, HrGetAllFiltrationsForQualificationsRequest model, string host)
     {
         Expression<Func<HrQualification, bool>> filter = x => x.IsDeleted == model.IsDeleted
             && (string.IsNullOrEmpty(model.Word) || x.NameAr.Contains(model.Word)
                                                  || x.NameEn.Contains(model.Word)
                                                );
-        var totalRecords = await _unitOfWork.Qualifications.CountAsync(filter: filter);
+
+        var totalRecords = await unitOfWork.Qualifications.CountAsync(filter: filter);
+
         int page = 1;
         int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
         if (model.PageNumber < 1)
@@ -58,12 +62,12 @@ public class QualificationService(IUnitOfWork unitOfWork, IStringLocalizer<Share
             .ToList();
         var result = new HrGetAllQualificationsResponse
         {
-            TotalRecords =  totalRecords,
+            TotalRecords = totalRecords,
 
-            Items =  _unitOfWork.Qualifications.GetQualificationInfo(qualFilter: filter,
+            Items = _unitOfWork.Qualifications.GetQualificationInfo(qualFilter: filter,
                  take: model.PageSize,
                  skip: (model.PageNumber - 1) * model.PageSize,
-                 lang:lang
+                 lang: lang
                 ),
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,
@@ -98,6 +102,61 @@ public class QualificationService(IUnitOfWork unitOfWork, IStringLocalizer<Share
             Data = result,
             Check = true
         };
+
+        #region hashcode
+        //var totalRecords = await _unitOfWork.Qualifications.CountAsync(filter: filter);
+        //int page = 1;
+        //int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+        //if (model.PageNumber < 1)
+        //    page = 1;
+        //else
+        //    page = model.PageNumber;
+        //var pageLinks = Enumerable.Range(1, totalPages)
+        //    .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+        //    .ToList();
+        //var result = new HrGetAllQualificationsResponse
+        //{
+        //    TotalRecords =  totalRecords,
+
+        //    Items =  _unitOfWork.Qualifications.GetQualificationInfo(qualFilter: filter,
+        //         take: model.PageSize,
+        //         skip: (model.PageNumber - 1) * model.PageSize,
+        //         lang:lang
+        //        ),
+        //    FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
+        //    From = (page - 1) * model.PageSize + 1,
+        //    To = Math.Min(page * model.PageSize, totalRecords),
+        //    LastPage = totalPages,
+        //    LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
+        //    PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
+        //    NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
+        //    Path = host,
+        //    PerPage = model.PageSize,
+        //    Links = pageLinks,
+        //    CurrentPage = page
+        //};
+
+        //if (result.TotalRecords is 0)
+        //{
+        //    string resultMsg = _sharLocalizer[Localization.NotFoundData];
+
+        //    return new()
+        //    {
+        //        Data = new()
+        //        {
+        //            Items = []
+        //        },
+        //        Error = resultMsg,
+        //        Msg = resultMsg
+        //    };
+        //}
+
+        //return new()
+        //{
+        //    Data = result,
+        //    Check = true
+        //};
+        #endregion
     }
 
     public async Task<Response<HrCreateQualificationRequest>> CreateQualificationAsync(HrCreateQualificationRequest model)
