@@ -11,12 +11,12 @@ namespace Kader_System.Services.Services.AppServices
         private readonly IHttpContextService _httpContextService;
         private readonly IRequestService _requestService;
         private readonly IStringLocalizer<SharedResource> _stringLocalizer;
-        public FileServer(IHttpContextService httpContextService, IRequestService requestService,IStringLocalizer<SharedResource> stringLocalizer)
+        public FileServer(IHttpContextService httpContextService, IRequestService requestService, IStringLocalizer<SharedResource> stringLocalizer)
         {
             _httpContextService = httpContextService;
             serverPath = _httpContextService.GetPhysicalServerPath();
             _requestService = requestService;
-            _stringLocalizer = stringLocalizer; 
+            _stringLocalizer = stringLocalizer;
         }
 
         public async Task<FileStreamResult> DownloadFileAsync(params string[] fileParts)
@@ -72,11 +72,25 @@ namespace Kader_System.Services.Services.AppServices
             if (File.Exists(filePath))
                 File.Delete(filePath);
         }
+        public void RemoveFiles(string ModuleName, List<string> fileNames)
+        {
+            if (fileNames is null)
+                return;
 
+            foreach (var file in fileNames)
+            {
+                if (file is null)
+                    continue;
+                var filePath = Path.Combine(serverPath, ModuleName, file);
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+            }
+
+        }
         public void RemoveDirectory(string folderName)
         {
             var directoryPath = Path.Combine(serverPath, folderName);
-            if(Directory.Exists(directoryPath)) 
+            if (Directory.Exists(directoryPath))
                 Directory.Delete(directoryPath, true);
 
         }
@@ -100,13 +114,16 @@ namespace Kader_System.Services.Services.AppServices
             #endregion
         }
 
-        public async Task<List<GetFileNameAndExtension>> UploadFilesAsync(string moduleName, IFormFileCollection files)
+        public async Task<List<GetFileNameAndExtension>> UploadFilesAsync(string moduleName, IFormFileCollection files, List<int> FileIds = null)
         {
             List<GetFileNameAndExtension> fileNames = new();
-            foreach (var file in files)
+            for (int i = 0; i < files.Count; i++)
             {
-                var fileName = await UploadFileAsync(moduleName, file);
-                fileNames.Add(new GetFileNameAndExtension { FileName = fileName,FileExtension = Path.GetExtension(fileName) });
+                if (files[i] is null)
+                    fileNames.Add(new GetFileNameAndExtension { FileName = null, FileExtension = null, fileId = FileIds != null ? FileIds[i] : null });
+
+                var fileName = await UploadFileAsync(moduleName, files[i]);
+                fileNames.Add(new GetFileNameAndExtension { FileName = fileName, FileExtension = Path.GetExtension(fileName), fileId = FileIds != null ? FileIds[i] : null });
             }
             return fileNames;
         }

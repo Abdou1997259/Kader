@@ -5,8 +5,9 @@ namespace Kader_System.DataAccess.Repositories.HR;
 
 public class CompanyRepository(KaderDbContext context) : BaseRepository<HrCompany>(context), ICompanyRepository
 {
-    private readonly KaderDbContext _context=context;   
-    public async Task<IEnumerable<EmployeeOfCompanyResponse>> GetEmployeeOfCompany(int companyId,string lang ,Expression<Func<EmployeeOfCompanyResponse, bool>>? filter,int? take,int? skip)
+    private readonly KaderDbContext _context = context;
+
+    public async Task<IEnumerable<EmployeeOfCompanyResponse>> GetEmployeeOfCompany(int companyId, string lang, Expression<Func<EmployeeOfCompanyResponse, bool>>? filter, int? take, int? skip)
     {
 
         var query = from c in _context.Companys
@@ -20,8 +21,8 @@ public class CompanyRepository(KaderDbContext context) : BaseRepository<HrCompan
                      on e.JobId equals j.Id
                     join n in _context.Nationalities
                     on e.NationalityId equals n.Id
-                 
-                    where c.Id == companyId  && e.IsDeleted == false
+
+                    where c.Id == companyId && e.IsDeleted == false
                     select new EmployeeOfCompanyResponse
                     {
                         id = companyId,
@@ -35,10 +36,10 @@ public class CompanyRepository(KaderDbContext context) : BaseRepository<HrCompan
         if (filter is not null)
             query = query.Where(filter);
 
-        if(take.HasValue )
-           query= query.Take(take.Value);
-        if(skip.HasValue)
-                query = query.Skip(skip.Value);
+        if (take.HasValue)
+            query = query.Take(take.Value);
+        if (skip.HasValue)
+            query = query.Skip(skip.Value);
         return await query.ToListAsync();
 
 
