@@ -803,13 +803,19 @@ namespace Kader_System.Services.Services.HR
                     {
                         VisiblePassword = model.password,
                         Email = obj.Email,
+                        CompanyId = model.CompanyId.ToString(),
+                        CurrentCompanyId = model.CompanyId,
                         ConcurrencyStamp = "1",
                         NormalizedEmail = obj.Email.ToUpper(),
                         PhoneNumber = obj.Phone,
                         IsActive = true,
-                        CurrentTitleId=model.title_id,
+                        CurrentTitleId = model.title_id,
+                        FullName =obj.FullNameAr, 
+                        CompanyYearId= CurrentCompanyYearId,
                         PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, model.password),
                         Id = Guid.NewGuid().ToString(),
+                        TitleId=model.title_id.ToString(),
+                        
                         UserName = model.username,
                         NormalizedUserName = model.username.ToUpper(),
 
