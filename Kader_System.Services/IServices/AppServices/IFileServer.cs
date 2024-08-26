@@ -21,13 +21,20 @@ namespace Kader_System.Services.IServices.AppServices
         /// </summary>
         /// <param name="moduleName"></param>
         /// <param name="files"></param>
-        /// <returns>new file name with GUID</returns>
-        public Task<List<GetFileNameAndExtension>> UploadFilesAsync(string moduleName, IFormFileCollection files);
+        /// <param name="FileIds"></param>
+        /// <returns>new list of file names with GUID</returns>
+        public Task<List<GetFileNameAndExtension>> UploadFilesAsync(string moduleName, IFormFileCollection files, List<int> FileIds = null);
         /// <summary>
         /// Remove file from wwwroot
         /// </summary>
         /// <param name="paths"></param>
         public void RemoveFile(params string[] paths);
+        /// <summary>
+        /// Remove files in Directory by filename
+        /// </summary>
+        /// <param name="ModuleName"></param>
+        /// <param name="fileNames"></param>
+        public void RemoveFiles(string ModuleName, List<string> fileNames);
 
         /// <summary>
         /// Remove all files in Directory from wwwroot

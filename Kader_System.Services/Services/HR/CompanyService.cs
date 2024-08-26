@@ -1,8 +1,10 @@
-﻿using Kader_System.Domain.DTOs;
+﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.DTOs;
 using Kader_System.Domain.Models.HR;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.Services.AppServices;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,8 +13,6 @@ namespace Kader_System.Services.Services.HR;
 public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : ICompanyService
 {
     private HrCompany _instance;
-
-
 
     #region Retrieve
 
@@ -82,7 +82,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                      Company_owner = x.CompanyOwner,
                      Company_type_name = lang == Localization.Arabic ? x.CompanyType.Name : x.CompanyType.NameInEnglish,
                      Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
-                     Employees_count = x.HrManagements.SelectMany(x => x.HrDepartments).SelectMany(x => x.Employees).Where(p=>p.CompanyId==x.Id).Count()
+                     Employees_count = x.HrManagements.SelectMany(x => x.HrDepartments).SelectMany(x => x.Employees).Count()
                  }, orderBy: x =>
                    x.OrderByDescending(x => x.Id), includeProperties: "HrManagements.HrDepartments.Employees")).ToList(),
             CurrentPage = model.PageNumber,
@@ -184,7 +184,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         catch (Exception ex)
         {
             // Handle exceptions (e.g., file access issues)
-         
+
             return new Response<FileResult>
             {
                 Msg = $": {ex.Message}",
@@ -192,7 +192,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             };
         }
 
-       
+
     }
 
     public async Task<Response<FileResult>> DownloadCompanylicense(int id)
@@ -260,7 +260,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         catch (Exception ex)
         {
             // Handle exceptions (e.g., file access issues)
-         
+
             return new Response<FileResult>
             {
                 Msg = $": {ex.Message}",
@@ -270,7 +270,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
     }
 
     public async Task<Response<HrGetCompanyByIdResponse>> GetCompanyByIdAsync(int id, string lang)
-     {
+    {
         var obj = await unitOfWork.Companies.GetFirstOrDefaultAsync(filter => filter.Id == id,
             includeProperties: $"{nameof(_instance.CompanyType)},{nameof(_instance.ListOfsContract)}," +
                               $"{nameof(_instance.Licenses)}");
@@ -310,7 +310,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 {
                     file_path = _fileServer.GetFilePath(directoryCompanyContractsName, c.CompanyContracts),
                     company_contract_id = c.Id,
-                    file_name=c.CompanyContracts,
+                    file_name = c.CompanyContracts,
                     add_date = c.Add_date,
                     file_extension = c.CompanyContractsExtension
 
@@ -321,7 +321,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
 
                     file_path = _fileServer.GetFilePath(directoryCompanyLicesnsesName, l.LicenseName),
                     company_license_id = l.Id,
-                    file_name=l.LicenseName,
+                    file_name = l.LicenseName,
                     add_date = l.Add_date,
                     file_extension = l.LicenseExtension
 
@@ -430,70 +430,84 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             };
         }
 
-        using var transaction = unitOfWork.BeginTransaction();
         try
         {
+            List<GetFileNameAndExtension> getFileNameAnds = [];
+            List<GetFileNameAndExtension> getLicenseFileNameAnds = [];
+            HrDirectoryTypes directoryTypes = new();
+            directoryTypes = HrDirectoryTypes.CompanyContracts;
 
 
-            if (obj.ListOfsContract.Any())
+
+            #region UpdateFileCompanyContracts
+            if (model.company_contracts is not null)
             {
-                HrDirectoryTypes directoryTypes = new();
-                directoryTypes = HrDirectoryTypes.CompanyContracts;
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-                _fileServer.RemoveDirectory(directoryName);
-                unitOfWork.CompanyContracts.RemoveRange(obj.ListOfsContract);
-               
+                if (obj.ListOfsContract.Any())
+                {
+                    var filenames = obj.ListOfsContract.Select(x => x.CompanyContracts).ToList();
+                    var Ids = obj.ListOfsContract.Select(x => x.Id).ToList();
+                    _fileServer.RemoveFiles(directoryName, filenames);
+                    getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_contracts, Ids);
+                }
+            }
+            else
+            {
+                if (obj.ListOfsContract.Any())
+                {
+                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+                    var filenames = obj.ListOfsContract.Select(x => x.CompanyContracts).ToList();
+                    _fileServer.RemoveFiles(directoryName, filenames);
+                    getFileNameAnds = null;
+                }
             }
 
-            if (obj.Licenses.Any())
+            #endregion
+
+            #region UpdateTableCompanyContracts
+            await unitOfWork.CompanyContracts.UpdateCompanyContractFileNames(getFileNameAnds);
+            #endregion
+
+            #region UpdateFileCompanyLicenses
+            if (model.company_licenses is not null)
             {
-                HrDirectoryTypes directoryTypes = new();
                 directoryTypes = HrDirectoryTypes.CompanyLicesnses;
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-                _fileServer.RemoveDirectory(directoryName); 
-                unitOfWork.CompanyLicenses.RemoveRange(obj.Licenses);
+                if (obj.Licenses.Any())
+                {
+                    var filenames = obj.Licenses.Select(x => x.LicenseName).ToList();
+                    var Ids = obj.Licenses.Select(x => x.Id).ToList();
+                    _fileServer.RemoveFiles(directoryName, filenames);
+                    getLicenseFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_licenses, Ids);
+                }
+            }
+            else
+            {
+                if (obj.Licenses.Any())
+                {
+                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+                    var filenames = obj.Licenses.Select(x => x.LicenseName).ToList();
+                    _fileServer.RemoveFiles(directoryName, filenames);
+                    getLicenseFileNameAnds = null;
+                }
             }
 
+            #endregion
 
+            #region UpdateTableCompanyLicenses
+            await unitOfWork.CompanyLicenses.UpdateCompanyLicenseFileNames(getLicenseFileNameAnds);
+
+            #endregion
+
+            #region UpdateCompany
             obj.NameEn = model.Name_en;
             obj.NameAr = model.Name_ar;
             obj.CompanyOwner = model.Company_owner;
             obj.CompanyTypeId = model.Company_type;
-
-
-            List<GetFileNameAndExtension> getFileNameAnds = [];
-            if (model.company_contracts is not null && model.company_contracts.Any())
-            {
-                getFileNameAnds = await _fileServer.UploadFilesAsync(Modules.CompanyContracts, model.company_contracts);
-            }
-            List<GetFileNameAndExtension> getLicenseFileNameAnds = [];
-            if (model.company_licenses is not null && model.company_licenses.Any())
-            {
-                getLicenseFileNameAnds = await _fileServer.UploadFilesAsync(Modules.CompanyLicesnses, model.company_licenses);
-            }
-
-            if (getFileNameAnds.Any())
-            {
-                await unitOfWork.CompanyLicenses.AddRangeAsync(getLicenseFileNameAnds.Select(l => new CompanyLicense()
-                {
-                    LicenseName = l.FileName,
-                    LicenseExtension = l.FileExtension,
-                    CompanyId = id
-                }).ToList());
-            }
-            if (getLicenseFileNameAnds.Any())
-            {
-                await unitOfWork.CompanyContracts.AddRangeAsync(getLicenseFileNameAnds.Select(l => new HrCompanyContract()
-                {
-                    CompanyContracts = l.FileName,
-                    CompanyContractsExtension = l.FileExtension,
-                    CompanyId = id
-                }).ToList());
-            }
             unitOfWork.Companies.Update(obj);
-
             await unitOfWork.CompleteAsync();
-            transaction.Commit();
+            #endregion
+
 
             return new()
             {
@@ -504,7 +518,6 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         }
         catch (Exception ex)
         {
-            transaction.Rollback();
             return new()
             {
                 Data = model,
@@ -665,7 +678,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         };
     }
 
-   
+
 
     #endregion
 }
