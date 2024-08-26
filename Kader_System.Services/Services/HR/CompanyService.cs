@@ -82,7 +82,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                      Company_owner = x.CompanyOwner,
                      Company_type_name = lang == Localization.Arabic ? x.CompanyType.Name : x.CompanyType.NameInEnglish,
                      Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
-                     Employees_count = x.HrManagements.SelectMany(x => x.HrDepartments).SelectMany(x => x.Employees).Where(p=>p.CompanyId==x.Id).Count()
+                     Employees_count = x.HrManagements.SelectMany(x => x.HrDepartments).SelectMany(x => x.Employees).Count()
                  }, orderBy: x =>
                    x.OrderByDescending(x => x.Id), includeProperties: "HrManagements.HrDepartments.Employees")).ToList(),
             CurrentPage = model.PageNumber,
@@ -310,7 +310,6 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 {
                     file_path = _fileServer.GetFilePath(directoryCompanyContractsName, c.CompanyContracts),
                     company_contract_id = c.Id,
-                    file_name=c.CompanyContracts,
                     file_name = c.CompanyContracts,
                     add_date = c.Add_date,
                     file_extension = c.CompanyContractsExtension
@@ -319,8 +318,8 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 }).ToList(),
                 Company_licenses = obj.Licenses.Select(l => new CompanyLicenseResponse()
                 {
-                    
-                    License = _fileServer.GetFilePath(directoryCompanyLicesnsesName, l.LicenseName),
+
+                    file_path = _fileServer.GetFilePath(directoryCompanyLicesnsesName, l.LicenseName),
                     company_license_id = l.Id,
                     file_name = l.LicenseName,
                     add_date = l.Add_date,
@@ -444,16 +443,23 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             if (model.company_contracts is not null)
             {
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-                _fileServer.RemoveDirectory(directoryName);
-                unitOfWork.CompanyContracts.RemoveRange(obj.ListOfsContract);
+                if (obj.ListOfsContract.Any())
+                {
+                    var filenames = obj.ListOfsContract.Select(x => x.CompanyContracts).ToList();
+                    var Ids = obj.ListOfsContract.Select(x => x.Id).ToList();
+                    _fileServer.RemoveFiles(directoryName, filenames);
+                    getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_contracts, Ids);
+                }
             }
-
-            if (obj.Licenses.Any())
+            else
             {
-                HrDirectoryTypes directoryTypes = new();
-                directoryTypes = HrDirectoryTypes.CompanyLicesnses;
-                var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-                _fileServer.RemoveDirectory(directoryName); unitOfWork.CompanyLicenses.RemoveRange(obj.Licenses);
+                if (obj.ListOfsContract.Any())
+                {
+                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
+                    var filenames = obj.ListOfsContract.Select(x => x.CompanyContracts).ToList();
+                    _fileServer.RemoveFiles(directoryName, filenames);
+                    getFileNameAnds = null;
+                }
             }
 
             #endregion
