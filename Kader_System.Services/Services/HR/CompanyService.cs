@@ -309,7 +309,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 Company_contracts = obj.ListOfsContract.Select(c => new CompanyContractResponse()
                 {
                     file_path = _fileServer.GetFilePath(directoryCompanyContractsName, c.CompanyContracts),
-                    company_contract_id = c.Id,
+                    id = c.Id,
                     file_name = c.CompanyContracts,
                     add_date = c.Add_date,
                     file_extension = c.CompanyContractsExtension
@@ -320,7 +320,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 {
 
                     file_path = _fileServer.GetFilePath(directoryCompanyLicesnsesName, l.LicenseName),
-                    company_license_id = l.Id,
+                    id = l.Id,
                     file_name = l.LicenseName,
                     add_date = l.Add_date,
                     file_extension = l.LicenseExtension
