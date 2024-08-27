@@ -68,7 +68,7 @@ public class QualificationService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                  take: model.PageSize,
                  skip: (model.PageNumber - 1) * model.PageSize,
                  lang: lang
-                ),
+                ).OrderByDescending(x => x.Id).ToList(),
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,
             To = Math.Min(page * model.PageSize, totalRecords),

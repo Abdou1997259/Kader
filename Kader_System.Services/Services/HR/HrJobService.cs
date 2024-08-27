@@ -58,7 +58,7 @@ namespace Kader_System.Services.Services.HR
                     label = p.ToString(),
                     url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}",
                     active = p == model.PageNumber
-                })
+                }).OrderByDescending(x => x.active)
                 .ToList();
 
 

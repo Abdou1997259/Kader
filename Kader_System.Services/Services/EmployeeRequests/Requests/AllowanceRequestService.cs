@@ -27,7 +27,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
         public async Task<Response<IEnumerable<DTOAllowanceRequest>>> ListOfAllowanceRequest()
         {
-            var result = await unitOfWork.AllowanceRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var result = await unitOfWork.AllowanceRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderByDescending(x => x.Id));
             var msg = sharLocalizer[Localization.NotFound];
             if (result == null)
             {

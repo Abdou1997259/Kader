@@ -65,11 +65,12 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
         {
             TotalRecords = totalRecords ,
 
-            Items = ( _unitOfWork.Allowances.GetAllowanceInfo(filter: filter,
+            Items =  _unitOfWork.Allowances.GetAllowanceInfo(filter: filter,
                  take: model.PageSize,
                 
                  skip: (model.PageNumber - 1) * model.PageSize,
-                lang:lang )),
+                lang:lang ).OrderByDescending(x => x.Id).ToList()
+            ,
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,

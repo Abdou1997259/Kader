@@ -52,7 +52,7 @@ namespace Kader_System.Services.Services.HR
                         Username = d.Username,
                         Password = d.Password
 
-                    })).ToList(),
+                    })).OrderByDescending(x =>x.Id).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
