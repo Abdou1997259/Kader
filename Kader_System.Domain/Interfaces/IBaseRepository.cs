@@ -38,6 +38,7 @@
     public Task<List<T>> GetAllWithIncludeAsync(string includeProperties);
 
     Task<bool> ExistAsync(int id);
+    public  Task<List<T>> GetListByIdWithNoTrackingAsync(int id);
 
     Task<bool> ExistAsync(Expression<Func<T, bool>> filter = null!, string includeProperties = null!);
     Task<T> GetFirstOrDefaultAsync(

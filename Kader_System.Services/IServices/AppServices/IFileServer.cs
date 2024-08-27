@@ -54,6 +54,12 @@ namespace Kader_System.Services.IServices.AppServices
         /// <param name="paths"></param>
         /// <returns></returns>
         public string GetFilePathWithServerPath(params string[] paths);
+        /// <summary>
+        /// Get filename with exetnesion from specific path
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>return filename in dirctory if exist ,otherwise return empty string</returns>
+        public string GetFilenameFromPath(params string[] paths);
 
         /// <summary>
         /// check if file is exist or not

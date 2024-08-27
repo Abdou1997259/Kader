@@ -148,5 +148,14 @@ namespace Kader_System.Services.Services.AppServices
             {".csv", "text/csv"}
             };
         }
+
+        public string GetFilenameFromPath(params string[] paths)
+        {
+            var fullPath = GetFilePathWithServerPath(paths);
+            if (File.Exists(fullPath))
+                return Path.GetFileName(fullPath);
+            else
+                return string.Empty;
+        }
     }
 }

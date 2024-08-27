@@ -13,7 +13,9 @@ public interface ICompanyService
     Task<Response<object>> RestoreCompanyAsync(int id);
     Task<Response<string>> DeleteCompanyAsync(int id);
     Task<Response<FileResult>> DownloadCompanyContract(int id);
- 
+    public  Task<int> RemoveCompanyLicensesAttachement(int companyId, HrDirectoryTypes directoryTypes);
+    public  Task<int> RemoveCompanyContractsAttachement(int companyId, HrDirectoryTypes directoryTypes);
+
     Task<Response<FileResult>> DownloadCompanylicense(int id);
     Task<Response<EmployeeOfCompanyPagination>> EmployeeOfCompany(int companyId, string lang, HrGetAllFiltrationsForCompaniesRequest model, string host);
 }

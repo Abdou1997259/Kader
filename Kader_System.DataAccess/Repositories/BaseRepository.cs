@@ -21,6 +21,10 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     public async Task<T> GetByIdWithNoTrackingAsync(int id)
     {
         return await dbSet.AsNoTracking().FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id);
+    } 
+    public async Task<List<T>> GetListByIdWithNoTrackingAsync(int id)
+    {
+        return await dbSet.AsNoTracking().Where(entity => EF.Property<int>(entity, "Id") == id).ToListAsync();
     }
 
 
