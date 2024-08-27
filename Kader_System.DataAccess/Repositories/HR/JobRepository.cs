@@ -38,8 +38,9 @@ public class JobRepository(KaderDbContext context) : BaseRepository<HrJob>(conte
 
         // Continue with the rest of the query
         var groupedQuery = query
-           
+             
             .GroupBy(x => new { x.Job.Id, x.Job.NameAr, x.Job.NameEn, x.Job.HasAdditionalTime, x.Job.HasNeedLicense,x.AddedBy })
+           
             .Select(group => new JobData()
             {
                 Id = group.Key.Id,
@@ -50,11 +51,11 @@ public class JobRepository(KaderDbContext context) : BaseRepository<HrJob>(conte
                 AddedBy=group.Key.AddedBy,
                 
             });
-      
-        if (take.HasValue)
-            groupedQuery = groupedQuery.Take(take.Value);
         if (skip.HasValue)
             groupedQuery = groupedQuery.Skip(skip.Value);
+        if (take.HasValue)
+            groupedQuery = groupedQuery.Take(take.Value);
+        var querystring = groupedQuery.ToQueryString();
         return groupedQuery.ToList();
     }
 }
