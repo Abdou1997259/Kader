@@ -97,7 +97,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              SalaryPaymentWayId = employee.SalaryPaymentWayId,
                              ShiftId = employee.ShiftId,
                              TotalSalary = cGroup.FixedSalary == null ? 0 : cGroup.FixedSalary + cGroup.HousingAllowance == null ? cGroup.HousingAllowance : cGroup.HousingAllowance,                            
-                             EmployeeImage = Path.Combine(Modules.Employees, employee.EmployeeImage),
+                             EmployeeImage = Path.Combine(Modules.Employees, employee.EmployeeImage ==null ? " ":employee.EmployeeImage),
                              qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
                              company_name = lang == Localization.Arabic ? com.NameAr : com.NameEn,
                              management_name = lang == Localization.Arabic ? man.NameAr : man.NameEn,
@@ -117,7 +117,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              allowances_sum = employeeAllowances.Any() ? employeeAllowances.AsEnumerable().Sum(a => a.Amount) : 0,
                              employee_loans_sum = 0,
                              title_id = usr.CurrentTitleId ==null ? 0:usr.CurrentTitleId,
-                             employee_attachments = employee.ListOfAttachments.Select(s => new EmployeeAttachmentForEmp
+                             employee_attachments = employee.ListOfAttachments ==null? null!: employee.ListOfAttachments.Select(s => new EmployeeAttachmentForEmp
                              {
                                  FileName = s.FileName,
                                  Extention = s.FileExtension,
