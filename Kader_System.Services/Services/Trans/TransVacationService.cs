@@ -80,7 +80,7 @@ namespace Kader_System.Services.Services.Trans
 
                 Items = unitOfWork.TransVacations.GetTransVacationInfo(filter:filter,filterSearch:filterSearch,
                     skip: (model.PageNumber - 1) * model.PageSize,
-                    take: model.PageSize,lang:lang),
+                    take: model.PageSize,lang:lang).OrderByDescending(x=>x.Id).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,

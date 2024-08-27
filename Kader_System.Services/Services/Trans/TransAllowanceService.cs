@@ -83,7 +83,7 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
             TotalRecords = totalRecords,
 
             Items = unitOfWork.TransAllowances.GetTransAllowanceInfo(filter:filter,filterSearch:filterSearch,skip: (model.PageNumber - 1) * model.PageSize
-            ,take: model.PageSize,lang:lang).Where(x => !model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId).ToList()
+            ,take: model.PageSize,lang:lang).Where(x => !model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId).OrderByDescending(x=>x.Id).ToList()
             ,
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
