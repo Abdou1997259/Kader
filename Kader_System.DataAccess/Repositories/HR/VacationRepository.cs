@@ -30,6 +30,7 @@ public class VacationRepository(KaderDbContext context) : BaseRepository<HrVacat
                         .Select(g => new { VacationId = g.Key, Count = (int?)g.Count() })
                         on vac.Id equals employeeCount.VacationId into ecGroup
                     from ec in ecGroup.DefaultIfEmpty()
+                    orderby vac.Id
                     select new VacationData
                     {
                         Id = vac.Id,
