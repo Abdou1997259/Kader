@@ -7,6 +7,8 @@ using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using System.Linq.Expressions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Setting
@@ -361,6 +363,7 @@ namespace Kader_System.Services.Services.Setting
             };
         }
 
+
         private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model, string lang, bool all = false)
         {
 
@@ -379,15 +382,17 @@ namespace Kader_System.Services.Services.Setting
                     if (all)
                     {
                         var userPermissionQuery = await unitOfWork.TitlePermissionRepository
-                                .GetSpecificSelectAsync(x => true, x => x);
+                                .GetSpecificSelectAsync( x => x.SubScreenId == assignedPermission.SubId, x => x, includeProperties: "ScreenSub,Title");
 
                         if (userPermissionQuery.Count() > 0)
                         {
                             unitOfWork.TitlePermissionRepository.RemoveRange(userPermissionQuery);
+                           await unitOfWork.CompleteAsync();
+
                         }
                         if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
                         {
-                            continue;
+                            goto LabelExpression0;
                         }
                         else
                         {
@@ -401,30 +406,80 @@ namespace Kader_System.Services.Services.Setting
                                 SubScreenId = assignedPermission.SubId,
                                 Permissions = string.Join(',', assignedPermission.title_permission)
                             });
+                            await unitOfWork.CompleteAsync();
                         }
-                        var userWithTitle = await unitOfWork.Users.GetSpecificSelectAsync(x => x.CurrentTitleId != null, select: x => new { x.Id, x.CurrentTitleId });
+                         LabelExpression0:;
+                        var userWithTitle = await unitOfWork.Users.GetSpecificSelectAsync(x => x.CurrentTitleId == id, select: x => x.Id);
                         if (userWithTitle.Any())
                         {
-                            foreach (var userIdtitle in userWithTitle)
+                            foreach (var userId in userWithTitle)
                             {
-                                var userpermssion = await unitOfWork.UserPermssionRepositroy.GetFirstOrDefaultAsync(x => x.UserId == userIdtitle.Id && x.TitleId == userIdtitle.CurrentTitleId && x.SubScreenId == assignedPermission.SubId);
+                                if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
+                                {
+                                    var removeduserpermssion = (await unitOfWork.UserPermssionRepositroy.GetSpecificSelectTrackingAsync(x => x.UserId == userId && x.TitleId == id && x.SubScreenId == assignedPermission.SubId, x => x)).ToList();
+
+                                    unitOfWork.UserPermssionRepositroy.RemoveRange(removeduserpermssion);
+                                    await unitOfWork.CompleteAsync();
+                                    goto LabelExpression2;
+
+                                }
+                                var userpermssion = await unitOfWork.UserPermssionRepositroy.GetFirstOrDefaultAsync(x => x.UserId == userId && x.TitleId == id && x.SubScreenId == assignedPermission.SubId);
                                 if (userpermssion is not null)
                                     unitOfWork.UserPermssionRepositroy.Remove(userpermssion);
 
+
+
+
+
                                 await unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission
                                 {
-                                    UserId = userIdtitle.Id,
-                                    TitleId = userIdtitle.CurrentTitleId,
+                                    UserId = userId,
+                                    TitleId = id,
                                     Permission = string.Join(',', assignedPermission.title_permission),
                                     SubScreenId = assignedPermission.SubId
                                 });
 
                                 await unitOfWork.CompleteAsync();
 
+                            LabelExpression2:;
+
 
                             }
 
                         }
+                        //var userWithTitle = await unitOfWork.Users.GetSpecificSelectAsync(x => x.CurrentTitleId != null, select: x => new { x.Id, x.CurrentTitleId });
+                        //if (userWithTitle.Any())
+                        //{
+                        //    foreach (var userIdtitle in userWithTitle)
+                        //    {
+                        //        if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
+                        //        {
+                        //            var removeduserpermssion = (await unitOfWork.UserPermssionRepositroy.GetSpecificSelectTrackingAsync(x => x.UserId == userIdtitle.Id && x.TitleId == userIdtitle.CurrentTitleId && x.SubScreenId == assignedPermission.SubId, x => x)).ToList();
+
+                        //            unitOfWork.UserPermssionRepositroy.RemoveRange(removeduserpermssion);
+                        //            await unitOfWork.CompleteAsync();
+                        //            goto LabelExpression2;
+
+                        //        }
+                        //        var userpermssion = await unitOfWork.UserPermssionRepositroy.GetFirstOrDefaultAsync(x => x.UserId == userIdtitle.Id && x.TitleId == userIdtitle.CurrentTitleId && x.SubScreenId == assignedPermission.SubId);
+                        //        if (userpermssion is not null)
+                        //            unitOfWork.UserPermssionRepositroy.Remove(userpermssion);
+
+                        //        await unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission
+                        //        {
+                        //            UserId = userIdtitle.Id,
+                        //            TitleId = userIdtitle.CurrentTitleId,
+                        //            Permission = string.Join(',', assignedPermission.title_permission),
+                        //            SubScreenId = assignedPermission.SubId
+                        //        });
+
+                        //        await unitOfWork.CompleteAsync();
+
+
+                        //    }
+                        //LabelExpression2:;
+
+                        //}
 
                     }
                     else
@@ -439,7 +494,7 @@ namespace Kader_System.Services.Services.Setting
                         }
                         if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
                         {
-                            continue;
+                            goto LabelExpression;
                         }
                         else
                         {
@@ -455,29 +510,8 @@ namespace Kader_System.Services.Services.Setting
                             });
                             await unitOfWork.CompleteAsync();
                         }
-                        var userWithTitle =await unitOfWork.Users.GetSpecificSelectAsync(x => x.CurrentTitleId == id,select:x=>x.Id);
-                        if (userWithTitle.Any())
-                        {
-                            foreach(var userId in userWithTitle)
-                            {
-                               var userpermssion= await unitOfWork.UserPermssionRepositroy.GetFirstOrDefaultAsync(x => x.UserId == userId && x.TitleId==id&&x.SubScreenId==assignedPermission.SubId);
-                               if(userpermssion is not null)
-                                    unitOfWork.UserPermssionRepositroy.Remove(userpermssion);
-
-                            await    unitOfWork.UserPermssionRepositroy.AddAsync(new UserPermission
-                                {
-                                    UserId = userId,
-                                    TitleId = id,
-                                    Permission = string.Join(',', assignedPermission.title_permission),
-                                    SubScreenId = assignedPermission.SubId
-                                });
-
-                              await  unitOfWork.CompleteAsync();
-
-
-                            }
-
-                        }
+                    LabelExpression:;
+                   
                           
 
                     }
