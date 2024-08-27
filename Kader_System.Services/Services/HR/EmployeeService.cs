@@ -210,7 +210,7 @@ namespace Kader_System.Services.Services.HR
             else
                 page = model.PageNumber;
             var pageLinks = Enumerable.Range(1, totalPages)
-                .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+                .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber }).OrderByDescending(x => x.active)
                 .ToList();
 
             var result = new GetAllEmployeesResponse
@@ -277,7 +277,7 @@ namespace Kader_System.Services.Services.HR
             else
                 page = model.PageNumber;
             var pageLinks = Enumerable.Range(1, totalPages)
-                .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
+                .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber }).OrderByDescending(x => x.active)
                 .ToList();
             var result = new GetAllEmployeesResponse
             {

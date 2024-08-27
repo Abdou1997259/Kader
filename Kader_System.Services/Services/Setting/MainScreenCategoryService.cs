@@ -116,7 +116,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
             Items = (await unitOfWork.MainScreenCategories.GetSpecificSelectAsync(filter: filter, x => x,
                  take: model.PageSize,
                  skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "screenCat", orderBy: x =>
-                  x.OrderBy(x => x.Order))).Select(x => new MainScreenCategoryData
+                  x.OrderByDescending(x => x.Order))).Select(x => new MainScreenCategoryData
                   {
                       Id = x.Id,
                       screen_main_id = x.MainScreenId,

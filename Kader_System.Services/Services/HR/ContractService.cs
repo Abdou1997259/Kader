@@ -105,7 +105,7 @@ namespace Kader_System.Services.Services.HR
                 (contractFilter: filter,
                     lang: lang,
                     take: model.PageSize,
-                    skip: (model.PageNumber - 1) * model.PageSize)),
+                    skip: (model.PageNumber - 1) * model.PageSize)).OrderByDescending(x=>x.Id).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,

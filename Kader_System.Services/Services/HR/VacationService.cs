@@ -72,7 +72,7 @@ namespace Kader_System.Services.Services.HR
             result.Items = (unitOfWork.Vacations.GetVacationInfo(filter,
                         take: model.PageSize,
                         skip: (model.PageNumber - 1) * model.PageSize,
-                        lang: lang));
+                        lang: lang)).OrderByDescending(x =>x.Id).ToList();
             result.From = (page - 1) * model.PageSize + 1;
             result.CurrentPage = model.PageNumber;
             result.LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}";

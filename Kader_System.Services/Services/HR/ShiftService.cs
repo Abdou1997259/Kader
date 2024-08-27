@@ -67,7 +67,7 @@ public class ShiftService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResourc
 
             Items = ( _unitOfWork.Shifts.GetShiftInfo(shiftFilter: filter,
                  take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize)),
+                 skip: (model.PageNumber - 1) * model.PageSize)).OrderByDescending(x=>x.Id).ToList(),
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,
