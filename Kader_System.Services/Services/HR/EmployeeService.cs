@@ -1,5 +1,6 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Services.IServices.AppServices;
+using Kader_System.Services.Services.AppServices;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -704,40 +705,27 @@ namespace Kader_System.Services.Services.HR
                 };
             }
 
-            var transaction = unitOfWork.BeginTransaction();
             try
             {
-                if (!string.IsNullOrEmpty(obj.EmployeeImage))
-                {
-                    fileServer.RemoveFile(Modules.Employees, obj.EmployeeImage);
-                }
 
-                if (obj.ListOfAttachments.Any())
+                #region UpdateCompanyContracts
+                if (model.employee_attachments is not null)
                 {
-                    HrDirectoryTypes directoryTypes = new();
-                    directoryTypes = HrDirectoryTypes.Attachments;
+                    var directoryTypes = HrDirectoryTypes.Attachments;
                     var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-                    fileServer.RemoveDirectory(directoryName);
-                    unitOfWork.EmployeeAttachments.RemoveRange(obj.ListOfAttachments);
+                    var getFileNameAnds = await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
+                    var employeeAttachment = getFileNameAnds.Select(x => new HrEmployeeAttachment { FileName = x.FileName,FileExtension = Path.GetExtension(x.FileName) }).ToList();
+                    await unitOfWork.EmployeeAttachments.AddRangeAsync(employeeAttachment);
+                    await unitOfWork.CompleteAsync();
                 }
-
-
-
                 GetFileNameAndExtension imageFile = new();
-                if (model.employee_image != null)
+                if (model.employee_image is not null)
                 {
                     imageFile.FileName = await fileServer.UploadFileAsync(Modules.Employees, model.employee_image);
-                    imageFile.FileExtension = Path.GetExtension(imageFile.FileName);        
+                    imageFile.FileExtension = Path.GetExtension(imageFile.FileName);
                 }
+                #endregion
 
-                List<GetFileNameAndExtension> employeeAttachments = [];
-                if (model.employee_attachments is not null && model.employee_attachments.Any())
-                {
-                    HrDirectoryTypes directoryTypes = new();
-                    directoryTypes = HrDirectoryTypes.Attachments;
-                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-                    employeeAttachments = await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
-                }
                 int CurrentCompanyYearId = 0;
                 if (_accessor.HttpContext.User.GetUserId() is not null)
                     CurrentCompanyYearId = (await unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == _accessor.HttpContext.User.GetUserId())).CompanyYearId;
@@ -780,16 +768,7 @@ namespace Kader_System.Services.Services.HR
                 {
                     obj.ChildrenNumber=model.children_number;   
                 }
-                
-                obj.ListOfAttachments = employeeAttachments?.Select(f => new HrEmployeeAttachment
-                {
-                    FileExtension = f.FileExtension,
-                    FileName = f.FileName,
-                    IsActive = true
-                }).ToList();
-                unitOfWork.Employees.Update(obj);
-
-
+               
                 var userExist = await userManager.FindByNameAsync(model.username);
                 if (userExist != null)
                 {
@@ -861,8 +840,6 @@ namespace Kader_System.Services.Services.HR
                 }
 
                 await unitOfWork.CompleteAsync();
-
-                transaction.Commit();
                 return new()
                 {
                     Msg = string.Format(shareLocalizer[Localization.Done],
@@ -874,7 +851,6 @@ namespace Kader_System.Services.Services.HR
             }
             catch (Exception e)
             {
-                transaction.Rollback();
                 return new()
                 {
                     Msg = shareLocalizer[Localization.Error],
@@ -1021,8 +997,31 @@ namespace Kader_System.Services.Services.HR
                 };
             }
         }
+        public async Task<Response<string>> RemoveEmployeeAttachement(int attachementId)
+        {
+            var directoryTypes = HrDirectoryTypes.Attachments;
+            var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
 
-     
+            var attachements = await unitOfWork.EmployeeAttachments.GetByIdWithNoTrackingAsync(attachementId);
+            fileServer.RemoveFile(directoryName, attachements.FileName);
+            unitOfWork.EmployeeAttachments.Remove(attachements);
+            await unitOfWork.CompleteAsync();
+            unitOfWork.EmployeeAttachments.Remove(attachements);
+            var result = await unitOfWork.CompleteAsync();
+            if (result > 0)
+            {
+                return new()
+                {
+                    Check = true,
+                    Data = $"Attachement {result} is deleted sucessfully"
+                };
+            }
+            return new()
+            {
+                Check = false,
+                Data = $"Attachement {result} is deleted sucessfully"
+            };
+        }
         #endregion
 
 

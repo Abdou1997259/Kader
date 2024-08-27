@@ -418,6 +418,7 @@ public static class SD
             public const string UpdateEmployee = "employee/update/{id}";
             public const string GetEmployeeById = "employee/getById/{id}";
             public const string DeleteEmployee = "employee/delete/{id}";
+            public const string DeleteEmployeeAttachement = "employee/deleteAttachement/{id}";
             public const string GetLookUps = "employee/getLookUps";
             public const string Restore = "employee/restore/{id}";
             public const string GetAllEmpByCompanyId = "employee/getAllEmpsByCompanyId/{companyId}";

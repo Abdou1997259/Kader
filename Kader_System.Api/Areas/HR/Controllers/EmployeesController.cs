@@ -120,6 +120,17 @@ namespace Kader_System.Api.Areas.HR.Controllers
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
+         [HttpDelete(ApiRoutes.Employee.DeleteEmployeeAttachement)]
+        [Permission(Permission.Delete, 13)]
+        public async Task<IActionResult> DeleteEmployeeAttachement(int id)
+        {
+            var response = await employeeService.RemoveEmployeeAttachement(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
 
         #endregion
 

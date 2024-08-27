@@ -80,6 +80,7 @@ namespace Kader_System.Services.IServices.AppServices
         /// <param name="path"></param>
         /// <returns></returns>
         public string GetContentType(string path);
+        public  Task<byte[]> GetFileBytes(params string[] fileParts);
 
     }
 }

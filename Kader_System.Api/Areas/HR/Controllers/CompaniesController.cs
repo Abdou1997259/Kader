@@ -32,7 +32,7 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     [Permission(Permission.View, 8)]
     public async Task<IActionResult> GetCompanyByIdAsync(int id)
     {
-        var response = await service.GetCompanyByIdAsync(id,requestService.GetRequestHeaderLanguage);
+        var response = await service.GetCompanyByIdAsync(id, requestService.GetRequestHeaderLanguage);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -44,28 +44,30 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     public async Task<IActionResult> DownloadCompanyContract(int id)
     {
         var response = await service.DownloadCompanyContract(id);
-        if (response.Check)
-            return Ok(response.Data);
-        else if (!response.Check)
+        if (response.Data.Length > 0)
+        {
+            return File(response.Data, "application/octet-stream");
+        }
+        else
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpGet(ApiRoutes.Company.DownloadCompanyLicense)]
     [Permission(Permission.View, 8)]
     public async Task<IActionResult> DownloadCompanylicense(int id)
     {
         var response = await service.DownloadCompanylicense(id);
-        if (response.Check)
-            return Ok(response.Data);
-        else if (!response.Check)
+        if (response.Data.Length > 0)
+        {
+            return File(response.Data, "application/octet-stream");
+        }
+        else
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
 
 
     [HttpGet(ApiRoutes.Company.EmployeeOfCompany)]
     [Permission(Permission.View, 8)]
-    public async Task<IActionResult> EmployeeOfCompany(int companyId,[FromQuery] HrGetAllFiltrationsForCompaniesRequest model)
+    public async Task<IActionResult> EmployeeOfCompany(int companyId, [FromQuery] HrGetAllFiltrationsForCompaniesRequest model)
     {
         var response = await service.EmployeeOfCompany(companyId, requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost);
         if (response.Check)
@@ -99,7 +101,7 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     [Permission(Permission.Edit, 8)]
     public async Task<IActionResult> UpdateCompanyAsync([FromRoute] int id, [FromForm] HrUpdateCompanyRequest model)
     {
-        
+
         Log.Information(JsonConvert.SerializeObject(model));
         var response = await service.UpdateCompanyAsync(id, model);
         if (response.Check)
@@ -114,7 +116,7 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     #region Restore
 
     [HttpPut(ApiRoutes.Company.RestoreCompany)]
-    [Permission(Permission.Edit ,8)]
+    [Permission(Permission.Edit, 8)]
     public async Task<IActionResult> RestoreCompanyAsync([FromRoute] int id)
     {
         var response = await service.RestoreCompanyAsync(id);
@@ -138,17 +140,17 @@ public class CompaniesController(ICompanyService service, IRequestService reques
         else if (!response.Check)
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
-    } 
+    }
     [HttpDelete(ApiRoutes.Company.DeleteCompanyContractAttachement)]
     [Permission(Permission.Delete, 8)]
-    public async Task<IActionResult> DeleteCompanyContractAttachement([FromRoute]int id,[FromQuery]HrDirectoryTypes types)
+    public async Task<IActionResult> DeleteCompanyContractAttachement([FromRoute] int id, [FromQuery] HrDirectoryTypes types)
     {
         var response = new Response<string>();
         if (types == HrDirectoryTypes.CompanyContracts)
         {
             response = await service.RemoveCompanyContractsAttachement(id, HrDirectoryTypes.CompanyContracts);
         }
-        else if(types == HrDirectoryTypes.CompanyLicesnses)
+        else if (types == HrDirectoryTypes.CompanyLicesnses)
         {
             response = await service.RemoveCompanyLicensesAttachement(id, HrDirectoryTypes.CompanyLicesnses);
         }

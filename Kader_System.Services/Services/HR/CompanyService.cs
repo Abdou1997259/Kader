@@ -119,13 +119,13 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             Check = true
         };
     }
-    public async Task<Response<FileResult>> DownloadCompanyContract(int id)
+    public async Task<Response<byte[]>> DownloadCompanyContract(int id)
     {
         var contractAttachment = await unitOfWork.CompanyContracts.GetByIdAsync(id);
         if (contractAttachment is null)
         {
             var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
-            return new Response<FileResult>
+            return new Response<byte[]>
             {
                 Msg = msg,
                 Check = false
@@ -135,7 +135,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         if (string.IsNullOrEmpty(contractAttachment.CompanyContracts))
         {
             var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
-            return new Response<FileResult>
+            return new Response<byte[]>
             {
                 Msg = msg,
                 Check = false
@@ -144,48 +144,30 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         HrDirectoryTypes directoryTypes = new();
         directoryTypes = HrDirectoryTypes.CompanyContracts;
         var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-
-
         if (!_fileServer.FileExist(directoryName, contractAttachment.CompanyContracts))
         {
             var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
-            return new Response<FileResult>
+            return new Response<byte[]>
             {
                 Data = null,
                 Msg = msg,
                 Check = false
             };
         }
-
-
         try
         {
-            // Open the file stream
-
-
-            // Create the FileStreamResult
-            var fileStream = await _fileServer.DownloadFileAsync(directoryName, contractAttachment.CompanyContracts);
-
-
-            // Return the FileStreamResult wrapped in your Response object
-            return new Response<FileResult>
+            var fileStream = await _fileServer.GetFileBytes(directoryName, contractAttachment.CompanyContracts);
+            return new Response<byte[]>
             {
                 Data = fileStream,
                 Check = true,
-                // or any success message you want
             };
-
-
-
-            // Create and return the FileContentResult
-
 
         }
         catch (Exception ex)
         {
-            // Handle exceptions (e.g., file access issues)
 
-            return new Response<FileResult>
+            return new Response<byte[]>
             {
                 Msg = $": {ex.Message}",
                 Check = false
@@ -195,73 +177,55 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
 
     }
 
-    public async Task<Response<FileResult>> DownloadCompanylicense(int id)
+    public async Task<Response<byte[]>> DownloadCompanylicense(int id)
     {
-        var licenseAttachment = await unitOfWork.CompanyLicenses.GetByIdAsync(id);
-        if (licenseAttachment is null)
+        var contractAttachment = await unitOfWork.CompanyLicenses.GetByIdAsync(id);
+        if (contractAttachment is null)
         {
             var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
-            return new Response<FileResult>
+            return new Response<byte[]>
             {
                 Msg = msg,
                 Check = false
             };
         }
 
-        if (string.IsNullOrEmpty(licenseAttachment.LicenseName))
+        if (string.IsNullOrEmpty(contractAttachment.LicenseName))
         {
             var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
-            return new Response<FileResult>
+            return new Response<byte[]>
             {
                 Msg = msg,
                 Check = false
             };
         }
         HrDirectoryTypes directoryTypes = new();
-        directoryTypes = HrDirectoryTypes.CompanyContracts;
+        directoryTypes = HrDirectoryTypes.CompanyLicesnses;
         var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-
-
-        if (!_fileServer.FileExist(directoryName, licenseAttachment.LicenseName))
+        if (!_fileServer.FileExist(directoryName, contractAttachment.LicenseName))
         {
             var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
-            return new Response<FileResult>
+            return new Response<byte[]>
             {
                 Data = null,
                 Msg = msg,
                 Check = false
             };
         }
-
-
         try
         {
-            // Open the file stream
-
-
-            // Create the FileStreamResult
-            var fileStream = await _fileServer.DownloadFileAsync(directoryName, licenseAttachment.LicenseName);
-
-
-            // Return the FileStreamResult wrapped in your Response object
-            return new Response<FileResult>
+            var fileStream = await _fileServer.GetFileBytes(directoryName, contractAttachment.LicenseName);
+            return new Response<byte[]>
             {
                 Data = fileStream,
                 Check = true,
-                // or any success message you want
             };
-
-
-
-            // Create and return the FileContentResult
-
 
         }
         catch (Exception ex)
         {
-            // Handle exceptions (e.g., file access issues)
 
-            return new Response<FileResult>
+            return new Response<byte[]>
             {
                 Msg = $": {ex.Message}",
                 Check = false

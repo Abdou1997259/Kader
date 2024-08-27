@@ -17,5 +17,7 @@ public interface IEmployeeService
     Task<Response<EmployeesLookUps>> GetEmployeesLookUpsData(string lang );
     Task<Response<object>> GetEmployeesDataNameAndIdAsLookUp(string lang);
     Task<Response<object>> GetDocuments(int empId);
+    public Task<Response<string>> RemoveEmployeeAttachement(int attachementId);
+
 
 }

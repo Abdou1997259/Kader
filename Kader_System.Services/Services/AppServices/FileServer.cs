@@ -5,12 +5,14 @@ using System.Net.Http.Headers;
 
 namespace Kader_System.Services.Services.AppServices
 {
-    public class FileServer : IFileServer
+    public class FileServer : IFileServer, IDisposable
     {
         private readonly string serverPath = string.Empty;
         private readonly IHttpContextService _httpContextService;
         private readonly IRequestService _requestService;
         private readonly IStringLocalizer<SharedResource> _stringLocalizer;
+        private FileStream _fileStream;
+        private FileStreamResult _fileStreamResult;
         public FileServer(IHttpContextService httpContextService, IRequestService requestService, IStringLocalizer<SharedResource> stringLocalizer)
         {
             _httpContextService = httpContextService;
@@ -23,20 +25,22 @@ namespace Kader_System.Services.Services.AppServices
         {
             var filePath = Path.Combine(serverPath, Path.Combine(fileParts));
             var fileName = Path.GetFileName(filePath);
-       
-            using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            if (stream != null)
+            _fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            if (_fileStream != null)
             {
-               
-                var contentType = GetContentType(filePath);
-                return new FileStreamResult(stream, contentType)
-                {
-                    FileDownloadName = fileName,
-                };
+
+                    _fileStreamResult = new FileStreamResult(_fileStream, "application/octet-stream");
+                return _fileStreamResult;
             }
+
             return null;
         }
-
+        public async Task<byte[]> GetFileBytes(params string[] fileParts)
+        {
+            var filePath = Path.Combine(serverPath, Path.Combine(fileParts));
+            var fileBytes = await File.ReadAllBytesAsync(filePath);
+            return fileBytes;   
+        }
         //private readonly FileStream _fileStream;
         public bool FileExist(string moduleName, string fileName)
         {
@@ -155,6 +159,11 @@ namespace Kader_System.Services.Services.AppServices
                 return Path.GetFileName(fullPath);
             else
                 return string.Empty;
+        }
+
+        public void Dispose()
+        {
+            _fileStream.Dispose();  
         }
     }
 }
