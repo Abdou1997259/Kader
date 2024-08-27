@@ -44,11 +44,11 @@ public class ShiftRepository(KaderDbContext context) : BaseRepository<HrShift>(c
                 EmployeesCount = group.Count(x => x.ShiftEmployee.Employee != null),
                 AddedByUser = group.FirstOrDefault()!.User!.UserName,
             });
-
-        if (take.HasValue)
-            groupedQuery = groupedQuery.Take(take.Value);
         if (skip.HasValue)
             groupedQuery = groupedQuery.Skip(skip.Value);
+        if (take.HasValue)
+            groupedQuery = groupedQuery.Take(take.Value);
+        var querystring=groupedQuery.ToQueryString();
         return groupedQuery.ToList();
     }
 }
