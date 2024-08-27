@@ -72,10 +72,11 @@ namespace Kader_System.Services.Services.AppServices
             if (File.Exists(filePath))
                 File.Delete(filePath);
         }
-        public void RemoveFiles(string ModuleName, List<string> fileNames)
+        public int RemoveFiles(string ModuleName, List<string> fileNames)
         {
+            var fileCount = 0;
             if (fileNames is null)
-                return;
+                return 0;
 
             foreach (var file in fileNames)
             {
@@ -84,8 +85,10 @@ namespace Kader_System.Services.Services.AppServices
                 var filePath = Path.Combine(serverPath, ModuleName, file);
                 if (File.Exists(filePath))
                     File.Delete(filePath);
-            }
 
+                fileCount++;
+            }
+            return fileCount;
         }
         public void RemoveDirectory(string folderName)
         {
@@ -114,16 +117,16 @@ namespace Kader_System.Services.Services.AppServices
             #endregion
         }
 
-        public async Task<List<GetFileNameAndExtension>> UploadFilesAsync(string moduleName, IFormFileCollection files, List<int> FileIds = null)
+        public async Task<List<GetFileNameAndExtension>> UploadFilesAsync(string moduleName, IFormFileCollection files)
         {
             List<GetFileNameAndExtension> fileNames = new();
             for (int i = 0; i < files.Count; i++)
             {
                 if (files[i] is null)
-                    fileNames.Add(new GetFileNameAndExtension { FileName = null, FileExtension = null, fileId = FileIds != null ? FileIds[i] : null });
+                    fileNames.Add(new GetFileNameAndExtension { FileName = null, FileExtension = null });
 
                 var fileName = await UploadFileAsync(moduleName, files[i]);
-                fileNames.Add(new GetFileNameAndExtension { FileName = fileName, FileExtension = Path.GetExtension(fileName), fileId = FileIds != null ? FileIds[i] : null });
+                fileNames.Add(new GetFileNameAndExtension { FileName = fileName, FileExtension = Path.GetExtension(fileName) });
             }
             return fileNames;
         }

@@ -429,73 +429,87 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 Msg = resultMsg
             };
         }
-
         try
         {
             List<GetFileNameAndExtension> getFileNameAnds = [];
             List<GetFileNameAndExtension> getLicenseFileNameAnds = [];
-            HrDirectoryTypes directoryTypes = new();
-            directoryTypes = HrDirectoryTypes.CompanyContracts;
+            var directoryTypes = HrDirectoryTypes.CompanyContracts;
 
 
-
-            #region UpdateFileCompanyContracts
+            #region UpdateCompanyContracts
             if (model.company_contracts is not null)
             {
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
                 if (obj.ListOfsContract.Any())
                 {
                     var filenames = obj.ListOfsContract.Select(x => x.CompanyContracts).ToList();
-                    var Ids = obj.ListOfsContract.Select(x => x.Id).ToList();
                     _fileServer.RemoveFiles(directoryName, filenames);
-                    getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_contracts, Ids);
+                    unitOfWork.CompanyContracts.RemoveRange([.. obj.ListOfsContract]);
+                    await unitOfWork.CompleteAsync();
+                    unitOfWork.CompanyContracts.RemoveRange([.. obj.ListOfsContract]);
+                    var result = await unitOfWork.CompleteAsync();
+                    if (result > 0)
+                    {
+                        getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_contracts);
+                        var companyContract = getFileNameAnds.Select(x => new HrCompanyContract { CompanyContracts = x.FileName, CompanyId = id }).ToList();
+                        await unitOfWork.CompanyContracts.AddRangeAsync(companyContract);
+                        await unitOfWork.CompleteAsync();
+                    }
                 }
             }
             else
             {
+                var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
                 if (obj.ListOfsContract.Any())
                 {
-                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
                     var filenames = obj.ListOfsContract.Select(x => x.CompanyContracts).ToList();
                     _fileServer.RemoveFiles(directoryName, filenames);
-                    getFileNameAnds = null;
+                    unitOfWork.CompanyContracts.RemoveRange([.. obj.ListOfsContract]);
+                    await unitOfWork.CompleteAsync();
+                    unitOfWork.CompanyContracts.RemoveRange([.. obj.ListOfsContract]);
+                    await unitOfWork.CompleteAsync();
                 }
             }
 
             #endregion
 
-            #region UpdateTableCompanyContracts
-            await unitOfWork.CompanyContracts.UpdateCompanyContractFileNames(getFileNameAnds);
-            #endregion
-
-            #region UpdateFileCompanyLicenses
-            if (model.company_licenses is not null)
+            #region UpdateCompanyLicesnses
+            if (model.company_contracts is not null)
             {
                 directoryTypes = HrDirectoryTypes.CompanyLicesnses;
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
                 if (obj.Licenses.Any())
                 {
                     var filenames = obj.Licenses.Select(x => x.LicenseName).ToList();
-                    var Ids = obj.Licenses.Select(x => x.Id).ToList();
                     _fileServer.RemoveFiles(directoryName, filenames);
-                    getLicenseFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_licenses, Ids);
+                    unitOfWork.CompanyLicenses.RemoveRange([.. obj.Licenses]);
+                    await unitOfWork.CompleteAsync();
+                    unitOfWork.CompanyLicenses.RemoveRange([.. obj.Licenses]);
+                    await unitOfWork.CompleteAsync();
+                    var result = await unitOfWork.CompleteAsync();
+                    if (result > 0)
+                    {
+                        getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_licenses);
+                        var companyContract = getFileNameAnds.Select(x => new CompanyLicense { LicenseName = x.FileName, CompanyId = id }).ToList();
+                        await unitOfWork.CompanyLicenses.AddRangeAsync(companyContract);
+                        await unitOfWork.CompleteAsync();
+                    }
                 }
             }
             else
             {
+                directoryTypes = HrDirectoryTypes.CompanyLicesnses;
+                var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
                 if (obj.Licenses.Any())
                 {
-                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
                     var filenames = obj.Licenses.Select(x => x.LicenseName).ToList();
                     _fileServer.RemoveFiles(directoryName, filenames);
-                    getLicenseFileNameAnds = null;
+                    unitOfWork.CompanyLicenses.RemoveRange([.. obj.Licenses]);
+                    await unitOfWork.CompleteAsync();
+                    unitOfWork.CompanyLicenses.RemoveRange([.. obj.Licenses]);
+                    await unitOfWork.CompleteAsync();
                 }
             }
-
-            #endregion
-
-            #region UpdateTableCompanyLicenses
-            await unitOfWork.CompanyLicenses.UpdateCompanyLicenseFileNames(getLicenseFileNameAnds);
 
             #endregion
 

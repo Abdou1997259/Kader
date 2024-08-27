@@ -21,9 +21,8 @@ namespace Kader_System.Services.IServices.AppServices
         /// </summary>
         /// <param name="moduleName"></param>
         /// <param name="files"></param>
-        /// <param name="FileIds"></param>
         /// <returns>new list of file names with GUID</returns>
-        public Task<List<GetFileNameAndExtension>> UploadFilesAsync(string moduleName, IFormFileCollection files, List<int> FileIds = null);
+        public Task<List<GetFileNameAndExtension>> UploadFilesAsync(string moduleName, IFormFileCollection files);
         /// <summary>
         /// Remove file from wwwroot
         /// </summary>
@@ -34,7 +33,8 @@ namespace Kader_System.Services.IServices.AppServices
         /// </summary>
         /// <param name="ModuleName"></param>
         /// <param name="fileNames"></param>
-        public void RemoveFiles(string ModuleName, List<string> fileNames);
+        /// <returns>number of removed files</returns>
+        public int RemoveFiles(string ModuleName, List<string> fileNames);
 
         /// <summary>
         /// Remove all files in Directory from wwwroot

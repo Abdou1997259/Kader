@@ -14,20 +14,12 @@ namespace Kader_System.DataAccess.Repositories.HR
             return result;
         }
 
-        public async Task<int> UpdateCompanyContractFileNames(List<GetFileNameAndExtension> fileNames)
+        public async Task<int> UpdateCompanyContractFileNames(int id,string newFileName)
         {
-            var result = 0;
-            if (fileNames is null)
-                return result;
-
-            foreach (var file in fileNames)
-            {
-                result = (await context.CompanyContracts.
-                                   AsNoTracking().Where(x => x.Id == file.fileId).
-                                   ExecuteUpdateAsync(x => x.
-                                   SetProperty(p => p.CompanyContracts, file.FileName).
-                                   SetProperty(p => p.CompanyContractsExtension, file.FileExtension))) + result;
-            }
+            var result = await context.CompanyContracts
+                                  .Where(x => x.Id == id).
+                                  ExecuteUpdateAsync(x => x.
+                                  SetProperty(p => p.CompanyContracts, newFileName));
             return result;
         }
     }
