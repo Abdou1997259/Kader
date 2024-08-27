@@ -86,6 +86,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              HiringDate = employee.HiringDate,
                              ImmediatelyDate = employee.ImmediatelyDate,
                              Id = employee.Id,
+                             
                              JobId = employee.JobId,
                              JobNumber = employee.JobNumber,
                              MaritalStatusId = employee.MaritalStatusId,
@@ -336,6 +337,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                         marital_status_name = lang == Localization.Arabic ? (marital != null ? marital.Name : "") : (marital != null ? marital.NameInEnglish : ""),
                         Id = emp.Id,
                         company_name = lang == Localization.Arabic ? (company != null ? company.NameAr : "") : (company != null ? company.NameEn : ""),
+                        Company = lang == Localization.Arabic ? (company != null ? company.NameAr : "") : (company != null ? company.NameEn : ""),
                         Shift = lang == Localization.Arabic ? (shift != null ? shift.Name_ar : "") : (shift != null ? shift.Name_en : ""),
                         employee_loans_count = l != null ? loanCounts.Count  : 0,
                         SalaryPaymentWay = lang == Localization.Arabic ? (salary != null ? salary.Name : "") : (salary != null ? salary.NameInEnglish : ""),

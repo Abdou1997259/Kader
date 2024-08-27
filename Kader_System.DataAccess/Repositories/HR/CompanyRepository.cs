@@ -20,6 +20,7 @@ public class CompanyRepository(KaderDbContext context) : BaseRepository<HrCompan
                     join m in _context.Managements
                     on e.ManagementId equals m.Id
                     where e.CompanyId == companyId
+                    orderby e.Id
                     select new EmployeeOfCompanyResponse
                     {
                         id = companyId,
@@ -53,11 +54,11 @@ public class CompanyRepository(KaderDbContext context) : BaseRepository<HrCompan
 
         if (filter is not null)
             query = query.Where(filter);
-
-        if (take.HasValue)
-            query = query.Take(take.Value);
         if (skip.HasValue)
             query = query.Skip(skip.Value);
+        if (take.HasValue)
+            query = query.Take(take.Value);
+        var querystring = query.ToQueryString();
         return await query.ToListAsync();
 
 
