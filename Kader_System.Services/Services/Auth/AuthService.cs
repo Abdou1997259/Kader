@@ -1253,7 +1253,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
 
         var pathFolder = hrDirectory.GetModuleNameWithType(moduleName);
-        var fullPath = Path.Combine(pathFolder, user.ImagePath);
+        var fullPath = Path.Combine(pathFolder, user.ImagePath ?? "");
         var image = fullPath;
         var currentTitles = user.CurrentTitleId;
         var currentCompany = user.CurrentCompanyId;
