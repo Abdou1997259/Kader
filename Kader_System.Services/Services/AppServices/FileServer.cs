@@ -23,14 +23,13 @@ namespace Kader_System.Services.Services.AppServices
         {
             var filePath = Path.Combine(serverPath, Path.Combine(fileParts));
             var fileName = Path.GetFileName(filePath);
-            var memory = new MemoryStream();
+       
             using var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             if (stream != null)
             {
-                await stream.CopyToAsync(memory);
-                memory.Position = 0;
+               
                 var contentType = GetContentType(filePath);
-                return new FileStreamResult(memory, contentType)
+                return new FileStreamResult(stream, contentType)
                 {
                     FileDownloadName = fileName,
                 };
