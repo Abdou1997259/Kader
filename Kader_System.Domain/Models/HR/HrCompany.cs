@@ -14,8 +14,8 @@ public class HrCompany : BaseEntity
     [ForeignKey(nameof(CompanyTypeId))]
     public HrCompanyType CompanyType { get; set; } = default!;
 
-    public ICollection<HrManagement> HrManagements { get; set; }
-
+    public ICollection<HrManagement> HrManagements { get; set; }=new HashSet<HrManagement>();
+    public ICollection<HrEmployee> HrEmployees { get; set; }   =new HashSet<HrEmployee>();
     
     public ICollection<HrCompanyContract> ListOfsContract { get; set; } = [];
     public ICollection<CompanyLicense> Licenses { get; set; } = [];
