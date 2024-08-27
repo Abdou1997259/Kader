@@ -242,7 +242,6 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     }
     [HttpGet(ApiRoutes.User.GetMyProfile)]
 
-    [Permission(Permission.View, 5)]
 
     public async Task<IActionResult> GetMyProfile()
     {
