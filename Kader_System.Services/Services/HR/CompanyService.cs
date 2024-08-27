@@ -453,7 +453,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
                 var directoryTypes = HrDirectoryTypes.CompanyLicesnses;
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
                 getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_licenses);
-                var companyContract = getFileNameAnds.Select(x => new CompanyLicense { LicenseName = x.FileName, CompanyId = id }).ToList();
+                var companyContract = getFileNameAnds.Select(x => new CompanyLicense { LicenseName = x.FileName, CompanyId = id,LicenseExtension = Path.GetExtension(x.FileName) }).ToList();
                 await unitOfWork.CompanyLicenses.AddRangeAsync(companyContract);
                 await unitOfWork.CompleteAsync();
             }
