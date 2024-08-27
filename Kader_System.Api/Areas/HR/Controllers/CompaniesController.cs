@@ -1,4 +1,5 @@
 ﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.Constants.Enums;
 using Kader_System.Services.IServices.HTTP;
 using Newtonsoft.Json;
 using Serilog;
@@ -132,6 +133,26 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     public async Task<IActionResult> DeleteCompanyAsync(int id)
     {
         var response = await service.DeleteCompanyAsync(id);
+        if (response.Check)
+            return Ok(response);
+        else if (!response.Check)
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+    } 
+    [HttpDelete(ApiRoutes.Company.DeleteCompanyContractAttachement)]
+    [Permission(Permission.Delete, 8)]
+    public async Task<IActionResult> DeleteCompanyContractAttachement([FromRoute]int id,[FromQuery]HrDirectoryTypes types)
+    {
+        var response = new Response<string>();
+        if (types == HrDirectoryTypes.CompanyContracts)
+        {
+            response = await service.RemoveCompanyContractsAttachement(id, HrDirectoryTypes.CompanyContracts);
+        }
+        else if(types == HrDirectoryTypes.CompanyLicesnses)
+        {
+            response = await service.RemoveCompanyLicensesAttachement(id, HrDirectoryTypes.CompanyLicesnses);
+        }
+
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
