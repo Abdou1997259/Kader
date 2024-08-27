@@ -774,7 +774,12 @@ namespace Kader_System.Services.Services.HR
                 obj.IsActive = model.is_active;
                 obj.EmployeeImage = imageFile?.FileName;
                 obj.EmployeeImageExtension = imageFile?.FileExtension;
-           
+                obj.ReligionId=model.religion_id;
+                obj.MaritalStatusId = model.marital_status_id;  
+                if(model.children_number != null)
+                {
+                    obj.ChildrenNumber=model.children_number;   
+                }
                 
                 obj.ListOfAttachments = employeeAttachments?.Select(f => new HrEmployeeAttachment
                 {
