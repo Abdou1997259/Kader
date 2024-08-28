@@ -28,7 +28,7 @@ public class MainScreenCategoryService(KaderDbContext context, IUnitOfWork unitO
                     Screen_cat_title = lang == Localization.Arabic ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
                     Screen_main_image = Path.Combine(SD.GoRootPath.GetSettingImagesPath, x.screenCat.Screen_main_image ?? "")
                 }, orderBy: x =>
-                  x.OrderByDescending(x => x.Id));
+                  x.OrderBy(x => x.Id));
 
         if (!result.Any())
         {
