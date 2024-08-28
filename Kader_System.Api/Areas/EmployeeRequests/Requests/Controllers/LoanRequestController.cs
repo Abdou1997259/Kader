@@ -5,6 +5,7 @@ using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.IServices.Trans;
 using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
@@ -102,7 +103,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> ApproveLoanRequests([FromRoute] int id)
         {
-            var response = await service.ApproveRequest(id);
+            var response = await service.ApproveRequest(id,requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

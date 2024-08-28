@@ -120,6 +120,12 @@
   <data name="Allowance" xml:space="preserve">
     <value>البدل</value>
   </data>
+  <data name="Approved" xml:space="preserve">
+    <value>تمت الموافقة بنجاج</value>
+  </data>
+  <data name="ApprovedAready" xml:space="preserve">
+    <value>تمت الموافقه بالفعل </value>
+  </data>
   <data name="BalanceNotEnough" xml:space="preserve">
     <value>الرصيد غير كافي</value>
   </data>
@@ -203,6 +209,9 @@
   </data>
   <data name="MangerAlready" xml:space="preserve">
     <value>مدير لاداره اخري  لا يمكن تعيين اكثر من مدير </value>
+  </data>
+  <data name="NotApproved" xml:space="preserve">
+    <value>لم تتم الموافقة</value>
   </data>
   <data name="NotFoundData" xml:space="preserve">
     <value>لا يوجد بيانات</value>
