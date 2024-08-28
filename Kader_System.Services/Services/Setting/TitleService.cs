@@ -382,7 +382,7 @@ namespace Kader_System.Services.Services.Setting
                     if (all)
                     {
                         var userPermissionQuery = await unitOfWork.TitlePermissionRepository
-                                .GetSpecificSelectAsync( x => x.SubScreenId == assignedPermission.SubId, x => x, includeProperties: "ScreenSub,Title");
+                                .GetSpecificSelectTrackingAsync( x => x.SubScreenId == assignedPermission.SubId, x => x, includeProperties: "ScreenSub,Title");
 
                         if (userPermissionQuery.Count() > 0)
                         {
@@ -416,7 +416,7 @@ namespace Kader_System.Services.Services.Setting
                             {
                                 if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
                                 {
-                                    var removeduserpermssion = (await unitOfWork.UserPermssionRepositroy.GetSpecificSelectTrackingAsync(x => x.UserId == userId && x.TitleId == id && x.SubScreenId == assignedPermission.SubId, x => x)).ToList();
+                                    var removeduserpermssion = (await unitOfWork.UserPermssionRepositroy.GetSpecificSelectTrackingAsync(x =>  x.TitleId == id && x.SubScreenId == assignedPermission.SubId, x => x)).ToList();
 
                                     unitOfWork.UserPermssionRepositroy.RemoveRange(removeduserpermssion);
                                     await unitOfWork.CompleteAsync();
