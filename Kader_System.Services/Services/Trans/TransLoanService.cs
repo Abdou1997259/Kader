@@ -211,8 +211,9 @@ namespace Kader_System.Services.Services.Trans
                          LoanAmount = x.LoanAmount,
                          StartCalculationDate = x.StartCalculationDate,
                          EndCalculationDate = x.EndCalculationDate,
+                         
                          StartLoanDate = x.StartLoanDate,
-                       
+                         LoanDate= new DateOnly(x.Add_date.Value.Year, x.Add_date.Value.Month, x.Add_date.Value.Month),
                          AdvanceType = x.AdvanceType,
                          MonthlyDeducted = x.MonthlyDeducted,
                          InstallmentCount = x.InstallmentCount,
