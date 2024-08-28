@@ -47,7 +47,7 @@ namespace Kader_System.Domain.DTOs.Response.EmployeesRequests
     {
         public int InstallmentsCount { get; set; }
         public DateOnly StartDate { get; set; }
-        public double Amount { get; set; }
+        public decimal Amount { get; set; }
     }
     public class ListOfSalaryIncreaseRequestResponse : EmployeeRequestsResponse
     {

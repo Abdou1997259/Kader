@@ -7,7 +7,7 @@
         public DateOnly StartLoanDate { get; set; }
         public DateOnly EndDoDate { get; set; }
         public DateOnly DocumentDate { get; set; }
-        public DateOnly AddedOn { get; set; }
+        public DateTime AddedOn { get; set; }
 
         public string LoanType { get; set; }
         public short AdvanceType { get; set; }

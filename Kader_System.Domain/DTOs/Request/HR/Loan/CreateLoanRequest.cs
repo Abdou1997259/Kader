@@ -4,15 +4,11 @@ namespace Kader_System.Domain.DTOs.Request.HR.Loan
 {
     public class CreateLoanRequest
     {
-        [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public DateOnly LoanDate { get; set; }
+      
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public DateOnly StartLoanDate { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public DateOnly EndDoDate { get; set; }
-        [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public DateOnly DocumentDate { get; set; }
-        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+
 
         public short AdvanceType { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]

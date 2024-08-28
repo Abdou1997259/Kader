@@ -5,10 +5,10 @@
     {
         [Key]
         public int Id { get; set; }
-        public DateOnly LoanDate { get; set; }
+ 
         public DateOnly StartLoanDate { get; set; }
-        public DateOnly EndDoDate { get; set; }
-        public DateOnly DocumentDate { get; set; }
+
+
         public short AdvanceType { get; set; }
         public decimal MonthlyDeducted { get; set; }
 

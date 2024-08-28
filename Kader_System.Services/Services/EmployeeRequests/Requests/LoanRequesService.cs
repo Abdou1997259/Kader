@@ -3,6 +3,7 @@ using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.DTOs.Response.Loan;
+using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
@@ -14,10 +15,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class LoanRequesService(IUnitOfWork _unitOfWork, IStringLocalizer<SharedResource> _sharLocalizer, IRequestService _requestService, IFileServer _fileServer, IHttpContextAccessor _httpContextAccessor, KaderDbContext _context, IMapper _mapper) : ILoanRequestService
+    public class LoanRequesService(IUnitOfWork _unitOfWork, ITransLoanService loanService, IStringLocalizer<SharedResource> _sharLocalizer, IRequestService _requestService, IFileServer _fileServer, IHttpContextAccessor _httpContextAccessor, KaderDbContext _context, IMapper _mapper) : ILoanRequestService
     {
 
+        private readonly ITransLoanService _loanService = loanService;
         #region ListOfLoanRequest
+
         public async Task<Response<IEnumerable<ListOfLoanRequestResponse>>> ListOfLoanRequest()
         {
             var result = _unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
@@ -265,22 +268,63 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region Status
-        public async Task<Response<string>> ApproveRequest(int requestId)
+        public async Task<Response<string>> ApproveRequest(int requestId,string lang)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var loanRequest = await _unitOfWork.LoanRequestRepository.GetFirstOrDefaultAsync(x => x.Id == requestId);
+            if (loanRequest == null)
+            {
+                var msg = _sharLocalizer[Localization.NotFound];
+                return new()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+                };
+            }
+            if(loanRequest.StatuesOfRequest.ApporvalStatus==(int)RequestStatusTypes.Approved)
+            {
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.ApprovedAready]
+                };
+
+            }
+
+
+
             var result = await _unitOfWork.LoanRequestRepository.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+            await _loanService.CreateLoanAsync(new Domain.DTOs.Request.HR.Loan.CreateLoanRequest
+            {
+                LoanAmount = loanRequest.Amount,
+                StartCalculationDate = loanRequest.StartDate,
+                InstallmentCount = loanRequest.InstallmentsCount,
+                EmployeeId = loanRequest.EmployeeId.Value,
+                StartLoanDate = loanRequest.StartDate,
+                EndCalculationDate=loanRequest.StartDate.AddMonths(loanRequest.InstallmentsCount-1),
+                MonthlyDeducted=  (decimal)(loanRequest.Amount /loanRequest.InstallmentsCount),
+                AdvanceType=1
+               
+
+
+
+            },lang);
+                      
+
+
             if (result > 0)
             {
                 return new Response<string>()
                 {
                     Check = true,
-                    Msg = "Approved sucessfully"
+                    Msg = _sharLocalizer[Localization.Approved]
                 };
             }
             return new Response<string>()
             {
                 Check = false,
-                Msg = "Cannot approve , request is not pending or is deleted"
+                Msg = _sharLocalizer[Localization.NotApproved]
             };
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
