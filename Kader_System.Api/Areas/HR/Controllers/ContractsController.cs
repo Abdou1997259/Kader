@@ -1,4 +1,5 @@
 ﻿using Kader_System.Api.Helpers;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.HR.Controllers
@@ -8,9 +9,10 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiController]
     //[Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
-    public class ContractsController(IContractService contractService, IRequestService requestService) : ControllerBase
+    public class ContractsController(IContractService contractService, IRequestService requestService,IFileServer fileServer) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
+        private readonly IFileServer _fileServer = fileServer;
 
         [HttpGet(ApiRoutes.Contract.ListOfContracts)]
         [Permission(Permission.View ,17)]
@@ -63,12 +65,19 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [HttpGet(ApiRoutes.Contract.DownloadDocument)]
         public async Task<IActionResult> GetFileStreamResultAsync(int contractId)
         {
-            var response = await contractService.GetFileStreamResultAsync(contractId, Modules.HR);
+            var response = await contractService.GetFileStreamResultAsync(contractId);
             if (response.Check)
-                return response.Data;
-            else if (!response.Check)
-                return BadRequest(response);
-            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+            {
+                if (response.Data.Length > 0)
+                {
+                    var contentType = (string)_fileServer.GetContentType(response.DynamicData);
+                    return File(response.Data, contentType);
+                }
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+
+            }
+            else
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         }
 
         #region Create

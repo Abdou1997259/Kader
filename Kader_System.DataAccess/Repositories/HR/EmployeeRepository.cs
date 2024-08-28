@@ -15,7 +15,9 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
         {
             HrDirectoryTypes directoryTypes = new();
             directoryTypes = HrDirectoryTypes.Attachments;
-            var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+            var directoryAttachmentsName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+            directoryTypes = HrDirectoryTypes.EmployeeProfile;
+            var directoryProfileName = directoryTypes.GetModuleNameWithType(Modules.Employees);
             var employeeAllowances = context.TransAllowances.Where(e => e.EmployeeId == id && !e.IsDeleted);
             var employeeVacations = context.TransVacations.Where(e => e.EmployeeId == id && !e.IsDeleted);
         
@@ -98,7 +100,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              SalaryPaymentWayId = employee.SalaryPaymentWayId,
                              ShiftId = employee.ShiftId,
                              TotalSalary = cGroup.FixedSalary == null ? 0 : cGroup.FixedSalary + cGroup.HousingAllowance == null ? cGroup.HousingAllowance : cGroup.HousingAllowance,                            
-                             EmployeeImage = Path.Combine(Modules.Employees, employee.EmployeeImage ==null ? " ":employee.EmployeeImage),
+                             EmployeeImage = Path.Combine(directoryProfileName, employee.EmployeeImage ==null ? " ":employee.EmployeeImage),
                              qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
                              company_name = lang == Localization.Arabic ? com.NameAr : com.NameEn,
                              management_name = lang == Localization.Arabic ? man.NameAr : man.NameEn,
@@ -124,7 +126,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                                  FileName = s.FileName,
                                  Extention = s.FileExtension,
                                  Id = s.Id,
-                                 file_path = s.FileName != null ? Path.Combine(directoryName, s.FileName) : null,
+                                 file_path = s.FileName != null ? Path.Combine(directoryAttachmentsName, s.FileName) : null,
                              }).ToList()
 
                          };
@@ -257,7 +259,11 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
         int? take = null, string lang = "ar"
        )
     {
-        
+        HrDirectoryTypes directoryTypes = new();
+        directoryTypes = HrDirectoryTypes.Attachments;
+        var directoryAttachmentsName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+        directoryTypes = HrDirectoryTypes.EmployeeProfile;
+        var directoryProfileName = directoryTypes.GetModuleNameWithType(Modules.Employees);
 
         var employees = context.Employees.Where(filter);
         var loanCounts = _context.Loans

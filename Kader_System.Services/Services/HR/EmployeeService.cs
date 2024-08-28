@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.DTOs;
+using Kader_System.Domain.DTOs.Request;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.Services.AppServices;
 using Microsoft.AspNetCore.Mvc;
@@ -9,12 +10,12 @@ namespace Kader_System.Services.Services.HR
 {
     public class EmployeeService(IUnitOfWork unitOfWork,
         IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper,
-          IHttpContextAccessor _accessor ,
+          IHttpContextAccessor _accessor,
           IFileServer fileServer
     , UserManager<ApplicationUser> userManager) : IEmployeeService
     {
         private HrEmployee _instanceEmployee;
-   
+
         #region Retreive
 
         public async Task<Response<IEnumerable<ListOfEmployeesResponse>>> ListOfEmployeesAsync(string lang)
@@ -67,19 +68,19 @@ namespace Kader_System.Services.Services.HR
             directoryTypes = HrDirectoryTypes.Attachments;
 
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-           var pathOfroot=fileServer.GetFilePath(directoryName);
+            var pathOfroot = fileServer.GetFilePath(directoryName);
             var attachments = unitOfWork.EmployeeAttachments.GetSpecificSelectAsync(x => x.EmployeeId == empId, x => new
             {
-                id=x.Id,
+                id = x.Id,
                 file_name = x.FileName,
-                file_extention=x.FileExtension,
-                file_path=Path.Combine(pathOfroot, x.FileName),
+                file_extention = x.FileExtension,
+                file_path = Path.Combine(pathOfroot, x.FileName),
             });
 
 
             return new Response<object>
             {
-                Data= attachments,
+                Data = attachments,
             };
 
 
@@ -133,7 +134,7 @@ namespace Kader_System.Services.Services.HR
                     BirthDate = obj.BirthDate,
                     ChildrenNumber = obj.ChildrenNumber,
                     DepartmentId = obj.DepartmentId,
-                    title_id=obj.User.CurrentTitleId,
+                    title_id = obj.User.CurrentTitleId,
                     Email = obj.Email,
                     EmployeeImageExtension = obj.EmployeeImageExtension,
                     EmployeeTypeId = obj.EmployeeTypeId,
@@ -150,12 +151,12 @@ namespace Kader_System.Services.Services.HR
                     NationalId = obj.NationalId,
                     NationalityId = obj.NationalityId,
                     Phone = obj.Phone,
-                    employee_attachments =obj.ListOfAttachments.Select(s=>new EmployeeAttachmentForEmp
+                    employee_attachments = obj.ListOfAttachments.Select(s => new EmployeeAttachmentForEmp
                     {
-                        Id=s.Id,
-                        file_path=fileServer.GetFilePath(s.FileName),
-                        FileName=s.FileName,
-                        Extention=s.FileExtension
+                        Id = s.Id,
+                        file_path = fileServer.GetFilePath(s.FileName),
+                        FileName = s.FileName,
+                        Extention = s.FileExtension
                     }).ToList(),
                     QualificationId = obj.QualificationId,
                     ReligionId = obj.ReligionId,
@@ -163,7 +164,7 @@ namespace Kader_System.Services.Services.HR
                     ShiftId = obj.ShiftId,
                     TotalSalary = obj.TotalSalary,
                     Username = obj.User!.UserName,
-                    EmployeeImage = fileServer.GetFilePath(Modules.Employees,obj.EmployeeImage),
+                    EmployeeImage = fileServer.GetFilePath(Modules.Employees, obj.EmployeeImage),
                     qualification_name = lang == Localization.Arabic ? obj.Qualification!.NameAr : obj.Qualification!.NameEn,
                     company_name = lang == Localization.Arabic ? obj.Company!.NameAr : obj.Company!.NameEn,
                     management_name = lang == Localization.Arabic ? obj.Management!.NameAr : obj.Management!.NameEn,
@@ -183,7 +184,7 @@ namespace Kader_System.Services.Services.HR
 
         public Response<GetEmployeeByIdResponse> GetEmployeeById(int id, string lang)
         {
-            var emp= unitOfWork.Employees.GetEmployeeByIdAsync(id, lang);
+            var emp = unitOfWork.Employees.GetEmployeeByIdAsync(id, lang);
 
 
             return emp;
@@ -196,11 +197,12 @@ namespace Kader_System.Services.Services.HR
             Expression<Func<EmployeesData, bool>> filterSearch = x =>
                 (string.IsNullOrEmpty(model.Word)
                  || x.FullName.Contains(model.Word));
-                 //|| x.Job.Contains(model.Word)
-                 //|| x.Department.Contains(model.Word)
-                 //|| x.Nationality.Contains(model.Word)
-                 //|| x.Company.Contains(model.Word)
-                 //|| x.Management.Contains(model.Word));
+            //|| x.Job.Contains(model.Word)
+            //|| x.Department.Contains(model.Word)
+            //|| x.Nationality.Contains(model.Word)
+            //|| x.Company.Contains(model.Word)
+            //|| x.Management.Contains(model.Word));
+
 
             var totalRecords = await unitOfWork.Employees.CountAsync(filter: filter);
             int page = 1;
@@ -323,8 +325,8 @@ namespace Kader_System.Services.Services.HR
             try
             {
                 var user = _accessor!.HttpContext!.User as ClaimsPrincipal;
-                var currentCompany=  int.Parse( user.GetCurrentCompany());
-                var companies = await unitOfWork.Companies.GetSpecificSelectAsync(filter => filter.IsDeleted == false&& filter.Id==currentCompany,
+                var currentCompany = int.Parse(user.GetCurrentCompany());
+                var companies = await unitOfWork.Companies.GetSpecificSelectAsync(filter => filter.IsDeleted == false && filter.Id == currentCompany,
                     select: x => new
                     {
                         Id = x.Id,
@@ -333,21 +335,21 @@ namespace Kader_System.Services.Services.HR
                     });
 
                 var departments = await unitOfWork.Departments.GetSpecificSelectAsync(
-                    filter: filter => filter.IsDeleted == false && filter.Management.CompanyId==currentCompany
+                    filter: filter => filter.IsDeleted == false && filter.Management.CompanyId == currentCompany
                     , select: x => new
                     {
                         Id = x.Id,
                         Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
                         ManagementId = x.ManagementId
 
-                    },includeProperties: "Management");
+                    }, includeProperties: "Management");
                 var jobs = await unitOfWork.Jobs.GetSpecificSelectAsync(
                     filter: filter => filter.IsDeleted == false
                     , select: x => new
                     {
                         Id = x.Id,
                         Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
-                        HasNeedLicense=   x.HasNeedLicense
+                        HasNeedLicense = x.HasNeedLicense
 
                     });
                 var vacations = await unitOfWork.Vacations.GetSpecificSelectAsync(
@@ -426,7 +428,7 @@ namespace Kader_System.Services.Services.HR
                         Id = x.Id,
                         Name = lang == Localization.Arabic ? x.Name : x.NameInEnglish,
                     });
-         
+
 
 
 
@@ -462,8 +464,8 @@ namespace Kader_System.Services.Services.HR
                         salary_payments_ways = salary_payments_ways.ToArray(),
                         shifts = shifts.ToArray(),
                         vacations = vacations.ToArray(),
-                        titles= titles.ToArray(),
-                      
+                        titles = titles.ToArray(),
+
                     }
                 };
             }
@@ -523,7 +525,7 @@ namespace Kader_System.Services.Services.HR
                     Check = false
                 };
             }
-            if(!await unitOfWork.Vacations.ExistAsync(model.vacation_id))
+            if (!await unitOfWork.Vacations.ExistAsync(model.vacation_id))
             {
 
                 string emp = shareLocalizer[Localization.Vacation];
@@ -539,7 +541,7 @@ namespace Kader_System.Services.Services.HR
             }
             int CurrentCompanyYearId = 0;
             if (_accessor.HttpContext.User.GetUserId() is not null)
-                    CurrentCompanyYearId = (await unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == _accessor.HttpContext.User.GetUserId())).CompanyYearId;
+                CurrentCompanyYearId = (await unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == _accessor.HttpContext.User.GetUserId())).CompanyYearId;
 
 
             using var transaction = unitOfWork.BeginTransaction();
@@ -551,7 +553,7 @@ namespace Kader_System.Services.Services.HR
                 if (model.employee_image != null)
                 {
                     imageFile.FileName = await fileServer.UploadFileAsync(Modules.Employees, model.employee_image);
-                    imageFile.FileExtension = Path.GetExtension(imageFile.FileName);        
+                    imageFile.FileExtension = Path.GetExtension(imageFile.FileName);
                 }
 
                 List<GetFileNameAndExtension> employeeAttachments = [];
@@ -561,9 +563,9 @@ namespace Kader_System.Services.Services.HR
                     directoryTypes = HrDirectoryTypes.Attachments;
 
                     var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-                    employeeAttachments =await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
+                    employeeAttachments = await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
                 }
-                
+
                 newEmployee.EmployeeImage = imageFile?.FileName;
                 newEmployee.EmployeeImageExtension = imageFile?.FileExtension;
                 newEmployee.ListOfAttachments = employeeAttachments.Select(f => new HrEmployeeAttachment
@@ -574,25 +576,25 @@ namespace Kader_System.Services.Services.HR
                 }).ToList();
                 await unitOfWork.Employees.AddAsync(newEmployee);
 
-                
+
                 var newUser = await unitOfWork.Users.AddAsync(new ApplicationUser()
                 {
                     UserName = model.username,
                     Id = Guid.NewGuid().ToString(),
-                    PhoneNumber=model.phone,
-                    JobId=newEmployee.JobId,
-                   
+                    PhoneNumber = model.phone,
+                    JobId = newEmployee.JobId,
+
                     NormalizedUserName = model.username.ToUpper(),
                     Email = newEmployee.Email,
                     NormalizedEmail = newEmployee.Email.ToUpper(),
                     EmailConfirmed = true,
                     IsActive = true,
-                    FinancialYear=2023,
-                    CurrentCompanyId=newEmployee.CompanyId,
-                    TitleId=model.title_id.ToString(),
-                    CurrentTitleId=model.title_id,
-                    CompanyYearId= CurrentCompanyYearId,
-                    FullName =newEmployee.FullNameAr,
+                    FinancialYear = 2023,
+                    CurrentCompanyId = newEmployee.CompanyId,
+                    TitleId = model.title_id.ToString(),
+                    CurrentTitleId = model.title_id,
+                    CompanyYearId = CurrentCompanyYearId,
+                    FullName = newEmployee.FullNameAr,
                     PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, model.password),
                     VisiblePassword = model.password,
                     CompanyId = model.CompanyId.ToString(),
@@ -614,7 +616,7 @@ namespace Kader_System.Services.Services.HR
                         x => x.TitleId == model.title_id,
                         select: x => new UserPermission
                         {
-                            TitleId=model.title_id,
+                            TitleId = model.title_id,
                             UserId = newUser.Id,
                             SubScreenId = x.SubScreenId,
                             Permission = x.Permissions
@@ -667,7 +669,11 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<CreateEmployeeRequest>> UpdateEmployeeAsync(int id, CreateEmployeeRequest model)
         {
-
+            HrDirectoryTypes directoryTypes = new();
+            directoryTypes = HrDirectoryTypes.Attachments;
+            var directoryAttachmentsName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+            directoryTypes = HrDirectoryTypes.EmployeeProfile;
+            var directoryProfileName = directoryTypes.GetModuleNameWithType(Modules.Employees);
 
             Expression<Func<HrEmployee, bool>> filter = x => x.IsDeleted == false && x.Id == id;
             var obj = await unitOfWork.Employees.GetFirstOrDefaultAsync(filter, includeProperties: $"{nameof(_instanceEmployee.ListOfAttachments)}");
@@ -711,17 +717,16 @@ namespace Kader_System.Services.Services.HR
                 #region UpdateCompanyContracts
                 if (model.employee_attachments is not null)
                 {
-                    var directoryTypes = HrDirectoryTypes.Attachments;
-                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-                    var getFileNameAnds = await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
-                    var employeeAttachment = getFileNameAnds.Select(x => new HrEmployeeAttachment { FileName = x.FileName,FileExtension = Path.GetExtension(x.FileName) }).ToList();
+                    var getFileNameAnds = await fileServer.UploadFilesAsync(directoryAttachmentsName, model.employee_attachments);
+                    var employeeAttachment = getFileNameAnds.Select(x => new HrEmployeeAttachment { EmployeeId = id, FileName = x.FileName, FileExtension = Path.GetExtension(x.FileName) }).ToList();
                     await unitOfWork.EmployeeAttachments.AddRangeAsync(employeeAttachment);
                     await unitOfWork.CompleteAsync();
                 }
                 GetFileNameAndExtension imageFile = new();
                 if (model.employee_image is not null)
                 {
-                    imageFile.FileName = await fileServer.UploadFileAsync(Modules.Employees, model.employee_image);
+                    fileServer.RemoveFile(directoryProfileName, obj.EmployeeImage);
+                    imageFile.FileName = await fileServer.UploadFileAsync(directoryProfileName, model.employee_image);
                     imageFile.FileExtension = Path.GetExtension(imageFile.FileName);
                 }
                 #endregion
@@ -762,13 +767,13 @@ namespace Kader_System.Services.Services.HR
                 obj.IsActive = model.is_active;
                 obj.EmployeeImage = imageFile?.FileName;
                 obj.EmployeeImageExtension = imageFile?.FileExtension;
-                obj.ReligionId=model.religion_id;
-                obj.MaritalStatusId = model.marital_status_id;  
-                if(model.children_number != null)
+                obj.ReligionId = model.religion_id;
+                obj.MaritalStatusId = model.marital_status_id;
+                if (model.children_number != null)
                 {
-                    obj.ChildrenNumber=model.children_number;   
+                    obj.ChildrenNumber = model.children_number;
                 }
-               
+
                 var userExist = await userManager.FindByNameAsync(model.username);
                 if (userExist != null)
                 {
@@ -794,12 +799,12 @@ namespace Kader_System.Services.Services.HR
                         PhoneNumber = obj.Phone,
                         IsActive = true,
                         CurrentTitleId = model.title_id,
-                        FullName =obj.FullNameAr, 
-                        CompanyYearId= CurrentCompanyYearId,
+                        FullName = obj.FullNameAr,
+                        CompanyYearId = CurrentCompanyYearId,
                         PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, model.password),
                         Id = Guid.NewGuid().ToString(),
-                        TitleId=model.title_id.ToString(),
-                        
+                        TitleId = model.title_id.ToString(),
+
                         UserName = model.username,
                         NormalizedUserName = model.username.ToUpper(),
 
@@ -861,7 +866,35 @@ namespace Kader_System.Services.Services.HR
             }
         }
 
+        public async Task<Response<string>> UpdateEmployeeAttachemnt(UpdateEmployeeAttachemnt model, int id)
+        {
+            var removeAttachement = await RemoveEmployeeAttachement(id);
+            if (removeAttachement.Check)
+            {
+                var directoryTypes = HrDirectoryTypes.Attachments;
+                var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+                var fileName = await fileServer.UploadFileAsync(directoryName, model.employee_attachment);
+                var employeeAttachement = new HrEmployeeAttachment()
+                {
+                    FileName = fileName,
+                    FileExtension = fileServer.GetFileEXE(fileName),
+                    EmployeeId = (int)removeAttachement.DynamicData,
+                };
+                await unitOfWork.EmployeeAttachments.AddAsync(employeeAttachement);
+                var result = await unitOfWork.CompleteAsync();
+                return new()
+                {
+                    Check = true,
+                    Msg = "Employee Attachment is updated sucessfully"
+                };
+            }
+            return new()
+            {
+                Check = false,
+                Msg = "Employee Attachment is updated sucessfully"
 
+            };
+        }
 
         public async Task<Response<CreateEmployeeRequest>> RestoreEmployeeAsync(int id)
         {
@@ -1013,7 +1046,8 @@ namespace Kader_System.Services.Services.HR
                 return new()
                 {
                     Check = true,
-                    Data = $"Attachement {result} is deleted sucessfully"
+                    Data = $"Attachement {result} is deleted sucessfully",
+                    DynamicData = attachements.EmployeeId,
                 };
             }
             return new()
@@ -1024,8 +1058,68 @@ namespace Kader_System.Services.Services.HR
         }
         #endregion
 
+        #region Download
+        public async Task<Response<byte[]>> DownloadEmployeeAttachement(int id)
+        {
+            var employeeeAttachment = await unitOfWork.EmployeeAttachments.GetByIdAsync(id);
+            if (employeeeAttachment is null)
+            {
+                var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
+                return new Response<byte[]>
+                {
+                    Msg = msg,
+                    Check = false
+                };
+            }
+
+            if (string.IsNullOrEmpty(employeeeAttachment.FileName))
+            {
+                var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
+                return new Response<byte[]>
+                {
+                    Msg = msg,
+                    Check = false
+                };
+            }
+            HrDirectoryTypes directoryTypes = new();
+            directoryTypes = HrDirectoryTypes.Attachments;
+            var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+            if (!fileServer.FileExist(directoryName, employeeeAttachment.FileName))
+            {
+                var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
+                return new Response<byte[]>
+                {
+                    Data = null,
+                    Msg = msg,
+                    Check = false
+                };
+            }
+            try
+            {
+                var fileStream = await fileServer.GetFileBytes(directoryName, employeeeAttachment.FileName);
+                return new Response<byte[]>
+                {
+                    Data = fileStream,
+                    Check = true,
+                    DynamicData = employeeeAttachment.FileName
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new Response<byte[]>
+                {
+                    Msg = $": {ex.Message}",
+                    Check = false
+                };
+            }
+
+        }
 
 
-
+        #endregion
     }
+
+
 }

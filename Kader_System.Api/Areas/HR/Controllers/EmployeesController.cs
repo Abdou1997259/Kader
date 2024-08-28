@@ -1,4 +1,6 @@
 ﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.DTOs.Request;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.HR.Controllers
@@ -8,10 +10,10 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiController]
     //[Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
-    public class EmployeesController(IEmployeeService employeeService, IRequestService requestService) : ControllerBase
+    public class EmployeesController(IEmployeeService employeeService, IRequestService requestService,IFileServer fileServer) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
-
+        private readonly IFileServer _fileServer = fileServer;
         #region Get
 
         [HttpGet(ApiRoutes.Employee.ListOfEmployees)]
@@ -23,7 +25,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
         [HttpGet(ApiRoutes.Employee.GetAllEmployees)]
         [Permission(Permission.View, 13)]
-        public async Task<IActionResult> GetAllEmployeesAsync([FromQuery]GetAllEmployeesFilterRequest request) =>
+        public async Task<IActionResult> GetAllEmployeesAsync([FromQuery] GetAllEmployeesFilterRequest request) =>
             Ok(await employeeService.GetAllEmployeesAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetCurrentHost));
 
 
@@ -31,12 +33,12 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [Permission(Permission.View, 13)]
         public async Task<IActionResult> GetEmployeeByIdAsync(int id)
         {
-            var response =  employeeService.GetEmployeeById(id,requestService.GetRequestHeaderLanguage);
+            var response = employeeService.GetEmployeeById(id, requestService.GetRequestHeaderLanguage);
 
-            var lookUps =await employeeService.GetEmployeesLookUpsData(requestService.GetRequestHeaderLanguage);
+            var lookUps = await employeeService.GetEmployeesLookUpsData(requestService.GetRequestHeaderLanguage);
             var screenLookup = await employeeService.GetDocuments(id);
             response.LookUpsScreen = screenLookup.Data;
-            response.LookUps=lookUps.Data;
+            response.LookUps = lookUps.Data;
 
             if (response.Check)
                 return Ok(response);
@@ -48,12 +50,12 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [Permission(Permission.View, 13)]
         public async Task<IActionResult> GetLookUps()
         {
-          return Ok(await employeeService.GetEmployeesLookUpsData(requestService.GetRequestHeaderLanguage));
+            return Ok(await employeeService.GetEmployeesLookUpsData(requestService.GetRequestHeaderLanguage));
         }
         [HttpGet(ApiRoutes.Employee.GetAllEmpByCompanyId)]
-        public async Task<IActionResult> GetAllEmpByCompanyId([FromRoute]int companyId, [FromQuery] GetAllEmployeesFilterRequest request)
+        public async Task<IActionResult> GetAllEmpByCompanyId([FromRoute] int companyId, [FromQuery] GetAllEmployeesFilterRequest request)
         {
-            return Ok(await employeeService.GetAllEmployeesByCompanyIdAsync(lang:requestService.GetRequestHeaderLanguage,companyId: companyId,model:request,host:requestService.GetCurrentHost));
+            return Ok(await employeeService.GetAllEmployeesByCompanyIdAsync(lang: requestService.GetRequestHeaderLanguage, companyId: companyId, model: request, host: requestService.GetCurrentHost));
         }
         #endregion
 
@@ -83,7 +85,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
         [HttpPut(ApiRoutes.Employee.Restore)]
         [Permission(Permission.Edit, 13)]
-        public async Task<IActionResult> RestoreEmployee([FromRoute]int id)
+        public async Task<IActionResult> RestoreEmployee([FromRoute] int id)
         {
             var response = await employeeService.RestoreEmployeeAsync(id);
             if (response.Check)
@@ -98,6 +100,17 @@ namespace Kader_System.Api.Areas.HR.Controllers
         public async Task<IActionResult> UpdateEmployeeAsyncTask([FromRoute] int id, [FromForm] CreateEmployeeRequest request)
         {
             var response = await employeeService.UpdateEmployeeAsync(id, request);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        [HttpPut(ApiRoutes.Employee.UpdateEmployeeAttachement)]
+        [Permission(Permission.Edit, 13)]
+        public async Task<IActionResult> UpdateEmployeeAttachment([FromRoute] int id, [FromForm] UpdateEmployeeAttachemnt request)
+        {
+            var response = await employeeService.UpdateEmployeeAttachemnt(request,id);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -120,7 +133,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
-         [HttpDelete(ApiRoutes.Employee.DeleteEmployeeAttachement)]
+        [HttpDelete(ApiRoutes.Employee.DeleteEmployeeAttachement)]
         [Permission(Permission.Delete, 13)]
         public async Task<IActionResult> DeleteEmployeeAttachement(int id)
         {
@@ -133,6 +146,25 @@ namespace Kader_System.Api.Areas.HR.Controllers
         }
 
         #endregion
+
+        [HttpGet(ApiRoutes.Employee.DownloadDocument)]
+        [Permission(Permission.View, 8)]
+        public async Task<IActionResult> DownloadEmployeeDocument([FromRoute]int id)
+        {
+            var response = await employeeService.DownloadEmployeeAttachement(id);
+            if (response.Check)
+            {
+                if (response.Data.Length > 0)
+                {
+                    var contentType = (string)_fileServer.GetContentType(response.DynamicData);
+                    return File(response.Data, contentType);
+                }
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+
+            }
+            else
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+        }
 
 
     }

@@ -219,6 +219,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             {
                 Data = fileStream,
                 Check = true,
+                DynamicData = contractAttachment.LicenseName
             };
 
         }
