@@ -7,6 +7,7 @@ using Kader_System.Services.IServices.AppServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using static Kader_System.Domain.Constants.SD.ApiRoutes;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -163,6 +164,32 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
         obj.PhoneNumber = model.phone;
         obj.UserName = model.user_name;
+        foreach(var title in model.title_id) {
+            // Manage user permissions
+            var existingUserPermissions = await _unitOfWork.UserPermssionRepositroy
+                .GetSpecificSelectTrackingAsync(x => x.TitleId == title && x.UserId ==obj.Id, x => x);
+
+            if (existingUserPermissions.Any())
+            {
+                _unitOfWork.UserPermssionRepositroy.RemoveRange(existingUserPermissions);
+                await _unitOfWork.CompleteAsync();
+            }
+
+            var titlePermissions = await _unitOfWork.TitlePermissionRepository
+                .GetSpecificSelectTrackingAsync(
+                    x => x.TitleId == model.current_title,
+                    select: x => new UserPermission
+                    {
+                        TitleId = model.current_title.Value,
+                        UserId = obj.Id,
+                        SubScreenId = x.SubScreenId,
+                        Permission = x.Permissions
+                    }
+                );
+            await _unitOfWork.UserPermssionRepositroy.AddRangeAsync(titlePermissions);
+            await _unitOfWork.CompleteAsync();
+
+        }
 
         if (model.password != null)
         {
@@ -644,29 +671,33 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             user.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
         }
 
-        // Manage user permissions
-        var existingUserPermissions = await _unitOfWork.UserPermssionRepositroy
-            .GetSpecificSelectTrackingAsync(x => x.TitleId == model.current_title && x.UserId == user.Id, x => x);
+        foreach (var title in model.title_id) {
+            // Manage user permissions
+            var existingUserPermissions = await _unitOfWork.UserPermssionRepositroy
+                .GetSpecificSelectTrackingAsync(x => x.TitleId == title && x.UserId == user.Id, x => x);
 
-        if (existingUserPermissions.Any())
-        {
-            _unitOfWork.UserPermssionRepositroy.RemoveRange(existingUserPermissions);
+            if (existingUserPermissions.Any())
+            {
+                _unitOfWork.UserPermssionRepositroy.RemoveRange(existingUserPermissions);
+                await _unitOfWork.CompleteAsync();
+            }
+
+            var titlePermissions = await _unitOfWork.TitlePermissionRepository
+                .GetSpecificSelectTrackingAsync(
+                    x => x.TitleId == model.current_title,
+                    select: x => new UserPermission
+                    {
+                        TitleId = title.Value 
+                        ,
+                        UserId = user.Id,
+                        SubScreenId = x.SubScreenId,
+                        Permission = x.Permissions
+                    }
+                );
+            await _unitOfWork.UserPermssionRepositroy.AddRangeAsync(titlePermissions);
             await _unitOfWork.CompleteAsync();
-        }
 
-        var titlePermissions = await _unitOfWork.TitlePermissionRepository
-            .GetSpecificSelectTrackingAsync(
-                x => x.TitleId == model.current_title,
-                select: x => new UserPermission
-                {
-                    TitleId = model.current_title.Value,
-                    UserId = user.Id,
-                    SubScreenId = x.SubScreenId,
-                    Permission = x.Permissions
-                }
-            );
-        await _unitOfWork.UserPermssionRepositroy.AddRangeAsync(titlePermissions);
-        await _unitOfWork.CompleteAsync();
+        }
 
         // Add user to the database
         var result = await _userManager.CreateAsync(user, model.password);
@@ -1317,34 +1348,15 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Check = false
             };
         }
-        var oldpermissions = await _unitOfWork.UserPermssionRepositroy.GetSpecificSelectAsync(x => x.UserId == userId, x => x);
+       
 
 
 
-        _unitOfWork.UserPermssionRepositroy.RemoveRange(oldpermissions);
-        var titlepermissions = await _unitOfWork.TitlePermissionRepository.GetSpecificSelectAsync(x => x.TitleId == title, x => x);
-
-        if (!titlepermissions.Any())
-        {
-            var msg = _sharLocalizer[Localization.UserPermission];
-            return new()
-            {
-                Msg = msg,
-                Data = null,
-                Check = false
-            };
-        }
-        var userpermission = titlepermissions.Select(x => new UserPermission
-        {
-            TitleId = x.TitleId,
-            Permission = x.Permissions,
-            UserId = userId,
-            SubScreenId = x.SubScreenId
-        });
-
+ 
+      
         user.CurrentTitleId = title;
         _unitOfWork.Users.Update(user);
-        await _unitOfWork.UserPermssionRepositroy.AddRangeAsync(userpermission);
+    
         await _unitOfWork.CompleteAsync();
         return new()
         {

@@ -20,6 +20,7 @@ namespace Kader_System.Api.Helpers
                
                
                 var userId = user.GetUserId();
+                var currentTitle =(await db.Users.FirstOrDefaultAsync(u=>u.Id==userId)).CurrentTitleId;
 
                 var isAdmin = await db.UserRoles.FirstOrDefaultAsync(s => s.UserId == userId && s.RoleId == SuperAdmin.RoleId);
                 if (isAdmin != null) {
@@ -31,7 +32,7 @@ namespace Kader_System.Api.Helpers
 
 
 
-                var permssionOnScreen = (await db.UserPermissions.FirstOrDefaultAsync(p => p.UserId == userId && p.SubScreenId == permssionAttribute.SubScreenId))?.Permission;
+                var permssionOnScreen = (await db.UserPermissions.FirstOrDefaultAsync(p => p.UserId == userId && p.SubScreenId == permssionAttribute.SubScreenId &&p.TitleId== currentTitle))?.Permission;
                 if (permssionOnScreen == null)
                 {
                     context.Result = new ForbidResult();
