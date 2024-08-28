@@ -49,7 +49,7 @@ namespace Kader_System.Services.IServices.EmployeeRequests.Requests
         #endregion
 
         #region Status
-        public  Task<Response<string>> ApproveRequest(int requestId);
+        public  Task<Response<string>> ApproveRequest(int requestId,string lang);
         public  Task<Response<string>> RejectRequest(int requestId, string resoan);
         #endregion
 
