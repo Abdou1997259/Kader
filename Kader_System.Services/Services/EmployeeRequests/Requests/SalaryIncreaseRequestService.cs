@@ -316,7 +316,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
             }
 
-            var result = await _unitOfWork.SalaryIncreaseRequest.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+           
 
 
 
@@ -325,7 +325,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
 
-            await _transSalaryIncreaseService.CreateTransSalaryIncreaseAsync(new CreateTransSalaryIncreaseRequest
+           var createresult= await _transSalaryIncreaseService.CreateTransSalaryIncreaseAsync(new CreateTransSalaryIncreaseRequest
             {
                 Amount = increaseRequest.Amount,
                 Employee_id = increaseRequest.EmployeeId,
@@ -334,8 +334,15 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
             }, lang);
 
-
-
+            if (!createresult.Check)
+            {
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = createresult.Msg
+                };
+            }
+            var result = await _unitOfWork.SalaryIncreaseRequest.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
 
             if (result > 0)
             {
