@@ -11,19 +11,11 @@
     
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="wwwroot\Audios\**" />
-    <Compile Remove="wwwroot\Files\**" />
-    <Compile Remove="wwwroot\Videos\**" />
-    <Content Remove="wwwroot\Audios\**" />
-    <Content Remove="wwwroot\Files\**" />
-    <Content Remove="wwwroot\Videos\**" />
-    <EmbeddedResource Remove="wwwroot\Audios\**" />
-    <EmbeddedResource Remove="wwwroot\Files\**" />
-    <EmbeddedResource Remove="wwwroot\Videos\**" />
-    <None Remove="wwwroot\Audios\**" />
-    <None Remove="wwwroot\Files\**" />
-    <None Remove="wwwroot\Videos\**" />
+  <ItemGroup>    <!--this config to exclude wwwroot folder from publish-->
+	  <Compile Remove="wwwroot\**" />
+	  <Content Remove="wwwroot\**" />
+	  <EmbeddedResource Remove="wwwroot\**" />
+	  <None Remove="wwwroot\**" />
   </ItemGroup>
 
   <ItemGroup>
