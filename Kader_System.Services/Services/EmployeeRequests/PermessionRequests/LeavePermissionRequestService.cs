@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 {
-    public class LeavePermissionRequestService(IUnitOfWork unitOfWork,ILeavePermissionRequestService leavePermissionRequest ,IRequestService requestService, KaderDbContext context, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ILeavePermissionRequestService
+    public class LeavePermissionRequestService(IUnitOfWork unitOfWork ,IRequestService requestService, KaderDbContext context, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ILeavePermissionRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -22,7 +22,6 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
         private readonly IRequestService _requestService = requestService;
-        private readonly ILeavePermissionRequestService leavePermissionRequestService = leavePermissionRequest;
         #region Create
         public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
