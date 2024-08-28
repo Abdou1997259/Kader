@@ -325,12 +325,12 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
 
         var ChildScreens = mainScreens
-       .Where(ms => ms.CategoryScreen.Any(x => x.MainScreenId == ms.Id)).OrderByDescending(ms => ms.Order)
+       .Where(ms => ms.CategoryScreen.Any(x => x.MainScreenId == ms.Id)).OrderBy(ms => ms.Order)
        .Select(ms => new GetAllStMainScreen
        {
            main_title = lang == "en" ? ms.Screen_main_title_en : ms.Screen_main_title_ar,
            main_image = ms.Screen_main_image,
-           cats = ms.CategoryScreen.Where(x => x.MainScreenId == ms.Id).OrderByDescending(x => x.Order)
+           cats = ms.CategoryScreen.Where(x => x.MainScreenId == ms.Id).OrderBy(x => x.Order)
                .Select(x => new GetAllStMainScreenCat
                {
                    Id = x.Id,
