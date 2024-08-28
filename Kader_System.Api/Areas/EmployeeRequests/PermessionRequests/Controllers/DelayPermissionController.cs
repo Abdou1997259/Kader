@@ -1,4 +1,5 @@
 ﻿using Kader_System.Api.Helpers;
+using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.Interfaces;
@@ -6,6 +7,7 @@ using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.Services.EmployeeRequests.Requests;
+using Kader_System.Services.Services.HR;
 
 namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 {
@@ -115,12 +117,17 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> DownloadFile()
         {
-            var fileResult =await _fileServer.DownloadFileAsync(
-                Modules.EmployeeRequest, 
-                Domain.Constants.Enums.HrEmployeeRequestTypesEnums.DelayPermission.ToString(),
-                "19c3fe38-6314-4504-ade3-f6fe9651a66d.jpeg");
-            return fileResult;
+            var employeeRequestEnum = HrEmployeeRequestTypesEnums.DelayPermission;
+            var directoryEmployeeRequest = employeeRequestEnum.GetModuleNameWithType(Modules.EmployeeRequest);
+            var fileBytes = await _fileServer.GetFileBytes(directoryEmployeeRequest);
+            if (fileBytes.Length > 0)
+            {
+                return File(fileBytes, "application/octet-stream");
+            }
+            else
+                return BadRequest("Cannot find file.");
         }
-
     }
+
 }
+

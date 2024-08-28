@@ -21,25 +21,14 @@ namespace Kader_System.Services.Services.AppServices
             _stringLocalizer = stringLocalizer;
         }
 
-        public async Task<FileStreamResult> DownloadFileAsync(params string[] fileParts)
-        {
-            var filePath = Path.Combine(serverPath, Path.Combine(fileParts));
-            var fileName = Path.GetFileName(filePath);
-            _fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-            if (_fileStream != null)
-            {
-
-                    _fileStreamResult = new FileStreamResult(_fileStream, "application/octet-stream");
-                return _fileStreamResult;
-            }
-
-            return null;
-        }
         public async Task<byte[]> GetFileBytes(params string[] fileParts)
         {
+            if (fileParts.Any(string.IsNullOrEmpty) || fileParts is null)
+                return null;
+
             var filePath = Path.Combine(serverPath, Path.Combine(fileParts));
             var fileBytes = await File.ReadAllBytesAsync(filePath);
-            return fileBytes;   
+            return fileBytes;
         }
         //private readonly FileStream _fileStream;
         public bool FileExist(string moduleName, string fileName)
@@ -57,20 +46,23 @@ namespace Kader_System.Services.Services.AppServices
 
         public string GetFilePath(params string[] paths)
         {
-            if (paths.Any(p => p == null))
+            if (paths.Any(string.IsNullOrEmpty) || paths is null)
                 return _stringLocalizer[Localization.PathNotFound];
             return Path.Combine(paths);
         }
 
         public string GetFilePathWithServerPath(params string[] paths)
         {
-            if (paths.Any(p => p == null))
+            if (paths.Any(string.IsNullOrEmpty) || paths is null)
                 return _stringLocalizer[Localization.PathNotFound];
             return Path.Combine(serverPath, Path.Combine(paths));
         }
 
         public void RemoveFile(params string[] paths)
         {
+            if (paths.Any(string.IsNullOrEmpty) || paths is null)
+                return;
+
             var filePath = Path.Combine(serverPath, Path.Combine(paths));
             if (File.Exists(filePath))
                 File.Delete(filePath);
@@ -119,7 +111,12 @@ namespace Kader_System.Services.Services.AppServices
             return newFileName;
             #endregion
         }
-
+        public string GetFileEXE(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                return string.Empty;
+            return Path.GetExtension(fileName);
+        }
         public async Task<List<GetFileNameAndExtension>> UploadFilesAsync(string moduleName, IFormFileCollection files)
         {
             List<GetFileNameAndExtension> fileNames = new();
@@ -163,7 +160,7 @@ namespace Kader_System.Services.Services.AppServices
 
         public void Dispose()
         {
-            _fileStream.Dispose();  
+            // _fileStream.Dispose();  
         }
     }
 }

@@ -416,10 +416,12 @@ public static class SD
             public const string GetAllEmployees = "employee/getAll";
             public const string CreateEmployee = "employee/create";
             public const string UpdateEmployee = "employee/update/{id}";
+            public const string UpdateEmployeeAttachement = "employee/updateAttachement/{id}";
             public const string GetEmployeeById = "employee/getById/{id}";
             public const string DeleteEmployee = "employee/delete/{id}";
             public const string DeleteEmployeeAttachement = "employee/deleteAttachement/{id}";
             public const string GetLookUps = "employee/getLookUps";
+            public const string DownloadDocument = "employee/DownloadDocument/{id}";
             public const string Restore = "employee/restore/{id}";
             public const string GetAllEmpByCompanyId = "employee/getAllEmpsByCompanyId/{companyId}";
         }
