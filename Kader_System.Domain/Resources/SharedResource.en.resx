@@ -120,6 +120,12 @@
   <data name="Allowance" xml:space="preserve">
     <value>Allowance</value>
   </data>
+  <data name="Approved" xml:space="preserve">
+    <value>Approved Sucessfully</value>
+  </data>
+  <data name="ApprovedAready" xml:space="preserve">
+    <value>Approved Aready</value>
+  </data>
   <data name="BalanceNotEnough" xml:space="preserve">
     <value>Balance Not Enough</value>
   </data>
@@ -203,6 +209,9 @@
   </data>
   <data name="MangerAlready" xml:space="preserve">
     <value>Manger Already , Can't Assgin more than Manger</value>
+  </data>
+  <data name="NotApproved" xml:space="preserve">
+    <value>Approved Failed</value>
   </data>
   <data name="NotFoundData" xml:space="preserve">
     <value>Not found data</value>

@@ -22,8 +22,7 @@ namespace Kader_System.Services.Services.Trans
                       StartCalculationDate = x.StartCalculationDate,
                       EndCalculationDate = x.EndCalculationDate,
                       StartLoanDate = x.StartLoanDate,
-                      EndDoDate = x.EndDoDate,
-                      DocumentDate = x.DocumentDate,
+                   
                       AdvanceType = x.AdvanceType,
                       MonthlyDeducted = x.MonthlyDeducted,
                       InstallmentCount = x.InstallmentCount,
@@ -130,6 +129,7 @@ namespace Kader_System.Services.Services.Trans
                 });
                 startMonth = startMonth.AddMonths(1);
             }
+           
             await _unitOfWork.CompleteAsync();
 
 
@@ -177,7 +177,7 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<GetAllLoansResponse>> GetAllLoanAsync(string lang, GetAllFilltrationForLoanRequest model, string host)
         {
             Expression<Func<TransLoan, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-                                                           (string.IsNullOrEmpty(model.Word) || x.LoanDate.ToString() == model.Word)
+                                                           (string.IsNullOrEmpty(model.Word) || x.StartLoanDate.ToString() == model.Word)
                                                            ||(!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
 
 
@@ -207,17 +207,17 @@ namespace Kader_System.Services.Services.Trans
                          LoanType = x.LoanType == 1 ? (Localization.Arabic == lang ? "أنشاء سند دفع" : "Create Payment Voucher ") :
                     x.LoanType == 2 ? (Localization.Arabic == lang ? " تخصم من الراتب" : "Deducted From Salary ") :
                    "",
-                         LoanDate = x.LoanDate,
+                    
                          LoanAmount = x.LoanAmount,
                          StartCalculationDate = x.StartCalculationDate,
                          EndCalculationDate = x.EndCalculationDate,
                          StartLoanDate = x.StartLoanDate,
-                         EndDoDate = x.EndDoDate,
-                         DocumentDate = x.DocumentDate,
+                       
                          AdvanceType = x.AdvanceType,
                          MonthlyDeducted = x.MonthlyDeducted,
                          InstallmentCount = x.InstallmentCount,
                          Notes = x.Notes,
+                         AddedOn=x.Add_date.Value,
                          PaidInstallmentCount=x.TransLoanDetails.Where(x=>x.PaymentDate !=null&x.IsDeleted==false).Count(),
 
                          PaidTotalBalance = x.TransLoanDetails.Where(x => x.PaymentDate != null & x.IsDeleted == false).Sum(x=>x.Amount),
@@ -290,10 +290,9 @@ namespace Kader_System.Services.Services.Trans
                 {
                     Id = id,
                     EmployeeId = obj.EmployeeId,
-                    LoanDate = obj.LoanDate,
+                
                     StartLoanDate = obj.StartLoanDate,
-                    EndDoDate = obj.EndDoDate,
-                    DocumentDate = obj.DocumentDate,
+                 
                     LoanType = obj.LoanType,
                     MonthlyDeducted = obj.MonthlyDeducted,
                     LoanAmount = obj.LoanAmount,

@@ -255,7 +255,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "23785bca-bd3a-47a2-8ae6-dac0392468a6",
+                            ConcurrencyStamp = "058f93bb-abb0-40de-9ff2-be605502a818",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -269,10 +269,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEJZRvej0E+jFtfwseTSGakqjg79LVUfj37LSJqjI0hpX210HXBZKoCM84WD6MQ9IA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEG4ZOQtQyFazpie2ekFhnLUpIFBw2dkGdF+Kx8jx17VDBAHUr4Ih5jV6iFjUl3maBg==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0e34a87e-aca8-406a-8b0d-f6ee6b1da25c",
+                            SecurityStamp = "cf6484ed-5c66-49bf-a085-68a55b627934",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -780,8 +780,8 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Amount")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
@@ -7126,16 +7126,10 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateOnly>("DocumentDate")
-                        .HasColumnType("date");
-
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<DateOnly>("EndCalculationDate")
-                        .HasColumnType("date");
-
-                    b.Property<DateOnly>("EndDoDate")
                         .HasColumnType("date");
 
                     b.Property<int>("InstallmentCount")
@@ -7150,9 +7144,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<decimal>("LoanAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateOnly>("LoanDate")
-                        .HasColumnType("date");
 
                     b.Property<short>("LoanType")
                         .HasColumnType("smallint");

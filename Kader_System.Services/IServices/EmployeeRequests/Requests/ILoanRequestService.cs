@@ -20,7 +20,7 @@ namespace Kader_System.Services.IServices.EmployeeRequests.Requests
         public Task<Response<ListOfLoanRequestResponse>> GetById(int id);    
         public Task<Response<IEnumerable<ListOfLoanRequestResponse>>> ListOfLoanRequest();
         public  Task<Response<string>> RejectRequest(int requestId, string resoan);
-        public  Task<Response<string>> ApproveRequest(int requestId);
+        public  Task<Response<string>> ApproveRequest(int requestId,string lang);
 
     }
 }
