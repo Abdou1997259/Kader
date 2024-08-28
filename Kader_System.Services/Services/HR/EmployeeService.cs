@@ -717,12 +717,8 @@ namespace Kader_System.Services.Services.HR
                 #region UpdateCompanyContracts
                 if (model.employee_attachments is not null)
                 {
-                    var directoryTypes = HrDirectoryTypes.Attachments;
-                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-                    var getFileNameAnds = await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
-                    var employeeAttachment = getFileNameAnds.Select(x => new HrEmployeeAttachment { FileName = x.FileName,FileExtension = Path.GetExtension(x.FileName),EmployeeId = id }).ToList();
                     var getFileNameAnds = await fileServer.UploadFilesAsync(directoryAttachmentsName, model.employee_attachments);
-                    var employeeAttachment = getFileNameAnds.Select(x => new HrEmployeeAttachment { EmployeeId = id, FileName = x.FileName, FileExtension = Path.GetExtension(x.FileName) }).ToList();
+                    var employeeAttachment = getFileNameAnds.Select(x => new HrEmployeeAttachment { FileName = x.FileName, FileExtension = Path.GetExtension(x.FileName),EmployeeId = id }).ToList();
                     await unitOfWork.EmployeeAttachments.AddRangeAsync(employeeAttachment);
                     await unitOfWork.CompleteAsync();
                 }
@@ -777,7 +773,7 @@ namespace Kader_System.Services.Services.HR
                 {
                     obj.ChildrenNumber = model.children_number;
                 }
-
+                unitOfWork.Employees.Update(obj);
                 var userExist = await userManager.FindByNameAsync(model.username);
                 if (userExist != null)
                 {
