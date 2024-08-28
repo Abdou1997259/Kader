@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.DTOs.Request;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Kader_System.Services.IServices.HR;
 
@@ -21,7 +22,8 @@ public interface IEmployeeService
     Task<Response<object>> GetEmployeesDataNameAndIdAsLookUp(string lang);
     Task<Response<object>> GetDocuments(int empId);
     public Task<Response<string>> RemoveEmployeeAttachement(int attachementId);
-    public  Task<Response<byte[]>> DownloadEmployeeAttachement(int id);
+    public  Task<Response<FileContentResult>> DownloadEmployeeAttachement(int id);
+
 
 
 

@@ -47,9 +47,12 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     public async Task<IActionResult> DownloadCompanyContract(int id)
     {
         var response = await service.DownloadCompanyContract(id);
-        if (response.Data.Length > 0)
+        if (response.Check)
         {
-            return File(response.Data, "application/octet-stream");
+            if (response.Data is not null)
+                return response.Data;
+            else
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         }
         else
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
@@ -61,13 +64,10 @@ public class CompaniesController(ICompanyService service, IRequestService reques
         var response = await service.DownloadCompanylicense(id);
         if (response.Check)
         {
-            if (response.Data.Length > 0)
-            {
-                var contentType = (string)_fileServer.GetContentType(response.DynamicData);
-                return File(response.Data, contentType);
-            }
-            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-
+            if (response.Data is not null)
+                return response.Data;
+            else
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         }
         else
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);

@@ -1059,13 +1059,13 @@ namespace Kader_System.Services.Services.HR
         #endregion
 
         #region Download
-        public async Task<Response<byte[]>> DownloadEmployeeAttachement(int id)
+        public async Task<Response<FileContentResult>> DownloadEmployeeAttachement(int id)
         {
             var employeeeAttachment = await unitOfWork.EmployeeAttachments.GetByIdAsync(id);
             if (employeeeAttachment is null)
             {
                 var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
-                return new Response<byte[]>
+                return new Response<FileContentResult>
                 {
                     Msg = msg,
                     Check = false
@@ -1075,7 +1075,7 @@ namespace Kader_System.Services.Services.HR
             if (string.IsNullOrEmpty(employeeeAttachment.FileName))
             {
                 var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
-                return new Response<byte[]>
+                return new Response<FileContentResult>
                 {
                     Msg = msg,
                     Check = false
@@ -1087,7 +1087,7 @@ namespace Kader_System.Services.Services.HR
             if (!fileServer.FileExist(directoryName, employeeeAttachment.FileName))
             {
                 var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
-                return new Response<byte[]>
+                return new Response<FileContentResult>
                 {
                     Data = null,
                     Msg = msg,
@@ -1096,8 +1096,8 @@ namespace Kader_System.Services.Services.HR
             }
             try
             {
-                var fileStream = await fileServer.GetFileBytes(directoryName, employeeeAttachment.FileName);
-                return new Response<byte[]>
+                var fileStream = await fileServer.DownloadFileAsync(directoryName, employeeeAttachment.FileName);
+                return new Response<FileContentResult>
                 {
                     Data = fileStream,
                     Check = true,
@@ -1108,7 +1108,7 @@ namespace Kader_System.Services.Services.HR
             catch (Exception ex)
             {
 
-                return new Response<byte[]>
+                return new Response<FileContentResult>
                 {
                     Msg = $": {ex.Message}",
                     Check = false
@@ -1116,8 +1116,6 @@ namespace Kader_System.Services.Services.HR
             }
 
         }
-
-
         #endregion
     }
 

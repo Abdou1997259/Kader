@@ -112,21 +112,6 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
         #endregion
-
-        [HttpGet("DownloadFile")]
-        [Permission(Permission.Edit, 19)]
-        public async Task<IActionResult> DownloadFile()
-        {
-            var employeeRequestEnum = HrEmployeeRequestTypesEnums.DelayPermission;
-            var directoryEmployeeRequest = employeeRequestEnum.GetModuleNameWithType(Modules.EmployeeRequest);
-            var fileBytes = await _fileServer.GetFileBytes(directoryEmployeeRequest);
-            if (fileBytes.Length > 0)
-            {
-                return File(fileBytes, "application/octet-stream");
-            }
-            else
-                return BadRequest("Cannot find file.");
-        }
     }
 
 }

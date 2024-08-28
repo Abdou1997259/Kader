@@ -12,10 +12,10 @@ public interface ICompanyService
     Task<Response<string>> UpdateActiveOrNotCompanyAsync(int id);
     Task<Response<object>> RestoreCompanyAsync(int id);
     Task<Response<string>> DeleteCompanyAsync(int id);
-    public  Task<Response<byte[]>> DownloadCompanyContract(int id);
+    public  Task<Response<FileContentResult>> DownloadCompanyContract(int id);
     Task<Response<string>> RemoveCompanyLicensesAttachement(int companyId, HrDirectoryTypes directoryTypes);
     Task<Response<string>> RemoveCompanyContractsAttachement(int companyId, HrDirectoryTypes directoryTypes);
 
-    Task<Response<byte[]>> DownloadCompanylicense(int id);
+    Task<Response<FileContentResult>> DownloadCompanylicense(int id);
     Task<Response<EmployeeOfCompanyPagination>> EmployeeOfCompany(int companyId, string lang, HrGetAllFiltrationsForCompaniesRequest model, string host);
 }

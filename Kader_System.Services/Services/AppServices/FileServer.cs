@@ -5,14 +5,12 @@ using System.Net.Http.Headers;
 
 namespace Kader_System.Services.Services.AppServices
 {
-    public class FileServer : IFileServer, IDisposable
+    public class FileServer : IFileServer
     {
         private readonly string serverPath = string.Empty;
         private readonly IHttpContextService _httpContextService;
         private readonly IRequestService _requestService;
         private readonly IStringLocalizer<SharedResource> _stringLocalizer;
-        private FileStream _fileStream;
-        private FileStreamResult _fileStreamResult;
         public FileServer(IHttpContextService httpContextService, IRequestService requestService, IStringLocalizer<SharedResource> stringLocalizer)
         {
             _httpContextService = httpContextService;
@@ -158,9 +156,15 @@ namespace Kader_System.Services.Services.AppServices
                 return string.Empty;
         }
 
-        public void Dispose()
+        public async Task<FileContentResult> DownloadFileAsync(string module,string fileName)
         {
-            // _fileStream.Dispose();  
+            var filePath = GetFilePath(serverPath,module, fileName);
+            var fileBytes =await GetFileBytes(filePath);
+            var contentType = GetContentType(fileName);
+            return new FileContentResult(fileBytes, contentType)
+            {
+                FileDownloadName = fileName
+            };
         }
     }
 }

@@ -119,13 +119,13 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             Check = true
         };
     }
-    public async Task<Response<byte[]>> DownloadCompanyContract(int id)
+    public async Task<Response<FileContentResult>> DownloadCompanyContract(int id)
     {
         var contractAttachment = await unitOfWork.CompanyContracts.GetByIdAsync(id);
         if (contractAttachment is null)
         {
             var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
-            return new Response<byte[]>
+            return new Response<FileContentResult>
             {
                 Msg = msg,
                 Check = false
@@ -135,7 +135,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         if (string.IsNullOrEmpty(contractAttachment.CompanyContracts))
         {
             var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
-            return new Response<byte[]>
+            return new Response<FileContentResult>
             {
                 Msg = msg,
                 Check = false
@@ -147,7 +147,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         if (!_fileServer.FileExist(directoryName, contractAttachment.CompanyContracts))
         {
             var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
-            return new Response<byte[]>
+            return new Response<FileContentResult>
             {
                 Data = null,
                 Msg = msg,
@@ -156,8 +156,8 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         }
         try
         {
-            var fileStream = await _fileServer.GetFileBytes(directoryName, contractAttachment.CompanyContracts);
-            return new Response<byte[]>
+            var fileStream = await _fileServer.DownloadFileAsync(directoryName, contractAttachment.CompanyContracts);
+            return new Response<FileContentResult>
             {
                 Data = fileStream,
                 Check = true,
@@ -167,7 +167,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         catch (Exception ex)
         {
 
-            return new Response<byte[]>
+            return new Response<FileContentResult>
             {
                 Msg = $": {ex.Message}",
                 Check = false
@@ -177,13 +177,13 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
 
     }
 
-    public async Task<Response<byte[]>> DownloadCompanylicense(int id)
+    public async Task<Response<FileContentResult>> DownloadCompanylicense(int id)
     {
         var contractAttachment = await unitOfWork.CompanyLicenses.GetByIdAsync(id);
         if (contractAttachment is null)
         {
             var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
-            return new Response<byte[]>
+            return new Response<FileContentResult>
             {
                 Msg = msg,
                 Check = false
@@ -193,7 +193,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         if (string.IsNullOrEmpty(contractAttachment.LicenseName))
         {
             var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
-            return new Response<byte[]>
+            return new Response<FileContentResult>
             {
                 Msg = msg,
                 Check = false
@@ -205,7 +205,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         if (!_fileServer.FileExist(directoryName, contractAttachment.LicenseName))
         {
             var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
-            return new Response<byte[]>
+            return new Response<FileContentResult>
             {
                 Data = null,
                 Msg = msg,
@@ -214,8 +214,8 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         }
         try
         {
-            var fileStream = await _fileServer.GetFileBytes(directoryName, contractAttachment.LicenseName);
-            return new Response<byte[]>
+            var fileStream = await _fileServer.DownloadFileAsync(directoryName, contractAttachment.LicenseName);
+            return new Response<FileContentResult>
             {
                 Data = fileStream,
                 Check = true,
@@ -226,7 +226,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
         catch (Exception ex)
         {
 
-            return new Response<byte[]>
+            return new Response<FileContentResult>
             {
                 Msg = $": {ex.Message}",
                 Check = false

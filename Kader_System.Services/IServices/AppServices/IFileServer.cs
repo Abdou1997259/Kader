@@ -81,7 +81,13 @@ namespace Kader_System.Services.IServices.AppServices
         /// <param name="fileName"></param>
         /// <returns>string empty if file name is null or empty</returns>
         public string GetFileEXE(string fileName);
-
+        /// <summary>
+        /// Download file from wwwroot by module name and filename
+        /// </summary>
+        /// <param name="module"></param>
+        /// <param name="fileName"></param>
+        /// <returns>File from wwwroot if exist</returns>
+        public Task<FileContentResult> DownloadFileAsync(string module, string fileName);
 
     }
 }

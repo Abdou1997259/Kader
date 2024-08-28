@@ -137,6 +137,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [Permission(Permission.Delete, 13)]
         public async Task<IActionResult> DeleteEmployeeAttachement(int id)
         {
+          
             var response = await employeeService.RemoveEmployeeAttachement(id);
             if (response.Check)
                 return Ok(response);
@@ -154,13 +155,10 @@ namespace Kader_System.Api.Areas.HR.Controllers
             var response = await employeeService.DownloadEmployeeAttachement(id);
             if (response.Check)
             {
-                if (response.Data.Length > 0)
-                {
-                    var contentType = (string)_fileServer.GetContentType(response.DynamicData);
-                    return File(response.Data, contentType);
-                }
-                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-
+                if (response.Data is not null)
+                    return response.Data;
+                else
+                    return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             }
             else
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
