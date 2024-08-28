@@ -72,7 +72,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         var items = (await unitOfWork.SubMainScreens.GetSpecificSelectAsync(filter: filter, x => x,
                  take: model.PageSize,
                  skip: (model.PageNumber - 1) * model.PageSize, includeProperties: "ScreenCat.screenCat,ScreenCat", orderBy: x =>
-                  x.OrderByDescending(x => x.Order))).Select(x => new SubMainScreenData
+                  x.OrderBy(x => x.Order))).Select(x => new SubMainScreenData
                   {
                       Ids = x.Id,
                       Screen_cat_id=x.ScreenCat.Id,
