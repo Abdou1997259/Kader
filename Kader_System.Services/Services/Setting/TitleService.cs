@@ -382,7 +382,7 @@ namespace Kader_System.Services.Services.Setting
                     if (all)
                     {
                         var userPermissionQuery = await unitOfWork.TitlePermissionRepository
-                                .GetSpecificSelectAsync( x => x.SubScreenId == assignedPermission.SubId, x => x, includeProperties: "ScreenSub,Title");
+                                .GetSpecificSelectTrackingAsync( x => x.SubScreenId == assignedPermission.SubId, x => x, includeProperties: "ScreenSub,Title");
 
                         if (userPermissionQuery.Count() > 0)
                         {
