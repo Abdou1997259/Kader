@@ -242,7 +242,6 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 Msg = "Cannot approve , request is not pending or is deleted"
             };
 
-            leavePermissionRequest.
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
