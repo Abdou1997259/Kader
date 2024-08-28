@@ -30,6 +30,7 @@ namespace Kader_System.Domain.Constants.Enums
         Contracts = 3,
         Attachments = 4,
         User = 5,
+        EmployeeProfile = 6,
     }
 
 

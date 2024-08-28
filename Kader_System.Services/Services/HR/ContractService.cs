@@ -2,6 +2,7 @@
 using Kader_System.Domain.DTOs;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.Services.AppServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -673,24 +674,24 @@ namespace Kader_System.Services.Services.HR
 
         }
 
-        public async Task<Response<FileResult>> GetFileStreamResultAsync(int contractId,string moduleName)
+        public async Task<Response<byte[]>> GetFileStreamResultAsync(int contractId)
         {
 
-            var contract = await unitOfWork.Contracts.GetByIdAsync(contractId);
-            if (contract is null)
+            var contractAttachment = await unitOfWork.Contracts.GetByIdAsync(contractId);
+            if (contractAttachment is null)
             {
                 var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
-                return new Response<FileResult>
+                return new Response<byte[]>
                 {
                     Msg = msg,
                     Check = false
                 };
             }
 
-            if (string.IsNullOrEmpty(contract.FileName))
+            if (string.IsNullOrEmpty(contractAttachment.FileName))
             {
                 var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
-                return new Response<FileResult>
+                return new Response<byte[]>
                 {
                     Msg = msg,
                     Check = false
@@ -699,53 +700,37 @@ namespace Kader_System.Services.Services.HR
             HrDirectoryTypes directoryTypes = new();
             directoryTypes = HrDirectoryTypes.Contracts;
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-           
-       
-            if (!fileServer.FileExist(directoryName, contract.FileName))
+            if (!fileServer.FileExist(directoryName, contractAttachment.FileName))
             {
                 var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
-                return new Response<FileResult>
+                return new Response<byte[]>
                 {
                     Data = null,
                     Msg = msg,
                     Check = false
                 };
             }
-           
-
             try
             {
-                // Open the file stream
+                var fileStream = await fileServer.GetFileBytes(directoryName, contractAttachment.FileName);
+                return new Response<byte[]>
+                {
+                    Data = fileStream,
+                    Check = true,
+                    DynamicData = contractAttachment.FileName
+                };
 
-
-                // Create the FileStreamResult
-                   var fileStream = await fileServer.DownloadFileAsync(directoryName,contract.FileName);
-                  
-                   
-                    // Return the FileStreamResult wrapped in your Response object
-                        return new Response<FileResult>
-                        {
-                            Data = fileStream,
-                            Check = true,
-                            // or any success message you want
-                        };
-
-                   
-
-                // Create and return the FileContentResult
-
-              
             }
             catch (Exception ex)
             {
-                // Handle exceptions (e.g., file access issues)
-                var msg = shareLocalizer[Localization.Error, shareLocalizer[Localization.Contract]];
-                return new Response<FileResult>
+
+                return new Response<byte[]>
                 {
-                    Msg = $"{msg}: {ex.Message}",
+                    Msg = $": {ex.Message}",
                     Check = false
                 };
             }
+
         }
 
     }

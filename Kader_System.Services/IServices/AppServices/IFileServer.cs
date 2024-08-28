@@ -69,18 +69,19 @@ namespace Kader_System.Services.IServices.AppServices
         /// <returns>true if file exist</returns>
         public bool FileExist(string moduleName, string fileName);
         /// <summary>
-        /// Download file from wwwroot by content type of request
-        /// </summary>
-        ///param name="fileParts"
-        /// <returns>new FileStreamResult to download</returns>
-        public Task<FileStreamResult> DownloadFileAsync(params string[] fileParts);
-        /// <summary>
         /// Get Content file of header request depand on file exentsion
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
         public string GetContentType(string path);
         public  Task<byte[]> GetFileBytes(params string[] fileParts);
+        /// <summary>
+        /// Get File exetension
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns>string empty if file name is null or empty</returns>
+        public string GetFileEXE(string fileName);
+
 
     }
 }

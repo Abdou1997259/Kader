@@ -1,6 +1,8 @@
 ﻿using Kader_System.Api.Helpers;
 using Kader_System.Domain.Constants.Enums;
+using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.Services.AppServices;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -11,9 +13,10 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 [Route("api/v1/")]
 //[Authorize(Permissions.HR.View)]
-public class CompaniesController(ICompanyService service, IRequestService requestService) : ControllerBase
+public class CompaniesController(ICompanyService service, IRequestService requestService, IFileServer fileServer) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;
+    private readonly IFileServer _fileServer = fileServer;
 
     #region Retreive
 
@@ -56,9 +59,15 @@ public class CompaniesController(ICompanyService service, IRequestService reques
     public async Task<IActionResult> DownloadCompanylicense(int id)
     {
         var response = await service.DownloadCompanylicense(id);
-        if (response.Data.Length > 0)
+        if (response.Check)
         {
-            return File(response.Data, "application/octet-stream");
+            if (response.Data.Length > 0)
+            {
+                var contentType = (string)_fileServer.GetContentType(response.DynamicData);
+                return File(response.Data, contentType);
+            }
+            return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+
         }
         else
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);

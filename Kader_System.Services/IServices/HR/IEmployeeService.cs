@@ -1,4 +1,6 @@
-﻿namespace Kader_System.Services.IServices.HR;
+﻿using Kader_System.Domain.DTOs.Request;
+
+namespace Kader_System.Services.IServices.HR;
 
 public interface IEmployeeService
 {
@@ -12,12 +14,15 @@ public interface IEmployeeService
     Response<GetEmployeeByIdResponse> GetEmployeeById(int id, string lang);
     Task<Response<CreateEmployeeRequest>> UpdateEmployeeAsync(int id, CreateEmployeeRequest model);
     Task<Response<CreateEmployeeRequest>> RestoreEmployeeAsync(int id);
+    public Task<Response<string>> UpdateEmployeeAttachemnt(UpdateEmployeeAttachemnt model, int id);
     Task<Response<string>> UpdateActiveOrNotEmployeeAsync(int id);
     Task<Response<string>> DeleteEmployeeAsync(int id);
     Task<Response<EmployeesLookUps>> GetEmployeesLookUpsData(string lang );
     Task<Response<object>> GetEmployeesDataNameAndIdAsLookUp(string lang);
     Task<Response<object>> GetDocuments(int empId);
     public Task<Response<string>> RemoveEmployeeAttachement(int attachementId);
+    public  Task<Response<byte[]>> DownloadEmployeeAttachement(int id);
+
 
 
 }
