@@ -1046,14 +1046,14 @@ namespace Kader_System.Services.Services.HR
                 return new()
                 {
                     Check = true,
-                    Data = $"Attachement {result} is deleted sucessfully",
+                    Msg = $"Attachement {result} is deleted sucessfully",
                     DynamicData = attachements.EmployeeId,
                 };
             }
             return new()
             {
                 Check = false,
-                Data = $"Attachement {result} is deleted sucessfully"
+                Msg = $"Attachement {result} is deleted sucessfully"
             };
         }
         #endregion
