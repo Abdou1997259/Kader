@@ -8,13 +8,15 @@ using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class AllowanceRequestService(IUnitOfWork unitOfWork, KaderDbContext context, IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
+    public class AllowanceRequestService(IUnitOfWork unitOfWork, KaderDbContext context,ITransAllowanceService allowanceService , IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly ITransAllowanceService _allowanceService = allowanceService;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
         private readonly IFileServer _fileServer = fileServer;
@@ -300,23 +302,66 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
         #region Status
-        public async Task<Response<string>> ApproveRequest(int requestId)
+        public async Task<Response<string>> ApproveRequest(int requestId,string lang)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.AllowanceRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+        
+            var allownecesRequest = await _unitOfWork.AllowanceRequests.GetFirstOrDefaultAsync(x => x.Id == requestId);
 
+            if (allownecesRequest == null)
+            {
+                var msg = _sharLocalizer[Localization.NotFound];
+                return new()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+                };
+            }
+            if (allownecesRequest.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved)
+            {
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.ApprovedAready]
+                };
+
+            }
+
+            var createresult = await _allowanceService.CreateTransAllowanceAsync(new CreateTransAllowanceRequest
+            {
+                AllowanceId = allownecesRequest.allowance_id,
+                ActionMonth = new DateOnly(allownecesRequest.Add_date.Value.Year, allownecesRequest.Add_date.Value.Month, allownecesRequest.Add_date.Value.Day),
+                Amount = allownecesRequest.amount,
+                SalaryEffectId = allownecesRequest.allowance_type_id,
+               
+                EmployeeId = allownecesRequest.EmployeeId,
+
+
+
+            });
+            if (!createresult.Check)
+            {
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = createresult.Msg
+                };
+            }
+
+            var result = await _unitOfWork.AllowanceRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
             if (result > 0)
             {
                 return new Response<string>()
                 {
                     Check = true,
-                    Msg = "Approved sucessfully"
+                    Msg = _sharLocalizer[Localization.Approved]
                 };
             }
             return new Response<string>()
             {
                 Check = false,
-                Msg = "Cannot approve , request is not pending or is deleted"
+                Msg = _sharLocalizer[Localization.NotApproved]
             };
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)

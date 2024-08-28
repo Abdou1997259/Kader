@@ -15,7 +15,7 @@ namespace Kader_System.Services.IServices.EmployeeRequests.Requests
 
         public Task<Response<IEnumerable<DTOAllowanceRequest>>> ListOfAllowanceRequest();
 
-        Task<Response<string>> ApproveRequest(int requestId);
+        Task<Response<string>> ApproveRequest(int requestId, string lang);
         Task<Response<string>> RejectRequest(int requestId, string resoan);
 
 
