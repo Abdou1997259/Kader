@@ -166,7 +166,7 @@ namespace Kader_System.Services.Services.Trans
         }
 
 
-        public async Task<Response<CreateTransVacationRequest>> CreateTransVacationAsync(CreateTransVacationRequest model)
+        public async Task<Response<CreateTransVacationRequest>> CreateTransVacationAsync(CreateTransVacationRequest model,string lang)
         {
 
             var newTrans = mapper.Map<TransVacation>(model);

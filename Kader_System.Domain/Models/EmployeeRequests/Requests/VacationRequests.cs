@@ -13,7 +13,7 @@
         public int VacationTypeId { get; set; }
         [ForeignKey(nameof(VacationTypeId))]
         public virtual HrVacationType VacationType { get; set; }
-         public int? EmployeeId { get; set; }
+         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public virtual HrEmployee? Employee { get; set; }
 
