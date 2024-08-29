@@ -219,7 +219,7 @@ namespace Kader_System.Services.Services.HR
             {
                 TotalRecords = totalRecords,
 
-                Items = unitOfWork.Employees.GetEmployeesInfo(filter: filter, filterSearch: filterSearch, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize),
+                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -285,7 +285,7 @@ namespace Kader_System.Services.Services.HR
             {
                 TotalRecords = totalRecords,
 
-                Items = unitOfWork.Employees.GetEmployeesInfo(filter: filter, filterSearch: filterSearch, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize),
+                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
