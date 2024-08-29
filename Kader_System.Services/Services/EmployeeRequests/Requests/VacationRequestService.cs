@@ -9,10 +9,12 @@ using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
+
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class VacationRequestService(IUnitOfWork unitOfWork, KaderDbContext context, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IVacationRequestService
+    public class VacationRequestService(IUnitOfWork unitOfWork, KaderDbContext context,ITransVacationService transVacation, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IVacationRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -22,6 +24,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
         private readonly IRequestService _requestService =requestService;
+        private readonly ITransVacationService _vacationService = transVacation;
+
         #region ListOfLoanRequest
         public async Task<Response<IEnumerable<DTOVacationRequest>>> ListOfVacationRequest()
         {
@@ -279,23 +283,63 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region Status
-        public async Task<Response<string>> ApproveRequest(int requestId)
+        public async Task<Response<string>> ApproveRequest(int requestId, string lang)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var vacationrequest = await _unitOfWork.VacationRequests.GetFirstOrDefaultAsync(x => x.Id == requestId);
+
+
+            if (vacationrequest.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved)
+            {
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.ApprovedAready]
+                };
+
+            }
+
+
+
             var result = await _unitOfWork.VacationRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+          var creatResult=  await _vacationService.CreateTransVacationAsync(new CreateTransVacationRequest
+            {
+              
+                VacationId = vacationrequest.Id,
+                StartDate = vacationrequest.StartDate,
+                EmployeeId = vacationrequest.EmployeeId, 
+                Attachment = vacationrequest.AttachmentPath,
+                Notes = vacationrequest.Notes,
+                FileName="",
+                DaysCount=vacationrequest.DayCounts,
+                
+                
+           
+               
+            }, lang);
+            if (!creatResult.Check)
+            {
+                return new Response<string>
+                {
+                    Msg = creatResult.Msg,
+                    Check = false,
+                };
+            }
             if (result > 0)
             {
                 return new Response<string>()
                 {
                     Check = true,
-                    Msg = "Approved sucessfully"
+                    Msg = _sharLocalizer[Localization.Approved]
                 };
             }
             return new Response<string>()
             {
                 Check = false,
-                Msg = "Cannot approve , request is not pending or is deleted"
+                Msg = _sharLocalizer[Localization.NotApproved]
             };
+
+
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {

@@ -107,7 +107,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> ApproveVacationRequests([FromRoute] int id)
         {
-            var response = await service.ApproveRequest(id);
+            var response = await service.ApproveRequest(id,requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

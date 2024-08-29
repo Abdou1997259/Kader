@@ -265,11 +265,8 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
         directoryTypes = HrDirectoryTypes.EmployeeProfile;
         var directoryProfileName = directoryTypes.GetModuleNameWithType(Modules.Employees);
 
-        var employees = context.Employees.Where(filter);
-        var loanCounts = _context.Loans
-            .GroupBy(l => l.EmployeeId)
-            .Select(g => new { EmployeeId = g.Key, Count = g.Count() })
-            .ToList();
+        var employees = context.Employees.AsNoTracking().Where(filter);
+
 
         var query = from emp in employees
 
@@ -310,6 +307,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                     join att in _context.EmployeeAttachments
                     on emp.Id equals att.EmployeeId
                     into attagroup
+                    let loansCount = context.Loans.AsNoTracking().Where(x=>x.EmployeeId == emp.Id).Count()
                     from attaGroup in attagroup.DefaultIfEmpty()
                     orderby emp.Id
                     select new EmployeesData()
@@ -346,7 +344,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                         company_name = lang == Localization.Arabic ? (company != null ? company.NameAr : "") : (company != null ? company.NameEn : ""),
                         Company = lang == Localization.Arabic ? (company != null ? company.NameAr : "") : (company != null ? company.NameEn : ""),
                         Shift = lang == Localization.Arabic ? (shift != null ? shift.Name_ar : "") : (shift != null ? shift.Name_en : ""),
-                        employee_loans_count = l != null ? loanCounts.Count  : 0,
+                        employee_loans_count = loansCount,
                         SalaryPaymentWay = lang == Localization.Arabic ? (salary != null ? salary.Name : "") : (salary != null ? salary.NameInEnglish : ""),
                         Gender = lang == Localization.Arabic ? (gender != null ? gender.Name : "") : (gender != null ? gender.NameInEnglish : "")
                     };
@@ -359,7 +357,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
         //         || x.Nationality.Contains(model.Word)
         //         || x.Company.Contains(model.Word)
         //         || x.Management.Contains(model.Word));
-
+        var cv= query.ToList();
         if (filterSearch != null)
             query = query.Where(filterSearch);
 
