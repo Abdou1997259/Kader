@@ -1299,11 +1299,7 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
 
         cop = await _unitOfWork.Companies.GetByIdAsync(user.CurrentCompanyId);
 
-
-
         var screens = await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang,userId);
-        var perm = await _permissionservice.GetPermissionsBySubScreen(lang);
-
         var jwtSecurityToken = await CreateJwtToken(await _userManager.FindByIdAsync(user.Id));
 
         var email = user.Email;
