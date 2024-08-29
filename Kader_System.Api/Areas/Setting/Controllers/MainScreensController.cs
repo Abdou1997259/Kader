@@ -41,7 +41,7 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     public async Task<IActionResult> GetMainScreensWithRelatedData([FromQuery] StGetAllFiltrationsForMainScreenRequest model)
     {
         var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-        var result = await _mainScreenRepository.GetMainScreensWithRelatedDataAsync(requestService.GetRequestHeaderLanguage,userId);
+        var result = await _mainScreenRepository.GetMainScreensWithRelatedDataAsync(requestService.GetRequestHeaderLanguage);
         return Ok(result);
     }
 
