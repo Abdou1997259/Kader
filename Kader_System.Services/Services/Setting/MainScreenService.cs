@@ -1,6 +1,7 @@
 ﻿using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Services.IServices.AppServices;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.Setting;
@@ -306,8 +307,13 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<Response<GetAllStMainScreen>> GetMainScreensWithRelatedDataAsync(string lang)
+    public async Task<Response<GetAllStMainScreen>> GetMainScreensWithRelatedDataAsync(string lang, string userId)
     {
+        var titleId = context.Users.AsNoTracking().Where(x => x.Id == userId).Select(x =>x.CurrentTitleId).FirstOrDefaultAsync(); 
+        var  userIdParameter = new SqlParameter("@UserId", userId);
+        var titleIdParameter = new SqlParameter("@TitleId", titleId);
+        var langParameter = new SqlParameter("@Lang", lang);
+
         var mainScreens = await context.MainScreenCategories.
             Include(ms => ms.CategoryScreen).
             ThenInclude(cs => cs.StScreenSub)
@@ -320,7 +326,11 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
  
         var subs = await _unitOfWork.SubMainScreenActions.GetAllAsync();
-        var permision = await _unitOfWork.UserPermssionRepositroy.GetAllAsync();
+        //var permision = await _unitOfWork.UserPermssionRepositroy.GetAllAsync();
+        var permision = await _dbContext.SPUserPermissionsBySubScreens
+                .FromSqlRaw("EXEC SP_GetUserPermissionsBySubScreen @UserId,@TitleId, @Lang", userIdParameter, titleIdParameter, langParameter)
+                .AsNoTracking()
+                .ToListAsync();
         var mains = await _unitOfWork.MainScreens.GetAllAsync();
 
 
@@ -337,7 +347,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                    title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
                    main_id = x.MainScreenId,
                    subs = x.StScreenSub.Where(k => permision.Any(ps =>
-                   ps.SubScreenId == k.Id && ps.Permission.Contains("1") && k.ScreenCatId == x.Id)).OrderBy(k => k.Order)
+                   ps.sub_id == k.Id && ps.actions.Contains("1") && k.ScreenCatId == x.Id)).OrderBy(k => k.Order)
                    .Select(k => new GetAllStScreenSub
                    {
                        Sub_Id = k.Id,
@@ -350,7 +360,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                        sub_image = Path.Combine(SD.GoRootPath.GetSettingImagesPath, ms.Screen_main_image ?? " "),
                        screen_code = k.ScreenCode,
                        actions = subs.Where(x => x.ScreenSubId == k.Id).Select(x => x.ActionId).ToList().Concater(),
-                       permissions = permision.Where(ps =>ps.SubScreenId == k.Id).Select(ps =>ps.Permission).FirstOrDefault()
+                       permissions = permision.Where(ps =>ps.sub_id == k.Id).Select(ps =>ps.actions).FirstOrDefault()
  
                    }).ToList()
                }).ToList()
