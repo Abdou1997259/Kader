@@ -3,7 +3,7 @@
 public interface IMainScreenService
 {
     Task<Response<IEnumerable<StSelectListForMainScreenResponse>>> ListOfMainScreensAsync(string lang);
-    public Task<Response<GetAllStMainScreen>> GetMainScreensWithRelatedDataAsync(string lang,  string userId);
+    public Task<Response<GetAllStMainScreen>> GetMainScreensWithRelatedDataAsync(string lang);
 
     public Task<Response<StGetAllMainScreensResponse>> GetAllMainScreensAsync(string lang, StGetAllFiltrationsForMainScreenRequest model, string host, string moduleName);
     Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string serverPath, string moduleName);
