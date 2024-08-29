@@ -32,7 +32,7 @@ namespace Kader_System.Domain.DTOs.Response.Auth
         public int CurrentYear { get; set; }
         public int CurrentTitles { get; set; }    
         public dynamic Mypermissions {  get; set; }
-        public List<GetAllStMainScreen> Screens { get;set; }
+        public IEnumerable<GetAllStMainScreen> Screens { get;set; }
 
 
 

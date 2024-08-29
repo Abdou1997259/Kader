@@ -20,7 +20,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
 
     public DbSet<SpCacluateSalary> SpCacluateSalariesModel { get; set; }
     public DbSet<UserPermission> UserPermissions { get; set; }
-
+    public DbSet<SpGetScreen> SpGetScreens { get; set; }
     public DbSet<CompanyYear> CompanyYears { get; set; }
     public DbSet<SpCaclauateSalaryDetails> SpCaclauateSalaryDetailsModel { get; set; }
     public DbSet<SpCaclauateSalaryDetailedTrans> SpCaclauateSalaryDetailedTransModel { get; set; }
@@ -239,7 +239,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
         //    .HasMany(s => s.StScreenSub)
         //    .WithOne(sub => sub.ScreenCat)
         //    .HasForeignKey(sub => sub.ScreenCatId);
-
+        modelBuilder.Entity<SpGetScreen>().HasNoKey();
         modelBuilder.Entity<StMainScreen>().
             HasMany(x => x.CategoryScreen).
             WithOne(x => x.screenCat).

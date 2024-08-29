@@ -1,4 +1,6 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Kader_System.Domain.DTOs.Request.Setting;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.DataAccess.Repositories
 {
@@ -126,6 +128,50 @@ namespace Kader_System.DataAccess.Repositories
 
             return result;
 
+        }
+        public async Task<IEnumerable<GetAllStMainScreen>> SpGetScreen(string userId,int titleId,string lang)
+        {
+            var rawData = await _db.Set<SpGetScreen>()
+                .FromSqlRaw("EXEC sp_get_screen @UserId, @TitleId, @Lang",
+                            new SqlParameter("@UserId", userId),
+                            new SqlParameter("@TitleId", titleId),
+                            new SqlParameter("@Lang", lang))
+
+
+                .AsNoTracking().ToListAsync();
+                var data = rawData
+                        .GroupBy(s => s.main_id)
+                        .Select(x => new GetAllStMainScreen
+                        {
+                            Id = x.Key,
+                            main_title = x.FirstOrDefault()?.main_title,
+                            main_image = x.FirstOrDefault()?.main_image,
+                            cats = x.GroupBy(c => c.cat_id).Select(cg => new GetAllStMainScreenCat
+                            {
+                                Id = cg.FirstOrDefault().cat_id,
+                                main_id = cg.Key,
+                                title = cg.FirstOrDefault()?.cat_title,
+                                subs = cg.Select(s => new GetAllStScreenSub
+                                {
+                                    sub_title = s.sub_title,
+                                    main_id = s.main_id,
+                                    sub_image = "",
+                                    screen_code = s.screen_code,
+                                    Sub_Id = s.sub_id,
+                                    Screen_CatId = s.cat_id,
+                                    actions = s.actions,
+                                    cat_Title = s.cat_title,
+                                    permissions = s.permission,
+                                    main_title = s.main_title,
+                                    url = s.url,
+                                    
+                                }).ToList()
+                            }).ToList()
+                        }).ToList();
+
+
+
+            return data;
         }
     }
 }
