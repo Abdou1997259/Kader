@@ -1,5 +1,8 @@
 ﻿using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.DTOs.Response.HR;
+using Kader_System.Domain.Models.HR;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
 namespace Kader_System.DataAccess.Repositories.HR;
@@ -8,7 +11,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
 {
 
     private readonly KaderDbContext _context = context;
-  
+
     public Response<GetEmployeeByIdResponse> GetEmployeeByIdAsync(int id, string lang)
     {
         try
@@ -20,7 +23,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
             var directoryProfileName = directoryTypes.GetModuleNameWithType(Modules.Employees);
             var employeeAllowances = context.TransAllowances.Where(e => e.EmployeeId == id && !e.IsDeleted);
             var employeeVacations = context.TransVacations.Where(e => e.EmployeeId == id && !e.IsDeleted);
-        
+
             var result = from employee in context.Employees
 
                          join user in context.Users on employee.UserId equals user.Id into userGroup
@@ -29,7 +32,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                          from dept in deptGroup.DefaultIfEmpty()
                          join management in context.Managements on employee.ManagementId equals management.Id into manGroup
                          from man in manGroup.DefaultIfEmpty()
-                         
+
                          join qualification in context.HrQualifications on employee.QualificationId equals qualification.Id into
                              qualGroup
                          from qual in qualGroup.DefaultIfEmpty()
@@ -55,7 +58,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                          on employee.Id equals c.EmployeeId
                          into contractGroup
                          from cGroup in contractGroup.DefaultIfEmpty()
-                        
+
                          where employee.Id == id
                          select new GetEmployeeByIdResponse()
                          {
@@ -88,7 +91,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              HiringDate = employee.HiringDate,
                              ImmediatelyDate = employee.ImmediatelyDate,
                              Id = employee.Id,
-                             
+
                              JobId = employee.JobId,
                              JobNumber = employee.JobNumber,
                              MaritalStatusId = employee.MaritalStatusId,
@@ -99,8 +102,8 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              ReligionId = employee.ReligionId,
                              SalaryPaymentWayId = employee.SalaryPaymentWayId,
                              ShiftId = employee.ShiftId,
-                             TotalSalary = cGroup.FixedSalary == null ? 0 : cGroup.FixedSalary + cGroup.HousingAllowance == null ? cGroup.HousingAllowance : cGroup.HousingAllowance,                            
-                             EmployeeImage = Path.Combine(directoryProfileName, employee.EmployeeImage ==null ? " ":employee.EmployeeImage),
+                             TotalSalary = cGroup.FixedSalary == null ? 0 : cGroup.FixedSalary + cGroup.HousingAllowance == null ? cGroup.HousingAllowance : cGroup.HousingAllowance,
+                             EmployeeImage = Path.Combine(directoryProfileName, employee.EmployeeImage == null ? " " : employee.EmployeeImage),
                              qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
                              company_name = lang == Localization.Arabic ? com.NameAr : com.NameEn,
                              management_name = lang == Localization.Arabic ? man.NameAr : man.NameEn,
@@ -119,9 +122,9 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              shift_name = lang == Localization.Arabic ? sh.Name_ar : sh.Name_en,
                              allowances_sum = employeeAllowances.Any() ? employeeAllowances.AsEnumerable().Sum(a => a.Amount) : 0,
                              employee_loans_sum = 0,
-                             Username=usr.UserName==null ?"":usr.UserName,
-                             title_id = usr.CurrentTitleId ==null ? 0:usr.CurrentTitleId,
-                             employee_attachments = employee.ListOfAttachments ==null? null!: employee.ListOfAttachments.Select(s => new EmployeeAttachmentForEmp
+                             Username = usr.UserName == null ? "" : usr.UserName,
+                             title_id = usr.CurrentTitleId == null ? 0 : usr.CurrentTitleId,
+                             employee_attachments = employee.ListOfAttachments == null ? null! : employee.ListOfAttachments.Select(s => new EmployeeAttachmentForEmp
                              {
                                  FileName = s.FileName,
                                  Extention = s.FileExtension,
@@ -132,7 +135,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                          };
 
 
-           
+
 
 
             if (result?.FirstOrDefault()?.Id == null || result?.FirstOrDefault()?.Id == 0)
@@ -166,9 +169,6 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                 Error = exception.InnerException != null ? exception.InnerException.ToString() : exception.Message
             };
         }
-
-
-
     }
 
     public async Task<object> GetEmployeesDataAsLookUp(string lang)
@@ -209,7 +209,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
 
         return await context.Employees.
             Where(e => !e.IsDeleted && e.IsActive)
-           
+
             .Select(e => new
             {
                 id = e.Id,
@@ -250,14 +250,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
 
     }
 
-
-
-    public List<EmployeesData> GetEmployeesInfo(
-        Expression<Func<HrEmployee, bool>> filter,
-        Expression<Func<EmployeesData, bool>> filterSearch,
-        int? skip = null,
-        int? take = null, string lang = "ar"
-       )
+    public async Task<List<EmployeesData>> GetAllEmployeeDetails(bool isDeleted, int skip = 0, int take = 10, string lang = "en")
     {
         HrDirectoryTypes directoryTypes = new();
         directoryTypes = HrDirectoryTypes.Attachments;
@@ -265,112 +258,159 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
         directoryTypes = HrDirectoryTypes.EmployeeProfile;
         var directoryProfileName = directoryTypes.GetModuleNameWithType(Modules.Employees);
 
-        var employees = context.Employees.AsNoTracking().Where(filter);
+        var isDeletedParam = new SqlParameter("@IsDeleted", isDeleted);
+        var langParam = new SqlParameter("@Lang", lang);
 
+        var query = await _context.SPEmployeeDetails
+            .FromSqlRaw("EXEC SP_GetEmployeeDetails @IsDeleted, @Lang", isDeletedParam, langParam)
+            .AsNoTracking().
+            ToListAsync();
 
-        var query = from emp in employees
-
-                    join u in context.Users on emp.Added_by equals u.Id into userGroup
-                    from u in userGroup.DefaultIfEmpty()
-                    join management in context.Managements on emp.ManagementId equals management.Id into mgmtGroup
-                    from management in mgmtGroup.DefaultIfEmpty()
-                    join job in context.HrJobs on emp.JobId equals job.Id into jobGroup
-                    from job in jobGroup.DefaultIfEmpty()
-                    join marital in context.MaritalStatus on emp.MaritalStatusId equals marital.Id into maritalGroup
-                    from marital in maritalGroup.DefaultIfEmpty()
-                    join empType in context.EmployeeTypes on emp.EmployeeTypeId equals empType.Id into empTypeGroup
-                    from empType in empTypeGroup.DefaultIfEmpty()
-                    join fingerPrint in context.FingerPrints on emp.FingerPrintId equals fingerPrint.Id into fingerPrintGroup
-                    from fingerPrint in fingerPrintGroup.DefaultIfEmpty()
-                    join nationality in context.Nationalities on emp.NationalityId equals nationality.Id into nationalityGroup
-                    from nationality in nationalityGroup.DefaultIfEmpty()
-                    join religion in context.Relegions on emp.ReligionId equals religion.Id into religionGroup
-                    from religion in religionGroup.DefaultIfEmpty()
-                    join qual in context.HrQualifications on emp.QualificationId equals qual.Id into qualGroup
-                    from qual in qualGroup.DefaultIfEmpty()
-                    join vacation in context.Vacations on emp.VacationId equals vacation.Id into vacationGroup
-                    from vacation in vacationGroup.DefaultIfEmpty()
-                    join company in context.Companys on emp.CompanyId equals company.Id into companyGroup
-                    from company in companyGroup.DefaultIfEmpty()
-                    join shift in context.Shifts on emp.ShiftId equals shift.Id into shiftGroup
-                    from shift in shiftGroup.DefaultIfEmpty()
-                    join department in context.Departments on emp.DepartmentId equals department.Id into depGroup
-                    from department in depGroup.DefaultIfEmpty()
-                    join salary in context.SalaryPaymentWays on emp.SalaryPaymentWayId equals salary.Id into salaryGroup
-                    from salary in salaryGroup.DefaultIfEmpty()
-                    join gender in context.Genders on emp.GenderId equals gender.Id into genderGroup
-                    from gender in genderGroup.DefaultIfEmpty()
-                    join title in context.Titles on u.CurrentTitleId equals title.Id into titleGroup
-                    from title in titleGroup.DefaultIfEmpty()
-                    join l in _context.Loans on emp.Id equals l.EmployeeId into loanGroup
-                    from l in loanGroup.DefaultIfEmpty()
-                    join att in _context.EmployeeAttachments
-                    on emp.Id equals att.EmployeeId
-                    into attagroup
-                    let loansCount = context.Loans.AsNoTracking().Where(x=>x.EmployeeId == emp.Id).Count()
-                    from attaGroup in attagroup.DefaultIfEmpty()
-                    orderby emp.Id
-                    select new EmployeesData()
-                    {
-                        Management = lang == Localization.Arabic ? (management != null ? management.NameAr : "") : (management != null ? management.NameEn : ""),
-                        Address = emp.Address != null ? emp.Address : "",
-                        BirthDate = emp.BirthDate,
-                        ChildrenNumber = emp.ChildrenNumber != null ? emp.ChildrenNumber : 0,
-                        Department = lang == Localization.Arabic ? (department != null ? department.NameAr : "") : (department != null ? department.NameEn : ""),
-                        Email = emp.Email != null ? emp.Email : "",
-                        MaritalStatus = lang == Localization.Arabic ? (marital != null ? marital.Name : "") : (marital != null ? marital.NameInEnglish : ""),
-                        EmployeeType = lang == Localization.Arabic ? (empType != null ? empType.Name : "") : (empType != null ? empType.NameInEnglish : ""),
-                        FingerPrint = lang == Localization.Arabic ? (fingerPrint != null ? fingerPrint.NameAr : "") : (fingerPrint != null ? fingerPrint.NameEn : ""),
-                        FingerPrintCode = emp.FingerPrintCode != null ? emp.FingerPrintCode : "",
-                        FullName = lang == Localization.Arabic ? (emp.FullNameAr != null ? emp.FullNameAr : "") : (emp.FullNameEn != null ? emp.FullNameEn : ""),
-                        HiringDate = emp.HiringDate,
-                        ImmediatelyDate = emp.ImmediatelyDate,
-                        IsActive = emp.IsActive,
-                        JobNumber = emp.JobNumber != null ? emp.JobNumber : " ",
-                        NationalId = emp.NationalId != null ? emp.NationalId : " ",
-                        Nationality = lang == Localization.Arabic ? (nationality != null ? nationality.Name : "") : (nationality != null ? nationality.NameInEnglish : ""),
-                        Religion = lang == Localization.Arabic ? (religion != null ? religion.Name : "") : (religion != null ? religion.NameInEnglish : ""),
-                        Job = lang == Localization.Arabic ? (job != null ? job.NameAr : "") : (job != null ? job.NameEn : ""),
-                        qualification_name = lang == Localization.Arabic ? (qual != null ? qual.NameAr : "") : (qual != null ? qual.NameEn : ""),
-                        title_id = u != null ? u.CurrentTitleId : 0,
-                        Phone = emp.Phone != null ? emp.Phone : "",
-                        vacation_days_count = vacation != null ? (vacation.TotalBalance != null ? vacation.TotalBalance : 0) : 0,
-                        Username = u != null ? u.UserName : "",
-                        Vacation = lang == Localization.Arabic ? (vacation != null ? vacation.NameAr : "") : (vacation != null ? vacation.NameEn : ""),
-                        department_name = lang == Localization.Arabic ? (department != null ? department.NameAr : "") : (department != null ? department.NameEn : ""),
-                        management_name = lang == Localization.Arabic ? (management != null ? management.NameAr : "") : (management != null ? management.NameEn : ""),
-                        marital_status_name = lang == Localization.Arabic ? (marital != null ? marital.Name : "") : (marital != null ? marital.NameInEnglish : ""),
-                        Id = emp.Id,
-                        company_name = lang == Localization.Arabic ? (company != null ? company.NameAr : "") : (company != null ? company.NameEn : ""),
-                        Company = lang == Localization.Arabic ? (company != null ? company.NameAr : "") : (company != null ? company.NameEn : ""),
-                        Shift = lang == Localization.Arabic ? (shift != null ? shift.Name_ar : "") : (shift != null ? shift.Name_en : ""),
-                        employee_loans_count = loansCount,
-                        SalaryPaymentWay = lang == Localization.Arabic ? (salary != null ? salary.Name : "") : (salary != null ? salary.NameInEnglish : ""),
-                        Gender = lang == Localization.Arabic ? (gender != null ? gender.Name : "") : (gender != null ? gender.NameInEnglish : "")
-                    };
-
-        //Expression<Func<EmployeesData, bool>> filterSearch = x =>
-        //        (string.IsNullOrEmpty(model.Word)
-        //         || x.FullName.Contains(model.Word)
-        //         || x.Job.Contains(model.Word)
-        //         || x.Department.Contains(model.Word)
-        //         || x.Nationality.Contains(model.Word)
-        //         || x.Company.Contains(model.Word)
-        //         || x.Management.Contains(model.Word));
-        var cv= query.ToList();
-        if (filterSearch != null)
-            query = query.Where(filterSearch);
-
-        if (skip.HasValue)
-            query = query.Skip(skip.Value);
-        if (take.HasValue)
-            query = query.Take(take.Value);
-      
-        var stquery=query.ToQueryString();
-        var data = query.ToList();
-        return data;
-
+        var result = query.OrderBy(x => x.Id).Skip(skip).Take(take).
+             Select(emp => new EmployeesData
+             {
+                 Management = emp.ManagementName,
+                 Address = emp.Address,
+                 BirthDate = DateOnly.FromDateTime(emp.BirthDate.Value),
+                 ChildrenNumber = emp.ChildrenNumber,
+                 Department = emp.DepartmentName,
+                 Email = emp.Email,
+                 MaritalStatus = emp.MaritalStatusName,
+                 EmployeeType = emp.EmployeeType,
+                 //FingerPrint = lang == Localization.Arabic ? (fingerPrint != null ? fingerPrint.NameAr : "") : (fingerPrint != null ? fingerPrint.NameEn : ""),
+                 //FingerPrintCode = emp.FingerPrintCode != null ? emp.FingerPrintCode : "",
+                 FullName = emp.FullName,
+                 HiringDate = DateOnly.FromDateTime(emp.HiringDate.Value),
+                 ImmediatelyDate = DateOnly.FromDateTime(emp.ImmediatelyDate.Value),
+                 IsActive = emp.IsActive,
+                 JobNumber = emp.JobNumber,
+                 NationalId = emp.NationalId,
+                 Nationality = emp.Nationality,
+                 Religion = emp.Nationality,
+                 Job = emp.Job,
+                 qualification_name = emp.QualificationName,
+                 title_id = emp.TitleId,
+                 Phone = emp.Phone,
+                 vacation_days_count = emp.VacationDaysCount,
+                 Username = emp.Username,
+                 Vacation = emp.Vacation,
+                 department_name = emp.DepartmentName,
+                 management_name = emp.ManagementName,
+                 marital_status_name = emp.MaritalStatusName,
+                 Id = emp.Id,
+                 company_name = emp.CompanyName,
+                 Company = emp.CompanyName,
+                 Shift = emp.Shift,
+                 //employee_loans_count = loansCount,
+                 SalaryPaymentWay = emp.SalaryPaymentWay,
+                 Gender = emp.Gender,
+             }).ToList();
+        return result;
     }
+
+    //public List<EmployeesData> GetEmployeesInfo(
+    //    Expression<Func<HrEmployee, bool>> filter,
+    //    Expression<Func<EmployeesData, bool>> filterSearch,
+    //    int? skip = null,
+    //    int? take = null, string lang = "ar"
+    //   )
+    //{
+    //    HrDirectoryTypes directoryTypes = new();
+    //    directoryTypes = HrDirectoryTypes.Attachments;
+    //    var directoryAttachmentsName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+    //    directoryTypes = HrDirectoryTypes.EmployeeProfile;
+    //    var directoryProfileName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+    //    var employees = context.Employees.AsNoTracking().Where(filter);
+
+
+    //    #region Old
+    //    //var query = from emp in employees
+    //    //            join u in context.Users on emp.Added_by equals u.Id into userGroup
+    //    //            from u in userGroup.DefaultIfEmpty()
+    //    //            join management in context.Managements on emp.ManagementId equals management.Id into managementGroup
+    //    //            from management in managementGroup.DefaultIfEmpty()
+    //    //            join job in context.HrJobs on emp.JobId equals job.Id into jobGroup
+    //    //            from job in jobGroup.DefaultIfEmpty()
+    //    //            join marital in context.MaritalStatus on emp.MaritalStatusId equals marital.Id into maritalGroup
+    //    //            from marital in maritalGroup.DefaultIfEmpty()
+    //    //            join empType in context.EmployeeTypes on emp.EmployeeTypeId equals empType.Id into empTypeGroup
+    //    //            from empType in empTypeGroup.DefaultIfEmpty()
+    //    //            join nationality in context.Nationalities on emp.NationalityId equals nationality.Id into nationalityGroup
+    //    //            from nationality in nationalityGroup.DefaultIfEmpty()
+    //    //            join religion in context.Relegions on emp.ReligionId equals religion.Id into religionGroup
+    //    //            from religion in religionGroup.DefaultIfEmpty()
+    //    //            join qual in context.HrQualifications on emp.QualificationId equals qual.Id into qualGroup
+    //    //            from qual in qualGroup.DefaultIfEmpty()
+    //    //            join vacation in context.Vacations on emp.VacationId equals vacation.Id into vacationGroup
+    //    //            from vacation in vacationGroup.DefaultIfEmpty()
+    //    //            join company in context.Companys on emp.CompanyId equals company.Id into companyGroup
+    //    //            from company in companyGroup.DefaultIfEmpty()
+    //    //            join shift in context.Shifts on emp.ShiftId equals shift.Id into shiftGroup
+    //    //            from shift in shiftGroup.DefaultIfEmpty()
+    //    //            join department in context.Departments on emp.DepartmentId equals department.Id into departmentGroup
+    //    //            from department in departmentGroup.DefaultIfEmpty()
+    //    //            join salary in context.SalaryPaymentWays on emp.SalaryPaymentWayId equals salary.Id into salaryGroup
+    //    //            from salary in salaryGroup.DefaultIfEmpty()
+    //    //            join gender in context.Genders on emp.GenderId equals gender.Id into genderGroup
+    //    //            from gender in genderGroup.DefaultIfEmpty()
+    //    //            join att in context.EmployeeAttachments on emp.Id equals att.EmployeeId into attGroup
+    //    //            from att in attGroup.DefaultIfEmpty()            
+    //    //            //join fingerPrint in context.FingerPrints on emp.Id equals fingerPrint.emp into attGroup
+    //    //            //from att in attGroup.DefaultIfEmpty()
+    //    //            select new EmployeesData()
+    //    //            {
+    //    //                Management = lang == Localization.Arabic ? (management != null ? management.NameAr : "") : (management != null ? management.NameEn : ""),
+    //    //                Address = emp.Address != null ? emp.Address : "",
+    //    //                BirthDate = emp.BirthDate,
+    //    //                ChildrenNumber = emp.ChildrenNumber != null ? emp.ChildrenNumber : 0,
+    //    //                Department = lang == Localization.Arabic ? (department != null ? department.NameAr : "") : (department != null ? department.NameEn : ""),
+    //    //                Email = emp.Email != null ? emp.Email : "",
+    //    //                MaritalStatus = lang == Localization.Arabic ? (marital != null ? marital.Name : "") : (marital != null ? marital.NameInEnglish : ""),
+    //    //                EmployeeType = lang == Localization.Arabic ? (empType != null ? empType.Name : "") : (empType != null ? empType.NameInEnglish : ""),
+    //    //                //FingerPrint = lang == Localization.Arabic ? (fingerPrint != null ? fingerPrint.NameAr : "") : (fingerPrint != null ? fingerPrint.NameEn : ""),
+    //    //                FingerPrintCode = emp.FingerPrintCode != null ? emp.FingerPrintCode : "",
+    //    //                FullName = lang == Localization.Arabic ? (emp.FullNameAr != null ? emp.FullNameAr : "") : (emp.FullNameEn != null ? emp.FullNameEn : ""),
+    //    //                HiringDate = emp.HiringDate,
+    //    //                ImmediatelyDate = emp.ImmediatelyDate,
+    //    //                IsActive = emp.IsActive,
+    //    //                JobNumber = emp.JobNumber != null ? emp.JobNumber : " ",
+    //    //                NationalId = emp.NationalId != null ? emp.NationalId : " ",
+    //    //                Nationality = lang == Localization.Arabic ? (nationality != null ? nationality.Name : "") : (nationality != null ? nationality.NameInEnglish : ""),
+    //    //                Religion = lang == Localization.Arabic ? (religion != null ? religion.Name : "") : (religion != null ? religion.NameInEnglish : ""),
+    //    //                Job = lang == Localization.Arabic ? (job != null ? job.NameAr : "") : (job != null ? job.NameEn : ""),
+    //    //                qualification_name = lang == Localization.Arabic ? (qual != null ? qual.NameAr : "") : (qual != null ? qual.NameEn : ""),
+    //    //                title_id = u != null ? u.CurrentTitleId : 0,
+    //    //                Phone = emp.Phone != null ? emp.Phone : "",
+    //    //                vacation_days_count = vacation != null ? (vacation.TotalBalance != null ? vacation.TotalBalance : 0) : 0,
+    //    //                Username = u != null ? u.UserName : "",
+    //    //                Vacation = lang == Localization.Arabic ? (vacation != null ? vacation.NameAr : "") : (vacation != null ? vacation.NameEn : ""),
+    //    //                department_name = lang == Localization.Arabic ? (department != null ? department.NameAr : "") : (department != null ? department.NameEn : ""),
+    //    //                management_name = lang == Localization.Arabic ? (management != null ? management.NameAr : "") : (management != null ? management.NameEn : ""),
+    //    //                marital_status_name = lang == Localization.Arabic ? (marital != null ? marital.Name : "") : (marital != null ? marital.NameInEnglish : ""),
+    //    //                Id = emp.Id,
+    //    //                company_name = lang == Localization.Arabic ? (company != null ? company.NameAr : "") : (company != null ? company.NameEn : ""),
+    //    //                Company = lang == Localization.Arabic ? (company != null ? company.NameAr : "") : (company != null ? company.NameEn : ""),
+    //    //                Shift = lang == Localization.Arabic ? (shift != null ? shift.Name_ar : "") : (shift != null ? shift.Name_en : ""),
+    //    //                //employee_loans_count = loansCount,
+    //    //                SalaryPaymentWay = lang == Localization.Arabic ? (salary != null ? salary.Name : "") : (salary != null ? salary.NameInEnglish : ""),
+    //    //                Gender = lang == Localization.Arabic ? (gender != null ? gender.Name : "") : (gender != null ? gender.NameInEnglish : "")
+    //    //            }; 
+    //    #endregion
+
+    //    //var test2 = query.ToQueryString();
+    //    //if (filterSearch != null)
+    //    //    query = query.Where(filterSearch);
+
+    //    //if (skip.HasValue)
+    //    //    query = query.Skip(skip.Value);
+    //    //if (take.HasValue)
+    //    //    query = query.Take(take.Value);
+
+    //    //var stquery = query.ToQueryString();
+    //    //var data = query.ToList();
+    //    //return data;
+
+    //}
 
 
 }

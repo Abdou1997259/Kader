@@ -82,10 +82,14 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrRelegion> Relegions { get; set; }
     public DbSet<HrMaritalStatus> MaritalStatus { get; set; }
     public DbSet<MainScreenTree> MainScreenTrees { get; set; }
+
+    #region SP
     public DbSet<SPUserPermissionsBySubScreen> SPUserPermissionsBySubScreens { get; set; }
     public DbSet<SPTitlePermissionsBySubScreen> SPTitlePermissionsBySubScreens { get; set; }
     public DbSet<SPPermissionStruct> SPPermissionsBySubScreen { get; set; }
     public DbSet<SpGetAllScreens> SpGetAllScreens { get; set; }
+    public DbSet<SPEmployeeDetails> SPEmployeeDetails { get; set; }
+    #endregion
 
     #region EmployeeRequest_Dbset
     public DbSet<HrEmployeeRequests> HrEmployeeRequests { get; set; }
@@ -187,7 +191,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasMany(d => d.Employees)
             .WithOne(e => e.Department)
             .HasForeignKey(e => e.DepartmentId);
-        
+
         modelBuilder.Entity<ApplicationUser>()
        .HasOne(u => u.CompanyYear)
        .WithMany(cy => cy.Users)
@@ -245,7 +249,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             HasMany(x => x.StScreenSub).
             WithOne(x => x.ScreenCat).
             HasForeignKey(x => x.ScreenCatId);
- 
+
 
 
         modelBuilder.Entity<SPUserPermissionsBySubScreen>(e =>
@@ -262,6 +266,12 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
         });
 
         modelBuilder.Entity<SPPermissionStruct>(e =>
+        {
+            e.HasNoKey();
+            e.ToView(null);
+
+        });
+        modelBuilder.Entity<SPEmployeeDetails>(e =>
         {
             e.HasNoKey();
             e.ToView(null);
