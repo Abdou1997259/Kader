@@ -88,6 +88,6 @@
         public string department_name { get; set; }
         public int vacation_days_count { get; set; }
         public bool IsDeleted { get; set; }
-   
+        public string EmployeeImage { get; set; }
     }
 }

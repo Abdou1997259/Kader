@@ -17,17 +17,17 @@ namespace Kader_System.Services.Services.Setting
             var langParameter = new SqlParameter("@Lang", lang);
 
             var results = await _context.SPUserPermissionsBySubScreens
-                 .FromSqlRaw("EXEC SP_GetUserPermissionsBySubScreen @UserId,@TitleId, @Lang", userIdParameter,titleIdParameter, langParameter)
+                 .FromSqlRaw("EXEC SP_GetUserPermissionsBySubScreen @UserId,@TitleId, @Lang", userIdParameter, titleIdParameter, langParameter)
                  .AsNoTracking()
                  .ToListAsync();
             var user = _context.Users.AsNoTracking()
-                            .Where(x => x.Id == userId )
+                            .Where(x => x.Id == userId)
                             .Select(u => new
                             {
                                 u.UserName,
                                 u.TitleId,
                                 u.CurrentTitleId,
-                               
+
                             }).FirstOrDefault();
 
             var titleIds = user.TitleId?.Split(',', StringSplitOptions.None)
@@ -43,34 +43,33 @@ namespace Kader_System.Services.Services.Setting
                                 TitleName = lang == Localization.English ? title.TitleNameEn : title.TitleNameAr
                             }).ToList();
 
-            var finalResult = results.Select(x => new DTOSPGetUserPermissionsBySubScreen
+            var finalResult = results.Select(x => new Dictionary<string, DTOSPGetUserPermissionsBySubScreen>
             {
+                {
+                    x.screen_code,
+                    new DTOSPGetUserPermissionsBySubScreen
+                    {
+                        actions = x.actions,
+                        TitleId = titleId,
+                        cat_id = x.cat_id,
+                        cat_title = x.cat_title,
+                        main_id = x.main_id,
+                        main_img = x.main_image,
+                        main_title = x.main_title,
+                        permissions = x.permissions.CreateNewPermission(x.actions, x.permissions, x.PermissionNames),
+                        screen_code = x.screen_code,
+                        sub_id = x.sub_id,
+                        sub_title = x.sub_title,
+                        url = x.url
+                    }}}).ToList();
 
-                actions = x.actions,
-                cat_id = x.cat_id,
-                cat_title = x.cat_title,
-                main_id = x.main_id,
-                main_img = x.main_image,
-                main_title = x.main_title,
-                permissions = x.permissions.CreateNewPermission(x.actions, x.permissions, x.PermissionNames),
-                screen_code = x.screen_code,
-                sub_id = x.sub_id,
-                sub_title = x.sub_title,
-                url = x.url
-            });
-
-            return new ResponseWithUser<DTOSPGetUserPermissionsBySubScreen>
-
+            return new()
             {
                 Check = true,
                 DynamicData = finalResult,
                 Error = "",
-                UserName = user.UserName,
-                titles = titles,
-                CurrentTitleId = user.CurrentTitleId
             };
         }
-
         private async Task<Dictionary<int, string>> GetActionNamesAsync(string lang)
         {
             var actions = await _context.Actions

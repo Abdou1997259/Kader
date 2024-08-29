@@ -301,17 +301,23 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
 
+
+
+
             var result = await _unitOfWork.VacationRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+           var emp=await _unitOfWork.Employees.GetFirstOrDefaultAsync(x=>x.Id== vacationrequest.EmployeeId);
+            var vacations = await _unitOfWork.Vacations.GetFirstOrDefaultAsync(x => x.Id == emp.VacationId);
           var creatResult=  await _vacationService.CreateTransVacationAsync(new CreateTransVacationRequest
             {
               
-                VacationId = vacationrequest.Id,
+                VacationId = vacations.Id,
                 StartDate = vacationrequest.StartDate,
                 EmployeeId = vacationrequest.EmployeeId, 
                 Attachment = vacationrequest.AttachmentPath,
                 Notes = vacationrequest.Notes,
                 FileName="",
                 DaysCount=vacationrequest.DayCounts,
+
                 
                 
            
