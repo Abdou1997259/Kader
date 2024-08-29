@@ -11,7 +11,7 @@ using static Kader_System.Domain.Constants.SD.ApiRoutes;
 
 namespace Kader_System.Services.Services.Auth;
 
-public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService premissionsevice, IMapper mapper, UserManager<ApplicationUser> userManager,
+public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissionsevice, IMapper mapper, UserManager<ApplicationUser> userManager,
                    JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
                    IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
                    IFileServer fileServer,
@@ -32,7 +32,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IHttpContextAccessor _accessor = accessor;
     private readonly IFileServer _fileServer = fileServer;
-    private readonly IPermessionStructureService _permissionservice = premissionsevice;
+    private readonly IUserPermessionService _permissionservice = premissionsevice;
     private readonly IMainScreenService _mainScreenService = mainScreenService;
     private readonly KaderDbContext _db = db;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
@@ -1274,7 +1274,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
 
         var screens = await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
-        var perm = await _permissionservice.GetPermissionsBySubScreen(lang);
+  
         var jwtSecurityToken = await CreateJwtToken(await _userManager.FindByIdAsync(user.Id));
 
         var email = user.Email;
@@ -1289,6 +1289,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var currentTitles = user.CurrentTitleId;
         var currentCompany = user.CurrentCompanyId;
         var currentCompanyName = Localization.Arabic == lang ? cop?.NameAr ?? string.Empty : cop?.NameEn ?? string.Empty;
+        var perm = await _permissionservice.GetUserPermissionsBySubScreen(currentTitles,userId,lang);
         var myPermissions = perm?.DynamicData;
         var screensResult = screens?.DataList;
         var aptoken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
