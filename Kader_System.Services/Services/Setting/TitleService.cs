@@ -367,7 +367,7 @@ namespace Kader_System.Services.Services.Setting
         private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model, string lang, bool all = false)
         {
 
-
+           
 
 
             foreach (var assignedPermission in model)

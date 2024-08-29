@@ -164,10 +164,10 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
 
         obj.PhoneNumber = model.phone;
         obj.UserName = model.user_name;
-        foreach(var title in model.title_id) {
+        foreach (var title in model.title_id) {
             // Manage user permissions
             var existingUserPermissions = await _unitOfWork.UserPermssionRepositroy
-                .GetSpecificSelectTrackingAsync(x => x.TitleId == title && x.UserId ==obj.Id, x => x);
+                .GetSpecificSelectTrackingAsync(x => x.TitleId == title && x.UserId == obj.Id, x => x);
 
             if (existingUserPermissions.Any())
             {
@@ -645,36 +645,98 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
                 Data = null
             };
         }
-
-        // Map CreateUserRequest to ApplicationUser
-        var user = _mapper.Map<ApplicationUser>(model);
-        user.VisiblePassword = model.password;
-        user.PhoneNumber = model.phone;
-        user.FullName = model.full_name;
-        user.Email = model.email;
-        user.FinancialYear = model.financial_year;
-        user.CompanyId = model.company_id.NulalbleConcater();
-        user.TitleId = model.title_id.NulalbleConcater();
-        user.CurrentTitleId = model.current_title.Value;
-        user.CurrentCompanyId = model.current_company.Value;
-        user.JobId = model.job_title;
-        user.UserName = model.user_name;
-        user.Add_date = DateTime.UtcNow;
-        user.CompanyYearId = model.financial_year;
-        user.Added_by = _accessor.HttpContext?.User.GetUserId() ?? string.Empty;
-        user.Id = Guid.NewGuid().ToString();
-
-        // Upload user image
-        var moduleNameWithType = hrDirectoryTypes.GetModuleNameWithType(moduleName);
-        if (model.image != null && model.image.Length > 0)
+        using var transaction = unitOfWork.BeginTransaction();
+        try
         {
-            user.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
-        }
+            // Map CreateUserRequest to ApplicationUser
+            var user = _mapper.Map<ApplicationUser>(model);
+            user.VisiblePassword = model.password;
+            user.PhoneNumber = model.phone;
+            user.FullName = model.full_name;
+            user.Email = model.email;
+            user.FinancialYear = model.financial_year;
+            user.CompanyId = model.company_id.NulalbleConcater();
+            user.TitleId = model.title_id.NulalbleConcater();
+            user.CurrentTitleId = model.current_title.Value;
+            user.CurrentCompanyId = model.current_company.Value;
+            user.JobId = model.job_title;
+            user.UserName = model.user_name;
+            user.Add_date = DateTime.UtcNow;
+            user.CompanyYearId = model.financial_year;
+            user.Added_by = _accessor.HttpContext?.User.GetUserId() ?? string.Empty;
+            user.Id = Guid.NewGuid().ToString();
 
-        foreach (var title in model.title_id) {
+            // Upload user image
+            var moduleNameWithType = hrDirectoryTypes.GetModuleNameWithType(moduleName);
+            if (model.image != null && model.image.Length > 0)
+            {
+                user.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
+            }
+
+
+            // Add user to the database
+            var result = await _userManager.CreateAsync(user, model.password);
+            if (!result.Succeeded)
+            {
+                var errorMsg = _sharLocalizer[Localization.Error];
+                return new Response<CreateUserResponse>
+                {
+                    Check = false,
+                    Msg = string.Join(',', result.Errors.Select(e => e.Description)),
+                    Data = null
+                };
+            }
+
+            // Optionally, generate JWT token
+            var token = await CreateJwtToken(user); // Implement this method if needed
+
+            var response = new CreateUserResponse
+            {
+                CompanyId = model.company_id,
+                FullName = model.full_name,
+                Email = model.email,
+                JobTitle = model.job_title,
+                CompanyYear = DateTime.Now.Year,
+                TitleId = model.title_id,
+                Token = "Bearer " + new JwtSecurityTokenHandler().WriteToken(token),
+                UserName = model.user_name,
+            };
+            await AddPermissionByTitleToUser(model.title_id, user.Id);
+            transaction.Commit();
+            return new Response<CreateUserResponse>
+            {
+                Check = true,
+                Data = response,
+            };
+        }
+        catch (Exception ex) { 
+           
+            transaction.Rollback();
+
+            return new()
+            {
+                Msg = string.Format(_sharLocalizer[Localization.Error],
+                          _sharLocalizer[Localization.Employee]),
+                Check = false,
+                Data = null,
+                Error = ex.InnerException != null ? ex.InnerException.ToString() : ex.Message
+            };
+
+        }
+        
+
+
+
+        // Return success response
+       
+    }
+    private async Task AddPermissionByTitleToUser(List<int?> titles,string userId)
+    {
+        foreach (var title in titles)
+        {
             // Manage user permissions
             var existingUserPermissions = await _unitOfWork.UserPermssionRepositroy
-                .GetSpecificSelectTrackingAsync(x => x.TitleId == title && x.UserId == user.Id, x => x);
+                .GetSpecificSelectTrackingAsync(x => x.TitleId == title && x.UserId == userId, x => x);
 
             if (existingUserPermissions.Any())
             {
@@ -684,12 +746,12 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
 
             var titlePermissions = await _unitOfWork.TitlePermissionRepository
                 .GetSpecificSelectTrackingAsync(
-                    x => x.TitleId == model.current_title,
+                    x => x.TitleId == title,
                     select: x => new UserPermission
                     {
-                        TitleId = title.Value 
+                        TitleId = x.TitleId
                         ,
-                        UserId = user.Id,
+                        UserId = userId,
                         SubScreenId = x.SubScreenId,
                         Permission = x.Permissions
                     }
@@ -698,41 +760,6 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
             await _unitOfWork.CompleteAsync();
 
         }
-
-        // Add user to the database
-        var result = await _userManager.CreateAsync(user, model.password);
-        if (!result.Succeeded)
-        {
-            var errorMsg = _sharLocalizer[Localization.Error];
-            return new Response<CreateUserResponse>
-            {
-                Check = false,
-                Msg = errorMsg,
-                Data = null
-            };
-        }
-
-        // Optionally, generate JWT token
-        var token = await CreateJwtToken(user); // Implement this method if needed
-
-        var response = new CreateUserResponse
-        {
-            CompanyId = model.company_id,
-            FullName = model.full_name,
-            Email = model.email,
-            JobTitle = model.job_title,
-            CompanyYear = DateTime.Now.Year,
-            TitleId = model.title_id,
-            Token = "Bearer " + new JwtSecurityTokenHandler().WriteToken(token),
-            UserName = model.user_name,
-        };
-
-        // Return success response
-        return new Response<CreateUserResponse>
-        {
-            Check = true,
-            Data = response,
-        };
     }
 
 
