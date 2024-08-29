@@ -10,13 +10,14 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 [ApiController]
 //[Authorize(Permissions.Setting.View)]
 [Route("api/v1/")]
-public class MainScreensController(IMainScreenService service, IRequestService requestService, KaderDbContext context , IWebHostEnvironment hostEnvironment) : ControllerBase
+public class MainScreensController(IMainScreenService service, IRequestService requestService, KaderDbContext context , IWebHostEnvironment hostEnvironment, IHttpContextAccessor httpContextAccessor) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;
 
     private readonly IMainScreenService _mainScreenRepository = service;
     private readonly KaderDbContext _dbcontext = context;
     private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment;
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
 
 
@@ -39,8 +40,8 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     [Permission(Helpers.Permission.View, 1)]
     public async Task<IActionResult> GetMainScreensWithRelatedData([FromQuery] StGetAllFiltrationsForMainScreenRequest model)
     {
-
-        var result = await _mainScreenRepository.GetMainScreensWithRelatedDataAsync(requestService.GetRequestHeaderLanguage);
+        var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+        var result = await _mainScreenRepository.GetMainScreensWithRelatedDataAsync(requestService.GetRequestHeaderLanguage,userId);
         return Ok(result);
     }
 
