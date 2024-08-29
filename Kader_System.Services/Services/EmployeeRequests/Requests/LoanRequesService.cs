@@ -292,25 +292,31 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
             }
 
-
-
-            var result = await _unitOfWork.LoanRequestRepository.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
-            await _loanService.CreateLoanAsync(new Domain.DTOs.Request.HR.Loan.CreateLoanRequest
+            var creatResult = await _loanService.CreateLoanAsync(new Domain.DTOs.Request.HR.Loan.CreateLoanRequest
             {
                 LoanAmount = loanRequest.Amount,
                 StartCalculationDate = loanRequest.StartDate,
                 InstallmentCount = loanRequest.InstallmentsCount,
                 EmployeeId = loanRequest.EmployeeId.Value,
                 StartLoanDate = loanRequest.StartDate,
-                EndCalculationDate=loanRequest.StartDate.AddMonths(loanRequest.InstallmentsCount-1),
-                MonthlyDeducted=  (decimal)(loanRequest.Amount /loanRequest.InstallmentsCount),
-                AdvanceType=1
-               
+                EndCalculationDate = loanRequest.StartDate.AddMonths(loanRequest.InstallmentsCount - 1),
+                MonthlyDeducted = (decimal)(loanRequest.Amount / loanRequest.InstallmentsCount),
+                AdvanceType = 1
 
 
 
-            },lang);
-                      
+
+            }, lang);
+            if (!creatResult.Check) {
+                return new Response<string>
+                {
+                    Check = false,
+                    Msg = creatResult.Msg
+                };
+            }
+
+            var result = await _unitOfWork.LoanRequestRepository.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+        
 
 
             if (result > 0)

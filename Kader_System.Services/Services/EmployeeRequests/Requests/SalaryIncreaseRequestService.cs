@@ -4,6 +4,8 @@ using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
+using Kader_System.Domain.Models.Trans;
+using Kader_System.Services.IServices;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
@@ -12,7 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class SalaryIncreaseRequestService(IUnitOfWork unitOfWork, KaderDbContext context,IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ISalaryIncreaseRequestService
+    public class SalaryIncreaseRequestService(IUnitOfWork unitOfWork, ITransSalaryIncreaseService transSalaryIncrease, KaderDbContext context,IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ISalaryIncreaseRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -22,6 +24,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
         private readonly IRequestService _requestService = requestService;
+        private readonly ITransSalaryIncreaseService _transSalaryIncreaseService = transSalaryIncrease;
+
 
 
         #region ListOfIncreaseSalaryRequest
@@ -287,22 +291,71 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region Status
-        public async Task<Response<string>> ApproveRequest(int requestId)
+        public async Task<Response<string>> ApproveRequest(int requestId,string lang)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var increaseRequest=await _unitOfWork.SalaryIncreaseRequest.GetFirstOrDefaultAsync(x=>x.Id == requestId);
+
+            if (increaseRequest == null)
+            {
+                var msg = _sharLocalizer[Localization.NotFound];
+                return new()
+                {
+                    Check = false,
+                    Data = null,
+                    Msg = msg
+                };
+            }
+            if (increaseRequest.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved)
+            {
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.ApprovedAready]
+                };
+
+            }
+
+           
+
+
+
+
+
+
+
+
+           var createresult= await _transSalaryIncreaseService.CreateTransSalaryIncreaseAsync(new CreateTransSalaryIncreaseRequest
+            {
+                Amount = increaseRequest.Amount,
+                Employee_id = increaseRequest.EmployeeId,
+                Increase_type = 1,
+                TransactionDate = new DateOnly(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day)
+
+            }, lang);
+
+            if (!createresult.Check)
+            {
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = createresult.Msg
+                };
+            }
             var result = await _unitOfWork.SalaryIncreaseRequest.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+
             if (result > 0)
             {
                 return new Response<string>()
                 {
                     Check = true,
-                    Msg = "Approved sucessfully"
+                    Msg = _sharLocalizer[Localization.Approved]
                 };
             }
             return new Response<string>()
             {
                 Check = false,
-                Msg = "Cannot approve , request is not pending or is deleted"
+                Msg = _sharLocalizer[Localization.NotApproved]
             };
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
