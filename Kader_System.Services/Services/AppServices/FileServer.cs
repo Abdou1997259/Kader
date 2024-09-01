@@ -156,15 +156,27 @@ namespace Kader_System.Services.Services.AppServices
                 return string.Empty;
         }
 
-        public async Task<FileContentResult> DownloadFileAsync(string module,string fileName)
+        public async Task<FileContentResult> DownloadFileAsync(string module, string fileName)
         {
-            var filePath = GetFilePath(serverPath,module, fileName);
-            var fileBytes =await GetFileBytes(filePath);
+            var filePath = GetFilePath(serverPath, module, fileName);
+            var fileBytes = await GetFileBytes(filePath);
             var contentType = GetContentType(fileName);
             return new FileContentResult(fileBytes, contentType)
             {
                 FileDownloadName = fileName
             };
+        }
+
+        public void CopyFile(string sourceFilePath, string destFilePath)
+        {
+            var desDir = Path.GetDirectoryName(destFilePath);
+            if (!Directory.Exists(desDir))
+                Directory.CreateDirectory(desDir);
+
+            if (File.Exists(sourceFilePath))
+            {
+                File.Copy(sourceFilePath, destFilePath);
+            }
         }
     }
 }

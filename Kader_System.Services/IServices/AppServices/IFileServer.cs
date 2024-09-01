@@ -74,7 +74,7 @@ namespace Kader_System.Services.IServices.AppServices
         /// <param name="path"></param>
         /// <returns></returns>
         public string GetContentType(string path);
-        public  Task<byte[]> GetFileBytes(params string[] fileParts);
+        public Task<byte[]> GetFileBytes(params string[] fileParts);
         /// <summary>
         /// Get File exetension
         /// </summary>
@@ -88,6 +88,11 @@ namespace Kader_System.Services.IServices.AppServices
         /// <param name="fileName"></param>
         /// <returns>File from wwwroot if exist</returns>
         public Task<FileContentResult> DownloadFileAsync(string module, string fileName);
-
+        /// <summary>
+        /// Copy file from source file to destination file 
+        /// </summary>
+        /// <param name="sourceFile"></param>
+        /// <param name="destFile"></param>
+        public void CopyFile(string sourceFilePath, string destFilePath);
     }
 }

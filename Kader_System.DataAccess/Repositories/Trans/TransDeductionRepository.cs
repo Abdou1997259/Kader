@@ -13,7 +13,7 @@ public class TransDeductionRepository(KaderDbContext context) : BaseRepository<T
     {
 
         var transBenefits = context.TransDeductions.Where(filter);
-
+        var test = transBenefits.Count();
 
         var query = from trans in transBenefits
                     join employee in context.Employees on trans.EmployeeId equals employee.Id into empGroup
