@@ -47,19 +47,7 @@ public class PermissionAuthorizationHandlerService(IHttpContextAccessor accessor
 
         #region Ancient
 
-        //bool checkHubAuth = _accessor!.HttpContext!.Request.Path == Shared.Notify; /*&& !string.IsNullOrEmpty(_httpContextAccessor.HttpContext.Request.Headers.Authorization);*/
-        //if (checkHubAuth)
-        //{
-        //    context.Succeed(requirement);
-        //    return;
-        //}
-
-        //canAccess = await Task.Run(() => context.User.Claims.Any(c => c.Type == RolesClaims.RolePermission && c.Value == requirement.Permission && c.Issuer == Shared.KaderSystem));
-        //if (canAccess)
-        //{
-        //    context.Succeed(requirement);
-        //    return;
-        //}
+      
 
         #endregion
     }

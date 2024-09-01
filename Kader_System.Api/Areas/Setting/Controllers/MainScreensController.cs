@@ -67,9 +67,9 @@ public class MainScreensController(IMainScreenService service, IRequestService r
     [Permission(Helpers.Permission.Add, 1)]
     public async Task<IActionResult> CreateMainScreenAsync([FromForm] StCreateMainScreenRequest model)
     {
-        var serverPath = HttpContext.Items["ServerPath"]?.ToString();
+       
 
-        var response = await service.CreateMainScreenAsync(model, serverPath, Modules.Setting);
+        var response = await service.CreateMainScreenAsync(model, Modules.Setting);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

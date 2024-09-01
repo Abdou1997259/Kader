@@ -1314,8 +1314,10 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var currentTitles = user.CurrentTitleId;
         var currentCompany = user.CurrentCompanyId;
         var currentCompanyName = Localization.Arabic == lang ? cop?.NameAr ?? string.Empty : cop?.NameEn ?? string.Empty;
-        var perm = await _permissionservice.GetPermissionsBySubScreen(lang);
-        var myPermissions = perm?.DynamicData;
+
+  
+    
+
         var screensResult = screens?.DataList;
         var aptoken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
@@ -1327,6 +1329,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             name = Localization.Arabic == lang ? x.NameAr : x.NameEn
         }
         ).ToList();
+
+        var permissionScreenData = await _unitOfWork.StoredProcuduresRepo.SpGetScreen(userId, currentTitles, lang);
         var obj = new GetMyProfileResponse
         {
             ApiToken = aptoken,
@@ -1348,8 +1352,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 CurrentYear = 2033,
                 Years = 2023,
                 CurrentCompanyName = currentCompanyName,
-                Mypermissions = myPermissions,
-                Screens = screensResult
+                Mypermissions=permissionScreenData.myPermissions,
+                Screens = permissionScreenData.getAllStMainScreens
             }
         };
 

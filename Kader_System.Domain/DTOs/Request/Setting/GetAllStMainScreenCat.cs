@@ -14,6 +14,6 @@ namespace Kader_System.Domain.DTOs.Request.Setting
 
         public required string title { get; set; }
         //public required string image { get; set; }
-        public ICollection<GetAllStScreenSub> subs { get; set; } = [];
+        public IEnumerable<GetAllStScreenSub> subs { get; set; } = [];
     }
 }

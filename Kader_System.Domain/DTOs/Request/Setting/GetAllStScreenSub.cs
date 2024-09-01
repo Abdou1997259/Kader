@@ -15,11 +15,11 @@ namespace Kader_System.Domain.DTOs.Request.Setting
        public string main_title { get; set; }
 
         public required string sub_title { get; set; }
-        public string? url { get; set; }
+        public string url { get; set; }
         public string screen_code { get; set; }
-        public string? sub_image { get; set; }
-        public string ? actions { get; set; }   
-        public string ? permissions { get; set; }   
+        public string sub_image { get; set; }
+        public string  actions { get; set; }   
+        public string permissions { get; set; }   
  
 
 
