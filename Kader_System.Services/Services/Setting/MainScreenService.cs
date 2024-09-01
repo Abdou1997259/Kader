@@ -1,6 +1,7 @@
 ﻿using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Services.IServices.AppServices;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.Setting;
@@ -308,6 +309,11 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
     public async Task<Response<GetAllStMainScreen>> GetMainScreensWithRelatedDataAsync(string lang)
     {
+        //var titleId = context.Users.AsNoTracking().Where(x => x.Id == userId).Select(x =>x.CurrentTitleId).FirstOrDefaultAsync(); 
+        //var  userIdParameter = new SqlParameter("@UserId", userId);
+        //var titleIdParameter = new SqlParameter("@TitleId", titleId);
+        //var langParameter = new SqlParameter("@Lang", lang);
+
         var mainScreens = await context.MainScreenCategories.
             Include(ms => ms.CategoryScreen).
             ThenInclude(cs => cs.StScreenSub)
@@ -321,6 +327,10 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
  
         var subs = await _unitOfWork.SubMainScreenActions.GetAllAsync();
         var permision = await _unitOfWork.UserPermssionRepositroy.GetAllAsync();
+        //var permision = await _dbContext.SPUserPermissionsBySubScreens
+        //        .FromSqlRaw("EXEC SP_GetUserPermissionsBySubScreen @UserId,@TitleId, @Lang", userIdParameter, titleIdParameter, langParameter)
+        //        .AsNoTracking()
+        //        .ToListAsync();
         var mains = await _unitOfWork.MainScreens.GetAllAsync();
 
 

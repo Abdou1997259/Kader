@@ -14,7 +14,7 @@
        
         public string? Notes { get; set; }
         public string? Attachment { get; set; }
-        public string? FileName { get; set; }
+        public IFormFile? AttachmentFile { get; set; }
 
     }
 }
