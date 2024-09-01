@@ -1329,6 +1329,8 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
             name = Localization.Arabic == lang ? x.NameAr : x.NameEn
         }
         ).ToList();
+
+        var permissionScreenData = await _unitOfWork.StoredProcuduresRepo.SpGetScreen(userId, currentTitles, lang);
         var obj = new GetMyProfileResponse
         {
             ApiToken = aptoken,
@@ -1350,8 +1352,8 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
                 CurrentYear = 2033,
                 Years = 2023,
                 CurrentCompanyName = currentCompanyName,
-           
-                Screens = await _unitOfWork.StoredProcuduresRepo.SpGetScreen(userId,currentTitles,lang)
+                Mypermissions=permissionScreenData.myPermissions,
+                Screens = permissionScreenData.getAllStMainScreens
             }
         };
 

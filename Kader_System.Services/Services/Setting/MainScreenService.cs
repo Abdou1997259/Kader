@@ -158,7 +158,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         };
     }
 
-    public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string appPath, string moduleName)
+    public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string moduleName)
     {
         var mainScreenmap = _mapper.Map<StMainScreen>(model);
         var maxId = await _unitOfWork.MainScreens.MaxInCloumn(x =>x.Id);

@@ -23,4 +23,23 @@ namespace Kader_System.Domain.DTOs.Response.Setting
         public string? url { get; set; }
 
     }
+
+
+    public class GetUserPermission
+    {
+        public int cat_id { get; set; }
+        public string cat_title { get; set; }
+        public int main_id { get; set; }
+        public string main_img { get; set; }
+        public string main_title { get; set; }
+        public string screen_code { get; set; }
+        public int sub_id { get; set; }
+        public string sub_title { get; set; }
+        public int TitleId { get; set; }
+
+        public string actions { get; set; }
+        public List<int> permissions { get; set; }
+        public string? url { get; set; }
+
+    }
 }

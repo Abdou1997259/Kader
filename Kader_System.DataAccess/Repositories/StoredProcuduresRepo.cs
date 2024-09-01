@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.DTOs.Request.Setting;
+﻿using Kader_System.Domain.DTOs.Request.Auth;
+using Kader_System.Domain.DTOs.Request.Setting;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,6 +8,7 @@ namespace Kader_System.DataAccess.Repositories
     public class StoredProcuduresRepo(KaderDbContext db) : IStoredProcuduresRepo
     {
         private readonly KaderDbContext _db = db;
+        
         public async Task<IEnumerable<SpCacluateSalary>> SpCalculateSalary(DateOnly startCalculationDate, int days, string listEmployeesString)
         {
             // Calculate the end of the month based on startCalculationDate
@@ -129,7 +131,7 @@ namespace Kader_System.DataAccess.Repositories
             return result;
 
         }
-        public async Task<IEnumerable<GetAllStMainScreen>> SpGetScreen(string userId,int titleId,string lang)
+        public async Task<GetMyProfilePermissionAndScreen> SpGetScreen(string userId,int titleId,string lang)
         {
             var rawData = await _db.Set<SpGetScreen>()
                 .FromSqlRaw("EXEC sp_get_screen @UserId, @TitleId, @Lang",
@@ -155,7 +157,7 @@ namespace Kader_System.DataAccess.Repositories
                                 {
                                     sub_title = s.sub_title,
                                     main_id = s.main_id,
-                                    sub_image = "",
+                                    sub_image = Path.Combine(Modules.Setting, s.main_image == null ? "" : s.main_image),
                                     screen_code = s.screen_code,
                                     Sub_Id = s.sub_id,
                                     Screen_CatId = s.cat_id,
@@ -171,7 +173,63 @@ namespace Kader_System.DataAccess.Repositories
 
 
 
-            return data;
+            var permission = rawData
+
+            .Select(x => new Dictionary<string, GetUserPermission>
+            {
+                {
+                    x.screen_code,
+                    new GetUserPermission
+                    { actions = x.actions,
+                    TitleId = titleId,
+                    cat_id = x.cat_id,
+                    cat_title = x.cat_title,
+                    main_id = x.main_id,
+                    main_img =Path.Combine(Modules.Setting, x.main_image ==null? "":x.main_image),
+                    main_title = x.main_title,
+                    permissions = x.permission.Split(',')
+                                       .Select(p => int.TryParse(p, out var result) ? result : 0) // Handle conversion with fallback value
+                                       .ToList(),
+                    screen_code = x.screen_code,
+                    sub_id = x.sub_id,
+                    sub_title = x.sub_title,
+                    url = x.url
+
+                    }
+                }
+
+
+            }).ToList();
+            //    g => g.Key, // The key for the dictionary is the screen_code
+            //    g => g.Select(x => new GetUserPermission
+            //    {
+            //        actions = x.actions,
+            //        TitleId = titleId,
+            //        cat_id = x.cat_id,
+            //        cat_title = x.cat_title,
+            //        main_id = x.main_id,
+            //        main_img =Path.Combine(Modules.Setting, x.main_image ==null? "":x.main_image),
+            //        main_title = x.main_title,
+            //        permissions = x.permission.Split(',')
+            //                           .Select(p => int.TryParse(p, out var result) ? result : 0) // Handle conversion with fallback value
+            //                           .ToList(), 
+            //        screen_code = x.screen_code,
+            //        sub_id = x.sub_id,
+            //        sub_title = x.sub_title,
+            //        url = x.url
+            //    }).FirstOrDefault() // Convert the IEnumerable to a List
+            //).ToList();
+
+
+
+
+        
+
+            return new GetMyProfilePermissionAndScreen
+            {
+                getAllStMainScreens = data,
+                myPermissions = permission
+            };
         }
     }
 }
