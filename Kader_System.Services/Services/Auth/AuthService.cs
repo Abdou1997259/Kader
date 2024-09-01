@@ -177,10 +177,10 @@ public class AuthService(IUnitOfWork unitOfWork, IUserPermessionService premissi
 
             var titlePermissions = await _unitOfWork.TitlePermissionRepository
                 .GetSpecificSelectTrackingAsync(
-                    x => x.TitleId == model.current_title,
+                    x => x.TitleId == title,
                     select: x => new UserPermission
                     {
-                        TitleId = model.current_title.Value,
+                        TitleId = title,
                         UserId = obj.Id,
                         SubScreenId = x.SubScreenId,
                         Permission = x.Permissions
