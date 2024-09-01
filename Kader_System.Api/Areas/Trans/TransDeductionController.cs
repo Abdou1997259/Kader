@@ -23,7 +23,7 @@ namespace Kader_System.Api.Areas.Trans
         [HttpGet(ApiRoutes.TransDeduction.GetTransDeductions)]
         [Permission(Helpers.Permission.View, 21)]
         public async Task<IActionResult> GetAllTransDeductions([FromQuery] GetAllFilterationForTransDeductionRequest request) =>
-            Ok(await service.GetAllTransDeductionsAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetRequestHeaderLanguage));
+            Ok(await service.GetAllTransDeductionsAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetCurrentHost));
         [HttpGet(ApiRoutes.TransDeduction.GetTransDeductionById)]
         [Permission(Helpers.Permission.View, 21)]
         public async Task<IActionResult> GetTransDeductionById(int id)

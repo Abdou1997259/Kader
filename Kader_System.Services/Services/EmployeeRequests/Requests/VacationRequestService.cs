@@ -2,6 +2,7 @@ using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
+using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
@@ -9,12 +10,15 @@ using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Net.Mail;
+using static Kader_System.Domain.Constants.SD.ApiRoutes;
+using TransVacation = Kader_System.Domain.Models.Trans.TransVacation;
 
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class VacationRequestService(IUnitOfWork unitOfWork, KaderDbContext context,ITransVacationService transVacation, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IVacationRequestService
+    public class VacationRequestService(IUnitOfWork unitOfWork, KaderDbContext context, ITransVacationService transVacation, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IVacationRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -23,13 +27,13 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly IHttpContextService _contextService = contextService;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
-        private readonly IRequestService _requestService =requestService;
+        private readonly IRequestService _requestService = requestService;
         private readonly ITransVacationService _vacationService = transVacation;
 
-        #region ListOfLoanRequest
+        #region ListOfVacationRequest
         public async Task<Response<IEnumerable<DTOVacationRequest>>> ListOfVacationRequest()
         {
-            var result = await unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var result = await unitOfWork.VacationRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = _sharLocalizer[Localization.NotFound];
             if (result == null)
             {
@@ -51,7 +55,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         #endregion
 
-        #region PaginatedLoanRequest
+        #region PaginatedVacationRequest
         public async Task<Response<GetAllVacationRequestReponse>> GetAllVacationRequest(GetFilterationVacationRequestRequest model, string host)
         {
             #region ApprovalExpression
@@ -71,24 +75,24 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
             var items = await (from x in _context.HrVacationRequests.AsNoTracking().
                                         Include(x => x.StatuesOfRequest).Where(filter)
-                                join emp in _context.Employees on x.EmployeeId equals emp.Id
-                                join vac in _context.VacationTypes on x.VacationTypeId equals vac.Id
-                                select new ListOfVacationRequestResponse
-                                {
-                                    Id = x.Id,
-                                    EmployeeId = x.EmployeeId,
-                                    request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
-                                    EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FullNameEn : x.Employee.FullNameAr,
-                                    DayCounts = x.DayCounts,
-                                    StartDate = x.StartDate,
-                                    EndDate = x.StartDate.AddDays(x.DayCounts),
-                                    VacationTypeId = x.VacationTypeId,
-                                    VacationTypeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.VacationType.NameInEnglish : x.VacationType.Name,
-                                    ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
-                                    reason = x.StatuesOfRequest.StatusMessage,
-                                    Notes = x.Notes,
-                                    AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.VacationRequest.ToString(), x.AttachmentPath) : null
-                                }).OrderByDescending(x =>x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                               join emp in _context.Employees on x.EmployeeId equals emp.Id
+                               join vac in _context.VacationTypes on x.VacationTypeId equals vac.Id
+                               select new ListOfVacationRequestResponse
+                               {
+                                   Id = x.Id,
+                                   EmployeeId = x.EmployeeId,
+                                   request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                                   EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FullNameEn : x.Employee.FullNameAr,
+                                   DayCounts = x.DayCounts,
+                                   StartDate = x.StartDate,
+                                   EndDate = x.StartDate.AddDays(x.DayCounts),
+                                   VacationTypeId = x.VacationTypeId,
+                                   VacationTypeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.VacationType.NameInEnglish : x.VacationType.Name,
+                                   ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
+                                   reason = x.StatuesOfRequest.StatusMessage,
+                                   Notes = x.Notes,
+                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.VacationRequest.ToString(), x.AttachmentPath) : null
+                               }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             #region Pagination
 
             int page = 1;
@@ -143,7 +147,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         #endregion
 
-        #region GetLoanRequetById
+        #region GetVacationRequetById
         public async Task<Response<ListOfVacationRequestResponse>> GetById(int id)
         {
             var result = await unitOfWork.VacationRequests.GetByIdAsync(id);
@@ -170,8 +174,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         #endregion
 
-        #region AddLoanRequest
-        public async Task<Response<VacationRequests>> AddNewVacationRequest(DTOVacationRequest model , string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.VacationRequest)
+        #region AddVacationRequest
+        public async Task<Response<VacationRequests>> AddNewVacationRequest(DTOVacationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.VacationRequest)
         {
             var newRequest = _mapper.Map<VacationRequests>(model);
             StatuesOfRequest statues = new()
@@ -193,8 +197,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         #endregion
 
-        #region DeleteLoanRequets
-        public async Task<Response<VacationRequests>> DeleteVacationRequest(int id,string moduleName)
+        #region DeleteVacationRequets
+        public async Task<Response<VacationRequests>> DeleteVacationRequest(int id, string moduleName)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
@@ -234,7 +238,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         #endregion
 
-        #region UpdateLoanRequest
+        #region UpdateVacationRequest
         public async Task<Response<VacationRequests>> UpdateVacationRequest(int id, DTOVacationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.VacationRequest)
         {
             var vacation = await _unitOfWork.VacationRequests.GetByIdAsync(id);
@@ -298,46 +302,50 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 };
 
             }
-
-
-
-
-
-
             var result = await _unitOfWork.VacationRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
-           var emp=await _unitOfWork.Employees.GetFirstOrDefaultAsync(x=>x.Id== vacationrequest.EmployeeId);
-            var vacations = await _unitOfWork.Vacations.GetFirstOrDefaultAsync(x => x.Id == emp.VacationId);
-          var creatResult=  await _vacationService.CreateTransVacationAsync(new CreateTransVacationRequest
-            {
-              
-                VacationId = vacations.Id,
-                StartDate = vacationrequest.StartDate,
-                EmployeeId = vacationrequest.EmployeeId, 
-                Attachment = vacationrequest.AttachmentPath,
-                Notes = vacationrequest.Notes,
-                FileName="",
-                DaysCount=vacationrequest.DayCounts,
-
-                
-                
-           
-               
-            }, lang);
-            if (!creatResult.Check)
-            {
-                return new Response<string>
-                {
-                    Msg = creatResult.Msg,
-                    Check = false,
-                };
-            }
             if (result > 0)
             {
-                return new Response<string>()
+                HrEmployeeRequestTypesEnums hrEmployeeRequests = HrEmployeeRequestTypesEnums.VacationRequest;
+                var moduleNameWithType = hrEmployeeRequests.GetModuleNameWithType(Modules.EmployeeRequest);
+                TransVacation transVacation = new();
+
+                var emp = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == vacationrequest.EmployeeId);
+                var vacations = await _unitOfWork.Vacations.GetFirstOrDefaultAsync(x => x.Id == emp.VacationId);
+               
+                
+                transVacation.VacationId = vacations.Id;
+                transVacation.StartDate = vacationrequest.StartDate;
+                transVacation.EmployeeId = vacationrequest.EmployeeId;
+                transVacation.Notes = vacationrequest.Notes;
+                transVacation.DaysCount = vacationrequest.DayCounts;
+
+                #region CopyFileAttachment
+                if (vacationrequest.AttachmentPath != null)
                 {
-                    Check = true,
-                    Msg = _sharLocalizer[Localization.Approved]
-                };
+                    var SourceFilePath = _fileServer.GetFilePathWithServerPath(moduleNameWithType, vacationrequest.AttachmentPath);
+                    var newFileName = $"{Guid.NewGuid()}{_fileServer.GetFileEXE(vacationrequest.AttachmentPath)}";
+                    moduleNameWithType = hrEmployeeRequests.GetModuleNameWithType(Modules.Trans);
+                    var desitnationFile = _fileServer.GetFilePathWithServerPath(moduleNameWithType, newFileName);
+                    _fileServer.CopyFile(SourceFilePath, desitnationFile);
+                    transVacation.Attachment = desitnationFile;
+                }
+                else
+                {
+                    transVacation.Attachment = null;
+
+                } 
+                #endregion
+
+                await _unitOfWork.TransVacations.AddAsync(transVacation);
+                var saveResult = await _unitOfWork.CompleteAsync();
+                if (saveResult > 0)
+                {
+                    return new Response<string>
+                    {
+                        Msg = _sharLocalizer[Localization.Approved],
+                        Check = true,
+                    };
+                }
             }
             return new Response<string>()
             {
@@ -350,7 +358,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.VacationRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId,resoan);
+            var result = await _unitOfWork.VacationRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId, resoan);
             if (result > 0)
             {
                 return new Response<string>()

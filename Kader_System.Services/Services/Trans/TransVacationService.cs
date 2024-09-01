@@ -1,17 +1,21 @@
 ﻿using Kader_System.Domain.DTOs;
+using Kader_System.Domain.Models.EmployeeRequests;
+using Kader_System.Services.IServices.AppServices;
+using static Kader_System.Domain.Constants.SD.ApiRoutes;
+using TransVacation = Kader_System.Domain.Models.Trans.TransVacation;
 
 
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransVacationService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransVacationService
+    public class TransVacationService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer,IFileServer _fileServer, IMapper mapper) : ITransVacationService
     {
         private TransVacation _insatance;
         public async Task<Response<IEnumerable<SelectListOfTransVacationResponse>>> ListOfTransVacationsAsync(string lang)
         {
             var result =
                 await unitOfWork.TransVacations.GetSpecificSelectAsync(null!,
-                    includeProperties: $"{nameof(_insatance.Vacation)},{nameof(_insatance.Employee)}" 
+                    includeProperties: $"{nameof(_insatance.Vacation)},{nameof(_insatance.Employee)}"
                                        ,
                     select: x => new SelectListOfTransVacationResponse
                     {
@@ -45,8 +49,8 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<GetAllTransVacationResponse>> GetAllTransVacationsAsync(string lang, 
-            GetAllFilterationForTransVacationRequest model,string host)
+        public async Task<Response<GetAllTransVacationResponse>> GetAllTransVacationsAsync(string lang,
+            GetAllFilterationForTransVacationRequest model, string host)
         {
             Expression<Func<TransVacation, bool>> filter = x => x.IsDeleted == model.IsDeleted
                 && (string.IsNullOrEmpty(model.Word)
@@ -64,7 +68,7 @@ namespace Kader_System.Services.Services.Trans
 
             var totalRecords = await unitOfWork.TransVacations.CountAsync(filter: filter,
                 includeProperties: $"{nameof(_insatance.Vacation)},{nameof(_insatance.Employee)}");
-          
+
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
             if (model.PageNumber < 1)
@@ -78,9 +82,9 @@ namespace Kader_System.Services.Services.Trans
             {
                 TotalRecords = totalRecords,
 
-                Items = unitOfWork.TransVacations.GetTransVacationInfo(filter:filter,filterSearch:filterSearch,
+                Items = unitOfWork.TransVacations.GetTransVacationInfo(filter: filter, filterSearch: filterSearch,
                     skip: (model.PageNumber - 1) * model.PageSize,
-                    take: model.PageSize,lang:lang).OrderByDescending(x=>x.Id).ToList(),
+                    take: model.PageSize, lang: lang).OrderByDescending(x => x.Id).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -127,7 +131,7 @@ namespace Kader_System.Services.Services.Trans
                 //    {
                 //        Id = x.Id,
                 //        Name = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn,
-                        
+
                 //    });
 
                 //var vacations = await unitOfWork.Vacations.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
@@ -147,7 +151,7 @@ namespace Kader_System.Services.Services.Trans
                 //    {
                 //        vacations = vacations.ToArray(),
                 //        employees = employees.ToArray(),
-                      
+
                 //    }
                 //};
             }
@@ -166,15 +170,15 @@ namespace Kader_System.Services.Services.Trans
         }
 
 
-        public async Task<Response<CreateTransVacationRequest>> CreateTransVacationAsync(CreateTransVacationRequest model,string lang)
+        public async Task<Response<CreateTransVacationRequest>> CreateTransVacationAsync(CreateTransVacationRequest model, string lang)
         {
 
             var newTrans = mapper.Map<TransVacation>(model);
 
-            var usedDays = 
+            var usedDays =
                 await unitOfWork.TransVacations.GetVacationDaysUsedByEmployee(model.EmployeeId, model.VacationId);
             var totalBalance =
-                await unitOfWork.TransVacations.GetVacationTotalBalance( model.VacationId);
+                await unitOfWork.TransVacations.GetVacationTotalBalance(model.VacationId);
             var reminderDays = totalBalance - usedDays;
             if (model.DaysCount > reminderDays)
             {
@@ -185,23 +189,17 @@ namespace Kader_System.Services.Services.Trans
                     Data = model,
                     LookUps = null,
                     Msg = sharLocalizer[Localization.BalanceNotEnough],
-                    
+
                 };
             }
 
-            if (!string.IsNullOrEmpty(model.Attachment))
+            if (model.AttachmentFile is not null)
             {
-                var fileNameAndExt = ManageFilesHelper.SaveBase64StringToFile(model.Attachment!, GoRootPath.TransFilesPath, model.FileName!);
-                if (fileNameAndExt != null)
-                {
-                    newTrans.Attachment = fileNameAndExt.FileName;
-                    newTrans.AttachmentExtension = fileNameAndExt.FileExtension;
-                }
-                else
-                {
-                    newTrans.Attachment = null;
-                    newTrans.AttachmentExtension = null;
-                }
+                HrEmployeeRequestTypesEnums hrEmployeeRequests = HrEmployeeRequestTypesEnums.VacationRequest;
+                var moduleNameWithType = hrEmployeeRequests.GetModuleNameWithType(Modules.Trans);
+                newTrans.Attachment = await _fileServer.UploadFileAsync(moduleNameWithType, model.AttachmentFile);
+                newTrans.AttachmentExtension = _fileServer.GetFileEXE(newTrans.Attachment);
+
             }
 
             await unitOfWork.TransVacations.AddAsync(newTrans);
@@ -214,12 +212,12 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<GetTransVacationById>> GetTransVacationByIdAsync(int id,string lang)
+        public async Task<Response<GetTransVacationById>> GetTransVacationByIdAsync(int id, string lang)
         {
             var obj = await unitOfWork.TransVacations.GetTransVacationByIdAsync(id, lang);
 
 
-            if (obj ==null)
+            if (obj == null)
             {
                 string resultMsg = sharLocalizer[Localization.NotFoundData];
 
@@ -256,7 +254,7 @@ namespace Kader_System.Services.Services.Trans
                 await unitOfWork.TransVacations.GetVacationDaysUsedByEmployee(model.EmployeeId, model.VacationId);
             var totalBalance =
                 await unitOfWork.TransVacations.GetVacationTotalBalance(model.VacationId);
-            var reminderDays = totalBalance +obj.DaysCount - usedDays;
+            var reminderDays = totalBalance + obj.DaysCount - usedDays;
             if (model.DaysCount > reminderDays)
             {
                 return new()
@@ -269,24 +267,30 @@ namespace Kader_System.Services.Services.Trans
 
                 };
             }
-            if (!string.IsNullOrEmpty(obj.Attachment))
+
+            HrEmployeeRequestTypesEnums hrEmployeeRequests = HrEmployeeRequestTypesEnums.VacationRequest;
+            var moduleNameWithType = hrEmployeeRequests.GetModuleNameWithType(Modules.Trans);
+            #region UpdateFile
+            if (model.AttachmentFile is not null)
             {
-                ManageFilesHelper.RemoveFile(Path.Combine(GoRootPath.TransFilesPath, obj.Attachment));
-            }
 
-            if (!string.IsNullOrEmpty(model.Attachment))
-            {
-                var fileNameAndExt = ManageFilesHelper.SaveBase64StringToFile(model.Attachment!, GoRootPath.TransFilesPath, model.FileName!);
+                if (obj.Attachment != null)
+                    _fileServer.RemoveFile(moduleNameWithType, obj.Attachment);
 
-                obj.Attachment = fileNameAndExt?.FileName;
-                obj.AttachmentExtension = fileNameAndExt?.FileExtension;
 
+                obj.Attachment = await _fileServer.UploadFileAsync(moduleNameWithType, model.AttachmentFile);
+                obj.AttachmentExtension = _fileServer.GetFileEXE(obj.Attachment);
             }
             else
             {
+                if (obj.Attachment != null)
+                    _fileServer.RemoveFile(moduleNameWithType, obj.Attachment);
                 obj.Attachment = null;
-                obj.AttachmentExtension = null;
             }
+
+            #endregion
+
+
 
             obj.DaysCount = model.DaysCount;
             obj.StartDate = model.StartDate;

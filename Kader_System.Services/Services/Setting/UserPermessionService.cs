@@ -43,33 +43,34 @@ namespace Kader_System.Services.Services.Setting
                                 TitleName = lang == Localization.English ? title.TitleNameEn : title.TitleNameAr
                             }).ToList();
 
-            var finalResult = results.Select(x => new Dictionary<string, DTOSPGetUserPermissionsBySubScreen>
+            var finalResult = results.Select(x => new DTOSPGetUserPermissionsBySubScreen
             {
-                {
-                    x.screen_code,
-                    new DTOSPGetUserPermissionsBySubScreen
-                    {
-                        actions = x.actions,
-                        TitleId = titleId,
-                        cat_id = x.cat_id,
-                        cat_title = x.cat_title,
-                        main_id = x.main_id,
-                        main_img = x.main_image,
-                        main_title = x.main_title,
-                        permissions = x.permissions.CreateNewPermission(x.actions, x.permissions, x.PermissionNames),
-                        screen_code = x.screen_code,
-                        sub_id = x.sub_id,
-                        sub_title = x.sub_title,
-                        url = x.url
-                    }}}).ToList();
 
-            return new()
+                actions = x.actions,
+                cat_id = x.cat_id,
+                cat_title = x.cat_title,
+                main_id = x.main_id,
+                main_img = x.main_image,
+                main_title = x.main_title,
+                permissions = x.permissions.CreateNewPermission(x.actions, x.permissions, x.PermissionNames),
+                screen_code = x.screen_code,
+                sub_id = x.sub_id,
+                sub_title = x.sub_title,
+                url = x.url
+            });
+
+            return new ResponseWithUser<DTOSPGetUserPermissionsBySubScreen>
+
             {
                 Check = true,
                 DynamicData = finalResult,
                 Error = "",
+                UserName = user.UserName,
+                titles = titles,
+                CurrentTitleId = user.CurrentTitleId
             };
         }
+
         private async Task<Dictionary<int, string>> GetActionNamesAsync(string lang)
         {
             var actions = await _context.Actions

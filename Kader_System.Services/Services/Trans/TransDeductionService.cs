@@ -53,16 +53,20 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<GetAllTransDeductionResponse>> GetAllTransDeductionsAsync(string lang,
             GetAllFilterationForTransDeductionRequest model,string host)
         {
-            Expression<Func<TransDeduction, bool>> filter = x => x.IsDeleted == model.IsDeleted
-                                                                 && (string.IsNullOrEmpty(model.Word) || x.ActionMonth.ToString().Contains(model.Word)
-                                                                     || x.AmountType!.Name.Contains(model.Word) || x.AmountType!.NameInEnglish.Contains(model.Word)
-                                                                     || x.Deduction!.Name_en.Contains(model.Word)
-                                                                     || x.Deduction!.Name_ar.Contains(model.Word)
-                                                                     || x.Employee!.FullNameEn.Contains(model.Word)
-                                                                     || x.Employee!.FullNameAr.Contains(model.Word))
-                                                                     || (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
-                ;
-            Expression<Func<TransDeductionData, bool>> filterSearch = x =>
+            Expression<Func<TransDeduction, bool>> filter = x =>
+                x.IsDeleted == model.IsDeleted &&
+                (
+                    (string.IsNullOrEmpty(model.Word) || x.ActionMonth.ToString().Contains(model.Word)
+                     || x.AmountType!.Name.Contains(model.Word)
+                     || x.AmountType!.NameInEnglish.Contains(model.Word)
+                     || x.Deduction!.Name_en.Contains(model.Word)
+                     || x.Deduction!.Name_ar.Contains(model.Word)
+                     || x.Employee!.FullNameEn.Contains(model.Word)
+                     || x.Employee!.FullNameAr.Contains(model.Word))
+                    && (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId)
+                );
+
+            Expression<Func<TransDeductionData, bool>> filterSearch = x => 
                 (string.IsNullOrEmpty(model.Word)
                  || x.DeductionName.Contains(model.Word)
                  || x.EmployeeName.Contains(model.Word)
