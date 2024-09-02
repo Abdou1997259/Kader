@@ -49,6 +49,7 @@ namespace Kader_System.Domain.DTOs.Response.HR
     public class EmployeeResponse
     {
         public int EmployeeId { get; set; }
+        public int Level { get; set; } = 4;
         public string NameEn { get; set; }
         public string NameAr { get; set;  }
         public string EmployeeName { get; set; }
