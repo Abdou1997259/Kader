@@ -189,7 +189,7 @@ public class UnitOfWork : IUnitOfWork
 
     public IDatabaseTransaction BeginTransaction() =>
         new EntityDatabaseTransaction(_context);
-
+    public IDatabaseTransactionScope TransactionScope() => new EntityDatabaseTransactionScope();
     public async Task<int> CompleteAsync() => await _context.SaveChangesAsync();
 
     public void Dispose()

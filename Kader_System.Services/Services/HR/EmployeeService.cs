@@ -4,6 +4,7 @@ using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.Services.AppServices;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel;
+using System.Transactions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.HR
@@ -11,9 +12,11 @@ namespace Kader_System.Services.Services.HR
     public class EmployeeService(IUnitOfWork unitOfWork,
         IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper,
           IHttpContextAccessor _accessor,
-          IFileServer fileServer
+          IFileServer fileServer,
+          IAuthService authService
     , UserManager<ApplicationUser> userManager) : IEmployeeService
     {
+        private readonly IAuthService _authService = authService;
         private HrEmployee _instanceEmployee;
 
         #region Retreive
@@ -527,10 +530,8 @@ namespace Kader_System.Services.Services.HR
             }
             if (!await unitOfWork.Vacations.ExistAsync(model.vacation_id))
             {
-
                 string emp = shareLocalizer[Localization.Vacation];
                 string resultMsg = shareLocalizer[Localization.IsNotExisted, emp];
-
 
                 return new()
                 {
@@ -543,124 +544,80 @@ namespace Kader_System.Services.Services.HR
             if (_accessor.HttpContext.User.GetUserId() is not null)
                 CurrentCompanyYearId = (await unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == _accessor.HttpContext.User.GetUserId())).CompanyYearId;
 
-
-            using var transaction = unitOfWork.BeginTransaction();
-            try
+            using (var transaction = new TransactionScope(TransactionScopeOption.Required,
+                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted }, TransactionScopeAsyncFlowOption.Enabled))
             {
-                var newEmployee = mapper.Map<HrEmployee>(model);
-
-                GetFileNameAndExtension imageFile = new();
-                if (model.employee_image != null)
+                try
                 {
-                    imageFile.FileName = await fileServer.UploadFileAsync(Modules.Employees, model.employee_image);
-                    imageFile.FileExtension = Path.GetExtension(imageFile.FileName);
-                }
+                    var newEmployee = mapper.Map<HrEmployee>(model);
 
-                List<GetFileNameAndExtension> employeeAttachments = [];
-                if (model.employee_attachments is not null && model.employee_attachments.Any())
-                {
-                    HrDirectoryTypes directoryTypes = new();
-                    directoryTypes = HrDirectoryTypes.Attachments;
-
-                    var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-                    employeeAttachments = await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
-                }
-
-                newEmployee.EmployeeImage = imageFile?.FileName;
-                newEmployee.EmployeeImageExtension = imageFile?.FileExtension;
-                newEmployee.ListOfAttachments = employeeAttachments.Select(f => new HrEmployeeAttachment
-                {
-                    FileExtension = f.FileExtension,
-                    FileName = f.FileName,
-                    IsActive = true
-                }).ToList();
-                await unitOfWork.Employees.AddAsync(newEmployee);
-
-
-                var newUser = await unitOfWork.Users.AddAsync(new ApplicationUser()
-                {
-                    UserName = model.username,
-                    Id = Guid.NewGuid().ToString(),
-                    PhoneNumber = model.phone,
-                    JobId = newEmployee.JobId,
-
-                    NormalizedUserName = model.username.ToUpper(),
-                    Email = newEmployee.Email,
-                    NormalizedEmail = newEmployee.Email.ToUpper(),
-                    EmailConfirmed = true,
-                    IsActive = true,
-                    FinancialYear = 2023,
-                    CurrentCompanyId = newEmployee.CompanyId,
-                    TitleId = model.title_id.ToString(),
-                    CurrentTitleId = model.title_id,
-                    CompanyYearId = CurrentCompanyYearId,
-                    FullName = newEmployee.FullNameAr,
-                    PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, model.password),
-                    VisiblePassword = model.password,
-                    CompanyId = model.CompanyId.ToString(),
-
-                });
-                await unitOfWork.CompleteAsync();
-
-                var existingUserPermissions = await unitOfWork.UserPermssionRepositroy
-     .GetSpecificSelectTrackingAsync(x => x.TitleId == model.title_id && x.UserId == newUser.Id, x => x);
-
-                if (existingUserPermissions.Any())
-                {
-                    unitOfWork.UserPermssionRepositroy.RemoveRange(existingUserPermissions);
-                    await unitOfWork.CompleteAsync();
-                }
-
-                var titlePermissions = await unitOfWork.TitlePermissionRepository
-                    .GetSpecificSelectTrackingAsync(
-                        x => x.TitleId == model.title_id,
-                        select: x => new UserPermission
-                        {
-                            TitleId = model.title_id,
-                            UserId = newUser.Id,
-                            SubScreenId = x.SubScreenId,
-                            Permission = x.Permissions
-                        }
-                    );
-                await unitOfWork.UserPermssionRepositroy.AddRangeAsync(titlePermissions);
-                await unitOfWork.CompleteAsync();
-
-                if (newUser != null)
-                {
-                    newEmployee.UserId = newUser.Id;
-                    await unitOfWork.UserRoles.AddAsync(new ApplicationUserRole()
+                    GetFileNameAndExtension imageFile = new();
+                    if (model.employee_image != null)
                     {
-                        RoleId = UserRole.Id,
-                        UserId = newUser.Id
-                    });
+                        imageFile.FileName = await fileServer.UploadFileAsync(Modules.Employees, model.employee_image);
+                        imageFile.FileExtension = Path.GetExtension(imageFile.FileName);
+                    }
+
+                    List<GetFileNameAndExtension> employeeAttachments = [];
+                    if (model.employee_attachments is not null && model.employee_attachments.Any())
+                    {
+                        HrDirectoryTypes directoryTypes = new();
+                        directoryTypes = HrDirectoryTypes.Attachments;
+
+                        var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+                        employeeAttachments = await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
+                    }
+
+                    newEmployee.EmployeeImage = imageFile?.FileName;
+                    newEmployee.EmployeeImageExtension = imageFile?.FileExtension;
+                    newEmployee.ListOfAttachments = employeeAttachments.Select(f => new HrEmployeeAttachment
+                    {
+                        FileExtension = f.FileExtension,
+                        FileName = f.FileName,
+                        IsActive = true
+                    }).ToList();
+                    await unitOfWork.Employees.AddAsync(newEmployee);
+                    var user = await _authService.CreateUserAsync(new Domain.DTOs.Request.Auth.CreateUserRequest
+                    {
+                        user_name = model.username,
+                        phone = model.phone,
+                        job_title = newEmployee.JobId,
+                        email = newEmployee.Email,
+                        is_active = true,
+                        full_name = newEmployee.FullNameAr,
+                        current_company = newEmployee.CompanyId,
+                        current_title = model.title_id,
+                        financial_year = CurrentCompanyYearId,
+                        password = model.password,
+                        title_id = new List<int?> { model.title_id },
+                        company_id = new List<int?> { model.CompanyId }
+                    }, Modules.Auth, HrDirectoryTypes.User);
+
+                    await unitOfWork.CompleteAsync(); // Commit changes in unit of work
+                    transaction.Complete(); // Commit the transaction scope
+
+                    return new()
+                    {
+                        Msg = string.Format(shareLocalizer[Localization.Done],
+                            shareLocalizer[Localization.Employee]),
+                        Check = true,
+                        Data = model
+                    };
                 }
-
-
-                await unitOfWork.CompleteAsync();
-                transaction.Commit();
-                return new()
+                catch (Exception ex)
                 {
-                    Msg = string.Format(shareLocalizer[Localization.Done],
-                        shareLocalizer[Localization.Employee]),
-                    Check = true,
-                    Data = model
-                };
+                    return new()
+                    {
+                        Msg = string.Format(shareLocalizer[Localization.Error],
+                            shareLocalizer[Localization.Employee]),
+                        Check = false,
+                        Data = model,
+                        Error = ex.InnerException != null ? ex.InnerException.ToString() : ex.Message
+                    };
+                }
             }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                return new()
-                {
-                    Msg = string.Format(shareLocalizer[Localization.Error],
-                        shareLocalizer[Localization.Employee]),
-                    Check = false,
-                    Data = model,
-                    Error = ex.InnerException != null ? ex.InnerException.ToString() : ex.Message
-                };
-            }
-
-
         }
+
 
 
         #endregion

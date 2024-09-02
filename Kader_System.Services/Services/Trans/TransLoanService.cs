@@ -178,7 +178,7 @@ namespace Kader_System.Services.Services.Trans
         {
             Expression<Func<TransLoan, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
                                                            (string.IsNullOrEmpty(model.Word) || x.StartLoanDate.ToString() == model.Word)
-                                                           ||(!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
+                                                             && (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
 
 
 

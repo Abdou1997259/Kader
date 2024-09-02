@@ -137,10 +137,8 @@ namespace Kader_System.DataAccess.Repositories
                 .FromSqlRaw("EXEC sp_get_screen @UserId, @TitleId, @Lang",
                             new SqlParameter("@UserId", userId),
                             new SqlParameter("@TitleId", titleId),
-                            new SqlParameter("@Lang", lang))
-
-
-                .AsNoTracking().ToListAsync();
+                            new SqlParameter("@Lang", lang)).AsNoTracking().ToListAsync();
+            rawData = rawData.Distinct().ToList();
                 var data = rawData
                         .GroupBy(s => s.main_id)
                         .Select(x => new GetAllStMainScreen
