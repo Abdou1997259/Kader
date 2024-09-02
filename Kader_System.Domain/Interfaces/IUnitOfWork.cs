@@ -8,6 +8,8 @@ public interface IUnitOfWork : IDisposable
 {
     public string DatabaseName { get; set; }
     IDatabaseTransaction BeginTransaction();
+    IDatabaseTransactionScope TransactionScope();
+
     IUserPermssionRepositroy UserPermssionRepositroy { get; }   
     ITitlePermissionRepositroy TitlePermissionRepository { get; }
     ILoanRequestRepository LoanRequestRepository { get; }

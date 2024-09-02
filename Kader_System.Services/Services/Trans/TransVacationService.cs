@@ -57,14 +57,16 @@ namespace Kader_System.Services.Services.Trans
                 || x.Employee!.FullNameEn.Contains(model.Word)
                 || x.Employee!.FullNameAr.Contains(model.Word)
                 || x.Vacation!.NameAr.Contains(model.Word)
-                || x.Vacation!.NameEn.Contains(model.Word));
+                || x.Vacation!.NameEn.Contains(model.Word))
+                  && (!model.EmployeeId.HasValue || x.Employee.Id == model.EmployeeId); 
 
             Expression<Func<TransVacationData, bool>> filterSearch = x =>
                 (string.IsNullOrEmpty(model.Word)
                  || x.EmployeeName.Contains(model.Word)
                  || x.VacationName.Contains(model.Word)
                  || x.EmployeeName.Contains(model.Word)
-                 || x.AddedBy!.Contains(model.Word));
+                 || x.AddedBy!.Contains(model.Word)
+                  && (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId));
 
             var totalRecords = await unitOfWork.TransVacations.CountAsync(filter: filter,
                 includeProperties: $"{nameof(_insatance.Vacation)},{nameof(_insatance.Employee)}");

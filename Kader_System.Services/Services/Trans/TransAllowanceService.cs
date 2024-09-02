@@ -53,17 +53,20 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
         GetAllFilterationAllowanceRequest model,string host)
     {
         Expression<Func<TransAllowance, bool>> filter = x => x.IsDeleted == model.IsDeleted
-                                                             && (string.IsNullOrEmpty(model.Word) || x.ActionMonth.ToString().Contains(model.Word)
+                                                             && (string.IsNullOrEmpty(model.Word) 
+                                                               || x.ActionMonth.ToString().Contains(model.Word)
                                                                  || x.Allowance!.Name_en.Contains(model.Word)
                                                                  || x.Allowance!.Name_ar.Contains(model.Word)
                                                                  || x.Employee!.FullNameEn.Contains(model.Word)
-                                                                 || x.Employee!.FullNameAr.Contains(model.Word))
-            ;
+                                                                 || x.Employee!.FullNameAr.Contains(model.Word)
+                                                                     && (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId));
+        ;
 
         Expression<Func<TransAllowanceData, bool>> filterSearch = x =>
             (string.IsNullOrEmpty(model.Word)
              || x.AllowanceName.Contains(model.Word)
-             || x.EmployeeName.Contains(model.Word));
+             || x.EmployeeName.Contains(model.Word)
+                 && (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId));
 
         var totalRecords = await unitOfWork.TransAllowances.CountAsync(filter: filter,
             includeProperties: $"{nameof(_insatance.Allowance)},{nameof(_insatance.Employee)},{nameof(_insatance.SalaryEffect)}");

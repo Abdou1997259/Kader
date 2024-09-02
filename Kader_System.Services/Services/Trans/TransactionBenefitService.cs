@@ -62,12 +62,14 @@ namespace Kader_System.Services.Services.Trans
                 || x.Benefit!.Name_ar.Contains(model.Word)
                 || x.Employee!.FullNameEn.Contains(model.Word)
                 || x.Employee!.FullNameAr.Contains(model.Word)
+                  && (!model.EmployeeId.HasValue || x.Employee.Id == model.EmployeeId)
                     );
             Expression<Func<TransBenefitData, bool>> filterSearch = x =>
                 (string.IsNullOrEmpty(model.Word)
                  || x.BenefitName.Contains(model.Word)
                  || x.EmployeeName.Contains(model.Word)
-                 || x.ValueTypeName.Contains(model.Word));
+                 || x.ValueTypeName.Contains(model.Word)
+                   && (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId));
 
             var totalRecords = await unitOfWork.TransBenefits.CountAsync(filter: filter,
                 includeProperties: $"{nameof(_insatance.Benefit)},{nameof(_insatance.Employee)}," +
