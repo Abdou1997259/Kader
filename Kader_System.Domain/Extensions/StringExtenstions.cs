@@ -54,27 +54,23 @@ namespace Kader_System.Domain.Extensions
             return string.Join(',', intergers);
 
         }
-        public static Dictionary<string, bool> CreateNewPermission(this string res, string mainActions, string userActions, string permNames)
+        public static Dictionary<string, bool> CreateNewPermission(this string res, string mainActions, string userPermessions, string permNames)
         {
             // Split the input strings into arrays
             var mainActionsArr = mainActions.Split(',').Distinct().ToArray(); // [1,2,3,4]
-            var userActionsArr = userActions.Split(',').ToArray(); // [2,3]
+            var userPermessionsArr = userPermessions.Split(',').ToArray(); // [2,3]
             var permNamesArr = permNames.Split(',').ToArray(); // [view,add,edit,delete]
 
-            // Create the action-to-permission map using LINQ
             var actionToPermNameMap = mainActionsArr
                 .Select((actionId, index) => new { actionId, permName = permNamesArr[index] })
-                
-
                 .ToDictionary(x => x.actionId, x => x.permName);
 
-            // Create the result dictionary using LINQ
             var result = permNamesArr
                 .ToDictionary(
                     permName => permName,
                     permName => actionToPermNameMap
                         .FirstOrDefault(x => x.Value == permName).Key != null
-                        && userActionsArr.Contains(actionToPermNameMap.FirstOrDefault(x => x.Value == permName).Key)
+                        && userPermessionsArr.Contains(actionToPermNameMap.FirstOrDefault(x => x.Value == permName).Key)
                 );
 
             return result;

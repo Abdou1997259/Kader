@@ -34,7 +34,9 @@ namespace Kader_System.Services.Services.Setting
                         sub_id = x.sub_id,
                         sub_title = x.sub_title,
                         url = x.url
-                    }}}).ToList();
+                    }
+                }
+            }).ToList();
 
             return new()
             {

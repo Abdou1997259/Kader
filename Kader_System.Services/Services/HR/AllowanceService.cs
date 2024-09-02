@@ -1,9 +1,11 @@
-﻿using Kader_System.Domain.DTOs;
+﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.DTOs;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
 namespace Kader_System.Services.Services.HR;
 
-public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : IAllowanceService
+public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer,KaderDbContext _context, IMapper mapper) : IAllowanceService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -20,7 +22,7 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
                     Id = x.Id,
                     Name = lang == Localization.Arabic ? x.Name_ar : x.Name_en
                 }, orderBy: x =>
-                  x.OrderByDescending(x => x.Id));
+                  x.OrderBy(x => x.Order));
 
         if (!result.Any())
         {
@@ -63,13 +65,13 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
 
         var result = new HrGetAllAllowancesResponse
         {
-            TotalRecords = totalRecords ,
+            TotalRecords = totalRecords,
 
-            Items =  _unitOfWork.Allowances.GetAllowanceInfo(filter: filter,
+            Items = _unitOfWork.Allowances.GetAllowanceInfo(filter: filter,
                  take: model.PageSize,
-                
+
                  skip: (model.PageNumber - 1) * model.PageSize,
-                lang:lang ).OrderByDescending(x => x.Id).ToList()
+                lang: lang)
             ,
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
@@ -265,25 +267,15 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
         };
     }
 
-    public async Task<Response<string>> OrderByPattern(int[] pattern)
+    public async Task<Response<string>> OrderByPattern(int[] orderedIds)
     {
-        int count = 0;
-        var allownecs = await _unitOfWork.Allowances.GetAllAsync();
-        foreach (var allow in allownecs)
+        for (int i = 0; i < orderedIds.Length; i++)
         {
-            if (count < pattern.Length)
-            {
-                allow.Order = pattern[count];
-                count++;
-            }
-            else
-            {
-                continue;
-            }
+            var id = orderedIds[i];
+            await _context.Allowances
+                .Where(s => s.Id == id)
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, x => i + 1));
         }
-
-        _unitOfWork.Allowances.UpdateRange(allownecs);
-        await _unitOfWork.CompleteAsync();
         return new() { Check = true };
     }
 
