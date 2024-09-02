@@ -183,9 +183,6 @@ namespace Kader_System.Services.Services.Trans
                                                                     !model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
                                                                   
 
-            //Expression<Func<TransLoan, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-            //                                               (string.IsNullOrEmpty(model.Word) || x.StartLoanDate.ToString() == model.Word)
-            //                                               ||(!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
 
 
 

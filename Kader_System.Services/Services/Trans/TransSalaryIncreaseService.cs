@@ -161,8 +161,10 @@ namespace Kader_System.Services.Services.Trans
         {
             Expression<Func<TransSalaryIncrease, bool>> filter = x =>
            x.IsDeleted == model.IsDeleted &&
-           (string.IsNullOrEmpty(model.Word) || x.transactionDate.ToString().Contains(model.Word)) ||
-           (!model.EmployeeId.HasValue || x.Employee_id == model.EmployeeId);
+           (string.IsNullOrEmpty(model.Word) ||
+           x.transactionDate.ToString().Contains(model.Word) ||
+           (!model.EmployeeId.HasValue || x.Employee_id == model.EmployeeId));
+           
 
 
             var totalRecords = await _unitOfWork.TransSalaryIncrease.CountAsync(filter: filter);
