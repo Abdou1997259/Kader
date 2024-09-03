@@ -65,7 +65,8 @@ public class DeductionService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
                  select: x => new DeductionData
                  {
                      Id = x.Id,
-                     Name = lang == Localization.Arabic ? x.Name_ar : x.Name_en
+                     Name = lang == Localization.Arabic ? x.Name_ar : x.Name_en,
+                     Added_by = x.Added_by,
                  }, orderBy: x =>
                    x.OrderByDescending(x => x.Id))).ToList(),
             CurrentPage = model.PageNumber,
