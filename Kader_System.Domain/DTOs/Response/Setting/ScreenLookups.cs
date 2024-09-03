@@ -25,6 +25,8 @@ namespace Kader_System.Domain.DTOs.Response.Setting
         public int main_id { get; set; }
         public string cat_title { get; set; }
         public string Main_Title { get; set; }
+        public string main_image { get; set; }
+
 
     }
     public class ScreenSubLookup
