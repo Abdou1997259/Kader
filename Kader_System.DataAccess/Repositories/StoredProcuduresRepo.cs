@@ -151,6 +151,7 @@ namespace Kader_System.DataAccess.Repositories
                                 Id = cg.FirstOrDefault().cat_id,
                                 main_id = cg.Key,
                                 title = cg.FirstOrDefault()?.cat_title,
+                                main_image = x.FirstOrDefault()?.main_image,
                                 subs = cg.Select(s => new GetAllStScreenSub
                                 {
                                     sub_title = s.sub_title,
