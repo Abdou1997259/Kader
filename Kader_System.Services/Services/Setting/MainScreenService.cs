@@ -346,6 +346,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                    Id = x.Id,
                    title = lang == "en" ? x.Screen_cat_title_en : x.Screen_cat_title_ar,
                    main_id = x.MainScreenId,
+                   main_image = ms.Screen_main_image,
                    subs = x.StScreenSub.Where(k => permision.Any(ps =>
                    ps.SubScreenId == k.Id && ps.Permission.Contains("1") && k.ScreenCatId == x.Id)).OrderBy(k => k.Order)
                    .Select(k => new GetAllStScreenSub
