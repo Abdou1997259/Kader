@@ -58,8 +58,8 @@ namespace Kader_System.Domain.Extensions
         {
             // Split the input strings into arrays
             var mainActionsArr = mainActions.Split(',').Distinct().ToArray(); // [1,2,3,4]
-            var userPermessionsArr = userPermessions.Split(',').ToArray(); // [2,3]
-            var permNamesArr = permNames.Split(',').ToArray(); // [view,add,edit,delete]
+            var userPermessionsArr = userPermessions.Split(',').Distinct().ToArray(); // [2,3]
+            var permNamesArr = permNames.Split(',').Distinct().ToArray(); // [view,add,edit,delete]
 
             var actionToPermNameMap = mainActionsArr
                 .Select((actionId, index) => new { actionId, permName = permNamesArr[index] })
