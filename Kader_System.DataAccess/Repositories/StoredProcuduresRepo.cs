@@ -133,11 +133,23 @@ namespace Kader_System.DataAccess.Repositories
         }
         public async Task<GetMyProfilePermissionAndScreen> SpGetScreen(string userId,int titleId,string lang)
         {
-            var rawData = await _db.Set<SpGetScreen>()
+            List<SpGetScreen> rawData = null;
+            if (userId != "b74ddd14-6340-4840-95c2-db12554843e5basb1")
+            {
+                        rawData = await _db.Set<SpGetScreen>()
                 .FromSqlRaw("EXEC sp_get_screen @UserId, @TitleId, @Lang",
                             new SqlParameter("@UserId", userId),
                             new SqlParameter("@TitleId", titleId),
                             new SqlParameter("@Lang", lang)).AsNoTracking().ToListAsync();
+            }
+            else
+            {
+
+                rawData = await _db.Set<SpGetScreen>()
+                    .FromSqlRaw("EXEC sp_get_Super_Admin_screen @Lang",
+                    new SqlParameter("@Lang", lang)).AsNoTracking().ToListAsync();
+
+            }
             rawData = rawData.Distinct().ToList();
                 var data = rawData
                         .GroupBy(s => s.main_id)
