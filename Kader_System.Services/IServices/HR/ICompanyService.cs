@@ -13,8 +13,8 @@ public interface ICompanyService
     Task<Response<object>> RestoreCompanyAsync(int id);
     Task<Response<string>> DeleteCompanyAsync(int id);
     public  Task<Response<FileContentResult>> DownloadCompanyContract(int id);
-    Task<Response<string>> RemoveCompanyLicensesAttachement(int companyId, HrDirectoryTypes directoryTypes);
-    Task<Response<string>> RemoveCompanyContractsAttachement(int companyId, HrDirectoryTypes directoryTypes);
+    Task<Response<string>> RemoveCompanyLicensesAttachement(int companyId, HrDirectoryTypes directoryTypes, bool isCompany);
+    Task<Response<string>> RemoveCompanyContractsAttachement(int companyId, HrDirectoryTypes directoryTypes, bool isCompany);
 
     Task<Response<FileContentResult>> DownloadCompanylicense(int id);
     Task<Response<EmployeeOfCompanyPagination>> EmployeeOfCompany(int companyId, string lang, HrGetAllFiltrationsForCompaniesRequest model, string host);

@@ -1,8 +1,10 @@
-﻿using Kader_System.Domain.DTOs;
+﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.Services.AppServices;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.Transactions;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -13,7 +15,8 @@ namespace Kader_System.Services.Services.HR
         IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper,
           IHttpContextAccessor _accessor,
           IFileServer fileServer,
-          IAuthService authService
+          IAuthService authService,
+          KaderDbContext _context
     , UserManager<ApplicationUser> userManager) : IEmployeeService
     {
         private readonly IAuthService _authService = authService;
@@ -674,27 +677,15 @@ namespace Kader_System.Services.Services.HR
                 #region UpdateEmployeeMedia
                 if (model.employee_attachments is not null)
                 {
-                    var fileResult = await RemoveEmployeeAttachement(id);
-                    if (fileResult.Check)
-                    {
-                        getFileNameAnds = await fileServer.UploadFilesAsync(directoryAttachmentsName, model.employee_attachments);
-                        var companyContract = getFileNameAnds.Select(x => new HrCompanyContract { CompanyContracts = x.FileName, CompanyId = id }).ToList();
-                        await unitOfWork.CompanyContracts.AddRangeAsync(companyContract);
-                        await unitOfWork.CompleteAsync();
-                    }
+                    getFileNameAnds = await fileServer.UploadFilesAsync(directoryAttachmentsName, model.employee_attachments);
+                    var companyContract = getFileNameAnds.Select(x => new HrCompanyContract { CompanyContracts = x.FileName, CompanyId = id }).ToList();
+                    await unitOfWork.CompanyContracts.AddRangeAsync(companyContract);
+                    await unitOfWork.CompleteAsync();
                 }
                 if (model.employee_image is not null)
                 {
-                    if (fileServer.FileExist(directoryProfileName, obj.EmployeeImage))
-                        await RemoveEmployeeProfile(id);
-
                     imageFile.FileName = await fileServer.UploadFileAsync(directoryProfileName, model.employee_image);
                     imageFile.FileExtension = fileServer.GetFileEXE(imageFile.FileName);
-                }
-                else
-                {
-                    imageFile.FileName = obj.EmployeeImage;
-                    imageFile.FileExtension = obj.EmployeeImageExtension;
                 }
                 #endregion
 
@@ -1001,8 +992,7 @@ namespace Kader_System.Services.Services.HR
         {
             var directoryTypes = HrDirectoryTypes.Attachments;
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-
-            var attachements = await unitOfWork.EmployeeAttachments.GetByIdWithNoTrackingAsync(attachementId);
+            var attachements = await _context.EmployeeAttachments.AsNoTracking().FirstOrDefaultAsync(x => x.Id == attachementId);
             fileServer.RemoveFile(directoryName, attachements.FileName);
             unitOfWork.EmployeeAttachments.Remove(attachements);
             await unitOfWork.CompleteAsync();
@@ -1013,22 +1003,38 @@ namespace Kader_System.Services.Services.HR
                 return new()
                 {
                     Check = true,
-                    Msg = $"Attachement {result} is deleted sucessfully",
-                    DynamicData = attachements.EmployeeId,
+                    Msg = $"Attachement {attachementId} is deleted sucessfully"
                 };
             }
             return new()
             {
                 Check = false,
-                Msg = $"Attachement {result} is deleted sucessfully"
+                Msg = $"Attachement {attachementId} is deleted sucessfully"
             };
         }
-        private async Task RemoveEmployeeProfile(int empId)
+        public async Task<Response<string>> RemoveEmployeeProfile(int empId)
         {
             var directoryTypes = HrDirectoryTypes.EmployeeProfile;
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-            var attachements = await unitOfWork.Employees.GetByIdWithNoTrackingAsync(empId);
+            var attachements = await _context.Employees.AsNoTracking().FirstOrDefaultAsync(x => x.Id == empId);
             fileServer.RemoveFile(directoryName, attachements.EmployeeImage);
+            attachements.EmployeeImage = null;
+            attachements.EmployeeImageExtension = null;
+            unitOfWork.Employees.Update(attachements);
+            var result = await unitOfWork.CompleteAsync();
+            if (result > 0)
+            {
+                return new()
+                {
+                    Check = true,
+                    Msg = $"Employee Image {empId} is deleted sucessfully"
+                };
+            }
+            return new()
+            {
+                Check = false,
+                Msg = $"Employee Image {empId} is deleted sucessfully"
+            };
         }
         #endregion
 

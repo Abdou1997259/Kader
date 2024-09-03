@@ -144,6 +144,18 @@ namespace Kader_System.Api.Areas.HR.Controllers
             else if (!response.Check)
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        } 
+        [HttpDelete(ApiRoutes.Employee.DeleteEmployeeProfileImage)]
+        [Permission(Permission.Delete, 13)]
+        public async Task<IActionResult> DeleteEmployeeProfileImage(int id)
+        {
+
+            var response = await employeeService.RemoveEmployeeProfile(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
 
         #endregion

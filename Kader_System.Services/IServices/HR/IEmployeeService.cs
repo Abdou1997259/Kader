@@ -9,20 +9,22 @@ public interface IEmployeeService
     Task<Response<GetAllEmployeesResponse>> GetAllEmployeesAsync(string lang, GetAllEmployeesFilterRequest model, string host);
 
     Task<Response<GetAllEmployeesResponse>> GetAllEmployeesByCompanyIdAsync(string lang,
-        GetAllEmployeesFilterRequest model, string host, int companyId);     
+        GetAllEmployeesFilterRequest model, string host, int companyId);
     Task<Response<CreateEmployeeRequest>> CreateEmployeeAsync(CreateEmployeeRequest model);
-    Task<Response<GetEmployeeByIdResponse>> GetEmployeeByIdAsync(int id,string lang);
+    Task<Response<GetEmployeeByIdResponse>> GetEmployeeByIdAsync(int id, string lang);
     Response<GetEmployeeByIdResponse> GetEmployeeById(int id, string lang);
     Task<Response<CreateEmployeeRequest>> UpdateEmployeeAsync(int id, CreateEmployeeRequest model);
     Task<Response<CreateEmployeeRequest>> RestoreEmployeeAsync(int id);
-    public Task<Response<string>> UpdateEmployeeAttachemnt(UpdateEmployeeAttachemnt model, int id);
+    Task<Response<string>> UpdateEmployeeAttachemnt(UpdateEmployeeAttachemnt model, int id);
     Task<Response<string>> UpdateActiveOrNotEmployeeAsync(int id);
     Task<Response<string>> DeleteEmployeeAsync(int id);
-    Task<Response<EmployeesLookUps>> GetEmployeesLookUpsData(string lang );
+    Task<Response<EmployeesLookUps>> GetEmployeesLookUpsData(string lang);
     Task<Response<object>> GetEmployeesDataNameAndIdAsLookUp(string lang);
     Task<Response<object>> GetDocuments(int empId);
-    public Task<Response<string>> RemoveEmployeeAttachement(int attachementId);
-    public  Task<Response<FileContentResult>> DownloadEmployeeAttachement(int id);
+    Task<Response<string>> RemoveEmployeeAttachement(int attachementId);
+    Task<Response<FileContentResult>> DownloadEmployeeAttachement(int id);
+    Task<Response<string>> RemoveEmployeeProfile(int empId);
+
 
 
 

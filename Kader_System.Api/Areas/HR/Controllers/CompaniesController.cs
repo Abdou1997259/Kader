@@ -157,11 +157,11 @@ public class CompaniesController(ICompanyService service, IRequestService reques
         var response = new Response<string>();
         if (types == HrDirectoryTypes.CompanyContracts)
         {
-            response = await service.RemoveCompanyContractsAttachement(id, HrDirectoryTypes.CompanyContracts);
+            response = await service.RemoveCompanyContractsAttachement(id, HrDirectoryTypes.CompanyContracts,false);
         }
         else if (types == HrDirectoryTypes.CompanyLicesnses)
         {
-            response = await service.RemoveCompanyLicensesAttachement(id, HrDirectoryTypes.CompanyLicesnses);
+            response = await service.RemoveCompanyLicensesAttachement(id, HrDirectoryTypes.CompanyLicesnses,false);
         }
 
         if (response.Check)
