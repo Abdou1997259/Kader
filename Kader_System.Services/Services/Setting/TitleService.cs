@@ -78,7 +78,8 @@ namespace Kader_System.Services.Services.Setting
                          Id = x.Id,
                          TitleNameAr = x.TitleNameAr,
                          TitleNameEn = x.TitleNameEn,
-                         Add_date=x.Add_date
+                         Add_date = x.Add_date
+                                  
 
                      }).ToList(),
                 CurrentPage = model.PageNumber,
