@@ -979,6 +979,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 x.JobId,
                 x.PhoneNumber,
                 x.UserName,
+                x.FullName,
 
                 x.ImagePath
 
@@ -1004,7 +1005,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
             Phone = x.PhoneNumber,
 
-            UserName = x.UserName,
+            UserName = x.FullName,
             Image = Path.Combine(folderPath, x.ImagePath ?? "")
 
 
