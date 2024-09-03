@@ -368,3 +368,4 @@ FodyWeavers.xsd
 
 #ignore migrations
 Migrations/
+/Kader_System.Api/wwwroot
