@@ -1277,7 +1277,11 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var titles = await _unitOfWork.Titles.GetSpecificSelectAsync(x => user.TitleId.Splitter().Contains(x.Id), x => x);
 
         Kader_System.Domain.Models.Title title = null;
-        var allTitles = await _unitOfWork.Titles.GetAllAsync();
+        List<int> inttitiles = user.TitleId.Splitter();
+        
+        var containedTitles = new HashSet<string>((await _unitOfWork.UserPermssionRepositroy.GetSpecificSelectAsync(x => inttitiles.Contains(x.TitleId) && x.UserId == userId, select: x => x.TitleId.ToString())));
+        var allTitles = await _unitOfWork.Titles.GetSpecificSelectAsQuerableAsync(x => containedTitles.Contains(x.Id.ToString()), x => new { Id = x.Id, TitleNameAr = x.TitleNameAr, TitleNameEn = x.TitleNameEn });
+
         HrCompany cop = null;
 
         title = await _unitOfWork.Titles.GetByIdAsync(user.CurrentTitleId);
