@@ -1,4 +1,5 @@
 ﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Services.IServices.AppServices;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Kader_System.Services.Services.Setting
 {
-    public class GetAllScreensService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer) : IGetAllScreensService
+    public class GetAllScreensService(IUnitOfWork unitOfWork,IFileServer _fileServer, IStringLocalizer<SharedResource> sharLocalizer) : IGetAllScreensService
     {
         //public async Task<Response<Dictionary<string, List<Dictionary<string, object>>>>> GetAllScreens(string lang)
         //{
@@ -127,7 +128,7 @@ namespace Kader_System.Services.Services.Setting
             List<ScreenMainLookup> lookupsForMain = mains.Where(x => !x.IsDeleted).OrderBy(x=>x.Order).Select(x => new ScreenMainLookup
             {
                 Id = x.Id,
-                main_image = Path.Combine(SD.GoRootPath.GetSettingImagesPath, x.Screen_main_image ?? " "),
+                main_image = _fileServer.GetFilePath(Modules.Setting,x.Screen_main_image),
                 main_title = Localization.Arabic == lang ? x.Screen_main_title_ar : x.Screen_main_title_en
             }).ToList();
 
@@ -136,8 +137,9 @@ namespace Kader_System.Services.Services.Setting
                 Id = x.Id,
                 cat_title = Localization.Arabic == lang ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
                 main_id = x.screenCat.Id,
-                Main_Title = Localization.Arabic == lang ? x.screenCat.Screen_main_title_ar : x.screenCat.Screen_main_title_en
-
+                Main_Title = Localization.Arabic == lang ? x.screenCat.Screen_main_title_ar : x.screenCat.Screen_main_title_en,
+                main_image = _fileServer.GetFilePath(Modules.Setting, x.screenCat.Screen_main_image) 
+               
             }, includeProperties: "screenCat",orderBy:x=>x.OrderBy(s=>s.Order))).ToList();
 
 
