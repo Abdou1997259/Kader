@@ -1,4 +1,5 @@
 ﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.Models.HR;
 using Kader_System.Services.IServices.AppServices;
@@ -374,8 +375,6 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
     #endregion
 
     #region Update
-
-
     public async Task<Response<HrUpdateCompanyRequest>> UpdateCompanyAsync(int id, HrUpdateCompanyRequest model)
     {
         Expression<Func<HrCompany, bool>> filter = x => x.IsDeleted == false && x.Id == id;
@@ -405,10 +404,14 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             {
                 var directoryTypes = HrDirectoryTypes.CompanyContracts;
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-                getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_contracts);
-                var companyContract = getFileNameAnds.Select(x => new HrCompanyContract { CompanyContracts = x.FileName, CompanyId = id }).ToList();
-                await unitOfWork.CompanyContracts.AddRangeAsync(companyContract);
-                await unitOfWork.CompleteAsync();
+                var fileResult = await RemoveCompanyContractsAttachement(id, directoryTypes);
+                if (fileResult.Check)
+                {
+                    getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_contracts);
+                    var companyContract = getFileNameAnds.Select(x => new HrCompanyContract { CompanyContracts = x.FileName, CompanyId = id }).ToList();
+                    await unitOfWork.CompanyContracts.AddRangeAsync(companyContract);
+                    await unitOfWork.CompleteAsync();
+                }
             }
             #endregion
 
@@ -417,10 +420,14 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, ISt
             {
                 var directoryTypes = HrDirectoryTypes.CompanyLicesnses;
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-                getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_licenses);
-                var companyContract = getFileNameAnds.Select(x => new CompanyLicense { LicenseName = x.FileName, CompanyId = id,LicenseExtension = Path.GetExtension(x.FileName) }).ToList();
-                await unitOfWork.CompanyLicenses.AddRangeAsync(companyContract);
-                await unitOfWork.CompleteAsync();
+                var fileResult = await RemoveCompanyLicensesAttachement(id, directoryTypes);
+                if (fileResult.Check)
+                {
+                    getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_licenses);
+                    var companyContract = getFileNameAnds.Select(x => new CompanyLicense { LicenseName = x.FileName, CompanyId = id }).ToList();
+                    await unitOfWork.CompanyLicenses.AddRangeAsync(companyContract);
+                    await unitOfWork.CompleteAsync();
+                }
             }
 
 

@@ -31,7 +31,7 @@ namespace Kader_System.Services.Services.AppServices
         //private readonly FileStream _fileStream;
         public bool FileExist(string moduleName, string fileName)
         {
-            var filePath = Path.Combine(serverPath, moduleName, fileName);
+            var filePath = Path.Combine(serverPath, moduleName, string.IsNullOrEmpty(fileName) ? "" : fileName);
             return File.Exists(filePath);
         }
 

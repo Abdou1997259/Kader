@@ -222,7 +222,7 @@ namespace Kader_System.Services.Services.HR
             {
                 TotalRecords = totalRecords,
 
-                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize,lang:lang),
+                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, lang: lang),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -288,7 +288,7 @@ namespace Kader_System.Services.Services.HR
             {
                 TotalRecords = totalRecords,
 
-                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize,lang:lang),
+                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, lang: lang),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -631,7 +631,6 @@ namespace Kader_System.Services.Services.HR
             var directoryAttachmentsName = directoryTypes.GetModuleNameWithType(Modules.Employees);
             directoryTypes = HrDirectoryTypes.EmployeeProfile;
             var directoryProfileName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-
             Expression<Func<HrEmployee, bool>> filter = x => x.IsDeleted == false && x.Id == id;
             var obj = await unitOfWork.Employees.GetFirstOrDefaultAsync(filter, includeProperties: $"{nameof(_instanceEmployee.ListOfAttachments)}");
 
@@ -670,21 +669,32 @@ namespace Kader_System.Services.Services.HR
 
             try
             {
-
-                #region UpdateCompanyContracts
+                List<GetFileNameAndExtension> getFileNameAnds = [];
+                GetFileNameAndExtension imageFile = new();
+                #region UpdateEmployeeMedia
                 if (model.employee_attachments is not null)
                 {
-                    var getFileNameAnds = await fileServer.UploadFilesAsync(directoryAttachmentsName, model.employee_attachments);
-                    var employeeAttachment = getFileNameAnds.Select(x => new HrEmployeeAttachment { FileName = x.FileName, FileExtension = Path.GetExtension(x.FileName),EmployeeId = id }).ToList();
-                    await unitOfWork.EmployeeAttachments.AddRangeAsync(employeeAttachment);
-                    await unitOfWork.CompleteAsync();
+                    var fileResult = await RemoveEmployeeAttachement(id);
+                    if (fileResult.Check)
+                    {
+                        getFileNameAnds = await fileServer.UploadFilesAsync(directoryAttachmentsName, model.employee_attachments);
+                        var companyContract = getFileNameAnds.Select(x => new HrCompanyContract { CompanyContracts = x.FileName, CompanyId = id }).ToList();
+                        await unitOfWork.CompanyContracts.AddRangeAsync(companyContract);
+                        await unitOfWork.CompleteAsync();
+                    }
                 }
-                GetFileNameAndExtension imageFile = new();
                 if (model.employee_image is not null)
                 {
-                    fileServer.RemoveFile(directoryProfileName, obj.EmployeeImage);
+                    if (fileServer.FileExist(directoryProfileName, obj.EmployeeImage))
+                        await RemoveEmployeeProfile(id);
+
                     imageFile.FileName = await fileServer.UploadFileAsync(directoryProfileName, model.employee_image);
-                    imageFile.FileExtension = Path.GetExtension(imageFile.FileName);
+                    imageFile.FileExtension = fileServer.GetFileEXE(imageFile.FileName);
+                }
+                else
+                {
+                    imageFile.FileName = obj.EmployeeImage;
+                    imageFile.FileExtension = obj.EmployeeImageExtension;
                 }
                 #endregion
 
@@ -1013,6 +1023,13 @@ namespace Kader_System.Services.Services.HR
                 Msg = $"Attachement {result} is deleted sucessfully"
             };
         }
+        private async Task RemoveEmployeeProfile(int empId)
+        {
+            var directoryTypes = HrDirectoryTypes.EmployeeProfile;
+            var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
+            var attachements = await unitOfWork.Employees.GetByIdWithNoTrackingAsync(empId);
+            fileServer.RemoveFile(directoryName, attachements.EmployeeImage);
+        }
         #endregion
 
         #region Download
@@ -1021,7 +1038,7 @@ namespace Kader_System.Services.Services.HR
             var employeeeAttachment = await unitOfWork.EmployeeAttachments.GetByIdAsync(id);
             if (employeeeAttachment is null)
             {
-                var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
+                var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Employee]];
                 return new Response<FileContentResult>
                 {
                     Msg = msg,
@@ -1031,7 +1048,7 @@ namespace Kader_System.Services.Services.HR
 
             if (string.IsNullOrEmpty(employeeeAttachment.FileName))
             {
-                var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
+                var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Employee]];
                 return new Response<FileContentResult>
                 {
                     Msg = msg,
