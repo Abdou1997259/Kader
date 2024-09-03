@@ -412,7 +412,7 @@ namespace Kader_System.Services.Services.Setting
                             await unitOfWork.CompleteAsync();
                         }
                          LabelExpression0:;
-                        var userWithTitle = await unitOfWork.Users.GetSpecificSelectAsync(x => x.CurrentTitleId == id, select: x => x.Id);
+                        var userWithTitle = await unitOfWork.Users.GetSpecificSelectAsync(x => x.TitleId.Contains(id.ToString()), select: x => x.Id);
                         if (userWithTitle.Any())
                         {
                             foreach (var userId in userWithTitle)
