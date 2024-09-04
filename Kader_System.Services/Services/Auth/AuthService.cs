@@ -104,7 +104,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
         var currentUserRoles = (await _userManager.GetRolesAsync(user)).ToList();
         //string superAdminRole = Domain.Constants.Enums.RolesEnums.Superadmin.ToString().Trim();
-
+      
         var jwtSecurityToken = await CreateJwtToken(user);
         var result = new AuthLoginUserResponse
         {
@@ -143,6 +143,22 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Msg = resultMsg
             };
         }
+        var companyList = await _unitOfWork.Companies.GetAllAsync();
+        var validCompanyIds = companyList.Select(c => c.Id).ToHashSet();
+
+        if (!model.company_id.All(id => validCompanyIds.Contains(id.Value)))
+        {
+            var msg = _sharLocalizer[Localization.CurrentIsNotExitedInTitle];
+            return new Response<UpdateUserRequest>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+        }
+
+        model.current_title ??= model.title_id.FirstOrDefault();
+        model.current_company ??= model.company_id.FirstOrDefault();
         string err = _sharLocalizer[Localization.Error];
         var obj = await _userManager.FindByIdAsync(id);
 
@@ -181,7 +197,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                     x => x.TitleId == title,
                     select: x => new UserPermission
                     {
-                        TitleId = title,
+                        TitleId = title.Value,
                         UserId = obj.Id,
                         SubScreenId = x.SubScreenId,
                         Permission = x.Permissions
@@ -199,13 +215,15 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         obj.FullName = model.full_name;
         obj.Email = model.email;
         obj.FinancialYear = model.financial_year;
-        obj.CompanyId = model.company_id.Concater();
+     
         obj.CompanyYearId = model.financial_year;
-        obj.TitleId = model.title_id.Concater();
+      
         obj.JobId = model.job_title;
         obj.IsActive = model.is_active;
-        obj.CurrentTitleId = model.current_title ?? 1;
-        obj.CurrentCompanyId = model.current_company ?? 3;
+        obj.CompanyId = model.company_id.NulalbleConcater();
+        obj.TitleId = model.title_id.NulalbleConcater();
+        obj.CurrentTitleId = model.current_title.Value;
+        obj.CurrentCompanyId = model.current_company.Value;
         _unitOfWork.Users.Update(obj);
         await _unitOfWork.CompleteAsync();
 
@@ -1005,7 +1023,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
             Phone = x.PhoneNumber,
 
-            UserName = x.FullName,
+            UserName = x.UserName,
+            FullName=x.FullName,
             Image = Path.Combine(folderPath, x.ImagePath ?? "")
 
 

@@ -134,23 +134,7 @@ namespace Kader_System.DataAccess.Repositories
         }
         public async Task<GetMyProfilePermissionAndScreen> SpGetScreen(string userId,int titleId,string lang)
         {
-            //List<SpGetScreen> rawData = null;
-            //if (userId != "b74ddd14-6340-4840-95c2-db12554843e5basb1")
-            //{
-            //            rawData = await _db.Set<SpGetScreen>()
-            //    .FromSqlRaw("EXEC sp_get_screen @UserId, @TitleId, @Lang",
-            //                new SqlParameter("@UserId", userId),
-            //                new SqlParameter("@TitleId", titleId),
-            //                new SqlParameter("@Lang", lang)).AsNoTracking().ToListAsync();
-            //}
-            //else
-            //{
-
-            //    rawData = await _db.Set<SpGetScreen>()
-            //        .FromSqlRaw("EXEC sp_get_Super_Admin_screen @Lang",
-            //        new SqlParameter("@Lang", lang)).AsNoTracking().ToListAsync();
-
-            //}
+          
           var userlogincontext=  UserPermissionFactory.CreatePermissionsUserStrategy(_db,userId,titleId,lang);
             var rawData =await userlogincontext.GetPermissions();
 
@@ -215,26 +199,7 @@ namespace Kader_System.DataAccess.Repositories
 
 
             }).ToList();
-            //    g => g.Key, // The key for the dictionary is the screen_code
-            //    g => g.Select(x => new GetUserPermission
-            //    {
-            //        actions = x.actions,
-            //        TitleId = titleId,
-            //        cat_id = x.cat_id,
-            //        cat_title = x.cat_title,
-            //        main_id = x.main_id,
-            //        main_img =Path.Combine(Modules.Setting, x.main_image ==null? "":x.main_image),
-            //        main_title = x.main_title,
-            //        permissions = x.permission.Split(',')
-            //                           .Select(p => int.TryParse(p, out var result) ? result : 0) // Handle conversion with fallback value
-            //                           .ToList(), 
-            //        screen_code = x.screen_code,
-            //        sub_id = x.sub_id,
-            //        sub_title = x.sub_title,
-            //        url = x.url
-            //    }).FirstOrDefault() // Convert the IEnumerable to a List
-            //).ToList();
-
+   
 
 
 

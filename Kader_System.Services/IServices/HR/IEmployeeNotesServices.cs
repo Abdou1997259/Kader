@@ -8,7 +8,7 @@ namespace Kader_System.Services.IServices.HR;
 public interface IEmployeeNotesServices
 {
     public  Task<Response<CreateEmployeeNotes>> CreateEmployeeNotesAsync(CreateEmployeeNotes model);
-    public  Task<Response<GetAllEmployeeNotesResponse>> GetAllEmployeeNotesAsync(string lang, GetAllEmployeeNotesRequest model, string host);
+    public Task<Response<GetAllEmployeeNotesResponse>> GetAllEmployeeNotesAsync(string lang, string moduleName, HrDirectoryTypes hrDirectory, GetAllEmployeeNotesRequest model, string host);
 
     public  Task<Response<EmployeeNotesData>> GetEmployeeNotesByIdAsync(int id);
 
