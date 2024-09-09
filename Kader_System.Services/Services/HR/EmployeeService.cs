@@ -678,8 +678,8 @@ namespace Kader_System.Services.Services.HR
                 if (model.employee_attachments is not null)
                 {
                     getFileNameAnds = await fileServer.UploadFilesAsync(directoryAttachmentsName, model.employee_attachments);
-                    var companyContract = getFileNameAnds.Select(x => new HrCompanyContract { CompanyContracts = x.FileName, CompanyId = id }).ToList();
-                    await unitOfWork.CompanyContracts.AddRangeAsync(companyContract);
+                    var employeeAttachment = getFileNameAnds.Select(x => new HrEmployeeAttachment { FileName = x.FileName, FileExtension = x.FileExtension,EmployeeId=id}).ToList();
+                    await unitOfWork.EmployeeAttachments.AddRangeAsync(employeeAttachment);
                     await unitOfWork.CompleteAsync();
                 }
                 if (model.employee_image is not null)
