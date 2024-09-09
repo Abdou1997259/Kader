@@ -71,7 +71,7 @@ builder.Services.AddCors();
 builder.Services.AddControllers(op =>
 {
     op.Filters.Add<PermissionFilter>();
-   // op.Filters.Add<DeflateCompressionAttribute>();
+    // op.Filters.Add<DeflateCompressionAttribute>();
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -132,7 +132,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings.Issuer,
         ClockSkew = TimeSpan.Zero
     };
-  
+
     o.Events = new JwtBearerEvents
     {
         OnMessageReceived = context =>
@@ -402,7 +402,7 @@ app.UseSwaggerUI(x =>
 app.UseMiddleware<ExceptionMiddleware>();
 app.ConfigureExceptionHandler(loggingRepository);    // custom as a global exception
 app.UseHttpsRedirection();
-app.UseStaticFiles(); 
+app.UseStaticFiles();
 app.UseRouting();
 
 //app.UseExceptionHandler();
@@ -411,7 +411,7 @@ app.UseRequestLocalization(localizationOptions);
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 app.UseMiddleware<HeadersValidationMiddleware>();
 app.UseMiddleware<PathMiddleware>();
-//app.UseMiddleware<ClientDatabaseMiddleware>();
+app.UseMiddleware<ClientDatabaseMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

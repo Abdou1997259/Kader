@@ -41,6 +41,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     {
         string err = _sharLocalizer[Localization.Error];
         var normalizedUserName = _userManager.NormalizeName(model.UserName);
+        var test = _db.Database.GetConnectionString();
         var usernormalize = await _userManager.Users.SingleOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName);
         var user = await _userManager.FindByNameAsync(model.UserName);
         if (user == null)

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository,IFileServer fileServer) : ISubMainScreenService
+public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper, ILoggingRepository loggingRepository, IFileServer fileServer) : ISubMainScreenService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -56,7 +56,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
                                                  || x.Screen_sub_title_en.Contains(model.Word)
                                               );
 
-     
+
 
         var totalRecords = await unitOfWork.SubMainScreens.CountAsync(filter: filter);
         int page = 1;
@@ -66,7 +66,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         else
             page = model.PageNumber;
         var pageLinks = Enumerable.Range(1, totalPages)
-           
+
             .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
             .ToList();
         var items = (await unitOfWork.SubMainScreens.GetSpecificSelectAsync(filter: filter, x => x,
@@ -75,14 +75,14 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
                   x.OrderBy(x => x.Order))).Select(x => new SubMainScreenData
                   {
                       Ids = x.Id,
-                      Screen_cat_id=x.ScreenCat.Id,
+                      Screen_cat_id = x.ScreenCat.Id,
                       Screen_sub_title = lang == Localization.Arabic ? x.Screen_sub_title_ar : x.Screen_sub_title_en,
                       ScreenCode = x.ScreenCode,
-                      Url=x.Url,
-                      ScreenMain =  Localization.Arabic ==lang?  x.ScreenCat.screenCat.Screen_main_title_ar:x.ScreenCat.screenCat.Screen_main_title_en,
-                      ScreenCat = Localization.Arabic == lang ? x.ScreenCat.Screen_cat_title_ar:x.Screen_sub_title_en,
-                      ScreenMainImage=Path.Combine(SD.GoRootPath.GetSettingImagesPath,x.ScreenCat.screenCat.Screen_main_image ?? "")
-                      
+                      Url = x.Url,
+                      ScreenMain = Localization.Arabic == lang ? x.ScreenCat.screenCat.Screen_main_title_ar : x.ScreenCat.screenCat.Screen_main_title_en,
+                      ScreenCat = Localization.Arabic == lang ? x.ScreenCat.Screen_cat_title_ar : x.Screen_sub_title_en,
+                      ScreenMainImage = Path.Combine(SD.GoRootPath.GetSettingImagesPath, x.ScreenCat.screenCat.Screen_main_image ?? "")
+
 
 
 
@@ -157,12 +157,12 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
                 Msg = resultms,
                 Check = false
             };
-            
+
         }
 
-        var lastsubscreen = await _unitOfWork.SubMainScreens.GetLast(x=>x.Id) ;
+        var lastsubscreen = await _unitOfWork.SubMainScreens.GetLast(x => x.Id);
 
-        var screencode = "01-" + $"{lastsubscreen.Id+1}".PadLeft(3, '0');
+        var screencode = "01-" + $"{lastsubscreen.Id + 1}".PadLeft(3, '0');
         var maxId = await _unitOfWork.SubMainScreens.MaxInCloumn(x => x.Id);
         await _unitOfWork.SubMainScreens.AddAsync(new()
         {
@@ -170,11 +170,11 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             Screen_sub_title_en = model.screen_sub_title_en,
             ScreenCatId = model.screen_cat_id,
             ScreenCode = screencode,
-            Order = maxId+1,
-            ListOfActions =model.actions.Select(x=>new StSubMainScreenAction
+            Order = maxId + 1,
+            ListOfActions = model.actions.Select(x => new StSubMainScreenAction
             {
-                ActionId=x
-             
+                ActionId = x
+
             }).ToList(),
             Url = model.url,
         });
@@ -247,7 +247,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
                 Msg = resultMsg
             };
         }
-        var lookup = await  _context.MainScreens.
+        var lookup = await _context.MainScreens.
             AsQueryable().
             ToDynamicLookUpAsync("Id", lang == "ar" ? "Screen_cat_title_ar" : "Screen_cat_title_en");
         return new()
@@ -259,7 +259,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
                 Screen_sub_title_ar = obj.Screen_sub_title_ar,
                 Screen_sub_title_en = obj.Screen_sub_title_en,
                 Url = obj.Url,
-                ScreenCode=obj.ScreenCode,
+                ScreenCode = obj.ScreenCode,
 
                 //Name = obj.Name,
                 Actions = obj.ListOfActions.Select(x => x.ActionId).ToList()
@@ -292,7 +292,7 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         return new()
         {
             Check = true,
-            Data =obj,
+            Data = obj,
             Msg = _sharLocalizer[Localization.Restored]
         };
 
@@ -301,9 +301,9 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
 
     public async Task<Response<StUpdateSubMainScreenRequest>> UpdateSubMainScreenAsync(int id, StUpdateSubMainScreenRequest model, string appPath, string moduleName)
     {
-  
 
-    var obj = await _unitOfWork.SubMainScreens.GetFirstOrDefaultAsync(x => x.Id == id, includeProperties: "ListOfActions");
+
+        var obj = await _unitOfWork.SubMainScreens.GetFirstOrDefaultAsync(x => x.Id == id, includeProperties: "ListOfActions");
 
         if (obj is null)
         {
@@ -327,37 +327,40 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
             _unitOfWork.SubMainScreenActions.RemoveRange(obj.ListOfActions);
             await _unitOfWork.CompleteAsync();
         }
-        obj.Screen_sub_title_ar=model.screen_sub_title_ar;
-        obj.Screen_sub_title_en=model.screen_sub_title_en;  
-        obj.ScreenCatId=model.screen_cat_id;
-        obj.Url=model.url;
+        obj.Screen_sub_title_ar = model.screen_sub_title_ar;
+        obj.Screen_sub_title_en = model.screen_sub_title_en;
+        obj.ScreenCatId = model.screen_cat_id;
+        obj.Url = model.url;
         _unitOfWork.SubMainScreens.Update(obj);
         var result = await _unitOfWork.CompleteAsync();
         var actionSubs = model.actions.Select(x => new StSubMainScreenAction
         {
             ActionId = x,
-            ScreenSubId=obj.Id,
+            ScreenSubId = obj.Id,
         }).ToList();
-       await     _unitOfWork.SubMainScreenActions.AddRangeAsync(actionSubs);
-    await _unitOfWork.CompleteAsync();
+
+        var actionSubScreen = await _unitOfWork.SubMainScreenActions.GetSpecificSelectTrackingAsync(x => x.ScreenSubId == obj.Id, x => x);
+        _unitOfWork.SubMainScreenActions.RemoveRange(actionSubScreen);
+        await _unitOfWork.SubMainScreenActions.AddRangeAsync(actionSubs);
+        await _unitOfWork.CompleteAsync();
 
 
 
 
 
-        return new ()
-            {
-                Msg = sharLocalizer[Localization.Done],
-                Check = true,
-            };
- 
+        return new()
+        {
+            Msg = sharLocalizer[Localization.Done],
+            Check = true,
+        };
 
-          
-        
-        
+
+
+
+
     }
 
-   
+
 
     public async Task<Response<string>> DeleteSubMainScreenAsync(int id)
     {
@@ -404,14 +407,14 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
         throw new NotImplementedException();
     }
 
-   
+
     public Task<Response<string>> UpdateActiveOrNotSubMainScreenAsync(int id)
     {
         throw new NotImplementedException();
     }
 
     public async Task<Response<string>> OrderByPattern(int[] orderedIds)
-    {   
+    {
         for (int i = 0; i < orderedIds.Length; i++)
         {
             var id = orderedIds[i];
@@ -419,10 +422,10 @@ public class SubMainScreenService(KaderDbContext _context, IUnitOfWork unitOfWor
                 .Where(s => s.Id == id)
                 .ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, x => i + 1));
         }
-        return new() {Check = true};
+        return new() { Check = true };
     }
 
-    public  async Task<int> DeleteScreenCodeSpace()
+    public async Task<int> DeleteScreenCodeSpace()
     {
         var result = await _context.SubMainScreens
                                   .ExecuteUpdateAsync(e =>
