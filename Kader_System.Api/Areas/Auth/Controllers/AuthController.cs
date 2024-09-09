@@ -1,7 +1,6 @@
 ﻿using Kader_System.Api.Helpers;
 using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.DTOs.Request.Auth;
-using Kader_System.Domain.DTOs.Response.Auth;
 using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.Auth.Controllers;
@@ -12,7 +11,7 @@ namespace Kader_System.Api.Areas.Auth.Controllers;
 //[Authorize(Permissions.Setting.View)]
 //[Authorize("Superadmin")]
 [Route("api/v1/")]
-public class AuthController(IAuthService service,IWebHostEnvironment hostEnvironment, IRequestService requestService) : ControllerBase
+public class AuthController(IAuthService service, IWebHostEnvironment hostEnvironment, IRequestService requestService) : ControllerBase
 {
     private readonly IAuthService _service = service;
 
@@ -21,54 +20,18 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
 
 
     public async Task<IActionResult> LoginUserAsync(AuthLoginUserRequest model)
-     {
+    {
         var response = await _service.LoginUserAsync(model);
         if (response.Check)
         {
-            //if (!string.IsNullOrEmpty(response.Data.RefreshToken))
-            //    SetRefreshTokenInCookie(response.Data.RefreshToken, response.Data.RefreshTokenExpiration);
+
             return Ok(response);
         }
         else if (!response.Check)
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
-    //[AllowAnonymous]
-    //[HttpPost("upload")]
-    //public IActionResult UploadFileAsync([FromForm] IFormFileCollection company_contracts)
-    //{ // Combine the directory path and the file name
-    //    string filePath = Path.Combine(Directory.GetCurrentDirectory() + GoRootPath.HRFilesPath, company_contracts[0].FileName);
-    //    string uploadDirectory = Directory.GetCurrentDirectory() + GoRootPath.HRFilesPath;
-    //    foreach (var file in company_contracts)
-    //    {
-    //        if (file != null && file.Length > 0)
-    //        {
-    //            ManageFilesHelper.UploadFileAsync(file, GoRootPath.HRFilesPath);
-    //            //// Create the directory if it doesn't exist
-    //            //if (!Directory.Exists(uploadDirectory))
-    //            //{
-    //            //    Directory.CreateDirectory(uploadDirectory);
-    //            //}
 
-    //            //// Create a FileStream to write the uploaded file
-    //            //using (var stream = new FileStream(filePath, FileMode.Create))
-    //            //{
-    //            //    // Copy the file stream to the FileStream
-    //            //    file.CopyTo(stream);
-    //            //}
-
-    //            // Process the model as needed, e.g., save to a database
-    //            // ...
-
-
-    //        }
-
-    //        return Ok("File uploaded successfully");
-    //    }
-
-
-    //    return BadRequest("No file or empty file");
-    //}
 
     [AllowAnonymous]
     [HttpPost("upload")]
@@ -97,7 +60,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     {
         var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
-        var response =  await _service.CreateUserAsync(model, Modules.Auth, HrDirectoryTypes.User);
+        var response = await _service.CreateUserAsync(model, Modules.Auth, HrDirectoryTypes.User);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -107,12 +70,12 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     [HttpPut(ApiRoutes.User.UpdateUser)]
     [Permission(Permission.Edit, 5)]
     public async Task<IActionResult> UpdateUserAsync([FromRoute]
-    string id, [FromForm] UpdateUserRequest  model)
+    string id, [FromForm] UpdateUserRequest model)
 
     {
         var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
-        var response = await _service.UpdateUserAsync(id, requestService.GetRequestHeaderLanguage,  model,
+        var response = await _service.UpdateUserAsync(id, requestService.GetRequestHeaderLanguage, model,
              Modules.Auth, HrDirectoryTypes.User);
 
         if (response.Check)
@@ -158,7 +121,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     [Permission(Permission.Delete, 5)]
     public async Task<IActionResult> DeleteUser(string id)
     {
-        var response = await _service.DeleteUser(id );
+        var response = await _service.DeleteUser(id);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -180,7 +143,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     [Permission(Permission.View, 5)]
     public async Task<IActionResult> GetAllUsers([FromQuery] FilterationUsersRequest filterationUsersRequest)
     {
-        var response = await _service.GetAllUsers(filterationUsersRequest,requestService.GetCurrentHost,requestService.GetRequestHeaderLanguage, Modules.Auth, HrDirectoryTypes.User);
+        var response = await _service.GetAllUsers(filterationUsersRequest, requestService.GetCurrentHost, requestService.GetRequestHeaderLanguage, Modules.Auth, HrDirectoryTypes.User);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -191,9 +154,9 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     [Permission(Permission.View, 5)]
     public async Task<IActionResult> GetUsersById(string id)
     {
-       
 
-   
+
+
         var response = await _service.GetUserById(id, requestService.GetRequestHeaderLanguage, Modules.Auth, HrDirectoryTypes.User);
         if (response.Check)
             return Ok(response);
@@ -205,7 +168,7 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     [Permission(Permission.View, 5)]
     public async Task<IActionResult> GetListOfUsers()
     {
-        var response = await _service.ListListOfUsers( requestService.GetRequestHeaderLanguage);
+        var response = await _service.ListListOfUsers(requestService.GetRequestHeaderLanguage);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -229,10 +192,10 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
     [HttpPost(ApiRoutes.User.AssginPermssionToUser)]
     [Permission(Permission.Edit, 5)]
 
-    public async Task<IActionResult> AssignPermissionForUser([FromRoute] string id,[FromBody]  IEnumerable<Kader_System.Domain.DTOs.Request.Auth.Permissions> model, [FromQuery] bool all = false, 
+    public async Task<IActionResult> AssignPermissionForUser([FromRoute] string id, [FromBody] IEnumerable<Kader_System.Domain.DTOs.Request.Auth.Permissions> model, [FromQuery] bool all = false,
         [FromQuery] int titleId = 1)
     {
-        var response = await _service.AssignPermissionForUser(id,all,titleId,model,requestService.GetRequestHeaderLanguage);
+        var response = await _service.AssignPermissionForUser(id, all, titleId, model, requestService.GetRequestHeaderLanguage);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -245,8 +208,8 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
 
     public async Task<IActionResult> GetMyProfile()
     {
-        
-        var response = await _service.GetMyProfile( requestService.GetRequestHeaderLanguage, Modules.Auth, HrDirectoryTypes.User);
+
+        var response = await _service.GetMyProfile(requestService.GetRequestHeaderLanguage, Modules.Auth, HrDirectoryTypes.User);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -283,14 +246,14 @@ public class AuthController(IAuthService service,IWebHostEnvironment hostEnviron
 
     public async Task<IActionResult> GetTitleUser(string id)
     {
-        var response = await _service.GetTitleLookUps(id,requestService.GetRequestHeaderLanguage);
+        var response = await _service.GetTitleLookUps(id, requestService.GetRequestHeaderLanguage);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
-    
+
 
     public class CompanyContractModel
     {

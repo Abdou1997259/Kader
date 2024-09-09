@@ -1,7 +1,4 @@
 ﻿using Kader_System.Domain.Constants.Enums;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.IdentityModel.Abstractions;
-using static Kader_System.Domain.Constants.SD.ApiRoutes;
 namespace Kader_System.DataAccess.Seeding;
 
 public static class ModelBuilderExtensions
@@ -28,33 +25,33 @@ public static class ModelBuilderExtensions
                 NormalizedName = UserRole.RoleNameInEn.ToUpper(),
                 IsActive = true
             });
-                 modelBuilder.Entity<CompanyYear>().HasData(
-                        new CompanyYear
-                        {
-                            Id = 1,
-                            FinancialYear = "2022"
-                        },
-                        new CompanyYear
-                        {
-                            Id = 2,
-                            FinancialYear = "2023"
-                        },
-                        new CompanyYear
-                        {
-                            Id = 3,
-                            FinancialYear = "2024"
-                        },
-                        new CompanyYear
-                        {
-                            Id = 4,
-                            FinancialYear = "2025"
-                        },
-                        new CompanyYear
-                        {
-                            Id = 5,
-                            FinancialYear = "2026"
-                        }
-                );
+        modelBuilder.Entity<CompanyYear>().HasData(
+               new CompanyYear
+               {
+                   Id = 1,
+                   FinancialYear = "2022"
+               },
+               new CompanyYear
+               {
+                   Id = 2,
+                   FinancialYear = "2023"
+               },
+               new CompanyYear
+               {
+                   Id = 3,
+                   FinancialYear = "2024"
+               },
+               new CompanyYear
+               {
+                   Id = 4,
+                   FinancialYear = "2025"
+               },
+               new CompanyYear
+               {
+                   Id = 5,
+                   FinancialYear = "2026"
+               }
+       );
 
 
         modelBuilder.Entity<ApplicationUser>()
@@ -76,7 +73,7 @@ public static class ModelBuilderExtensions
                 CompanyId = "3,2,1",
                 NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                 EmailConfirmed = true,
-                CompanyYearId=1,
+                CompanyYearId = 1,
                 IsActive = true,
                 PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, SuperAdmin.Password),
                 VisiblePassword = SuperAdmin.Password
@@ -113,14 +110,14 @@ public static class ModelBuilderExtensions
         #endregion
         modelBuilder.Entity<StAction>()
             .HasData(
-           new() { Id = 1, Name = "إظهار", NameInEnglish = ActionsEnums.View.ToString() },
-           new() { Id = 2, Name = "اضافة", NameInEnglish = ActionsEnums.Add.ToString() },
-           new() { Id = 3, Name = "تعديل", NameInEnglish = ActionsEnums.Edit.ToString() },
-           new() { Id = 4, Name = "حذف", NameInEnglish = ActionsEnums.Delete.ToString() },
-           new() { Id = 5, Name = "طباعة", NameInEnglish = ActionsEnums.Print.ToString() }
+           new() { Id = 1, Name = "إظهار", NameInEnglish = ActionsEnums.View.ToString().ToLower() },
+           new() { Id = 2, Name = "اضافة", NameInEnglish = ActionsEnums.Add.ToString().ToLower() },
+           new() { Id = 3, Name = "تعديل", NameInEnglish = ActionsEnums.Edit.ToString().ToLower() },
+           new() { Id = 4, Name = "حذف", NameInEnglish = ActionsEnums.Delete.ToString().ToLower() },
+           new() { Id = 5, Name = "طباعة", NameInEnglish = ActionsEnums.Print.ToString().ToLower() }
            );
         modelBuilder.Entity<StMainScreen>().HasData(
-            new StMainScreen { Id = 1, Screen_main_title_ar = "الموارد البشريه", Screen_main_title_en = "Human Resources",Order=1 }
+            new StMainScreen { Id = 1, Screen_main_title_ar = "الموارد البشريه", Screen_main_title_en = "Human Resources", Order = 1 }
 
 
         );
@@ -128,56 +125,56 @@ public static class ModelBuilderExtensions
 
 
          new StMainScreenCat { Id = 1, MainScreenId = 1, Screen_cat_title_ar = "الاعدادات", Screen_cat_title_en = "Setting", Order = 1 },
-         new StMainScreenCat { Id = 2, MainScreenId = 1, Screen_cat_title_ar = "اكواد", Screen_cat_title_en = "Codes" , Order = 2 },
-         new StMainScreenCat { Id = 3, MainScreenId = 1, Screen_cat_title_ar = "طلبات", Screen_cat_title_en = "Request" , Order = 3 },
-         new StMainScreenCat { Id = 4, MainScreenId = 1, Screen_cat_title_ar = "حركات", Screen_cat_title_en = "Transcation" , Order = 4 },
-        new StMainScreenCat { Id = 5, MainScreenId = 1, Screen_cat_title_ar = "تقارير", Screen_cat_title_en = "Reports" , Order = 5 },
+         new StMainScreenCat { Id = 2, MainScreenId = 1, Screen_cat_title_ar = "اكواد", Screen_cat_title_en = "Codes", Order = 2 },
+         new StMainScreenCat { Id = 3, MainScreenId = 1, Screen_cat_title_ar = "طلبات", Screen_cat_title_en = "Request", Order = 3 },
+         new StMainScreenCat { Id = 4, MainScreenId = 1, Screen_cat_title_ar = "حركات", Screen_cat_title_en = "Transcation", Order = 4 },
+        new StMainScreenCat { Id = 5, MainScreenId = 1, Screen_cat_title_ar = "تقارير", Screen_cat_title_en = "Reports", Order = 5 },
 
 
-         new StMainScreenCat { Id = 6, MainScreenId = 1, Screen_cat_title_ar = "توظيف", Screen_cat_title_en = "Hiring" , Order = 6 },
-         new StMainScreenCat { Id = 7, MainScreenId = 1, Screen_cat_title_ar = "الاعدادات HR", Screen_cat_title_en = "Hr Setting"  , Order = 7 }
+         new StMainScreenCat { Id = 6, MainScreenId = 1, Screen_cat_title_ar = "توظيف", Screen_cat_title_en = "Hiring", Order = 6 },
+         new StMainScreenCat { Id = 7, MainScreenId = 1, Screen_cat_title_ar = "الاعدادات HR", Screen_cat_title_en = "Hr Setting", Order = 7 }
 
       );
 
         modelBuilder.Entity<StScreenSub>().HasData(
 
 
-        new StScreenSub { Id = 1, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الرئيسية", Screen_sub_title_en = "Main Screen", Url = "/main/screen_main", ScreenCode = "01001",Order=1 },
+        new StScreenSub { Id = 1, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الرئيسية", Screen_sub_title_en = "Main Screen", Url = "/main/screen_main", ScreenCode = "01001", Order = 1 },
         new StScreenSub { Id = 2, ScreenCatId = 1, Screen_sub_title_ar = "القائمة الفرعية", Screen_sub_title_en = "Sub Cat", Url = "/main/screen_cat", ScreenCode = "01001", Order = 2 },
         new StScreenSub { Id = 3, ScreenCatId = 1, Screen_sub_title_ar = "الشاشات", Screen_sub_title_en = "Screen Sub", Url = "/main/screen_sub", ScreenCode = "01001", Order = 3 },
 
         new StScreenSub { Id = 4, ScreenCatId = 1, Screen_sub_title_ar = "المسئوليات", Screen_sub_title_en = "Titles", Url = "/main/title", ScreenCode = "01001", Order = 4 },
-        new StScreenSub { Id = 5, ScreenCatId = 1, Screen_sub_title_ar = "مستخدمين", Screen_sub_title_en = "Users", Url = "/main/user", ScreenCode = "01001", Order = 5},
+        new StScreenSub { Id = 5, ScreenCatId = 1, Screen_sub_title_ar = "مستخدمين", Screen_sub_title_en = "Users", Url = "/main/user", ScreenCode = "01001", Order = 5 },
         new StScreenSub { Id = 6, ScreenCatId = 1, Screen_sub_title_ar = "صلاحيات المستخدمين", Screen_sub_title_en = "Users Privilege", Url = "/main/user_permission", ScreenCode = "01001", Order = 6 },
 
-        new StScreenSub { Id = 7, ScreenCatId = 1, Screen_sub_title_ar = "اعدادات", Screen_sub_title_en = "Settings", Url = "/main/settings/10", ScreenCode = "01001" , Order = 7       },
+        new StScreenSub { Id = 7, ScreenCatId = 1, Screen_sub_title_ar = "اعدادات", Screen_sub_title_en = "Settings", Url = "/main/settings/10", ScreenCode = "01001", Order = 7 },
 
-        new StScreenSub { Id = 8, ScreenCatId = 2, Screen_sub_title_ar = "شركات", Screen_sub_title_en = "Company", Url = "/codes/company", ScreenCode = "01001",Order = 8 },
-        new StScreenSub { Id = 9, ScreenCatId = 2, Screen_sub_title_ar = "الوظائف", Screen_sub_title_en = "Jobs", Url = "/codes/job", ScreenCode = "01001" , Order = 9 },
-        new StScreenSub { Id = 10, ScreenCatId = 2, Screen_sub_title_ar = "المؤهلات", Screen_sub_title_en = "Qualifications", Url = "/codes/qualification", ScreenCode = "01001" , Order = 10 },
-        new StScreenSub { Id = 11, ScreenCatId = 2, Screen_sub_title_ar = "الهيكل الاداري", Screen_sub_title_en = "Structured Managements", Url = "/codes/admin_structure", ScreenCode = "01001" , Order = 11 },
-        new StScreenSub { Id = 12, ScreenCatId = 2, Screen_sub_title_ar = "الاجازات", Screen_sub_title_en = "Vacations", Url = "/codes/vacation", ScreenCode = "01001" , Order = 12 },
-        new StScreenSub { Id = 13, ScreenCatId = 2, Screen_sub_title_ar = "الموظفين", Screen_sub_title_en = "Employees", Url = "/codes/employee", ScreenCode = "01001"  , Order = 13 },
-        new StScreenSub { Id = 14, ScreenCatId = 2, Screen_sub_title_ar = "بدلات", Screen_sub_title_en = "Allowances", Url = "/codes/allowance", ScreenCode = "01001"   , Order = 14 },
-        new StScreenSub { Id = 15, ScreenCatId = 2, Screen_sub_title_ar = "استقطاعات", Screen_sub_title_en = "Deductions", Url = "/codes/deduction", ScreenCode = "01001" , Order = 15 },
-        new StScreenSub { Id = 16, ScreenCatId = 2, Screen_sub_title_ar = "استحقاقات", Screen_sub_title_en = "Benefits", Url = "/codes/benefit", ScreenCode = "01001"           , Order = 16 },
-        new StScreenSub { Id = 17, ScreenCatId = 2, Screen_sub_title_ar = "العقود", Screen_sub_title_en = "Contracts", Url = "/codes/contract", ScreenCode = "01001"    , Order = 17 },
-        new StScreenSub { Id = 18, ScreenCatId = 2, Screen_sub_title_ar = "اجهزة البصمة", Screen_sub_title_en = "Fingerprint Devices", Url = "/codes/fingerprint", ScreenCode = "01001"  , Order =18     },
+        new StScreenSub { Id = 8, ScreenCatId = 2, Screen_sub_title_ar = "شركات", Screen_sub_title_en = "Company", Url = "/codes/company", ScreenCode = "01001", Order = 8 },
+        new StScreenSub { Id = 9, ScreenCatId = 2, Screen_sub_title_ar = "الوظائف", Screen_sub_title_en = "Jobs", Url = "/codes/job", ScreenCode = "01001", Order = 9 },
+        new StScreenSub { Id = 10, ScreenCatId = 2, Screen_sub_title_ar = "المؤهلات", Screen_sub_title_en = "Qualifications", Url = "/codes/qualification", ScreenCode = "01001", Order = 10 },
+        new StScreenSub { Id = 11, ScreenCatId = 2, Screen_sub_title_ar = "الهيكل الاداري", Screen_sub_title_en = "Structured Managements", Url = "/codes/admin_structure", ScreenCode = "01001", Order = 11 },
+        new StScreenSub { Id = 12, ScreenCatId = 2, Screen_sub_title_ar = "الاجازات", Screen_sub_title_en = "Vacations", Url = "/codes/vacation", ScreenCode = "01001", Order = 12 },
+        new StScreenSub { Id = 13, ScreenCatId = 2, Screen_sub_title_ar = "الموظفين", Screen_sub_title_en = "Employees", Url = "/codes/employee", ScreenCode = "01001", Order = 13 },
+        new StScreenSub { Id = 14, ScreenCatId = 2, Screen_sub_title_ar = "بدلات", Screen_sub_title_en = "Allowances", Url = "/codes/allowance", ScreenCode = "01001", Order = 14 },
+        new StScreenSub { Id = 15, ScreenCatId = 2, Screen_sub_title_ar = "استقطاعات", Screen_sub_title_en = "Deductions", Url = "/codes/deduction", ScreenCode = "01001", Order = 15 },
+        new StScreenSub { Id = 16, ScreenCatId = 2, Screen_sub_title_ar = "استحقاقات", Screen_sub_title_en = "Benefits", Url = "/codes/benefit", ScreenCode = "01001", Order = 16 },
+        new StScreenSub { Id = 17, ScreenCatId = 2, Screen_sub_title_ar = "العقود", Screen_sub_title_en = "Contracts", Url = "/codes/contract", ScreenCode = "01001", Order = 17 },
+        new StScreenSub { Id = 18, ScreenCatId = 2, Screen_sub_title_ar = "اجهزة البصمة", Screen_sub_title_en = "Fingerprint Devices", Url = "/codes/fingerprint", ScreenCode = "01001", Order = 18 },
 
-        new StScreenSub { Id = 19, ScreenCatId = 3, Screen_sub_title_ar = "متابعة الطلبات", Screen_sub_title_en = "Request Tracking", Url = "/requests/follow_request", ScreenCode = "01001", Order = 19},
+        new StScreenSub { Id = 19, ScreenCatId = 3, Screen_sub_title_ar = "متابعة الطلبات", Screen_sub_title_en = "Request Tracking", Url = "/requests/follow_request", ScreenCode = "01001", Order = 19 },
         new StScreenSub { Id = 20, ScreenCatId = 3, Screen_sub_title_ar = "طلب", Screen_sub_title_en = "Request", Url = "/requests/request", ScreenCode = "01001", Order = 20 },
 
-        new StScreenSub { Id = 21, ScreenCatId = 4, Screen_sub_title_ar = "الاستقطاعات", Screen_sub_title_en = "Deductions", Url = "/transactions/deduction_transaction", ScreenCode = "01001" , Order = 21 },
-        new StScreenSub { Id = 22, ScreenCatId = 4, Screen_sub_title_ar = "الاستحقاقات", Screen_sub_title_en = "Benefits", Url = "/transactions/benefit_transaction", ScreenCode = "01001" , Order = 22 },
-        new StScreenSub { Id = 23, ScreenCatId = 4, Screen_sub_title_ar = "السلف", Screen_sub_title_en = "Loans", Url = "/transactions/loan_transaction", ScreenCode = "01001" , Order = 23 },
-        new StScreenSub { Id = 24, ScreenCatId = 4, Screen_sub_title_ar = "البدلات", Screen_sub_title_en = "Allowances Transactions", Url = "/transactions/allowance_transaction", ScreenCode = "01001"     , Order = 24 },
-        new StScreenSub { Id = 25, ScreenCatId = 4, Screen_sub_title_ar = "الاجازات", Screen_sub_title_en = "Vacations Transactions", Url = "/transactions/vacation_transaction", ScreenCode = "01001" , Order = 25 },
-        new StScreenSub { Id = 26, ScreenCatId = 4, Screen_sub_title_ar = "حساب الرواتب", Screen_sub_title_en = "Salary Calculator", Url = "/transactions/salary_calculator_transaction", ScreenCode = "01001"      , Order = 26 },
-        new StScreenSub { Id = 27, ScreenCatId = 4, Screen_sub_title_ar = "الصرف", Screen_sub_title_en = "Disbursement", Url = "/transactions/disbursement_transaction", ScreenCode = "01001" , Order = 27 },
-        new StScreenSub { Id = 28, ScreenCatId = 4, Screen_sub_title_ar = "زيادة المرتبات", Screen_sub_title_en = "Salary Increase", Url = "/transactions/salary_increase", ScreenCode = "01001" , Order = 28 },
-        new StScreenSub { Id = 29, ScreenCatId = 4, Screen_sub_title_ar = "العهد العينية", Screen_sub_title_en = "Covenants", Url = "/transactions/covenant_transaction", ScreenCode = "01001"  , Order = 29 },
+        new StScreenSub { Id = 21, ScreenCatId = 4, Screen_sub_title_ar = "الاستقطاعات", Screen_sub_title_en = "Deductions", Url = "/transactions/deduction_transaction", ScreenCode = "01001", Order = 21 },
+        new StScreenSub { Id = 22, ScreenCatId = 4, Screen_sub_title_ar = "الاستحقاقات", Screen_sub_title_en = "Benefits", Url = "/transactions/benefit_transaction", ScreenCode = "01001", Order = 22 },
+        new StScreenSub { Id = 23, ScreenCatId = 4, Screen_sub_title_ar = "السلف", Screen_sub_title_en = "Loans", Url = "/transactions/loan_transaction", ScreenCode = "01001", Order = 23 },
+        new StScreenSub { Id = 24, ScreenCatId = 4, Screen_sub_title_ar = "البدلات", Screen_sub_title_en = "Allowances Transactions", Url = "/transactions/allowance_transaction", ScreenCode = "01001", Order = 24 },
+        new StScreenSub { Id = 25, ScreenCatId = 4, Screen_sub_title_ar = "الاجازات", Screen_sub_title_en = "Vacations Transactions", Url = "/transactions/vacation_transaction", ScreenCode = "01001", Order = 25 },
+        new StScreenSub { Id = 26, ScreenCatId = 4, Screen_sub_title_ar = "حساب الرواتب", Screen_sub_title_en = "Salary Calculator", Url = "/transactions/salary_calculator_transaction", ScreenCode = "01001", Order = 26 },
+        new StScreenSub { Id = 27, ScreenCatId = 4, Screen_sub_title_ar = "الصرف", Screen_sub_title_en = "Disbursement", Url = "/transactions/disbursement_transaction", ScreenCode = "01001", Order = 27 },
+        new StScreenSub { Id = 28, ScreenCatId = 4, Screen_sub_title_ar = "زيادة المرتبات", Screen_sub_title_en = "Salary Increase", Url = "/transactions/salary_increase", ScreenCode = "01001", Order = 28 },
+        new StScreenSub { Id = 29, ScreenCatId = 4, Screen_sub_title_ar = "العهد العينية", Screen_sub_title_en = "Covenants", Url = "/transactions/covenant_transaction", ScreenCode = "01001", Order = 29 },
 
-        new StScreenSub { Id = 30, ScreenCatId = 2, Screen_sub_title_ar = "الدوام", Screen_sub_title_en = "Shifts", Url = "/codes/shift", ScreenCode = "01001"  , Order = 30 }
+        new StScreenSub { Id = 30, ScreenCatId = 2, Screen_sub_title_ar = "الدوام", Screen_sub_title_en = "Shifts", Url = "/codes/shift", ScreenCode = "01001", Order = 30 }
 
 
 
@@ -351,36 +348,36 @@ public static class ModelBuilderExtensions
 
 
         modelBuilder.Entity<TitlePermission>().HasData(
-            new TitlePermission { Id = 1, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 1 },
-            new TitlePermission { Id = 2, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 2 },
-            new TitlePermission { Id = 3, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 3 },
-            new TitlePermission { Id = 4, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 4 },
-            new TitlePermission { Id = 5, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 5 },
-            new TitlePermission { Id = 6, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 6 },
-            new TitlePermission { Id = 7, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 7 },
-            new TitlePermission { Id = 8, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 8 },
-            new TitlePermission { Id = 9, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 9 },
-            new TitlePermission { Id = 10, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 10 },
-            new TitlePermission { Id = 11, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 11 },
-            new TitlePermission { Id = 12, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 12 },
-            new TitlePermission { Id = 13, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 13 },
-            new TitlePermission { Id = 14, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 14 },
-            new TitlePermission { Id = 15, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 15 },
-            new TitlePermission { Id = 16, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 16 },
-            new TitlePermission { Id = 17, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 17 },
-            new TitlePermission { Id = 18, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 18 },
-            new TitlePermission { Id = 19, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 19 },
-            new TitlePermission { Id = 20, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 20 },
-            new TitlePermission { Id = 21, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 21 },
-            new TitlePermission { Id = 22, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 22 },
-            new TitlePermission { Id = 23, TitleId = 1, Permissions ="1,2,3,4,5"  , SubScreenId = 23 },
-            new TitlePermission { Id = 24, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 24 },
-            new TitlePermission { Id = 25, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 25 },
-            new TitlePermission { Id = 26, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 26 },
-            new TitlePermission { Id = 27, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 27 },
-            new TitlePermission { Id = 28, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 28 },
-            new TitlePermission { Id = 29, TitleId = 1, Permissions ="1,2,3,4,5" , SubScreenId = 29 },
-            new TitlePermission { Id = 30, TitleId = 2, Permissions ="1,2,3,4,5" , SubScreenId = 30 },
+            new TitlePermission { Id = 1, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 1 },
+            new TitlePermission { Id = 2, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 2 },
+            new TitlePermission { Id = 3, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 3 },
+            new TitlePermission { Id = 4, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 4 },
+            new TitlePermission { Id = 5, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 5 },
+            new TitlePermission { Id = 6, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 6 },
+            new TitlePermission { Id = 7, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 7 },
+            new TitlePermission { Id = 8, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 8 },
+            new TitlePermission { Id = 9, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 9 },
+            new TitlePermission { Id = 10, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 10 },
+            new TitlePermission { Id = 11, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 11 },
+            new TitlePermission { Id = 12, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 12 },
+            new TitlePermission { Id = 13, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 13 },
+            new TitlePermission { Id = 14, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 14 },
+            new TitlePermission { Id = 15, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 15 },
+            new TitlePermission { Id = 16, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 16 },
+            new TitlePermission { Id = 17, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 17 },
+            new TitlePermission { Id = 18, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 18 },
+            new TitlePermission { Id = 19, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 19 },
+            new TitlePermission { Id = 20, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 20 },
+            new TitlePermission { Id = 21, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 21 },
+            new TitlePermission { Id = 22, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 22 },
+            new TitlePermission { Id = 23, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 23 },
+            new TitlePermission { Id = 24, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 24 },
+            new TitlePermission { Id = 25, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 25 },
+            new TitlePermission { Id = 26, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 26 },
+            new TitlePermission { Id = 27, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 27 },
+            new TitlePermission { Id = 28, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 28 },
+            new TitlePermission { Id = 29, TitleId = 1, Permissions = "1,2,3,4,5", SubScreenId = 29 },
+            new TitlePermission { Id = 30, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 30 },
             new TitlePermission { Id = 31, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 1 },
             new TitlePermission { Id = 32, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 2 },
             new TitlePermission { Id = 33, TitleId = 2, Permissions = "1,2,3,4,5", SubScreenId = 3 },
@@ -414,7 +411,7 @@ public static class ModelBuilderExtensions
 
             );
 
-      
+
 
         modelBuilder.Entity<HrVacationType>()
             .HasData(
@@ -593,16 +590,16 @@ public static class ModelBuilderExtensions
             new HrDepartment { Id = 5, NameEn = "ASP Dep", NameAr = "ASP قسم ال", ManagementId = 4, IsDeleted = false, IsActive = true }
             );
         modelBuilder.Entity<HrShift>().HasData(
-            new HrShift { Id = 1,Name_ar = "شيفت مسائى",Name_en = "evening shifts",IsDeleted = false,IsActive = true} 
+            new HrShift { Id = 1, Name_ar = "شيفت مسائى", Name_en = "evening shifts", IsDeleted = false, IsActive = true }
             );
         modelBuilder.Entity<HrQualification>().HasData(
-            new HrQualification { Id = 1,NameAr = "بكالريوس حاسبات ومعلومات",NameEn = "Bachelor's degree in computers and information", IsDeleted = false,IsActive = true} 
+            new HrQualification { Id = 1, NameAr = "بكالريوس حاسبات ومعلومات", NameEn = "Bachelor's degree in computers and information", IsDeleted = false, IsActive = true }
             );
         modelBuilder.Entity<HrVacation>().HasData(
-           new HrVacation { Id = 1, NameAr = "اجازة", NameEn = "Vacation",VacationTypeId = 1,ApplyAfterMonth = 1,TotalBalance = 3000,CanTransfer = true, IsDeleted = false, IsActive = true }
-           ); 
+           new HrVacation { Id = 1, NameAr = "اجازة", NameEn = "Vacation", VacationTypeId = 1, ApplyAfterMonth = 1, TotalBalance = 3000, CanTransfer = true, IsDeleted = false, IsActive = true }
+           );
         modelBuilder.Entity<HrJob>().HasData(
-           new HrJob { Id = 1, NameAr = "وظيفة", NameEn = "job",HasAdditionalTime = false,HasNeedLicense = false, IsDeleted = false, IsActive = true }
+           new HrJob { Id = 1, NameAr = "وظيفة", NameEn = "job", HasAdditionalTime = false, HasNeedLicense = false, IsDeleted = false, IsActive = true }
            );
         modelBuilder.Entity<HrEmployee>().HasData(
                new HrEmployee
@@ -617,7 +614,7 @@ public static class ModelBuilderExtensions
                    FamilyNameAr = "السعود",
                    FamilyNameEn = "Al-Saud",
                    AccommodationAllowance = 1500.00,
-                   MaritalStatusId = 2, 
+                   MaritalStatusId = 2,
                    Address = "Riyadh, Saudi Arabia",
                    FixedSalary = 8000.00,
                    HiringDate = new DateOnly(2020, 01, 01),
@@ -626,26 +623,26 @@ public static class ModelBuilderExtensions
                    TotalSalary = 9500.00,
                    GenderId = 1,
                    BirthDate = new DateOnly(1990, 05, 20),
-                   ReligionId = 1, 
+                   ReligionId = 1,
                    Phone = "0551234567",
                    Email = "ahmed@example.com",
                    NationalId = "1234567890",
                    JobNumber = "E1234",
-                   SalaryPaymentWayId = 1, 
-                   UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1", 
+                   SalaryPaymentWayId = 1,
+                   UserId = "b74ddd14-6340-4840-95c2-db12554843e5basb1",
                    ChildrenNumber = 2,
                    ShiftId = 1,
-                   CompanyId = 3, 
+                   CompanyId = 3,
                    FingerPrintCode = "FP1234",
                    EmployeeImage = "image.png",
                    EmployeeImageExtension = ".png",
-                   ManagementId = 4, 
+                   ManagementId = 4,
                    DepartmentId = 5,
-                   NationalityId = 1, 
-                   QualificationId = 1, 
-                   VacationId = 1, 
-                   JobId = 1, 
-                   EmployeeTypeId = 1, 
+                   NationalityId = 1,
+                   QualificationId = 1,
+                   VacationId = 1,
+                   JobId = 1,
+                   EmployeeTypeId = 1,
                    AccountNo = 1234567890,
                    Note = "No notes",
                }

@@ -12,12 +12,7 @@ namespace Kader_System.Domain.DTOs.Request.Setting
         public IEnumerable<GetAllStMainScreen> getAllStMainScreens { get; set; }
         public List<Dictionary<string, GetUserPermission>>?  myPermissions { get; set; }
     }
-    public class MyPermission
-    {
-     
-        public Dictionary<string, IEnumerable<GetUserPermission>> GetUserPermission {  get; set; }
-
-    }
+   
     public class GetAllStMainScreen
     {
         public int Id { get; set; }

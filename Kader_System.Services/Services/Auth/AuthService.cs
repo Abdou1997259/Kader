@@ -4,11 +4,8 @@ using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.Auth;
 using Kader_System.Services.IServices.AppServices;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using System.Transactions;
-using static Kader_System.Domain.Constants.SD.ApiRoutes;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -44,6 +41,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     {
         string err = _sharLocalizer[Localization.Error];
         var normalizedUserName = _userManager.NormalizeName(model.UserName);
+        var test = _db.Database.GetConnectionString();
         var usernormalize = await _userManager.Users.SingleOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName);
         var user = await _userManager.FindByNameAsync(model.UserName);
         if (user == null)
@@ -143,6 +141,22 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Msg = resultMsg
             };
         }
+        var companyList = await _unitOfWork.Companies.GetAllAsync();
+        var validCompanyIds = companyList.Select(c => c.Id).ToHashSet();
+
+        if (!model.company_id.All(id => validCompanyIds.Contains(id.Value)))
+        {
+            var msg = _sharLocalizer[Localization.CurrentIsNotExitedInTitle];
+            return new Response<UpdateUserRequest>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+        }
+
+        model.current_title ??= model.title_id.FirstOrDefault();
+        model.current_company ??= model.company_id.FirstOrDefault();
         string err = _sharLocalizer[Localization.Error];
         var obj = await _userManager.FindByIdAsync(id);
 
@@ -165,7 +179,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
         obj.PhoneNumber = model.phone;
         obj.UserName = model.user_name;
-        foreach (var title in model.title_id) {
+        foreach (var title in model.title_id)
+        {
             // Manage user permissions
             var existingUserPermissions = await _unitOfWork.UserPermssionRepositroy
                 .GetSpecificSelectTrackingAsync(x => x.TitleId == title && x.UserId == obj.Id, x => x);
@@ -181,7 +196,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                     x => x.TitleId == title,
                     select: x => new UserPermission
                     {
-                        TitleId = title,
+                        TitleId = title.Value,
                         UserId = obj.Id,
                         SubScreenId = x.SubScreenId,
                         Permission = x.Permissions
@@ -199,13 +214,15 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         obj.FullName = model.full_name;
         obj.Email = model.email;
         obj.FinancialYear = model.financial_year;
-        obj.CompanyId = model.company_id.Concater();
+
         obj.CompanyYearId = model.financial_year;
-        obj.TitleId = model.title_id.Concater();
+
         obj.JobId = model.job_title;
         obj.IsActive = model.is_active;
-        obj.CurrentTitleId = model.current_title ?? 1;
-        obj.CurrentCompanyId = model.current_company ?? 3;
+        obj.CompanyId = model.company_id.NulalbleConcater();
+        obj.TitleId = model.title_id.NulalbleConcater();
+        obj.CurrentTitleId = model.current_title.Value;
+        obj.CurrentCompanyId = model.current_company.Value;
         _unitOfWork.Users.Update(obj);
         await _unitOfWork.CompleteAsync();
 
@@ -717,7 +734,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         }
     }
 
-    private async Task AddPermissionByTitleToUser(List<int?> titles,string userId)
+    private async Task AddPermissionByTitleToUser(List<int?> titles, string userId)
     {
         foreach (var title in titles)
         {
@@ -752,6 +769,17 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     public async Task<Response<string>> AssignPermissionForUser(string id, bool all, int? titleId, IEnumerable<Permissions> model, string lang)
     {
+        var user = (await _unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == id));
+        if (user is null)
+        {
+            var msg = _sharLocalizer[Localization.CannotBeFound, _sharLocalizer[Localization.User]];
+            return new Response<string>
+            {
+                Msg = msg,
+                Check = false,
+                Data = "",
+            };
+        }
         if (titleId == 0 || titleId == null)
         {
             var msg = _sharLocalizer[Localization.TitlePermisson];
@@ -1005,7 +1033,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 : jobs.FirstOrDefault(j => j.Id == x.JobId)?.NameEn,
             Phone = x.PhoneNumber,
 
-            UserName = x.FullName,
+            UserName = x.UserName,
+            FullName = x.FullName,
             Image = Path.Combine(folderPath, x.ImagePath ?? "")
 
 
@@ -1280,7 +1309,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
         Kader_System.Domain.Models.Title title = null;
         List<int> inttitiles = user.TitleId.Splitter();
-        
+
         var containedTitles = new HashSet<string>((await _unitOfWork.UserPermssionRepositroy.GetSpecificSelectAsync(x => inttitiles.Contains(x.TitleId) && x.UserId == userId, select: x => x.TitleId.ToString())));
         var allTitles = await _unitOfWork.Titles.GetSpecificSelectAsQuerableAsync(x => containedTitles.Contains(x.Id.ToString()), x => new { Id = x.Id, TitleNameAr = x.TitleNameAr, TitleNameEn = x.TitleNameEn });
 
@@ -1308,8 +1337,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var currentCompany = user.CurrentCompanyId;
         var currentCompanyName = Localization.Arabic == lang ? cop?.NameAr ?? string.Empty : cop?.NameEn ?? string.Empty;
 
-  
-    
+
+
 
         var screensResult = screens?.DataList;
         var aptoken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
@@ -1345,7 +1374,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 CurrentYear = 2033,
                 Years = 2023,
                 CurrentCompanyName = currentCompanyName,
-                Mypermissions=permissionScreenData.myPermissions,
+                Mypermissions = permissionScreenData.myPermissions,
                 Screens = permissionScreenData.getAllStMainScreens
             }
         };
@@ -1371,15 +1400,15 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Check = false
             };
         }
-       
 
 
 
- 
-      
+
+
+
         user.CurrentTitleId = title;
         _unitOfWork.Users.Update(user);
-    
+
         await _unitOfWork.CompleteAsync();
         return new()
         {

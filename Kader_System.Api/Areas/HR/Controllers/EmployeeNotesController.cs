@@ -1,7 +1,8 @@
 ﻿
 
 using Kader_System.Api.Helpers;
-using Kader_System.Domain.DTOs.Request.HR.Vacation;
+using Kader_System.Domain.Constants.Enums;
+
 using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Api.Areas.HR.Controllers
@@ -23,7 +24,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [HttpGet(ApiRoutes.EmployeeNotes.GetAllEmployeeNotes)]
         [Permission(Permission.View, 12)]
         public async Task<IActionResult> GetAllEmployeeNotes([FromQuery] GetAllEmployeeNotesRequest model) =>
-            Ok(await _service.GetAllEmployeeNotesAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
+            Ok(await _service.GetAllEmployeeNotesAsync(requestService.GetRequestHeaderLanguage, Modules.Auth, HrDirectoryTypes.User, model, requestService.GetCurrentHost));
 
 
         [HttpGet(ApiRoutes.EmployeeNotes.GetEmployeeNotesById)]

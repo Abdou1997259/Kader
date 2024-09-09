@@ -4,6 +4,7 @@ using Kader_System.Domain.DTOs.Response.EmployeesRequests;
 using Kader_System.Services.IServices.AppServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 
 namespace Kader_System.Services.Services.HR
 {
@@ -32,7 +33,7 @@ namespace Kader_System.Services.Services.HR
                 Data = model
             };
         }
-        public async Task<Response<GetAllEmployeeNotesResponse>> GetAllEmployeeNotesAsync(string lang, GetAllEmployeeNotesRequest model, string host)
+        public async Task<Response<GetAllEmployeeNotesResponse>> GetAllEmployeeNotesAsync(string lang,string moduleName, HrDirectoryTypes hrDirectory, GetAllEmployeeNotesRequest model, string host)
         {
             Expression<Func<HrEmployeeNotes, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
                                                                  x.EmployeeId == model.EmployeeId &&
@@ -45,9 +46,13 @@ namespace Kader_System.Services.Services.HR
                 page = 1;
             else
                 page = model.PageNumber;
+           
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber }).ToList();
             var db = _context.Database.GetDbConnection().Database;
+
+            var pathFolder = hrDirectory.GetModuleNameWithType(moduleName);
+
             var result = new GetAllEmployeeNotesResponse
             {
                 TotalRecords = totalRecords,
@@ -64,7 +69,7 @@ namespace Kader_System.Services.Services.HR
                                    notes = x.Notes,
                                    AddedBy = user.FullName,
                                    added_date = DateOnly.FromDateTime(x.Add_date.Value),
-                                   user_image_url = fileServer.GetFilePath(Modules.Auth, user.ImagePath)
+                                   user_image_url = Path.Combine(pathFolder, user.ImagePath ?? "")
                                }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
