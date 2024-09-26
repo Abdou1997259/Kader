@@ -1,15 +1,13 @@
 ﻿using Kader_System.DataAccess.DesginPatterns;
-using Kader_System.Domain.DTOs.Request.Auth;
 using Kader_System.Domain.DTOs.Request.Setting;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.DataAccess.Repositories
 {
     public class StoredProcuduresRepo(KaderDbContext db) : IStoredProcuduresRepo
     {
         private readonly KaderDbContext _db = db;
-        
+
         public async Task<IEnumerable<SpCacluateSalary>> SpCalculateSalary(DateOnly startCalculationDate, int days, string listEmployeesString)
         {
             // Calculate the end of the month based on startCalculationDate
@@ -35,7 +33,7 @@ namespace Kader_System.DataAccess.Repositories
 
             // Execute stored procedure and return result
             var result = await _db.SpCacluateSalariesModel
-                .FromSqlInterpolated($"exec Sp_Cacluate_Salary {startOfMonth}, {endCalculationDate}, {empsParameter}")
+                .FromSqlInterpolated($"exec sp_calculate_salary {startOfMonth}, {endCalculationDate}, {empsParameter}")
                 .ToListAsync();
 
             return result;
@@ -58,7 +56,7 @@ namespace Kader_System.DataAccess.Repositories
                 SqlDbType = SqlDbType.VarChar,
                 Value = listEmployeesString
             };
-            var result = await _db.SpCaclauateSalaryDetailsModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_Details {startOfMonth}, {endCalculationDate}, {empsParameter}").ToListAsync();
+            var result = await _db.SpCaclauateSalaryDetailsModel.FromSqlInterpolated($"exec sp_calculate_salary_details {startOfMonth}, {endCalculationDate}, {empsParameter}").ToListAsync();
             return null;
 
         }
@@ -75,7 +73,7 @@ namespace Kader_System.DataAccess.Repositories
                 SqlDbType = SqlDbType.VarChar,
                 Value = listEmployeesString
             };
-            var result = await _db.SpCaclauateSalaryDetailsModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_Details {startCalculationDate}, {endCalculationDate}, {empsParameter}").ToListAsync();
+            var result = await _db.SpCaclauateSalaryDetailsModel.FromSqlInterpolated($"exec sp_calculate_salary_details {startCalculationDate}, {endCalculationDate}, {empsParameter}").ToListAsync();
 
 
 
@@ -84,7 +82,7 @@ namespace Kader_System.DataAccess.Repositories
             return result;
 
         }
-        public async Task<IEnumerable<SpCaclauateSalaryDetailedTrans>> SpCalculatedSalaryDetailedTrans(DateOnly startCalculationDate, DateOnly endCalculationDate, string listEmployeesString)
+        public async Task<IEnumerable<SpCaclauateSalaryDetailedTrans>> SpCalculatedSalaryDetailedInfo(DateOnly startCalculationDate, DateOnly endCalculationDate, string listEmployeesString)
         {
 
             var empsParameter = new SqlParameter
@@ -96,14 +94,14 @@ namespace Kader_System.DataAccess.Repositories
             IEnumerable<SpCaclauateSalaryDetailedTrans> result = null;
 
 
-            result = await _db.SpCaclauateSalaryDetailedTransModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_DetailedTrans {startCalculationDate}, {endCalculationDate}, {empsParameter}").ToListAsync();
+            result = await _db.SpCaclauateSalaryDetailedTransModel.FromSqlInterpolated($"exec sp_calculate_salary_detailed_info {startCalculationDate}, {endCalculationDate}, {empsParameter}").ToListAsync();
 
 
 
             return result;
 
         }
-        public async Task<IEnumerable<SpCaclauateSalaryDetailedTrans>> SpCalculatedSalaryDetailedTrans(DateOnly startCalculationDate, int days, string listEmployeesString)
+        public async Task<IEnumerable<SpCaclauateSalaryDetailedTrans>> SpCalculatedSalaryDetailedInfo(DateOnly startCalculationDate, int days, string listEmployeesString)
         {
 
             int daysInMonth = DateTime.DaysInMonth(startCalculationDate.Year, startCalculationDate.Month);
@@ -125,50 +123,50 @@ namespace Kader_System.DataAccess.Repositories
 
 
 
-            var result = await _db.SpCaclauateSalaryDetailedTransModel.FromSqlInterpolated($"exec Sp_Cacluate_Salary_DetailedTrans {startOfMonth}, {endCalculationDate}, {empsParameter}").ToListAsync();
+            var result = await _db.SpCaclauateSalaryDetailedTransModel.FromSqlInterpolated($"exec sp_calculate_salary_detailed_info {startOfMonth}, {endCalculationDate}, {empsParameter}").ToListAsync();
 
 
 
             return result;
 
         }
-        public async Task<GetMyProfilePermissionAndScreen> SpGetScreen(string userId,int titleId,string lang)
+        public async Task<GetMyProfilePermissionAndScreen> SpGetScreen(string userId, int titleId, string lang)
         {
-          
-          var userlogincontext=  UserPermissionFactory.CreatePermissionsUserStrategy(_db,userId,titleId,lang);
-            var rawData =await userlogincontext.GetPermissions();
+
+            var userlogincontext = UserPermissionFactory.CreatePermissionsUserStrategy(_db, userId, titleId, lang);
+            var rawData = await userlogincontext.GetPermissions();
 
             rawData = rawData.Distinct().ToList();
-                var data = rawData
-                        .GroupBy(s => s.main_id)
-                        .Select(x => new GetAllStMainScreen
+            var data = rawData
+                    .GroupBy(s => s.main_id)
+                    .Select(x => new GetAllStMainScreen
+                    {
+                        Id = x.Key,
+                        main_title = x.FirstOrDefault()?.main_title,
+                        main_image = x.FirstOrDefault()?.main_image,
+                        cats = x.GroupBy(c => c.cat_id).Select(cg => new GetAllStMainScreenCat
                         {
-                            Id = x.Key,
-                            main_title = x.FirstOrDefault()?.main_title,
+                            Id = cg.FirstOrDefault().cat_id,
+                            main_id = cg.Key,
+                            title = cg.FirstOrDefault()?.cat_title,
                             main_image = x.FirstOrDefault()?.main_image,
-                            cats = x.GroupBy(c => c.cat_id).Select(cg => new GetAllStMainScreenCat
+                            subs = cg.Select(s => new GetAllStScreenSub
                             {
-                                Id = cg.FirstOrDefault().cat_id,
-                                main_id = cg.Key,
-                                title = cg.FirstOrDefault()?.cat_title,
-                                main_image = x.FirstOrDefault()?.main_image,
-                                subs = cg.Select(s => new GetAllStScreenSub
-                                {
-                                    sub_title = s.sub_title,
-                                    main_id = s.main_id,
-                                    sub_image = Path.Combine(Modules.Setting, s.main_image == null ? "" : s.main_image),
-                                    screen_code = s.screen_code,
-                                    Sub_Id = s.sub_id,
-                                    Screen_CatId = s.cat_id,
-                                    actions = s.actions,
-                                    cat_Title = s.cat_title,
-                                    permissions = s.permission,
-                                    main_title = s.main_title,
-                                    url = s.url,
-                                    
-                                }).ToList()
+                                sub_title = s.sub_title,
+                                main_id = s.main_id,
+                                sub_image = Path.Combine(Modules.Setting, s.main_image == null ? "" : s.main_image),
+                                screen_code = s.screen_code,
+                                Sub_Id = s.sub_id,
+                                Screen_CatId = s.cat_id,
+                                actions = s.actions,
+                                cat_Title = s.cat_title,
+                                permissions = s.permission,
+                                main_title = s.main_title,
+                                url = s.url,
+
                             }).ToList()
-                        }).ToList();
+                        }).ToList()
+                    }).ToList();
 
 
 
@@ -199,11 +197,11 @@ namespace Kader_System.DataAccess.Repositories
 
 
             }).ToList();
-   
 
 
 
-        
+
+
 
             return new GetMyProfilePermissionAndScreen
             {

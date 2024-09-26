@@ -14,7 +14,7 @@ public class SpCacluateSalary
     public double AccommodationAllowance { get; set; }
 
     public double CalculatedSalary { get; set; }
-    public double TotalSalary { get; set; }
+    public double FixedSalary { get; set; }
     public override bool Equals(object? obj)
     {
         if (obj == null || !(obj is SpCacluateSalary))
@@ -29,7 +29,7 @@ public class SpCacluateSalary
                this.FullNameEn == other.FullNameEn &&
                this.AccommodationAllowance == other.AccommodationAllowance &&
                this.CalculatedSalary == other.CalculatedSalary &&
-               this.TotalSalary == other.TotalSalary;
+               this.FixedSalary == other.FixedSalary;
     }
     public override int GetHashCode()
     {
@@ -42,7 +42,7 @@ public class SpCacluateSalary
             hash = hash * 23 + (FullNameEn?.GetHashCode() ?? 0);
             hash = hash * 23 + AccommodationAllowance.GetHashCode();
             hash = hash * 23 + CalculatedSalary.GetHashCode();
-            hash = hash * 23 + TotalSalary.GetHashCode();
+            hash = hash * 23 + FixedSalary.GetHashCode();
 
             return hash;
         }
