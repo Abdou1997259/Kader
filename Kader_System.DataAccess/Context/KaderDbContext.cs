@@ -5,7 +5,7 @@ using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.Models.EmployeeRequests;
 using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
-using Microsoft.EntityFrameworkCore;
+using Kader_System.Domain.Models.Interviews;
 
 namespace Kader_System.DataAccesss.Context;
 
@@ -82,6 +82,14 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrRelegion> Relegions { get; set; }
     public DbSet<HrMaritalStatus> MaritalStatus { get; set; }
     public DbSet<MainScreenTree> MainScreenTrees { get; set; }
+    public DbSet<Applicant> Applicants { get; set; }
+    public DbSet<Education> Educations { get; set; }
+    public DbSet<Experience> Experiences { get; set; }
+    public DbSet<CvFile> CvFiles { get; set; }
+    public DbSet<Faculty> Faculties { get; set; }
+    public DbSet<University> Universities { get; set; }
+
+
 
     #region SP
     public DbSet<SPUserPermissionsBySubScreen> SPUserPermissionsBySubScreens { get; set; }
@@ -232,6 +240,10 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
 
         modelBuilder.Entity<StScreenSub>().HasMany(x => x.ListOfActions)
             .WithOne(x => x.ScreenSub);
+
+
+
+
         #endregion
 
         #region SubScreen

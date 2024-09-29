@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.Constants.Enums;
+using Kader_System.Domain.Models.Interviews;
 namespace Kader_System.DataAccess.Seeding;
 
 public static class ModelBuilderExtensions
@@ -647,6 +648,23 @@ public static class ModelBuilderExtensions
                    Note = "No notes",
                }
            );
+        modelBuilder.Entity<University>().HasData(
+            new University { Id = 1, NameAr = "جامعة عين شمس", NameEn = "Ain Shams University" },
+            new University { Id = 2, NameAr = "جامعة اسكندرية", NameEn = "Cairo University" },
+            new University { Id = 3, NameAr = "جامعة بنها", NameEn = "Banha University" },
+            new University { Id = 4, NameAr = "جامعة المنوفية", NameEn = "Manifouia University" },
+            new University { Id = 5, NameAr = "جامعة اسيوط", NameEn = "Asyuit University" }
+
+            );
+        modelBuilder.Entity<Faculty>().HasData(
+            new Faculty { Id = 1, NameAr = "حاسبات ومعلومات ", NameEn = "Faculty Of University and Informatics", UniversityId = 1 },
+            new Faculty { Id = 2, NameAr = "تجارة", NameEn = "Commercial Faculty", UniversityId = 1 },
+            new Faculty { Id = 3, NameAr = "حقوق", NameEn = "Faculty Of law", UniversityId = 1 },
+            new Faculty { Id = 4, NameAr = "أداب", NameEn = "Faculty of Arts", UniversityId = 1 },
+            new Faculty { Id = 5, NameAr = "طب", NameEn = "Faculty of Medicine", UniversityId = 1 }
+            );
+
+
     }
 
     public static void AddQueryFilterToAllEntitiesAssignableFrom<T>(this ModelBuilder modelBuilder,

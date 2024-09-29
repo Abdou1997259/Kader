@@ -1,11 +1,5 @@
-﻿using Kader_System.DataAccesss.Context;
-using Kader_System.Domain.Constants.Enums;
+﻿using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using static Dapper.SqlMapper;
 
 namespace Kader_System.DataAccess.Repositories;
 
@@ -21,7 +15,7 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     public async Task<T> GetByIdWithNoTrackingAsync(int id)
     {
         return await dbSet.AsNoTracking().FirstOrDefaultAsync(entity => EF.Property<int>(entity, "Id") == id);
-    } 
+    }
     public async Task<List<T>> GetListByIdWithNoTrackingAsync(int id)
     {
         return await dbSet.AsNoTracking().Where(entity => EF.Property<int>(entity, "Id") == id).ToListAsync();
@@ -183,7 +177,7 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
         return await query.Where(predicate).ToListAsync();
     }
 
-    public async Task<T> AddAsync(T entity)
+    public virtual async Task<T> AddAsync(T entity)
     {
         await dbSet.AddAsync(entity);
         return entity;
