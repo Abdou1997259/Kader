@@ -21,13 +21,15 @@
         public decimal ExpectedSalary { get; set; }
         [Required]
         public int Gender { get; set; }
+        public float? Rate { get; set; }
+        public ApplicantStates State { get; set; } = ApplicantStates.Applied;
 
         public string? ImagePath { get; set; }
-
+        public string CvFilesPath { get; set; } = default!;
         public ICollection<Education> Educations { get; set; } = new HashSet<Education>();
 
         public ICollection<Experience> Experiences { get; set; } = new HashSet<Experience>();
-        public ICollection<CvFile> CvFiles { get; set; } = new HashSet<CvFile>();
+
 
 
 

@@ -4,35 +4,35 @@
     {
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "first_name_ar")]
-        public  string first_name_ar { get; set; }
+        public string first_name_ar { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "first_name_en")]
-        public  string first_name_en { get; set; }
+        public string first_name_en { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "father_name_ar")]
-        public  string father_name_ar { get; set; }
+        public string father_name_ar { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "father_name_en")]
-        public  string father_name_en { get; set; }
+        public string father_name_en { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "grand_father_name_ar")]
-        public  string grand_father_name_ar { get; set; }
+        public string grand_father_name_ar { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "grand_father_name_en")]
-        public  string grand_father_name_en { get; set; }
+        public string grand_father_name_en { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "family_name_ar")]
-        public  string family_name_ar { get; set; }
+        public string family_name_ar { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "family_name_en")]
-        public  string family_name_en { get; set; }
-        
+        public string family_name_en { get; set; }
+
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "marital_status_id")]
         public int marital_status_id { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "address")]
-        public  string address { get; set; }
+        public string address { get; set; }
         [JsonProperty(PropertyName = "national_id")]
         public string national_id { get; set; }
         [JsonProperty(PropertyName = "job_number")]
@@ -40,30 +40,30 @@
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "hiring_date")]
-        public  DateOnly hiring_date { get; set; }
+        public DateOnly hiring_date { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "immediately_date")]
-        public  DateOnly immediately_date { get; set; }
+        public DateOnly immediately_date { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "is_active")]
-        public  bool is_active { get; set; }
+        public bool is_active { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "gender_id")]
         public int gender_id { get; set; }
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "birth_date")]
-        public  DateOnly birth_date { get; set; }
+        public DateOnly birth_date { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "religion_id")]
         public int religion_id { get; set; }
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "phone")]
-        public  string phone { get; set; }
+        public string phone { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "email")]
-        public  string email { get; set; }
+        public string email { get; set; }
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "salary_payment_way_id")]
@@ -71,14 +71,14 @@
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "username")]
-        public  string username { get; set; }
+        public string username { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "password")]
-        public  string password { get; set; }
+        public string password { get; set; }
         [DefaultValue(0)]
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "children_number")]
-        public  int children_number { get; set; }
+        public int children_number { get; set; }
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "shift_id")]
@@ -147,9 +147,9 @@
          FileExtensionValidation(FileSettings.AllowedExtension)]
         public IFormFileCollection? employee_attachments { get; set; } = default!;
 
-     
+
 
     }
 
- 
+
 }

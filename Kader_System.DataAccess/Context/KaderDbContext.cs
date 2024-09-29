@@ -85,7 +85,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<Applicant> Applicants { get; set; }
     public DbSet<Education> Educations { get; set; }
     public DbSet<Experience> Experiences { get; set; }
-    public DbSet<CvFile> CvFiles { get; set; }
+
     public DbSet<Faculty> Faculties { get; set; }
     public DbSet<University> Universities { get; set; }
 
@@ -242,8 +242,8 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .WithOne(x => x.ScreenSub);
 
 
-
-
+        modelBuilder.Entity<Applicant>().Property(x => x.State).HasConversion(x => x.ToString(), d => (ApplicantStates)Enum.Parse(typeof(ApplicantStates), d));
+        modelBuilder.Entity<Applicant>().HasIndex(x => new { x.Email, x.Phone }).IsUnique();
         #endregion
 
         #region SubScreen

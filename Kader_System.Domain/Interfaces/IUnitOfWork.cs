@@ -1,4 +1,5 @@
-﻿using Kader_System.Domain.Interfaces.EmployeeRequest;
+﻿using Kader_System.Domain.Interfaces.EducationRepositories;
+using Kader_System.Domain.Interfaces.EmployeeRequest;
 using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
 using Kader_System.Domain.Interfaces.EmployeeRequest.Request;
 
@@ -10,11 +11,11 @@ public interface IUnitOfWork : IDisposable
     IDatabaseTransaction BeginTransaction();
     IDatabaseTransactionScope TransactionScope();
 
-    IUserPermssionRepositroy UserPermssionRepositroy { get; }   
+    IUserPermssionRepositroy UserPermssionRepositroy { get; }
     ITitlePermissionRepositroy TitlePermissionRepository { get; }
     ILoanRequestRepository LoanRequestRepository { get; }
     ITransLoanDetailsRepository TransLoanDetails { get; }
-    IResignationRequesteRepository ResignationRepository { get; }    
+    IResignationRequesteRepository ResignationRepository { get; }
     IAdvancedTypesRepository AdvancedTypesRepository { get; }
     IStoredProcuduresRepo StoredProcuduresRepo { get; }
     ITransLoanRepository LoanRepository { get; }
@@ -75,10 +76,14 @@ public interface IUnitOfWork : IDisposable
     IMaritalStatusRepository MaritalStatus { get; }
     IGenderRepository Genders { get; }
     IReligionRepository Religions { get; }
-    IPermessionStructureRepository PermessionStructure { get; } 
-    IActionsRepository ActionsRepo { get; } 
+    IPermessionStructureRepository PermessionStructure { get; }
+    IActionsRepository ActionsRepo { get; }
+    IApplicantRepository Applicant { get; }
+    IEducationRepository Education { get; }
+
+    IExperienceRepository Experience { get; }
     #region Employee_Requests_UOW
-    IEmployeeRequestsRepository EmployeeRequests { get; } 
+    IEmployeeRequestsRepository EmployeeRequests { get; }
     ILeavePermissionRequestRepository LeavePermissionRequest { get; }
     IDelayPermissionServiceRepository DelayPermission { get; }
     IVacationRequestRepository VacationRequests { get; }

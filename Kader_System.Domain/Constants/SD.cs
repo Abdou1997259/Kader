@@ -563,7 +563,7 @@ public static class SD
             public const string RestoreVacation = "Vacation/restore/{id}";
             public const string GetVacationById = "Vacation/getById/{id}";
             public const string DeleteVacation = "Vacation/delete/{id}";
-        } 
+        }
         public class EmployeeNotes
         {
             public const string ListOfEmployeeNotes = "EmployeeNotes/getListOfEmployeeNotes";
@@ -851,7 +851,7 @@ public static class SD
         public const string AttachmentsType = "Attachments type.";
         public const string FieldIsRequired = "The {0} is required";
         public const string BirthDate = "Birth date.";
-
+        public const string IsPhoneEmailUnique = "the phone and email is not unique";
         public const string NationalID = "National ID";
         public const string FieldIsEqual = "The {0} field length must be equal 14.";
         public const string ProfilePhoto = "Profile photo.";

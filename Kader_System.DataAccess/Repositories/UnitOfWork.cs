@@ -1,11 +1,12 @@
 ﻿using Kader_System.DataAccess.Repositories.EmployeeRequests;
 using Kader_System.DataAccess.Repositories.EmployeeRequests.PermessionRequests;
 using Kader_System.DataAccess.Repositories.EmployeeRequests.Requests;
+using Kader_System.DataAccess.Repositories.InterviewRepositories;
+using Kader_System.Domain.Interfaces.EducationRepositories;
 using Kader_System.Domain.Interfaces.EmployeeRequest;
 using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
 using Kader_System.Domain.Interfaces.EmployeeRequest.Request;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Data.SqlClient;
 
 namespace Kader_System.DataAccess.Repositories;
 
@@ -104,10 +105,15 @@ public class UnitOfWork : IUnitOfWork
 
     public IUserPermssionRepositroy UserPermssionRepositroy { get; private set; }
     #endregion
-    public IActionsRepository ActionsRepo  { get; private set; }
+    public IActionsRepository ActionsRepo { get; private set; }
     public string DatabaseName { get; set; }
 
     public IEmployeeNotesRepository EmployeeNotes { get; private set; }
+
+    public IApplicantRepository Applicant { get; private set; }
+
+    public IEducationRepository Education { get; private set; }
+    public IExperienceRepository Experience { get; private set; }
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
     {
@@ -182,9 +188,13 @@ public class UnitOfWork : IUnitOfWork
         SalaryIncreaseRequest = new SalaryIncreaseRequestRepository(_context);
         DelayPermission = new DelayPermissionRepository(_context);
         EmployeeRequests = new EmployeeRequestsRepository(_context);
-        PermessionStructure = new PermessionStructureRepository(_context);  
+        PermessionStructure = new PermessionStructureRepository(_context);
         ActionsRepo = new ActionsRepository(_context);
-        EmployeeNotes = new EmployeeNotesRepository(_context); 
+        EmployeeNotes = new EmployeeNotesRepository(_context);
+        Experience = new ExperienceRepository(_context);
+        Education = new EducationRepository(_context);
+
+        Applicant = new ApplicantRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>

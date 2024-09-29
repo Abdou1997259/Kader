@@ -249,6 +249,9 @@
   <data name="The password can't be less than 6." xml:space="preserve">
     <value>الباسورد لا يجب ان يقل عن 6 ارقام</value>
   </data>
+  <data name="the phone and email is not unique" xml:space="preserve">
+    <value>رقم التليفون و الاميل  ليس موحد</value>
+  </data>
   <data name="The {0} field length can not more than {1}" xml:space="preserve">
     <value>الحقل {0} لا يمكن ان يكون اكثر من  {1}</value>
   </data>
