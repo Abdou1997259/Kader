@@ -57,6 +57,7 @@ public static class SD
         public const string CompanyContracts = "Company Contracts";
         public const string CompanyLicesnses = "Company Licesnses";
         public const string Employees = "Employees";
+        public const string Interview = "Interview";
 
     }
     public static class SuperAdmin
@@ -554,6 +555,11 @@ public static class SD
             public const string GetJobById = "Job/getById/{id}";
             public const string DeleteJob = "Job/delete/{id}";
         }
+        public class ApplicantRoute
+        {
+            public const string ListOfApplicant = "Applicant/getListOfApplicant";
+            public const string CreateApplicant = "Applicant/create";
+        }
         public class Vacation
         {
             public const string ListOfVacations = "Vacation/getListOfVacations";
@@ -626,6 +632,7 @@ public static class SD
         public const string CurrentIsNotExitedInCompanys = "CurrentIsNotExitedInCompanys";
         public const string CurrentIsNotExitedInTitle = "CurrentIsNotExitedInTitle";
         public const string ScreenInAction = "ScreenInAction";
+        public const string Applicant = "Applicant";
         public const string ViewInclude = "ViewInclude";
         public const string Project = "Project";
         public const string Task = "Task";
@@ -678,9 +685,13 @@ public static class SD
         public const string Service = "Service";
         public const string ServicesCategory = "ServicesCategory";
         public const string Policy = "Policy";
+
+        public const string UniversityContainsFaculty = "UniversityContainsFaculty";
         public const string News = "News";
         public const string Updated = "Updated";
         public const string Deleted = "Deleted";
+        public const string Faculty = "Faculty";
+        public const string University = "University";
         public const string ApproveRejectDelte = "Cannot delete approve or reject request";
         public const string CurrentAndNewPasswordIsTheSame = "CurrentAndNewPasswordIsTheSame";
         public const string CurrentPasswordIsIncorrect = "CurrentPasswordIsIncorrect";
@@ -850,6 +861,7 @@ public static class SD
 
         public const string AttachmentsType = "Attachments type.";
         public const string FieldIsRequired = "The {0} is required";
+        public const string OneTwoValueAllowed = "Value not Allowed please insert 1 or 2";
         public const string BirthDate = "Birth date.";
         public const string IsPhoneEmailUnique = "the phone and email is not unique";
         public const string NationalID = "National ID";

@@ -1,6 +1,5 @@
 using Kader_System.Api.Helpers;
 using Kader_System.Api.Helpers.SwaggerHelper;
-using Kader_System.DataAccess.DbMiddlewares;
 using Kader_System.DataAccess.Models;
 using Kader_System.DataAccess.Repositories;
 using Kader_System.DataAccess.Repositories.EmployeeRequests;
@@ -24,6 +23,7 @@ using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
+using Kader_System.Services.IServices.InterviewServices;
 using Kader_System.Services.IServices.Trans;
 using Kader_System.Services.Services;
 using Kader_System.Services.Services.AppServices;
@@ -32,6 +32,7 @@ using Kader_System.Services.Services.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.Services.EmployeeRequests.Requests;
 using Kader_System.Services.Services.HR;
 using Kader_System.Services.Services.HTTP;
+using Kader_System.Services.Services.InterviewServices;
 using Kader_System.Services.Services.Setting;
 using Kader_System.Services.Services.Trans;
 using Microsoft.AspNetCore.Identity;
@@ -222,6 +223,12 @@ builder.Services.AddSwaggerGen(x =>
         Title = $"{Shared.KaderSystem} {Modules.EmployeeRequest}",
         Version = Modules.V1
     });
+    x.SwaggerDoc(Modules.Interview, new OpenApiInfo
+    {
+        Title = $"{Shared.KaderSystem} {Modules.Interview}",
+        Version = Modules.V1
+
+    });
     x.AddSecurityDefinition(Modules.Bearer, new OpenApiSecurityScheme
     {
         In = ParameterLocation.Header,
@@ -305,6 +312,7 @@ builder.Services.AddScoped<ITitlePermessionService, TitlePermessionService>();
 builder.Services.AddScoped<IGetAllScreensService, GetAllScreensService>();
 builder.Services.AddScoped<IHttpContextService, HttpContextService>();
 builder.Services.AddScoped<IEmployeeNotesServices, EmployeeNotesServices>();
+builder.Services.AddScoped<IApplicantServices, ApplicantServices>();
 #region Employee_Requests
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
 builder.Services.AddScoped<IVacationRequestService, VacationRequestService>();
@@ -391,6 +399,7 @@ app.UseSwaggerUI(x =>
     x.SwaggerEndpoint($"/swagger/{Modules.HR}/swagger.json", "HR_Management v1");
     x.SwaggerEndpoint($"/swagger/{Modules.Trans}/swagger.json", "Transaction_Management v1");
     x.SwaggerEndpoint($"/swagger/{Modules.EmployeeRequest}/swagger.json", "Employee_Request v1");
+    x.SwaggerEndpoint($"/swagger/{Modules.Interview}/swagger.json", "Interview");
 });
 //// Configure the HTTP request pipeline.
 //if (app.Environment.IsDevelopment() || app.Environment.IsProduction() || app.Environment.IsEnvironment(Shared.Local))
@@ -411,7 +420,7 @@ app.UseRequestLocalization(localizationOptions);
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 app.UseMiddleware<HeadersValidationMiddleware>();
 app.UseMiddleware<PathMiddleware>();
-app.UseMiddleware<ClientDatabaseMiddleware>();
+//app.UseMiddleware<ClientDatabaseMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

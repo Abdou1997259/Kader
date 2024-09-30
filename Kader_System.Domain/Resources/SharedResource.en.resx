@@ -120,6 +120,9 @@
   <data name="Allowance" xml:space="preserve">
     <value>Allowance</value>
   </data>
+  <data name="Applicant" xml:space="preserve">
+    <value>Applicant</value>
+  </data>
   <data name="Approved" xml:space="preserve">
     <value>Approved Sucessfully</value>
   </data>
@@ -170,6 +173,9 @@
   </data>
   <data name="Employee" xml:space="preserve">
     <value>Employee</value>
+  </data>
+  <data name="Faculty" xml:space="preserve">
+    <value>Faculty or Section</value>
   </data>
   <data name="FileHasNoDirectory" xml:space="preserve">
     <value>File Has No Directory or not Exited</value>
@@ -248,6 +254,12 @@
   </data>
   <data name="TitleUser" xml:space="preserve">
     <value> this title has already a user</value>
+  </data>
+  <data name="University" xml:space="preserve">
+    <value>University or Institue</value>
+  </data>
+  <data name="UniversityContainsFaculty" xml:space="preserve">
+    <value>this university or institue dosen't have this seciton or faculty.</value>
   </data>
   <data name="Updated" xml:space="preserve">
     <value>Updated successfully</value>

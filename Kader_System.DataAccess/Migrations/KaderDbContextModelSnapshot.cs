@@ -255,7 +255,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "16643c7f-599d-4cdd-b70b-b5c3b81c9078",
+                            ConcurrencyStamp = "b8c4d5da-bed3-4c07-8344-79932bf5e4e4",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -269,10 +269,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBlE/CHMOa/syoA23HjiwDyfTQoFpG+pmc1MFyanM8WiEpXECix89vshSLijmTOy2g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGd5fG4GS81oYlUgyVnJXZAuOPqhmTL621CtjIYdnavJFYTiK3V7CYMq/RaWMx5C8g==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4efc5847-2e0d-42f3-bdfb-de846c951fb1",
+                            SecurityStamp = "f039dac7-b98d-43f6-9acc-f85818208175",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -3364,6 +3364,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<decimal?>("CurrentSalary")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("CvFilesPath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date");
 
@@ -3375,7 +3378,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("ExpectedSalary")
                         .HasColumnType("decimal(18,2)");
@@ -3398,7 +3401,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("Phone")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<float?>("Rate")
                         .HasColumnType("real");
@@ -3418,57 +3421,10 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email", "Phone")
+                        .IsUnique();
+
                     b.ToTable("applicants");
-                });
-
-            modelBuilder.Entity("Kader_System.Domain.Models.Interviews.CvFile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("Add_date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Added_by")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DeleteBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("DeleteDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FileExtension")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UpdateBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("UpdateDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicantId");
-
-                    b.ToTable("cv_files");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Education", b =>
@@ -3494,7 +3450,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FaultyId")
+                    b.Property<int>("FacultyId")
                         .HasColumnType("int");
 
                     b.Property<DateOnly>("From")
@@ -3519,7 +3475,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("ApplicantId");
 
-                    b.HasIndex("FaultyId");
+                    b.HasIndex("FacultyId");
 
                     b.ToTable("educations");
                 });
@@ -8856,17 +8812,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("Vacation");
                 });
 
-            modelBuilder.Entity("Kader_System.Domain.Models.Interviews.CvFile", b =>
-                {
-                    b.HasOne("Kader_System.Domain.Models.Interviews.Applicant", "Applicant")
-                        .WithMany("CvFiles")
-                        .HasForeignKey("ApplicantId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Applicant");
-                });
-
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Education", b =>
                 {
                     b.HasOne("Kader_System.Domain.Models.Interviews.Applicant", "Applicant")
@@ -8877,7 +8822,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasOne("Kader_System.Domain.Models.Interviews.Faculty", "Faculty")
                         .WithMany("Educations")
-                        .HasForeignKey("FaultyId")
+                        .HasForeignKey("FacultyId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -9250,8 +9195,6 @@ namespace Kader_System.DataAccess.Migrations
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Applicant", b =>
                 {
-                    b.Navigation("CvFiles");
-
                     b.Navigation("Educations");
 
                     b.Navigation("Experiences");

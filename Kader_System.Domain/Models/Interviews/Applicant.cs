@@ -25,7 +25,7 @@
         public ApplicantStates State { get; set; } = ApplicantStates.Applied;
 
         public string? ImagePath { get; set; }
-        public string CvFilesPath { get; set; } = default!;
+        public string? CvFilesPath { get; set; } = default!;
         public ICollection<Education> Educations { get; set; } = new HashSet<Education>();
 
         public ICollection<Experience> Experiences { get; set; } = new HashSet<Experience>();

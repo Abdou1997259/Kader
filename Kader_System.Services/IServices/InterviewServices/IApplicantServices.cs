@@ -1,27 +1,24 @@
-﻿
-
-using Kader_System.Domain.DTOs.Request.Interview;
-using Kader_System.Domain.DTOs.Response.Interview;
+﻿using Kader_System.Domain.DTOs.Request.Interview;
 
 namespace Kader_System.Services.IServices.InterviewServices
 {
     public interface IApplicantServices
     {
-        Task<Response<IEnumerable<object>>> ListOfContractsAsync(string lang);
-        Task<Response<GetAllResponse>> GetAllContractAsync(string lang, GetAllFilteredRequests model, string host);
+        Task<Response<IEnumerable<object>>> ListOfAsync(string lang);
+        //Task<Response<GetAllResponse>> GetAllAsync(string lang, GetAllFilteredRequests model, string host);
 
 
 
 
-        Task<Response<CreateContractRequest>> CreateContractAsync(CreateContractRequest model, string moduleName);
-        Task<Response<object>> GetContractByIdAsync(int id, string lang);
-        Task<Response<object>> GetLookUps(string lang);
-        Task<Response<CreateContractRequest>> UpdateContractAsync(int id, CreateContractRequest model, string moduleName);
-        Task<Response<CreateContractRequest>> RestoreContractAsync(int id);
-        Task<Response<GetContractForUserResponse>> GetContractByUser(int EmpId, string lang);
+        Task<Response<CreateApplicantRequest>> CreateAsync(CreateApplicantRequest model, string moduleName, string lang);
 
-        Task<Response<string>> UpdateActiveOrNotContractAsync(int id);
-        Task<Response<string>> DeleteContractAsync(int id);
+
+        //Task<Response<CreateApplicantRequest>> UpdateAsync(int id, CreateApplicantRequest model, string moduleName);
+
+        //Task<Response<object>> GetById(int id , string lang);
+        //Task<Response<string>> RestoreContractAsync(int id);
+        //Task<Response<string>> UpdateActiveOrNotContractAsync(int id);
+        //Task<Response<string>> DeleteContractAsync(int id);
 
     }
 }

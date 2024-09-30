@@ -120,6 +120,9 @@
   <data name="Allowance" xml:space="preserve">
     <value>البدل</value>
   </data>
+  <data name="Applicant" xml:space="preserve">
+    <value>المتقدم</value>
+  </data>
   <data name="Approved" xml:space="preserve">
     <value>تمت الموافقة بنجاج</value>
   </data>
@@ -170,6 +173,9 @@
   </data>
   <data name="Employee" xml:space="preserve">
     <value>الموظف</value>
+  </data>
+  <data name="Faculty" xml:space="preserve">
+    <value>الكلية او القسم </value>
   </data>
   <data name="FileHasNoDirectory" xml:space="preserve">
     <value>هذا الملف ليس له مسار او ليس موجود</value>
@@ -248,6 +254,12 @@
   </data>
   <data name="TitleUser" xml:space="preserve">
     <value>هذه المسئوليه بلفعل لديها مستخدمة </value>
+  </data>
+  <data name="University" xml:space="preserve">
+    <value>الجامعة او المعهد</value>
+  </data>
+  <data name="UniversityContainsFaculty" xml:space="preserve">
+    <value>هذا الجامعة او المعهد {0} لاتحتوي علي هذا القسم او الكلية {0}</value>
   </data>
   <data name="Updated" xml:space="preserve">
     <value>تم التحديث بنجاح</value>

@@ -5,8 +5,8 @@
     {
 
         public int Id { get; set; }
-        public int FaultyId { get; set; }
-        [ForeignKey(nameof(FaultyId))]
+        public int FacultyId { get; set; }
+        [ForeignKey(nameof(FacultyId))]
         public Faculty Faculty { get; set; } = default!;
 
         public DateOnly From { get; set; }

@@ -273,6 +273,9 @@
   <data name="User name" xml:space="preserve">
     <value>اسم المستخدم للدخول على النظام فيما بعد</value>
   </data>
+  <data name="Value not Allowed please insert 1 or 2" xml:space="preserve">
+    <value>من فضلك ادخل 1 او 2</value>
+  </data>
   <data name="{0} can only be between {1} and {2}" xml:space="preserve">
     <value>{0}يجب ان يكون بين {1} و {2}</value>
   </data>
