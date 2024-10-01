@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.Customization.Attributes.Kader_System.Domain.Customization.Attributes;
+using System.Text.Json.Serialization;
 
 namespace Kader_System.Domain.DTOs.Request.Interview
 {
@@ -6,6 +7,7 @@ namespace Kader_System.Domain.DTOs.Request.Interview
     {
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        [JsonPropertyName("full_name")]
         public string FullName { get; set; } = null!;
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]

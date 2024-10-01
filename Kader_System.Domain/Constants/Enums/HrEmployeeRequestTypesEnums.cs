@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kader_System.Domain.Constants.Enums
+﻿namespace Kader_System.Domain.Constants.Enums
 {
     public enum HrEmployeeRequestTypesEnums
     {
@@ -31,13 +25,14 @@ namespace Kader_System.Domain.Constants.Enums
         Attachments = 4,
         User = 5,
         EmployeeProfile = 6,
+        Applicant = 7,
     }
 
 
     public enum UsereEnum
     {
         None = 0,
-        Users=1,
+        Users = 1,
 
     }
 }

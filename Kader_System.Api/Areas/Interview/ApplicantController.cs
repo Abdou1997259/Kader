@@ -63,5 +63,44 @@ namespace Kader_System.Api.Areas.Interview
         }
 
         #endregion
+
+
+        #region Update
+        [HttpPut(ApiRoutes.ApplicantRoute.UpdateApplicant)]
+
+        public async Task<IActionResult> UpdateAsync([FromForm] CreateApplicantRequest model, [FromRoute] int id)
+        {
+            var response = await _service.UpdateAsync(id, model, _requestService.GetRequestHeaderLanguage);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        [HttpPut(ApiRoutes.ApplicantRoute.RestoreApplicant)]
+
+        public async Task<IActionResult> RestoreAsync([FromRoute] int id)
+        {
+            var response = await _service.RestoreAsync(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        #endregion
+        #region Delete
+        [HttpDelete(ApiRoutes.ApplicantRoute.DeleteApplicant)]
+        public async Task<IActionResult> DeleteAsync([FromRoute] int id)
+        {
+            var response = await _service.DeleteAsync(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+
+        }
+        #endregion
     }
 }

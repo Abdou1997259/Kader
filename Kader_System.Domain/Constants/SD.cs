@@ -38,7 +38,7 @@ public static class SD
     {
         public const string SpecialChar = @"|!#$%&[]=?»«@£§€{};<>";
         public const int Length = 50;
-        public const string AllowedExtension = ".jpg,.png,.jpeg";
+        public const string AllowedExtension = ".jpg,.png,.jpeg,.docx,.pdf";
     }
     public static class SysFileServer
     {
@@ -559,6 +559,9 @@ public static class SD
         {
             public const string ListOfApplicant = "Applicant/getListOfApplicant";
             public const string CreateApplicant = "Applicant/create";
+            public const string UpdateApplicant = "Applicant/update/{id}";
+            public const string RestoreApplicant = "Applicant/Restore/{id}";
+            public const string DeleteApplicant = "Applicant/delete/{id}";
         }
         public class Vacation
         {

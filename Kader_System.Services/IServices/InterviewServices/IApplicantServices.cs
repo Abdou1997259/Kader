@@ -13,12 +13,12 @@ namespace Kader_System.Services.IServices.InterviewServices
         Task<Response<CreateApplicantRequest>> CreateAsync(CreateApplicantRequest model, string moduleName, string lang);
 
 
-        //Task<Response<CreateApplicantRequest>> UpdateAsync(int id, CreateApplicantRequest model, string moduleName);
+        Task<Response<CreateApplicantRequest>> UpdateAsync(int id, CreateApplicantRequest model, string lang);
 
-        //Task<Response<object>> GetById(int id , string lang);
-        //Task<Response<string>> RestoreContractAsync(int id);
+        Task<Response<object>> GetById(int id, string lang);
+        Task<Response<string>> RestoreAsync(int id);
         //Task<Response<string>> UpdateActiveOrNotContractAsync(int id);
-        //Task<Response<string>> DeleteContractAsync(int id);
+        Task<Response<string>> DeleteAsync(int id);
 
     }
 }
