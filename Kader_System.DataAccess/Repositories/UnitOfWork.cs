@@ -25,10 +25,10 @@ public class UnitOfWork : IUnitOfWork
     public IRoleRepository Roles { get; private set; }
     public IUserRoleRepository UserRoles { get; private set; }
     public IUserDeviceRepository UserDevices { get; private set; }
-    public ISubMainScreenRepository SubMainScreens { get; private set; }
+    public ISubScreenRepository SubScreens { get; private set; }
     public ISubMainScreenActionRepository SubMainScreenActions { get; private set; }
     public IMainScreenRepository MainScreens { get; private set; }
-    public IMainScreenCategoryRepository MainScreenCategories { get; private set; }
+    public IScreenCategoryRepository ScreenCategories { get; private set; }
     public IScreenRepository Screens { get; private set; }
     public IScreenActionRepository ScreenActions { get; private set; }
     public IAccountingWayRepository AccountingWays { get; private set; }
@@ -115,6 +115,8 @@ public class UnitOfWork : IUnitOfWork
     public IEducationRepository Education { get; private set; }
     public IExperienceRepository Experience { get; private set; }
 
+
+
     public UnitOfWork(KaderDbContext context, IConfiguration config)
     {
         _context = context;
@@ -139,12 +141,12 @@ public class UnitOfWork : IUnitOfWork
         Roles = new RoleRepository(_context);
         UserRoles = new UserRoleRepository(_context);
         UserClaims = new UserClaimRepository(_context);
-        SubMainScreens = new SubMainScreenRepository(_context);
+        SubScreens = new SubScreenRepository(_context);
         SubMainScreenActions = new SubMainScreenActionRepository(_context);
         MainScreens = new MainScreenRepository(_context);
         Screens = new ScreenRepository(_context);
         ScreenActions = new ScreenActionRepository(_context);
-        MainScreenCategories = new MainScreenCategoryRepository(_context);
+        ScreenCategories = new ScreenCategoryRepository(_context);
         Titles = new TitleRepository(_context);
         AccountingWays = new AccountingWayRepository(_context);
         Allowances = new AllowanceRepository(_context);

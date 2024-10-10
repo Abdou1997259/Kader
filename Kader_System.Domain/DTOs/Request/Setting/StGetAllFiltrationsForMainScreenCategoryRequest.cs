@@ -1,5 +1,5 @@
 ﻿namespace Kader_System.Domain.Dtos.Request.Setting;
 
-public class StGetAllFiltrationsForMainScreenCategoryRequest : PaginationRequest
+public class StGetAllFiltrationsForScreenCategoryRequest : PaginationRequest
 {
 }

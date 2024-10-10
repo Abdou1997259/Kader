@@ -1,5 +1,4 @@
 ﻿using Kader_System.Services.IServices.HTTP;
-using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Api.Areas.Setting.Controllers;
 
@@ -9,26 +8,26 @@ namespace Kader_System.Api.Areas.Setting.Controllers;
 //[Authorize(Permissions.MainScreenCat.View)]
 [Route("api/v1/")]
 
-public class MainScreensCategoriesController(IMainScreenCategoryService service, IRequestService requestService,IWebHostEnvironment hostEnvironment) : ControllerBase
+public class ScreensCategoriesController(IScreenCategoryService service, IRequestService requestService, IWebHostEnvironment hostEnvironment) : ControllerBase
 {
     private readonly IRequestService requestService = requestService;
     private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment;
 
 
     #region Retrieve
-    [HttpGet(ApiRoutes.MainScreenCategory.ListOfMainScreensCategories)]
-    
-    public async Task<IActionResult> ListOfMainScreensCategoriesAsync() =>
-        Ok(await service.ListOfMainScreensCategoriesAsync(requestService.GetRequestHeaderLanguage));
+    [HttpGet(ApiRoutes.ScreenCategory.ListOfScreensCategories)]
 
-    [HttpGet(ApiRoutes.MainScreenCategory.GetAllMainScreenCategories)]
-    public async Task<IActionResult> GetAllMainScreensCategoriesAsync([FromQuery] StGetAllFiltrationsForMainScreenCategoryRequest model) =>
-        Ok(await service.GetAllMainScreensCategoriesAsync(requestService.GetRequestHeaderLanguage, model,requestService.GetCurrentHost));
+    public async Task<IActionResult> ListOfScreensCategoriesAsync() =>
+        Ok(await service.ListOfScreensCategoriesAsync(requestService.GetRequestHeaderLanguage));
 
-    [HttpGet(ApiRoutes.MainScreenCategory.GetMainScreenCategoryById)]
-    public async Task<IActionResult> GetMainScreenCategoryByIdAsync(int id)
+    [HttpGet(ApiRoutes.ScreenCategory.GetAllScreenCategories)]
+    public async Task<IActionResult> GetAllScreensCategoriesAsync([FromQuery] StGetAllFiltrationsForScreenCategoryRequest model) =>
+        Ok(await service.GetAllScreensCategoriesAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
+
+    [HttpGet(ApiRoutes.ScreenCategory.GetScreenCategoryById)]
+    public async Task<IActionResult> GetScreenCategoryByIdAsync(int id)
     {
-        var response = await service.GetMainScreenCategoryByIdAsync(id);
+        var response = await service.GetScreenCategoryByIdAsync(id);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -39,11 +38,11 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
 
     #region Insert
 
-    [HttpPost(ApiRoutes.MainScreenCategory.CreateMainScreenCategory)]
-    
-    public async Task<IActionResult> CreateServiceAsync([FromForm] StCreateMainScreenCategoryRequest model)
+    [HttpPost(ApiRoutes.ScreenCategory.CreateScreenCategory)]
+
+    public async Task<IActionResult> CreateServiceAsync([FromForm] StCreateScreenCategoryRequest model)
     {
-        var response = await service.CreateMainScreenCategoryAsync(model);
+        var response = await service.CreateScreenCategoryAsync(model);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -55,12 +54,13 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
 
     #region Update
 
-    [HttpPut(ApiRoutes.MainScreenCategory.UpdateMainScreenCategory)]
-    public async Task<IActionResult> UpdateServiceAsync([FromRoute] int id, [FromForm] StUpdateMainScreenCategoryRequest model,string lang)
+    [HttpPut(ApiRoutes.ScreenCategory.UpdateScreenCategory)]
+    public async Task<IActionResult> UpdateServiceAsync([FromRoute] int id, [FromForm] StUpdateScreenCategoryRequest model)
     {
+        //this is not the first time this happens from now on i will record everything for the record 
         var serverPath = HttpContext.Items["ServerPath"]?.ToString();
 
-        var response = await service.UpdateMainScreenCategoryAsync(id, model,lang, serverPath, Modules.Setting);
+        var response = await service.UpdateScreenCategoryAsync(id, model, requestService.GetRequestHeaderLanguage, serverPath, Modules.Setting);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)
@@ -68,7 +68,7 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
 
-    [HttpPut(ApiRoutes.MainScreenCategory.restore)]
+    [HttpPut(ApiRoutes.ScreenCategory.restore)]
     public async Task<IActionResult> RestoreAsync([FromRoute] int id)
     {
 
@@ -80,7 +80,7 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
             return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
-    [HttpPost(ApiRoutes.MainScreenCategory.OrderbyPattern)]
+    [HttpPost(ApiRoutes.ScreenCategory.OrderbyPattern)]
     public async Task<IActionResult> orderbyPatttern(int[] Ids)
     {
 
@@ -96,10 +96,10 @@ public class MainScreensCategoriesController(IMainScreenCategoryService service,
 
     #region Delete
 
-    [HttpDelete(ApiRoutes.MainScreenCategory.DeleteMainScreenCategory)]
-    public async Task<IActionResult> DeleteMainScreenCategoryAsync(int id)
+    [HttpDelete(ApiRoutes.ScreenCategory.DeleteScreenCategory)]
+    public async Task<IActionResult> DeleteScreenCategoryAsync(int id)
     {
-        var response = await service.DeleteMainScreenCategoryAsync(id);
+        var response = await service.DeleteScreenCategoryAsync(id);
         if (response.Check)
             return Ok(response);
         else if (!response.Check)

@@ -25,10 +25,10 @@ public interface IUnitOfWork : IDisposable
     IUserDeviceRepository UserDevices { get; }
     IRoleRepository Roles { get; }
     IUserRoleRepository UserRoles { get; }
-    ISubMainScreenRepository SubMainScreens { get; }
+    ISubScreenRepository SubScreens { get; }
     ISubMainScreenActionRepository SubMainScreenActions { get; }
     IMainScreenRepository MainScreens { get; }
-    IMainScreenCategoryRepository MainScreenCategories { get; }
+    IScreenCategoryRepository ScreenCategories { get; }
     ITitleRepository Titles { get; }
     IScreenRepository Screens { get; }
     IScreenActionRepository ScreenActions { get; }

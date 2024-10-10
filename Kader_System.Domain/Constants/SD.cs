@@ -119,15 +119,15 @@ public static class SD
     }
     public static class ApiRoutes
     {
-        public class MainScreenCategory
+        public class ScreenCategory
         {
 
-            public const string ListOfMainScreensCategories = "screen_cat/getListOfMainScreens";
-            public const string GetAllMainScreenCategories = "screen_cat";
-            public const string CreateMainScreenCategory = "screen_cat";
-            public const string UpdateMainScreenCategory = "screen_cat/update/{id}";
-            public const string GetMainScreenCategoryById = "screen_cat/getById/{id}";
-            public const string DeleteMainScreenCategory = "screen_cat/{id}";
+            public const string ListOfScreensCategories = "screen_cat/getListOfMainScreens";
+            public const string GetAllScreenCategories = "screen_cat";
+            public const string CreateScreenCategory = "screen_cat";
+            public const string UpdateScreenCategory = "screen_cat/update/{id}";
+            public const string GetScreenCategoryById = "screen_cat/getById/{id}";
+            public const string DeleteScreenCategory = "screen_cat/{id}";
 
             public const string restore = "screen_cat/restore/{id}";
 
@@ -158,14 +158,14 @@ public static class SD
             public const string RestoreScreen = "screen/restore/{id}";
         }
 
-        public class SubMainScreen
+        public class SubScreenRoute
         {
             public const string ListOfSubMainScreens = "screen_sub/getListOfSubMainScreens";
-            public const string GetAllSubMainScreens = "screen_sub";
-            public const string CreateSubMainScreen = "screen_sub";
-            public const string RemoveSceenCodeSpace = "screen_sub/remove_space";
-            public const string UpdateSubMainScreen = "screen_sub/update/{id}";
-            public const string GetSubMainScreenById = "screen_sub/getById/{id}";
+            public const string GetAllSubScreens = "screen_sub";
+            public const string CreateSubScreen = "screen_sub";
+            public const string RemoveScreenCodeSpace = "screen_sub/remove_space";
+            public const string UpdateSubScreen = "screen_sub/update/{id}";
+            public const string GetSubScreenById = "screen_sub/getById/{id}";
             public const string DeleteSubMainScreen = "screen_sub/delete/{id}";
             public const string RestoreScreen = "screen_sub/restore/{id}";
             public const string OrderbyPattern = "screen_sub/order_by_pattern";
@@ -664,6 +664,7 @@ public static class SD
         public const string ItIsNecessaryThatAmountMoreThanZero = "ItIsNecessaryThatAmountMoreThanZero";
         public const string Used = "Used";
         public const string CannotBeFound = "CannotBeFound";
+        public const string AlreadyExitedWithSameName = "AlreadyExitedWithSameName";
         public const string OldPasswordDoesnotMatch = "Old password doesn't match with current password.";
         public const string NewPasswordDoesnotMatch = "The new password and the confirmed password do not match.";
         public const string UserInTitle = "UserInTitle";

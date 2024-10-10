@@ -810,7 +810,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             if (missingActionsExist.Any() && missingActionsExist.Any(x => x != 0))
             {
                 var permssions = await _unitOfWork.ActionsRepo.GetSpecificSelectAsync(x => missingActionsExist.Any(u => u == x.Id), x => x);
-                var subscrren = await _unitOfWork.SubMainScreens.GetByIdAsync(sub.SubId);
+                var subscrren = await _unitOfWork.SubScreens.GetByIdAsync(sub.SubId);
                 string name = Localization.Arabic == lang ? subscrren.Screen_sub_title_ar : subscrren.Screen_sub_title_en;
                 string nameofpermissions = "";
                 foreach (var per in permssions)
@@ -843,7 +843,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         foreach (var assignedPermission in model)
         {
 
-            if (await _unitOfWork.SubMainScreens.ExistAsync(x => x.Id == assignedPermission.SubId))
+            if (await _unitOfWork.SubScreens.ExistAsync(x => x.Id == assignedPermission.SubId))
             {
 
                 var titlePermission = await _unitOfWork.TitlePermissionRepository
@@ -915,7 +915,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             var userPermissionQuery = await _unitOfWork.UserPermssionRepositroy
                 .GetSpecificSelectTrackingAsync(x => x.TitleId == titleId && x.SubScreenId == assignedPermission.SubId, x => x);
 
-            if (await _unitOfWork.SubMainScreens.ExistAsync(x => x.Id == assignedPermission.SubId))
+            if (await _unitOfWork.SubScreens.ExistAsync(x => x.Id == assignedPermission.SubId))
             {
                 if (userPermissionQuery.Count() > 0)
                 {
@@ -1321,7 +1321,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
         cop = await _unitOfWork.Companies.GetByIdAsync(user.CurrentCompanyId);
 
-        var screens = await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
+        //var screens = await _mainScreenService.GetMainScreensWithRelatedDataAsync(lang);
         var jwtSecurityToken = await CreateJwtToken(await _userManager.FindByIdAsync(user.Id));
 
         var email = user.Email;
@@ -1340,7 +1340,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
 
 
-        var screensResult = screens?.DataList;
+        //var screensResult = screens?.DataList;
         var aptoken = "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
 
         // Fetch companies asynchronously

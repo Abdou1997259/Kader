@@ -45,8 +45,8 @@ namespace Kader_System.Services.Services
             CreateMap<DelayPermission, DtoListOfDelayRequestReponse>()
               .ForMember(dest => dest.ApporvalStatus, opt => opt.MapFrom(src => src.StatuesOfRequest != null ? src.StatuesOfRequest.ApporvalStatus : null)).
                   ForMember(x => x.EmployeeName, x => x.MapFrom(d => d.Employee.SetName()));
-            CreateMap<StCreateSubMainScreenRequest, StScreenSub>().ReverseMap();
-            CreateMap<StUpdateMainScreenCategoryRequest, StMainScreenCat>().ReverseMap();
+            CreateMap<StCreateSubScreenRequest, StScreenSub>().ReverseMap();
+            CreateMap<StUpdateScreenCategoryRequest, StScreenCat>().ReverseMap();
             CreateMap<StCreateMainScreenRequest, StMainScreen>().ReverseMap();
         }
     }

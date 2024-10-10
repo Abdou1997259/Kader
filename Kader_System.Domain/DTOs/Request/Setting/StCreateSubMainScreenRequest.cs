@@ -1,18 +1,20 @@
 ﻿namespace Kader_System.Domain.Dtos.Request.Setting;
 
-public class StCreateSubMainScreenRequest
+public class StCreateSubScreenRequest
 {
     [Display(Name = Annotations.NameInEnglish), Required(ErrorMessage = Annotations.FieldIsRequired)]
-    public required string screen_sub_title_en { get; set; } 
+    public string screen_sub_title_en { get; set; } = string.Empty;
 
     [Display(Name = Annotations.NameInArabic), Required(ErrorMessage = Annotations.FieldIsRequired)]
-    public required string screen_sub_title_ar { get; set; }
+    public string screen_sub_title_ar { get; set; } = string.Empty;
 
     [Display(Name = Annotations.Name), Required(ErrorMessage = Annotations.FieldIsRequired)]
 
 
     public int screen_cat_id { get; set; }
-    public required string url { get; set; }
+    [Display(Name = Annotations.Name), Required(ErrorMessage = Annotations.FieldIsRequired)]
+    [Url]
+    public string url { get; set; } = string.Empty;
 
     public List<int>? actions { get; set; } = [];
 }

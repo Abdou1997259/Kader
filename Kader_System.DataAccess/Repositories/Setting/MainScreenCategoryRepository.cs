@@ -1,10 +1,8 @@
-﻿using Kader_System.DataAccesss.Context;
+﻿namespace Kader_System.DataAccess.Repositories.Setting;
 
-namespace Kader_System.DataAccess.Repositories.Setting;
-
-public class MainScreenCategoryRepository(KaderDbContext context) : BaseRepository<StMainScreenCat>(context), IMainScreenCategoryRepository
+public class ScreenCategoryRepository(KaderDbContext context) : BaseRepository<StScreenCat>(context), IScreenCategoryRepository
 {
-   
 
-   
+
+
 }

@@ -1,15 +1,7 @@
-﻿
-
-using Kader_System.DataAccess.Repositories;
-using Kader_System.DataAccesss.Context;
+﻿using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.Auth;
-using Kader_System.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using System.Linq.Expressions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.Setting
 {
@@ -80,7 +72,7 @@ namespace Kader_System.Services.Services.Setting
                          TitleNameEn = x.TitleNameEn,
                          Add_date = x.Add_date.HasValue
                                     ? x.Add_date.Value.ToString("MM/dd/yyyy HH:mm:ss")
-                                    : null 
+                                    : null
 
 
 
@@ -196,14 +188,14 @@ namespace Kader_System.Services.Services.Setting
                 if (missingActionsExist.Any() && missingActionsExist.Any(x => x != 0))
                 {
                     var permssions = await unitOfWork.ActionsRepo.GetSpecificSelectAsync(x => missingActionsExist.Any(u => u == x.Id), x => x);
-                    var subscrren = await unitOfWork.SubMainScreens.GetByIdAsync(sub.SubId);
+                    var subscrren = await unitOfWork.SubScreens.GetByIdAsync(sub.SubId);
                     string name = Localization.Arabic == lang ? subscrren.Screen_sub_title_ar : subscrren.Screen_sub_title_en;
-                    string nameofpermissions = "";
+                    string nameofPermissions = "";
                     foreach (var per in permssions)
                     {
-                        nameofpermissions += Localization.Arabic == lang ? per.Name + " " : per.NameInEnglish + " ";
+                        nameofPermissions += Localization.Arabic == lang ? per.Name + " " : per.NameInEnglish + " ";
                     }
-                    var msg = $"{name} {sharLocalizer[Localization.ScreenInAction]} {nameofpermissions}";
+                    var msg = $"{name} {sharLocalizer[Localization.ScreenInAction]} {nameofPermissions}";
                     // Handle the case where at least one ActionId is missing
                     // Example: Log or perform some action
                     return new()
@@ -317,9 +309,9 @@ namespace Kader_System.Services.Services.Setting
         {
 
 
-            var isUserTakeThisTitle =await  unitOfWork.Users.GetFirstOrDefaultAsync(x=> x.CurrentTitleId == id);
+            var isUserTakeThisTitle = await unitOfWork.Users.GetFirstOrDefaultAsync(x => x.CurrentTitleId == id);
 
-            if(isUserTakeThisTitle is not null)
+            if (isUserTakeThisTitle is not null)
             {
                 string resultMsg = sharLocalizer[Localization.UserInTitle];
 
@@ -373,7 +365,7 @@ namespace Kader_System.Services.Services.Setting
         private async Task<Response<string>> AssginTitlePermssion(int id, IEnumerable<Permissions> model, string lang, bool all = false)
         {
 
-           
+
 
 
             foreach (var assignedPermission in model)
@@ -382,18 +374,18 @@ namespace Kader_System.Services.Services.Setting
 
 
 
-                if (await unitOfWork.SubMainScreens.ExistAsync(x => x.Id == assignedPermission.SubId))
+                if (await unitOfWork.SubScreens.ExistAsync(x => x.Id == assignedPermission.SubId))
                 {
 
                     if (all)
                     {
                         var userPermissionQuery = await unitOfWork.TitlePermissionRepository
-                                .GetSpecificSelectTrackingAsync( x => x.SubScreenId == assignedPermission.SubId, x => x, includeProperties: "ScreenSub,Title");
+                                .GetSpecificSelectTrackingAsync(x => x.SubScreenId == assignedPermission.SubId, x => x, includeProperties: "ScreenSub,Title");
 
                         if (userPermissionQuery.Count() > 0)
                         {
                             unitOfWork.TitlePermissionRepository.RemoveRange(userPermissionQuery);
-                           await unitOfWork.CompleteAsync();
+                            await unitOfWork.CompleteAsync();
 
                         }
                         if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
@@ -414,7 +406,7 @@ namespace Kader_System.Services.Services.Setting
                             });
                             await unitOfWork.CompleteAsync();
                         }
-                         LabelExpression0:;
+                    LabelExpression0:;
                         var userWithTitle = await unitOfWork.Users.GetSpecificSelectAsync(x => x.TitleId.Contains(id.ToString()), select: x => x.Id);
                         if (userWithTitle.Any())
                         {
@@ -422,7 +414,7 @@ namespace Kader_System.Services.Services.Setting
                             {
                                 if (assignedPermission.title_permission.Count == 0 || assignedPermission.title_permission.Any(x => x == 0))
                                 {
-                                    var removeduserpermssion = (await unitOfWork.UserPermssionRepositroy.GetSpecificSelectTrackingAsync(x =>  x.TitleId == id && x.SubScreenId == assignedPermission.SubId, x => x)).ToList();
+                                    var removeduserpermssion = (await unitOfWork.UserPermssionRepositroy.GetSpecificSelectTrackingAsync(x => x.TitleId == id && x.SubScreenId == assignedPermission.SubId, x => x)).ToList();
 
                                     unitOfWork.UserPermssionRepositroy.RemoveRange(removeduserpermssion);
                                     await unitOfWork.CompleteAsync();
@@ -517,8 +509,8 @@ namespace Kader_System.Services.Services.Setting
                             await unitOfWork.CompleteAsync();
                         }
                     LabelExpression:;
-                   
-                          
+
+
 
                     }
 

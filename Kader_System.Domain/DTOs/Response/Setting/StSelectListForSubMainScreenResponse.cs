@@ -7,5 +7,5 @@ public class StSelectListForSubMainScreenResponse : PaginationRequest
     public string Url { get; set; } = string.Empty;
     public int? Screen_main_cat_id { get; set; }
 
-    public List<StMainScreenCat> List_Screen_main_cat { get; set; }
+    public List<StScreenCat> List_Screen_main_cat { get; set; }
 }
