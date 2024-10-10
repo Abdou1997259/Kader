@@ -120,6 +120,9 @@
   <data name="Allowance" xml:space="preserve">
     <value>البدل</value>
   </data>
+  <data name="AlreadyExited" xml:space="preserve">
+    <value>موجود بافعل {0}</value>
+  </data>
   <data name="Applicant" xml:space="preserve">
     <value>المتقدم</value>
   </data>

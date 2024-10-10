@@ -630,6 +630,7 @@ public static class SD
         public const string English = "en";
         public const string IsExist = "IsExist";
         public const string Approved = "Approved";
+        public const string AlreadyExited = "AlreadyExited";
         public const string NotApproved = "NotApproved";
         public const string ApprovedAready = "ApprovedAready";
         public const string CurrentIsNotExitedInCompanys = "CurrentIsNotExitedInCompanys";
