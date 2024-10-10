@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kader_System.Domain.Extensions
 {
@@ -25,7 +20,7 @@ namespace Kader_System.Domain.Extensions
 
             if (idProperty != null && nameProperty != null)
             {
-                var results = await  queryable.ToListAsync();
+                var results = await queryable.ToListAsync();
                 var dynamicList = new List<dynamic>();
 
                 foreach (var item in results)
@@ -54,7 +49,7 @@ namespace Kader_System.Domain.Extensions
         /// <param name="IdPropIndicator"></param>
         /// <param name="NamePropIndicator"></param>
         /// <returns>New lookup of of Props (Id - Name - Image) From T Type</returns>
-        public static async Task<List<dynamic>> ToDynamicLookUpAsync<T>(this IQueryable<T> queryable, string IdPropIndicator = "Id", string NamePropIndicator = "Name",string ImagePropIndicator = "iamge")
+        public static async Task<List<dynamic>> ToDynamicLookUpAsync<T>(this IQueryable<T> queryable, string IdPropIndicator = "Id", string NamePropIndicator = "Name", string ImagePropIndicator = "iamge")
         {
             var idProperty = typeof(T).GetProperties().FirstOrDefault(p => p.Name.Contains(IdPropIndicator, StringComparison.OrdinalIgnoreCase));
             var nameProperty = typeof(T).GetProperties().FirstOrDefault(p => p.Name.Contains(NamePropIndicator, StringComparison.OrdinalIgnoreCase));
@@ -67,12 +62,13 @@ namespace Kader_System.Domain.Extensions
 
                 foreach (var item in results)
                 {
+                    // here i didnt make this function everything was fine unitl now someone else updated the code 
                     dynamic expandoObj = new ExpandoObject();
                     var expandoDict = (IDictionary<string, object>)expandoObj;
 
                     expandoDict[idProperty.Name] = idProperty.GetValue(item);
                     expandoDict[nameProperty.Name] = nameProperty.GetValue(item);
-                    expandoDict[imageProperty.Name] = imageProperty.GetValue(item);
+                    expandoDict[imageProperty.Name] = "dkfjsdklfjsdkljfklsdj";
 
                     dynamicList.Add(expandoObj);
                 }
@@ -92,7 +88,7 @@ namespace Kader_System.Domain.Extensions
         /// <param name="_entity"></param>
         /// <param name="_softDeleteProperty"></param>
         /// <returns>number of rows affected</returns>
-        public static async Task<int> SoftDeleteAsync<T>(this DbContext _context, T _entity, string _softDeleteProperty = "IsDeleted", bool IsDeleted = true,string DeletedBy = null)
+        public static async Task<int> SoftDeleteAsync<T>(this DbContext _context, T _entity, string _softDeleteProperty = "IsDeleted", bool IsDeleted = true, string DeletedBy = null)
         {
             if (_entity is null)
                 return 0;

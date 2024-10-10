@@ -277,9 +277,9 @@ builder.Services.AddScoped<IDbInitSeedsService, DbInitSeedsService>();
 builder.Services.AddScoped<IPermService, PermService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ILoggingRepository, LoggingRepository>();
-builder.Services.AddScoped<IMainScreenCategoryService, MainScreenCategoryService>();
+builder.Services.AddScoped<IScreenCategoryService, ScreenCategoryService>();
 builder.Services.AddScoped<IMainScreenService, MainScreenService>();
-builder.Services.AddScoped<ISubMainScreenService, SubMainScreenService>();
+builder.Services.AddScoped<ISubScreenService, SubScreenService>();
 
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<IAllowanceService, AllowanceService>();

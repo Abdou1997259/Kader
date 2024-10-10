@@ -122,18 +122,16 @@ public static class ModelBuilderExtensions
 
 
         );
-        modelBuilder.Entity<StMainScreenCat>().HasData(
+        modelBuilder.Entity<StScreenCat>().HasData(
 
 
-         new StMainScreenCat { Id = 1, MainScreenId = 1, Screen_cat_title_ar = "الاعدادات", Screen_cat_title_en = "Setting", Order = 1 },
-         new StMainScreenCat { Id = 2, MainScreenId = 1, Screen_cat_title_ar = "اكواد", Screen_cat_title_en = "Codes", Order = 2 },
-         new StMainScreenCat { Id = 3, MainScreenId = 1, Screen_cat_title_ar = "طلبات", Screen_cat_title_en = "Request", Order = 3 },
-         new StMainScreenCat { Id = 4, MainScreenId = 1, Screen_cat_title_ar = "حركات", Screen_cat_title_en = "Transcation", Order = 4 },
-        new StMainScreenCat { Id = 5, MainScreenId = 1, Screen_cat_title_ar = "تقارير", Screen_cat_title_en = "Reports", Order = 5 },
-
-
-         new StMainScreenCat { Id = 6, MainScreenId = 1, Screen_cat_title_ar = "توظيف", Screen_cat_title_en = "Hiring", Order = 6 },
-         new StMainScreenCat { Id = 7, MainScreenId = 1, Screen_cat_title_ar = "الاعدادات HR", Screen_cat_title_en = "Hr Setting", Order = 7 }
+         new StScreenCat { Id = 1, MainScreenId = 1, Screen_cat_title_ar = "الاعدادات", Screen_cat_title_en = "Setting", Order = 1 },
+         new StScreenCat { Id = 2, MainScreenId = 1, Screen_cat_title_ar = "اكواد", Screen_cat_title_en = "Codes", Order = 2 },
+         new StScreenCat { Id = 3, MainScreenId = 1, Screen_cat_title_ar = "طلبات", Screen_cat_title_en = "Request", Order = 3 },
+         new StScreenCat { Id = 4, MainScreenId = 1, Screen_cat_title_ar = "حركات", Screen_cat_title_en = "Transcation", Order = 4 },
+         new StScreenCat { Id = 5, MainScreenId = 1, Screen_cat_title_ar = "تقارير", Screen_cat_title_en = "Reports", Order = 5 },
+         new StScreenCat { Id = 6, MainScreenId = 1, Screen_cat_title_ar = "توظيف", Screen_cat_title_en = "Hiring", Order = 6 },
+         new StScreenCat { Id = 7, MainScreenId = 1, Screen_cat_title_ar = "الاعدادات HR", Screen_cat_title_en = "Hr Setting", Order = 7 }
 
       );
 

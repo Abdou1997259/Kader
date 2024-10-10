@@ -123,6 +123,9 @@
   <data name="AlreadyExited" xml:space="preserve">
     <value>موجود بافعل {0}</value>
   </data>
+  <data name="AlreadyExitedWithSameName" xml:space="preserve">
+    <value>موجود بافعل {0} بنفس الاسم </value>
+  </data>
   <data name="Applicant" xml:space="preserve">
     <value>المتقدم</value>
   </data>

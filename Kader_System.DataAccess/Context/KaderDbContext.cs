@@ -28,10 +28,10 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<ApplicationUserDevice> UserDevices { get; set; }
     public DbSet<TransLoan> Loans { get; set; }
     public DbSet<ComLog> Logs { get; set; }
-    public DbSet<StMainScreen> MainScreenCategories { get; set; }
+    public DbSet<StMainScreen> MainScreens { get; set; }
     public DbSet<Screen> Screens { get; set; }
-    public DbSet<StMainScreenCat> MainScreens { get; set; }
-    public DbSet<StScreenSub> SubMainScreens { get; set; }
+    public DbSet<StScreenCat> ScreenCategories { get; set; }
+    public DbSet<StScreenSub> SubScreens { get; set; }
     public DbSet<StAction> Actions { get; set; }
     public DbSet<StSubMainScreenAction> SubMainScreenActions { get; set; }
 
@@ -254,10 +254,10 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
         modelBuilder.Entity<SpGetScreen>().HasNoKey();
         modelBuilder.Entity<StMainScreen>().
             HasMany(x => x.CategoryScreen).
-            WithOne(x => x.screenCat).
+            WithOne(x => x.ScreenMain).
             HasForeignKey(x => x.MainScreenId);
 
-        modelBuilder.Entity<StMainScreenCat>().
+        modelBuilder.Entity<StScreenCat>().
             HasMany(x => x.StScreenSub).
             WithOne(x => x.ScreenCat).
             HasForeignKey(x => x.ScreenCatId);

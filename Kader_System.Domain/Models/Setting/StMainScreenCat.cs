@@ -1,7 +1,7 @@
 ﻿namespace Kader_System.Domain.Models.Setting;
 
-[Table("st_main_screen_cats")]
-public class StMainScreenCat : BaseEntity
+[Table("st_screen_cats")]
+public class StScreenCat : BaseEntity
 {
     [Key]
     public int Id { get; set; }
@@ -14,8 +14,8 @@ public class StMainScreenCat : BaseEntity
 
     public int MainScreenId { get; set; }
     [ForeignKey(nameof(MainScreenId))]
-    public StMainScreen screenCat { get; set; } = default!;
+    public StMainScreen ScreenMain { get; set; } = default!;
     public int Order { get; set; }
-    public ICollection<StScreenSub> StScreenSub { get; set; }
-    //public StMainScreenCat stMainScreenCat { get; set; }
+    public ICollection<StScreenSub> StScreenSub { get; set; } = new HashSet<StScreenSub>();
+
 }

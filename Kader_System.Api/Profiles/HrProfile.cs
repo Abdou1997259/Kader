@@ -12,7 +12,7 @@ public class HrProfile : Profile
     {
         #region Company
 
-        CreateMap<StScreenSub, StUpdateSubMainScreenRequest>()
+        CreateMap<StScreenSub, StUpdateSubScreenRequest>()
                 .ReverseMap();
 
         #endregion
@@ -74,9 +74,9 @@ public class HrProfile : Profile
             .ForMember(dest => dest.details, opt => opt.MapFrom(src => src.ListOfAllowancesDetails.Select(d => new CreateContractDetailsRequest
             {
                 allowance_id = d.AllowanceId,
-                value= d.Value,
+                value = d.Value,
                 is_percent = d.IsPercent,
-                id= d.Id
+                id = d.Id
             }).ToList()))
             .ReverseMap();
 

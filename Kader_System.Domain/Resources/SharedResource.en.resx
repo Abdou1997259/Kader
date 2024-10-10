@@ -123,6 +123,9 @@
   <data name="AlreadyExited" xml:space="preserve">
     <value>{0} is Already Exited</value>
   </data>
+  <data name="AlreadyExitedWithSameName" xml:space="preserve">
+    <value>{0} is Already Exited With Same Name</value>
+  </data>
   <data name="Applicant" xml:space="preserve">
     <value>Applicant</value>
   </data>

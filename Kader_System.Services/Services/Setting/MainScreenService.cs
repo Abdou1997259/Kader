@@ -56,7 +56,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         for (int i = 0; i < orderedIds.Length; i++)
         {
             var id = orderedIds[i];
-            await _dbContext.MainScreenCategories
+            await _dbContext.MainScreens
                 .Where(s => s.Id == id)
                 .ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, x => i + 1));
         }
@@ -330,7 +330,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
         //var titleIdParameter = new SqlParameter("@TitleId", titleId);
         //var langParameter = new SqlParameter("@Lang", lang);
 
-        var mainScreens = await context.MainScreenCategories.
+        var mainScreens = await context.MainScreens.
             Include(ms => ms.CategoryScreen).
             ThenInclude(cs => cs.StScreenSub)
               .Where(ms => ms.CategoryScreen != null)
