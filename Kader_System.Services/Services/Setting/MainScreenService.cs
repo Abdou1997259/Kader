@@ -1,18 +1,17 @@
 ﻿using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Services.IServices.AppServices;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.Setting;
 
-public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer,IPermessionStructureService permessionStructureService, IMapper mapper, KaderDbContext context, IFileServer fileServer) : IMainScreenService
+public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IPermessionStructureService permessionStructureService, IMapper mapper, KaderDbContext context, IFileServer fileServer) : IMainScreenService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
     private readonly IMapper _mapper = mapper;
     private readonly IFileServer _fileServer = fileServer;
-    private readonly IPermessionStructureService _permessionStructureService= permessionStructureService;
+    private readonly IPermessionStructureService _permessionStructureService = permessionStructureService;
     private readonly KaderDbContext _dbContext = context;
 
 
@@ -91,7 +90,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
 
     }
-    public async Task<Response<StGetAllMainScreensResponse>> GetAllMainScreensAsync(string lang, StGetAllFiltrationsForMainScreenRequest model, string host,string moduleName)
+    public async Task<Response<StGetAllMainScreensResponse>> GetAllMainScreensAsync(string lang, StGetAllFiltrationsForMainScreenRequest model, string host, string moduleName)
     {
         Expression<Func<StMainScreen, bool>> filter = x => x.IsDeleted == model.IsDeleted
                                                && (string.IsNullOrEmpty(model.Word) ||
@@ -118,10 +117,10 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                  take: model.PageSize,
                  skip: (model.PageNumber - 1) * model.PageSize, orderBy: x =>
                   x.OrderBy(x => x.Order))).Select(x => new MainScreenData
-                 {
-                     Id=x.Id,
-                     Screen_main_title = Localization.Arabic ==lang? x.Screen_main_title_ar:x.Screen_main_title_en,
-                     Screen_main_image= x.Screen_main_image == null ? string.Empty : _fileServer.GetFilePath(moduleName, x.Screen_main_image)
+                  {
+                      Id = x.Id,
+                      Screen_main_title = Localization.Arabic == lang ? x.Screen_main_title_ar : x.Screen_main_title_en,
+                      Screen_main_image = x.Screen_main_image == null ? string.Empty : _fileServer.GetFilePath(moduleName, x.Screen_main_image)
 
                   }).ToList(),
             CurrentPage = model.PageNumber,
@@ -162,9 +161,9 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
     public async Task<Response<StCreateMainScreenRequest>> CreateMainScreenAsync(StCreateMainScreenRequest model, string moduleName)
     {
         var mainScreenmap = _mapper.Map<StMainScreen>(model);
-        var maxId = await _unitOfWork.MainScreens.MaxInCloumn(x =>x.Id);
+        var maxId = await _unitOfWork.MainScreens.MaxInCloumn(x => x.Id);
         mainScreenmap.Order = maxId + 1;
-        bool exists = await _unitOfWork.MainScreens.ExistAsync(x => x.Screen_main_title_en.Trim() == model.Screen_main_title_ar);
+        bool exists = await _unitOfWork.MainScreens.ExistAsync(x => x.Screen_main_title_en.Trim() == model.Screen_main_title_en.Trim() || x.Screen_main_title_ar.Trim() == model.Screen_main_title_ar.Trim());
 
         if (exists)
         {
@@ -194,7 +193,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
 
 
-    public async Task<Response<StGetMainScreenByIdResponse>> GetMainScreenByIdAsync(int id,string moduleName)
+    public async Task<Response<StGetMainScreenByIdResponse>> GetMainScreenByIdAsync(int id, string moduleName)
     {
         var obj = await _unitOfWork.MainScreens.GetFirstOrDefaultAsync(x => x.Id == id);
         var imagePath = obj.Screen_main_image == null ? string.Empty : _fileServer.GetFilePath(moduleName, obj.Screen_main_image);
@@ -214,7 +213,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             Data = new()
             {
                 Id = id,
-                Screen_main_image= imagePath,
+                Screen_main_image = imagePath,
                 Screen_Main_title_ar = obj.Screen_main_title_ar,
                 Screen_Main_title_en = obj.Screen_main_title_en
             },
@@ -224,7 +223,9 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
     public async Task<Response<StUpdateMainScreenRequest>> UpdateMainScreenAsync(int id, StUpdateMainScreenRequest model, string appPath, string moduleName)
     {
-        var obj = await _unitOfWork.MainScreens.GetFirstOrDefaultAsync(x => x.Id ==id);
+
+        var obj = await _unitOfWork.MainScreens.GetFirstOrDefaultAsync(x => x.Id == id);
+
 
         if (obj == null)
         {
@@ -238,7 +239,22 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                 Msg = resultMsg
             };
         }
+        if (await _unitOfWork.MainScreens.ExistAsync(x => x.Id != id
+        && (x.Screen_main_title_en == model.Screen_main_title_en
+        || x.Screen_main_title_ar == model.Screen_main_title_ar)))
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.AlreadyExited],
+                    _sharLocalizer[Localization.MainScreen]);
 
+            return new()
+            {
+                Data = model,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+
+
+        }
         obj.Screen_main_title_ar = model.Screen_main_title_ar;
         obj.Screen_main_title_en = model.Screen_main_title_en;
         if (model.Screen_main_image != null)
@@ -248,7 +264,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
 
             obj.Screen_main_image = (model.Screen_main_image.Length == 0) ? null
-                : await _fileServer.UploadFileAsync( moduleName, model.Screen_main_image);
+                : await _fileServer.UploadFileAsync(moduleName, model.Screen_main_image);
         }
 
 
@@ -318,13 +334,13 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             Include(ms => ms.CategoryScreen).
             ThenInclude(cs => cs.StScreenSub)
               .Where(ms => ms.CategoryScreen != null)
-            .ToListAsync(); 
+            .ToListAsync();
 
 
 
         var permStruct = (List<Dictionary<string, DTOSPGetPermissionsBySubScreen>>)(await _permessionStructureService.GetPermissionsBySubScreen(lang)).DynamicData;
 
- 
+
         var subs = await _unitOfWork.SubMainScreenActions.GetAllAsync();
         var permision = await _unitOfWork.UserPermssionRepositroy.GetAllAsync();
         //var permision = await _dbContext.SPUserPermissionsBySubScreens
@@ -361,13 +377,13 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                        sub_image = Path.Combine(SD.GoRootPath.GetSettingImagesPath, ms.Screen_main_image ?? " "),
                        screen_code = k.ScreenCode,
                        actions = subs.Where(x => x.ScreenSubId == k.Id).Select(x => x.ActionId).ToList().Concater(),
-                       permissions = permision.Where(ps =>ps.SubScreenId == k.Id).Select(ps =>ps.Permission).FirstOrDefault()
- 
+                       permissions = permision.Where(ps => ps.SubScreenId == k.Id).Select(ps => ps.Permission).FirstOrDefault()
+
                    }).ToList()
                }).ToList()
        }).ToList();
 
-        
+
 
         foreach (var mainScreen in ChildScreens)
         {
@@ -376,7 +392,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
 
             foreach (var categoryScreen in mainScreen.cats)
             {
-                if (categoryScreen.main_id ==  null ) continue;
+                if (categoryScreen.main_id == null) continue;
                 Console.WriteLine($"Category ID: {categoryScreen.Id}");
                 Console.WriteLine($"Category Screen Title: {categoryScreen.title}");
                 Console.WriteLine($"Main Screen Title: {mainScreen.main_title}");

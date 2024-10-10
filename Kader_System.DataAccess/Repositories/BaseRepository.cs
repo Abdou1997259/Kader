@@ -142,7 +142,7 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
             foreach (var includeProperty in includeProperties.Split(new char[] { ',' },
                 StringSplitOptions.RemoveEmptyEntries))
                 query = query.Include(includeProperty);
-
+        var querytest = query.ToQueryString();
         return await query.FirstOrDefaultAsync() is not null;
     }
 
