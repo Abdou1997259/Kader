@@ -2,8 +2,6 @@
 
 using Kader_System.Domain.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using System.Xml;
 
 namespace Kader_System.Services.Services.HR
 {
@@ -41,12 +39,12 @@ namespace Kader_System.Services.Services.HR
         }
 
         public async Task<Response<GetAllVacationResponse>> GetAllVacationsWithJoinAsync(string lang,
-            GetAllFilterationFoVacationRequest model,string host)
+            GetAllFilterationFoVacationRequest model, string host)
         {
             Expression<Func<HrVacation, bool>> filter = x => x.IsDeleted == model.IsDeleted
                                                              && (string.IsNullOrEmpty(model.Word) || x.NameAr.Contains(model.Word)
                                                                  || x.NameEn.Contains(model.Word)
-                                                                 ||x.VacationType!.Name!.Contains(model.Word)
+                                                                 || x.VacationType!.Name!.Contains(model.Word)
                                                                  || x.VacationType!.NameInEnglish!.Contains(model.Word)
                                                              );
             var totalRecords = await unitOfWork.Vacations.CountAsync(filter: filter);
@@ -60,9 +58,9 @@ namespace Kader_System.Services.Services.HR
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
             var result = new GetAllVacationResponse();
-       
-            result.TotalRecords= totalRecords;
-            var items= (unitOfWork.Vacations.GetVacationInfo(filter,
+
+            result.TotalRecords = totalRecords;
+            var items = (unitOfWork.Vacations.GetVacationInfo(filter,
                         take: model.PageSize,
                         skip: (model.PageNumber - 1) * model.PageSize,
                         lang: lang));
@@ -72,10 +70,11 @@ namespace Kader_System.Services.Services.HR
             result.Items = (unitOfWork.Vacations.GetVacationInfo(filter,
                         take: model.PageSize,
                         skip: (model.PageNumber - 1) * model.PageSize,
-                        lang: lang)).OrderByDescending(x =>x.Id).ToList();
+                        lang: lang)).OrderByDescending(x => x.Id).ToList();
             result.From = (page - 1) * model.PageSize + 1;
             result.CurrentPage = model.PageNumber;
             result.LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}";
+            result.LastPage = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
             result.FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}";
             result.PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null;
             result.NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null;
@@ -105,7 +104,7 @@ namespace Kader_System.Services.Services.HR
             };
         }
 
-        public async Task<Response<GetVacationDetailsByIdResponse>> GetVacationByIdAsync(int id )
+        public async Task<Response<GetVacationDetailsByIdResponse>> GetVacationByIdAsync(int id)
         {
 
             var obj = await unitOfWork.Vacations.GetFirstOrDefaultAsync(v => v.Id == id, $"{nameof(instanceVacation.VacationType)},{nameof(instanceVacation.VacationDistributions)}");
@@ -133,14 +132,14 @@ namespace Kader_System.Services.Services.HR
                     VacationType = obj.VacationType.Name,
                     TotalBalance = obj.TotalBalance,
                     VacationTypeId = obj.VacationTypeId,
-                    Details = obj.VacationDistributions.Select(d=>new VacationDistributionResponseData()
+                    Details = obj.VacationDistributions.Select(d => new VacationDistributionResponseData()
                     {
                         DaysCount = d.DaysCount,
                         Id = d.Id,
                         NameAr = d.NameAr,
                         NameEn = d.NameEn,
                         SalaryCalculatorId = d.SalaryCalculatorId
-                    } ).ToList()
+                    }).ToList()
                 },
                 Check = true
             };
@@ -333,7 +332,7 @@ namespace Kader_System.Services.Services.HR
             {
 
                 obj.IsDeleted = false;
-               
+
                 unitOfWork.Vacations.Update(obj);
 
                 foreach (var v in obj.VacationDistributions)
@@ -347,7 +346,7 @@ namespace Kader_System.Services.Services.HR
                 return new()
                 {
                     Check = true,
-                    Data = new ()
+                    Data = new()
                     {
                         NameAr = obj.NameAr,
                         NameEn = obj.NameEn,
@@ -355,7 +354,7 @@ namespace Kader_System.Services.Services.HR
                         CanTransfer = obj.CanTransfer,
                         TotalBalance = obj.TotalBalance,
                         VacationTypeId = obj.VacationTypeId,
-                        VacationDistributions = obj.VacationDistributions.Select(d=>new UpdateVacationDistribution()
+                        VacationDistributions = obj.VacationDistributions.Select(d => new UpdateVacationDistribution()
                         {
                             Id = d.Id,
                             NameAr = d.NameAr,
@@ -374,7 +373,7 @@ namespace Kader_System.Services.Services.HR
                 return new()
                 {
                     Data = null,
-                    Error = e.InnerException!=null ? e.InnerException.Message:e.Message,
+                    Error = e.InnerException != null ? e.InnerException.Message : e.Message,
                     Msg = e.Message
                 };
             }

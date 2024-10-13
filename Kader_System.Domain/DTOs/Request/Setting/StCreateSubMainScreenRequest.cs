@@ -13,7 +13,7 @@ public class StCreateSubScreenRequest
 
     public int screen_cat_id { get; set; }
     [Display(Name = Annotations.Name), Required(ErrorMessage = Annotations.FieldIsRequired)]
-    [Url]
+
     public string url { get; set; } = string.Empty;
 
     public List<int>? actions { get; set; } = [];

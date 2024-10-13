@@ -1,5 +1,4 @@
 ﻿using Kader_System.Domain.DTOs;
-using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.Trans
 {
@@ -47,22 +46,15 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<GetAllTransCovenantResponse>> GetAllTransCovenantsAsync(string lang,
             GetAllFilterationForTransCovenant model, string host)
         {
-            Expression<Func<TransCovenant, bool>> filter = x => x.IsDeleted == model.IsDeleted
-                && (string.IsNullOrEmpty(model.Word)
-                   || x.NameAr.Contains(model.Word)
-                   || x.NameEn.Contains(model.Word)
-                   || x.Employee!.FullNameAr.Contains(model.Word)
-                   || x.Employee!.FullNameEn.Contains(model.Word))
-                   || (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
+            Expression<Func<TransCovenant, bool>> filter = x =>
+            x.IsDeleted == model.IsDeleted &&
+            (string.IsNullOrEmpty(model.Word) ||
+                x.NameAr.Contains(model.Word) ||
+                x.NameEn.Contains(model.Word) ||
+                (x.Employee != null && (x.Employee.FullNameAr.Contains(model.Word) || x.Employee.FullNameEn.Contains(model.Word)))) &&
+            (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
 
-            Expression<Func<TransCovenantData, bool>> filterSearch = x =>
-                (string.IsNullOrEmpty(model.Word)
-                 || x.NameAr.Contains(model.Word)
-                 || x.EmployeeName.Contains(model.Word)
-                 || x.NameEn.Contains(model.Word)
-                 || x.EmployeeName.Contains(model.Word)
-                 || x.AddedBy!.Contains(model.Word))
-               || (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
+
 
             var totalRecords = await unitOfWork.TransCovenants.CountAsync(filter: filter,
                 includeProperties: $"{nameof(_insatance.Employee)}");
@@ -77,14 +69,30 @@ namespace Kader_System.Services.Services.Trans
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
+
+            var items = await unitOfWork.TransCovenants.GetSpecificSelectAsync(filter, includeProperties: "Employee,Employee.User,Employee.Job", select: x => new TransCovenantData
+            {
+                AddedBy = x.Employee.User.FullName,
+                AddedOn = x.Add_date,
+                Amount = x.Amount,
+                EmployeeId = x.EmployeeId,
+                EmployeeName = lang == Localization.Arabic ? x.Employee.FullNameAr : x.Employee.FullNameEn,
+                Id = x.Id,
+                Notes = x.Notes,
+                NameAr = x.NameAr,
+                NameEn = x.NameEn,
+                Date = x.Date,
+                JobName = lang == Localization.Arabic ? x.Employee.Job.NameAr : x.Employee.Job.NameEn,
+
+            }, skip: model.PageSize * (model.PageNumber - 1), take: model.PageSize);
             var result = new GetAllTransCovenantResponse
             {
                 TotalRecords = totalRecords,
-
-                Items = unitOfWork.TransCovenants.GetTransCovenantDataInfo(filter: filter, filterSearch: filterSearch,
-                    skip: (model.PageNumber - 1) * model.PageSize,
-                    take: model.PageSize, lang: lang).Where(x=>!model.EmployeeId.HasValue||x.EmployeeId==model.EmployeeId).ToList()
-               ,
+                Items = items.ToList(),
+                // Items = unitOfWork.TransCovenants.GetTransCovenantDataInfo(filter: filter, filterSearch: filterSearch,
+                //     skip: (model.PageNumber - 1) * model.PageSize,
+                //     take: model.PageSize, lang: lang).Where(x => !model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId).ToList()
+                //,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -160,9 +168,9 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<GetTransCovenantById>> GetTransCovenantByIdAsync(int id,string lang)
+        public async Task<Response<GetTransCovenantById>> GetTransCovenantByIdAsync(int id, string lang)
         {
-            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(c=>c.Id==id, 
+            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(c => c.Id == id,
                 includeProperties: $"{nameof(_insatance.Employee)}");
 
 
@@ -179,7 +187,7 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
-            var lookups =await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang);
+            var lookups = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang);
             return new()
             {
                 Data = new GetTransCovenantById()
@@ -191,14 +199,14 @@ namespace Kader_System.Services.Services.Trans
                     NameEn = obj.NameEn,
                     Notes = obj.Notes,
                     EmployeeId = obj.EmployeeId,
-                    EmployeeName =lang==Localization.Arabic? obj.Employee!.FullNameAr:obj.Employee!.FullNameEn,
+                    EmployeeName = lang == Localization.Arabic ? obj.Employee!.FullNameAr : obj.Employee!.FullNameEn,
                     Id = obj.Id
                 },
                 Check = true,
-                LookUps =new
+                LookUps = new
                 {
-                    employees= lookups
-                } 
+                    employees = lookups
+                }
             };
         }
 

@@ -24,7 +24,7 @@ namespace Kader_System.Services.Services.Setting
                 Main_Title = Localization.Arabic == lang ? x.ScreenMain.Screen_main_title_ar : x.ScreenMain.Screen_main_title_en,
                 main_image = _fileServer.GetFilePath(Modules.Setting, x.ScreenMain.Screen_main_image)
 
-            }, includeProperties: "screenCat", orderBy: x => x.OrderBy(s => s.Order))).ToList();
+            }, includeProperties: "ScreenMain", orderBy: x => x.OrderBy(s => s.Order))).ToList();
 
 
             List<ScreenSubLookup> lookupsForsub = (await unitOfWork.SubScreens.GetSpecificSelectAsync(x => !x.IsDeleted, select: x => new ScreenSubLookup

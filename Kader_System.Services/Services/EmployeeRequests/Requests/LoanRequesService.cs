@@ -2,14 +2,10 @@
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
-using Kader_System.Domain.DTOs.Response.Loan;
-using Kader_System.Domain.Models.EmployeeRequests;
-using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
-using Microsoft.EntityFrameworkCore;
 
 
 
@@ -187,35 +183,41 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<LoanRequest>> DeleteLoanRequest(int id, string fullPath)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-            var loanRequest = await _unitOfWork.LoanRequestRepository.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
-            if (loanRequest != null)
+            var loanRequest = await _unitOfWork.LoanRequestRepository.GetByIdAsync(id);
+            if (loanRequest == null)
             {
-                if (loanRequest.StatuesOfRequest.ApporvalStatus != 1)
-                {
-                    msg = _sharLocalizer[Localization.ApproveRejectDelte];
-                    return new()
-                    {
-                        Msg = msg,
-                        Check = false,
-                    };
-                }
-                if (!string.IsNullOrWhiteSpace(loanRequest.AttachmentPath))
-                {
-                    _fileServer.RemoveFile(fullPath, HrEmployeeRequestTypesEnums.LoanRequest.ToString(), loanRequest.AttachmentPath);
-                }
-                msg = _sharLocalizer[Localization.Deleted];
                 return new()
                 {
-                    Msg = msg,
-                    Check = true,
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.CannotBeFound, _sharLocalizer[Localization.LoanRequest]]
+                };
+
+            }
+
+            if (loanRequest?.StatuesOfRequest?.ApporvalStatus != 1)
+            {
+
+                return new()
+                {
+                    Msg = _sharLocalizer[Localization.ApproveRejectDelte],
+                    Check = false,
                 };
             }
+            if (!string.IsNullOrWhiteSpace(loanRequest.AttachmentPath))
+            {
+                _fileServer.RemoveFile(fullPath, HrEmployeeRequestTypesEnums.LoanRequest.ToString(), loanRequest.AttachmentPath);
+            }
+            loanRequest.IsDeleted = true;
+            loanRequest.DeleteDate = DateTime.Now;
+            loanRequest.DeleteBy = userId;
+            _unitOfWork.LoanRequestRepository.Update(loanRequest);
+
+            await _unitOfWork.CompleteAsync();
+
             return new()
             {
-                Check = false,
-                Data = null,
-                Msg = msg
+                Msg = _sharLocalizer[Localization.Deleted],
+                Check = true,
             };
 
         }
@@ -268,7 +270,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region Status
-        public async Task<Response<string>> ApproveRequest(int requestId,string lang)
+        public async Task<Response<string>> ApproveRequest(int requestId, string lang)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
             var loanRequest = await _unitOfWork.LoanRequestRepository.GetFirstOrDefaultAsync(x => x.Id == requestId);
@@ -282,7 +284,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     Msg = msg
                 };
             }
-            if(loanRequest.StatuesOfRequest.ApporvalStatus==(int)RequestStatusTypes.Approved)
+            if (loanRequest.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved)
             {
                 return new Response<string>()
                 {
@@ -307,7 +309,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
             }, lang);
-            if (!creatResult.Check) {
+            if (!creatResult.Check)
+            {
                 return new Response<string>
                 {
                     Check = false,
@@ -316,7 +319,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             }
 
             var result = await _unitOfWork.LoanRequestRepository.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
-        
+
 
 
             if (result > 0)

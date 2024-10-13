@@ -1,11 +1,10 @@
 ﻿using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
 namespace Kader_System.Services.Services.HR;
 
-public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer,KaderDbContext _context, IMapper mapper) : IAllowanceService
+public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, KaderDbContext _context, IMapper mapper) : IAllowanceService
 {
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -43,21 +42,21 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
         };
     }
 
-    public async Task<Response<HrGetAllAllowancesResponse>> GetAllAllowancesAsync(string lang, HrGetAllFiltrationsForAllowancesRequest model,string host)
+    public async Task<Response<HrGetAllAllowancesResponse>> GetAllAllowancesAsync(string lang, HrGetAllFiltrationsForAllowancesRequest model, string host)
     {
-        Expression<Func<HrAllowance, bool>> filter = x => x.IsDeleted == model.IsDeleted && 
-                                                          (string.IsNullOrEmpty(model.Word) 
-                                                           ||x.Name_ar.Contains(model.Word) 
-                                                           ||x.Name_en.Contains(model.Word) );
+        Expression<Func<HrAllowance, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
+                                                          (string.IsNullOrEmpty(model.Word)
+                                                           || x.Name_ar.Contains(model.Word)
+                                                           || x.Name_en.Contains(model.Word));
 
 
-         var totalRecords = await _unitOfWork.Allowances.CountAsync(filter: filter);
-            int page = 1;
-            int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize==0?10:model.PageSize));
-            if (model.PageNumber < 1)
-                page = 1;
-            else
-                page = model.PageNumber;
+        var totalRecords = await _unitOfWork.Allowances.CountAsync(filter: filter);
+        int page = 1;
+        int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
+        if (model.PageNumber < 1)
+            page = 1;
+        else
+            page = model.PageNumber;
         var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
@@ -111,8 +110,8 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
     public async Task<Response<HrCreateAllowanceRequest>> CreateAllowanceAsync(HrCreateAllowanceRequest model)
     {
         bool exists = false;
-        exists = await _unitOfWork.Companies.ExistAsync(x => x.NameAr.Trim() == model.Name_ar
-        && x.NameEn.Trim() == model.Name_en.Trim());
+        exists = await _unitOfWork.Allowances.ExistAsync(x => x.Name_ar.Trim() == model.Name_ar
+        || x.Name_en.Trim() == model.Name_en.Trim());
 
         if (exists)
         {
@@ -184,6 +183,16 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
                 Error = resultMsg,
                 Msg = resultMsg
             };
+        }
+        if (await _unitOfWork.Allowances.ExistAsync(x => x.Id != id && x.Name_ar == model.Name_ar || x.Name_en == model.Name_ar))
+        {
+            return new()
+            {
+                Check = false,
+                Msg = _sharLocalizer[Localization.AlreadyExitedWithSameName, _sharLocalizer[Localization.Allowance]]
+
+            };
+
         }
 
         obj.Name_ar = model.Name_ar;

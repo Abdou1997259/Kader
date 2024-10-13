@@ -1,14 +1,11 @@
-﻿using Kader_System.DataAccess.Repositories;
-using Kader_System.DataAccesss.Context;
+﻿using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
-using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
-using Microsoft.EntityFrameworkCore;
 
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
@@ -16,7 +13,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
 
-    public class ResignationRequestService(IUnitOfWork unitOfWork, KaderDbContext context,IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IResignationRequestService
+    public class ResignationRequestService(IUnitOfWork unitOfWork, ILogger<ResignationRequestService> logger, KaderDbContext context, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IResignationRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -26,6 +23,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
         private readonly IRequestService _requestService = requestService;
+        private readonly ILogger<ResignationRequestService> _logger = logger;
 
         #region ListOfResignationRequest
         public async Task<Response<IEnumerable<ListOfResignationRequestResponse>>> ListOfResignationRequest()
@@ -187,39 +185,62 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region DeleteResignationRequest
-        public async Task<Response<ResignationRequest>> DeleteResignationRequest(int id,string ModuleName)
+        public async Task<Response<ResignationRequest>> DeleteResignationRequest(int id, string ModuleName)
         {
-            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-            var resignationRequest = await _unitOfWork.ResignationRepository.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
-            if (resignationRequest != null)
+            try
             {
-                if (resignationRequest.StatuesOfRequest.ApporvalStatus != 1)
+                var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+
+                var resignationRequest = await _unitOfWork.ResignationRepository.GetByIdAsync(id);
+                if (resignationRequest == null)
                 {
-                    msg = _sharLocalizer[Localization.ApproveRejectDelte];
                     return new()
                     {
-                        Msg = msg,
+                        Msg = _sharLocalizer[Localization.CannotBeFound, _sharLocalizer[Localization.Resignation]],
+                        Check = true,
+                    };
+
+                }
+                if (resignationRequest?.StatuesOfRequest?.ApporvalStatus != 1)
+                {
+
+                    return new()
+                    {
+                        Msg = _sharLocalizer[Localization.ApproveRejectDelte],
                         Check = false,
                     };
                 }
+
+
                 if (!string.IsNullOrWhiteSpace(resignationRequest.AttachmentPath))
                 {
                     _fileServer.RemoveFile(ModuleName, HrEmployeeRequestTypesEnums.ResignationRequest.ToString(), resignationRequest.AttachmentPath);
                 }
-                msg = _sharLocalizer[Localization.Deleted];
+                resignationRequest.IsDeleted = true;
+                resignationRequest.DeleteDate = DateTime.Now;
+                resignationRequest.DeleteBy = userId;
+                _unitOfWork.ResignationRepository.Update(resignationRequest);
+                await _unitOfWork.CompleteAsync();
+
+
                 return new()
                 {
-                    Msg = msg,
-                    Check = true,
+                    Check = false,
+                    Data = null,
+                    Msg = _sharLocalizer[Localization.Deleted]
                 };
             }
-            return new()
+            catch (Exception ex)
             {
-                Check = false,
-                Data = null,
-                Msg = msg
-            };
+
+                _logger.LogError(ex.InnerException.Message);
+                return new()
+                {
+                    Check = false,
+                    Msg = ex?.InnerException?.Message
+                };
+
+            }
 
         }
         #endregion
@@ -295,7 +316,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.ResignationRepository.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId,resoan);
+            var result = await _unitOfWork.ResignationRepository.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId, resoan);
             if (result > 0)
             {
                 return new Response<string>()
