@@ -4,16 +4,16 @@
     public class Education : BaseEntity
     {
 
-        public int Id { get; set; }
-        public int FacultyId { get; set; }
-        [ForeignKey(nameof(FacultyId))]
-        public Faculty Faculty { get; set; } = default!;
+        public int id { get; set; }
+        public int faculty_id { get; set; }
+        [ForeignKey(nameof(faculty_id))]
+        public Faculty faculty { get; set; } = default!;
 
-        public DateOnly From { get; set; }
-        public DateOnly To { get; set; }
-        public int ApplicantId { get; set; }
-        [ForeignKey(nameof(ApplicantId))]
-        public Applicant Applicant { get; set; } = default!;
+        public DateOnly from { get; set; }
+        public DateOnly to { get; set; }
+        public int applicant_id { get; set; }
+        [ForeignKey(nameof(applicant_id))]
+        public Applicant applicant { get; set; } = default!;
 
 
 

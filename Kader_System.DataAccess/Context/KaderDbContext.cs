@@ -242,8 +242,8 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .WithOne(x => x.ScreenSub);
 
 
-        modelBuilder.Entity<Applicant>().Property(x => x.State).HasConversion(x => x.ToString(), d => (ApplicantStates)Enum.Parse(typeof(ApplicantStates), d));
-        modelBuilder.Entity<Applicant>().HasIndex(x => new { x.Email, x.Phone }).IsUnique();
+        modelBuilder.Entity<Applicant>().Property(x => x.state).HasConversion(x => x.ToString(), d => (ApplicantStates)Enum.Parse(typeof(ApplicantStates), d));
+        modelBuilder.Entity<Applicant>().HasIndex(x => new { x.email, x.phone }).IsUnique();
         #endregion
 
         #region SubScreen

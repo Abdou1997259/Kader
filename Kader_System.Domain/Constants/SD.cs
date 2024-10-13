@@ -562,6 +562,7 @@ public static class SD
             public const string UpdateApplicant = "Applicant/update/{id}";
             public const string RestoreApplicant = "Applicant/Restore/{id}";
             public const string DeleteApplicant = "Applicant/delete/{id}";
+            public const string GetApplicantById = "Applicant/GetById/{id}";
         }
         public class Vacation
         {

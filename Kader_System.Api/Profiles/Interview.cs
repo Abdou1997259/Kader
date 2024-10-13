@@ -8,10 +8,10 @@ namespace Kader_System.Api.Profiles
         public Interview()
         {
             CreateMap<CreateApplicantRequest, Applicant>()
-                .ForMember(x => x.Educations, otp => otp.Ignore())
-                .ForMember(x => x.Experiences, opt => opt.Ignore())
-                .ForMember(x => x.CvFilesPath, opt => opt.Ignore())
-                .ForMember(x => x.ImagePath, opt => opt.Ignore())
+                .ForMember(x => x.educations, otp => otp.Ignore())
+                .ForMember(x => x.experiences, opt => opt.Ignore())
+                .ForMember(x => x.cv_file_path, opt => opt.Ignore())
+                .ForMember(x => x.image_path, opt => opt.Ignore())
 
                 ;
         }
