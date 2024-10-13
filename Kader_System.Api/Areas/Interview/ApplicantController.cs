@@ -26,25 +26,9 @@ namespace Kader_System.Api.Areas.Interview
             => Ok(await _service.ListOfAsync(_requestService.GetRequestHeaderLanguage));
 
 
-        //[HttpGet(ApiRoutes.Job.GetJobById)]
-        //[Permission(Permission.View, 9)]
-        //public async Task<IActionResult> GetJobById(int id)
-        //{
-        //    var response = await jobService.GetJobByIdAsync(id);
-        //    if (response.Check)
-        //        return Ok(response);
-        //    else
-        //        return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
 
-        //}
 
-        //[HttpGet(ApiRoutes.Job.GetAllJobs)]
-        //[Permission(Permission.View, 9)]
-        //public async Task<IActionResult> GetAll([FromQuery] HrGetAllFilterationForJobRequest model)
-        //{
 
-        //    return Ok(await jobService.GetAllJobsAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
-        //}
         #endregion
 
 

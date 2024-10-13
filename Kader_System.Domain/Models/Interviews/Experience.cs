@@ -3,19 +3,19 @@
     [Table("experiences")]
     public class Experience : BaseEntity
     {
-        public int Id { get; set; }
+        public int id { get; set; }
         [Required]
-        public string CompanyName { get; set; } = null!;
+        public string company_name { get; set; } = null!;
         [Required]
-        public string JobTitle { get; set; } = null!;
+        public string job_title { get; set; } = null!;
         [Required]
-        public DateOnly From { get; set; }
+        public DateOnly from { get; set; }
 
         [Required]
-        public DateOnly To { get; set; }
-        public int ApplicantId { get; set; }
-        [ForeignKey(nameof(ApplicantId))]
-        public Applicant Applicant { get; set; } = default!;
+        public DateOnly to { get; set; }
+        public int applicant_id { get; set; }
+        [ForeignKey(nameof(applicant_id))]
+        public Applicant applicant { get; set; } = default!;
 
     }
 }

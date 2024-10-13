@@ -3,32 +3,32 @@
     [Table("applicants")]
     public class Applicant : BaseEntity
     {
-        public int Id { get; set; }
+        public int id { get; set; }
         [Required]
-        public string FullName { get; set; } = null!;
+        public string full_name { get; set; } = null!;
 
         [Required]
-        public string Email { get; set; } = null!;
+        public string email { get; set; } = null!;
         [Required]
-        public string Phone { get; set; } = null!;
+        public string phone { get; set; } = null!;
 
-        public int? YearOfExperiences { get; set; }
+        public int? year_of_experiences { get; set; }
 
-        public DateOnly? DateOfBirth { get; set; }
+        public DateOnly? date_of_birth { get; set; }
 
-        public decimal? CurrentSalary { get; set; }
+        public decimal? current_salary { get; set; }
         [Required]
-        public decimal ExpectedSalary { get; set; }
+        public decimal expected_salary { get; set; }
         [Required]
-        public int Gender { get; set; }
-        public float? Rate { get; set; }
-        public ApplicantStates State { get; set; } = ApplicantStates.Applied;
+        public int gender { get; set; }
+        public float? rate { get; set; }
+        public ApplicantStates state { get; set; } = ApplicantStates.Applied;
 
-        public string? ImagePath { get; set; }
-        public string? CvFilesPath { get; set; } = default!;
-        public ICollection<Education> Educations { get; set; } = new HashSet<Education>();
+        public string? image_path { get; set; }
+        public string? cv_file_path { get; set; } = default!;
+        public ICollection<Education> educations { get; set; } = new HashSet<Education>();
 
-        public ICollection<Experience> Experiences { get; set; } = new HashSet<Experience>();
+        public ICollection<Experience> experiences { get; set; } = new HashSet<Experience>();
 
 
 

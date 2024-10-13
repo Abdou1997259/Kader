@@ -53,7 +53,7 @@
             // Helper method to perform the asynchronous check
             private async Task<bool> CheckIfExistsAsync(IUnitOfWork unitOfWork, string email, string phone)
             {
-                return await unitOfWork.Applicant.ExistAsync(x => x.Email == email && x.Phone == phone);
+                return await unitOfWork.Applicant.ExistAsync(x => x.email == email && x.phone == phone);
             }
         }
     }

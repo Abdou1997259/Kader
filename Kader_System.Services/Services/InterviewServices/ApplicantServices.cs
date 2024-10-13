@@ -26,31 +26,33 @@ namespace Kader_System.Services.Services.InterviewServices
 
         #region Get
 
-        //public async Task<Response<GetAllResponse>> GetAllAsync(string lang, GetAllFilteredRequests model, string host)
-        //{
 
 
-        //    if (!result.Any())
-        //    {
-        //        string resultMsg = _sharLocalizer[Localization.NotFoundData];
-
-        //        return new()
-        //        {
-        //            Data = null,
-        //            Error = resultMsg,
-        //            Msg = resultMsg
-        //        };
-        //    }
-        //    return new Response<GetAllResponse>
-        //    {
-        //        Data = result
-
-        //    }
-        //}
-
-        public Task<Response<object>> GetById(int id, string lang)
+        public async Task<Response<object>> GetById(int id, string lang)
         {
-            throw new NotImplementedException();
+            //var applicant = await _unitOfWork.Applicant.GetByIdAsync(id);
+            //if (applicant == null)
+            //{
+
+            //    return new()
+            //    {
+            //        Check = false,
+            //        Msg = _sharLocalizer[Localization.CannotBeFound, _sharLocalizer[Localization.Applicant]]
+            //    };
+
+            //}
+            //return new()
+            //{
+            //    Check = true,
+            //    Data = new
+            //    {
+            //        f
+            //    }
+            //}
+            return new()
+            {
+                Check = true
+            };
         }
 
 
@@ -64,12 +66,12 @@ namespace Kader_System.Services.Services.InterviewServices
 
                 var result = await _context.Applicants.Where(filter).Select(x => new
                 {
-                    id = x.Id,
-                    rate = x.Rate,
-                    state = x.State,
-                    geneder = x.Gender,
+                    id = x.id,
+                    rate = x.rate,
+                    state = x.state,
+                    geneder = x.gender,
 
-                    applicant_name = x.FullName,
+                    applicant_name = x.full_name,
                 }).ToListAsync();
                 return new()
                 {
@@ -102,7 +104,7 @@ namespace Kader_System.Services.Services.InterviewServices
             try
             {
                 // Check if the applicant already exists
-                if (await _unitOfWork.Applicant.ExistAsync(x => x.FullName == model.FullName))
+                if (await _unitOfWork.Applicant.ExistAsync(x => x.full_name == model.full_name))
                 {
                     return new()
                     {
@@ -117,11 +119,11 @@ namespace Kader_System.Services.Services.InterviewServices
                 await _context.SaveChangesAsync();
 
                 // Handle Educations
-                if (model.Educations.Any())
+                if (model.educations.Any())
                 {
-                    foreach (var edu in model.Educations)
+                    foreach (var edu in model.educations)
                     {
-                        var university = await _context.Universities.FirstOrDefaultAsync(x => x.Id == edu.UniversityId);
+                        var university = await _context.Universities.FirstOrDefaultAsync(x => x.Id == edu.university_id);
                         if (university == null)
                         {
                             return new()
@@ -131,7 +133,7 @@ namespace Kader_System.Services.Services.InterviewServices
                             };
                         }
 
-                        var faculty = await _context.Faculties.FirstOrDefaultAsync(x => x.Id == edu.FacultyId);
+                        var faculty = await _context.Faculties.FirstOrDefaultAsync(x => x.Id == edu.faculty_id);
                         if (faculty == null)
                         {
                             return new()
@@ -141,7 +143,8 @@ namespace Kader_System.Services.Services.InterviewServices
                             };
                         }
 
-                        var universityContainsFaculty = await _context.Faculties.FirstOrDefaultAsync(x => x.UniversityId == edu.UniversityId && x.Id == edu.FacultyId);
+                        var universityContainsFaculty = await _context.Faculties.FirstOrDefaultAsync(x => x.UniversityId == edu.university_id
+                        && x.Id == edu.faculty_id);
                         if (universityContainsFaculty is null)
                         {
                             return new()
@@ -155,42 +158,42 @@ namespace Kader_System.Services.Services.InterviewServices
 
                         await _context.Educations.AddAsync(new Education
                         {
-                            ApplicantId = applicant.Id,
-                            FacultyId = edu.FacultyId,
-                            To = edu.To,
-                            From = edu.From,
+                            applicant_id = applicant.id,
+                            faculty_id = edu.faculty_id,
+                            to = edu.to,
+                            from = edu.from,
                         });
                     }
                 }
 
                 // Handle Experiences
-                if (model.Experiences.Any())
+                if (model.experiences.Any())
                 {
-                    foreach (var exp in model.Experiences)
+                    foreach (var exp in model.experiences)
                     {
                         await _context.Experiences.AddAsync(new Experience
                         {
-                            ApplicantId = applicant.Id,
-                            CompanyName = exp.CompanyName,
-                            JobTitle = exp.JobTitle,
-                            From = exp.From,
-                            To = exp.To,
+                            applicant_id = applicant.id,
+                            company_name = exp.company_name,
+                            job_title = exp.job_title,
+                            from = exp.from,
+                            to = exp.to,
                         });
                     }
                 }
                 var directoryTypes = HrDirectoryTypes.Applicant;
 
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.Interview);
-                if (model.ImageFile != null)
+                if (model.image_file != null)
                 {
-                    applicant.ImagePath = await _fileServer.UploadFileAsync(directoryName, model.ImageFile);
+                    applicant.image_path = await _fileServer.UploadFileAsync(directoryName, model.image_file);
 
                 }
-                if (model.CVFile != null)
+                if (model.cv_file != null)
                 {
 
 
-                    applicant.CvFilesPath = await _fileServer.UploadFileAsync(directoryName, model.CVFile);
+                    applicant.cv_file_path = await _fileServer.UploadFileAsync(directoryName, model.cv_file);
 
                 }
 
@@ -225,14 +228,14 @@ namespace Kader_System.Services.Services.InterviewServices
         #region Delete
         public async Task<Response<string>> DeleteAsync(int id)
         {
-            var applicant = await _unitOfWork.Applicant.GetFirstOrDefaultAsync(x => x.Id == id);
+            var applicant = await _unitOfWork.Applicant.GetFirstOrDefaultAsync(x => x.id == id);
             if (applicant == null)
             {
 
                 return new()
                 {
                     Check = false,
-                    Msg = _sharLocalizer[Localization.IsNotExisted, applicant.FullName]
+                    Msg = _sharLocalizer[Localization.IsNotExisted, applicant.full_name]
                 };
 
             }
@@ -251,14 +254,14 @@ namespace Kader_System.Services.Services.InterviewServices
         #region Update
         public async Task<Response<string>> RestoreAsync(int id)
         {
-            var applicant = await _unitOfWork.Applicant.GetFirstOrDefaultAsync(x => x.Id == id);
+            var applicant = await _unitOfWork.Applicant.GetFirstOrDefaultAsync(x => x.id == id);
             if (applicant == null)
             {
 
                 return new()
                 {
                     Check = false,
-                    Msg = _sharLocalizer[Localization.IsNotExisted, applicant.FullName]
+                    Msg = _sharLocalizer[Localization.IsNotExisted, applicant.full_name]
                 };
 
             }
@@ -283,16 +286,16 @@ namespace Kader_System.Services.Services.InterviewServices
             using var transaction = _unitOfWork.BeginTransaction();
             try
             {
-                var applicant = await _context.Applicants.FirstOrDefaultAsync(x => x.Id == id);
+                var applicant = await _context.Applicants.FirstOrDefaultAsync(x => x.id == id);
                 if (applicant == null)
                 {
                     return new() { Check = false, Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Applicant]] };
 
 
                 }
-                if (await _unitOfWork.Applicant.ExistAsync(x => x.Id != id && x.FullName == model.FullName))
+                if (await _unitOfWork.Applicant.ExistAsync(x => x.id != id && x.full_name == model.full_name))
                 {
-                    return new() { Check = false, Msg = _sharLocalizer[Localization.IsExist, model.FullName] };
+                    return new() { Check = false, Msg = _sharLocalizer[Localization.IsExist, model.full_name] };
 
                 }
 
@@ -301,28 +304,29 @@ namespace Kader_System.Services.Services.InterviewServices
                 var directoryTypes = HrDirectoryTypes.Applicant;
 
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.Interview);
-                if (model.ImageFile != null)
+                if (model.image_file != null)
                 {
-                    applicant.ImagePath = await _fileServer.UploadFileAsync(directoryName, model.ImageFile);
+                    applicant.image_path = await _fileServer.UploadFileAsync(directoryName, model.image_file);
 
                 }
-                if (model.CVFile != null)
+                if (model.cv_file != null)
                 {
 
 
-                    applicant.CvFilesPath = await _fileServer.UploadFileAsync(directoryName, model.CVFile);
+                    applicant.cv_file_path = await _fileServer.UploadFileAsync(directoryName, model.cv_file);
 
                 }
 
                 var updateApplicant = _mapper.Map(model, applicant);
 
-                if (model.Educations.Any())
+                if (model.educations.Any())
                 {
-                    var oldEducations = await _unitOfWork.Education.GetSpecificSelectTrackingAsync(x => x.ApplicantId == id, x => x);
+                    var oldEducations = await _unitOfWork.Education.GetSpecificSelectTrackingAsync(x => x.applicant_id == id, x => x);
                     _unitOfWork.Education.RemoveRange(oldEducations);
-                    foreach (var edu in model.Educations)
+                    foreach (var edu in model.educations)
                     {
-                        var university = await _context.Universities.FirstOrDefaultAsync(x => x.Id == edu.UniversityId);
+                        var university = await
+                            _context.Universities.FirstOrDefaultAsync(x => x.Id == edu.university_id);
                         if (university == null)
                         {
                             return new()
@@ -332,7 +336,7 @@ namespace Kader_System.Services.Services.InterviewServices
                             };
                         }
 
-                        var faculty = await _context.Faculties.FirstOrDefaultAsync(x => x.Id == edu.FacultyId);
+                        var faculty = await _context.Faculties.FirstOrDefaultAsync(x => x.Id == edu.faculty_id);
                         if (faculty == null)
                         {
                             return new()
@@ -342,7 +346,8 @@ namespace Kader_System.Services.Services.InterviewServices
                             };
                         }
 
-                        var universityContainsFaculty = await _context.Faculties.FirstOrDefaultAsync(x => x.UniversityId == edu.UniversityId && x.Id == edu.FacultyId);
+                        var universityContainsFaculty = await
+                            _context.Faculties.FirstOrDefaultAsync(x => x.UniversityId == edu.university_id && x.Id == edu.faculty_id);
                         if (universityContainsFaculty is null)
                         {
                             return new()
@@ -356,24 +361,24 @@ namespace Kader_System.Services.Services.InterviewServices
 
                         await _context.Educations.AddAsync(new Education
                         {
-                            ApplicantId = applicant.Id,
-                            FacultyId = edu.FacultyId,
-                            To = edu.To,
-                            From = edu.From,
+                            applicant_id = applicant.id,
+                            faculty_id = edu.faculty_id,
+                            to = edu.to,
+                            from = edu.from,
                         });
                     }
-                    if (model.Experiences.Any())
+                    if (model.experiences.Any())
                     {
-                        var oldExp = await _unitOfWork.Experience.GetSpecificSelectTrackingAsync(x => x.ApplicantId == id, x => x);
+                        var oldExp = await _unitOfWork.Experience.GetSpecificSelectTrackingAsync(x => x.applicant_id == id, x => x);
                         _unitOfWork.Experience.RemoveRange(oldExp);
-                        foreach (var exp in model.Experiences)
+                        foreach (var exp in model.experiences)
                         {
                             await _context.Experiences.AddAsync(new Experience
                             {
-                                ApplicantId = applicant.Id,
-                                CompanyName = exp.CompanyName,
-                                From = exp.From,
-                                To = exp.To,
+                                applicant_id = applicant.id,
+                                company_name = exp.company_name,
+                                from = exp.from,
+                                to = exp.to,
                             });
                         }
                     }
@@ -404,6 +409,11 @@ namespace Kader_System.Services.Services.InterviewServices
             #endregion
 
 
+        }
+
+        public Task<Response<object>> GetByIdAsync(int id, string lang)
+        {
+            throw new NotImplementedException();
         }
     }
 }

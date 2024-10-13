@@ -6,7 +6,7 @@ namespace Kader_System.Services.IServices.InterviewServices
     {
         Task<Response<IEnumerable<object>>> ListOfAsync(string lang);
         //Task<Response<GetAllResponse>> GetAllAsync(string lang, GetAllFilteredRequests model, string host);
-
+        Task<Response<object>> GetByIdAsync(int id, string lang);
 
 
 
