@@ -9,27 +9,27 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransCovenantController(ITransCovenantService service,IEmployeeService employeeService, IRequestService requestService) : ControllerBase
+    public class TransCovenantController(ITransCovenantService service, IEmployeeService employeeService, IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
         #region Get
 
-        [HttpGet(ApiRoutes.TransCovenant.ListOfTransCovenants)]
+        [HttpGet(ApiRoutes.TransCovenantRoute.ListOfTransCovenants)]
 
         [Permission(Helpers.Permission.View, 18)]
         public async Task<IActionResult> ListOfTransCovenants() =>
             Ok(await service.ListOfTransCovenantsAsync(requestService.GetRequestHeaderLanguage));
 
-        [HttpGet(ApiRoutes.TransCovenant.GetTransCovenants)]
+        [HttpGet(ApiRoutes.TransCovenantRoute.GetTransCovenants)]
         [Permission(Helpers.Permission.View, 18)]
         public async Task<IActionResult> GetAllTransCovenants([FromQuery] GetAllFilterationForTransCovenant request) =>
-            Ok(await service.GetAllTransCovenantsAsync(requestService.GetRequestHeaderLanguage,request, requestService.GetRequestHeaderLanguage));
+            Ok(await service.GetAllTransCovenantsAsync(requestService.GetRequestHeaderLanguage, request, requestService.GetRequestHeaderLanguage));
 
-        [HttpGet(ApiRoutes.TransCovenant.GetTransCovenantById)]
+        [HttpGet(ApiRoutes.TransCovenantRoute.GetTransCovenantById)]
         [Permission(Helpers.Permission.View, 18)]
         public async Task<IActionResult> GetTransCovenantById([FromRoute] int id)
         {
-            var result =await service.GetTransCovenantByIdAsync(id, requestService.GetRequestHeaderLanguage);
+            var result = await service.GetTransCovenantByIdAsync(id, requestService.GetRequestHeaderLanguage);
             if (result.Check)
                 return Ok(result);
             else if (!result.Check)
@@ -37,7 +37,7 @@ namespace Kader_System.Api.Areas.Trans
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, result);
         }
 
-        [HttpGet(ApiRoutes.TransCovenant.GetLookUps)]
+        [HttpGet(ApiRoutes.TransCovenantRoute.GetLookUps)]
         [Permission(Helpers.Permission.View, 18)]
         public async Task<IActionResult> GetLookUps()
         {
@@ -52,7 +52,7 @@ namespace Kader_System.Api.Areas.Trans
 
         #region Create
 
-        [HttpPost(ApiRoutes.TransCovenant.CreateTransCovenant)]
+        [HttpPost(ApiRoutes.TransCovenantRoute.CreateTransCovenant)]
         [Permission(Helpers.Permission.Add, 18)]
         public async Task<IActionResult> CreateTransCovenant([FromBody] CreateTransCovenantRequest request)
         {
@@ -73,7 +73,7 @@ namespace Kader_System.Api.Areas.Trans
         #endregion
 
         #region Put
-        [HttpPut(ApiRoutes.TransCovenant.UpdateTransCovenant)]
+        [HttpPut(ApiRoutes.TransCovenantRoute.UpdateTransCovenant)]
         [Permission(Helpers.Permission.Edit, 18)]
         public async Task<IActionResult> UpdateTransCovenant([FromRoute] int id, [FromBody] CreateTransCovenantRequest request)
         {
@@ -93,7 +93,7 @@ namespace Kader_System.Api.Areas.Trans
         }
 
 
-        [HttpPut(ApiRoutes.TransCovenant.RestoreTransCovenant)]
+        [HttpPut(ApiRoutes.TransCovenantRoute.RestoreTransCovenant)]
         [Permission(Helpers.Permission.Edit, 18)]
         public async Task<IActionResult> RestoreTransCovenant([FromRoute] int id)
         {
@@ -116,7 +116,7 @@ namespace Kader_System.Api.Areas.Trans
 
         #region Delete
 
-        [HttpDelete(ApiRoutes.TransCovenant.DeleteTransCovenant)]
+        [HttpDelete(ApiRoutes.TransCovenantRoute.DeleteTransCovenant)]
         [Permission(Helpers.Permission.Delete, 18)]
         public async Task<IActionResult> DeleteTransCovenant(int id)
         {
@@ -130,6 +130,6 @@ namespace Kader_System.Api.Areas.Trans
 
         #endregion
 
-        
+
     }
 }

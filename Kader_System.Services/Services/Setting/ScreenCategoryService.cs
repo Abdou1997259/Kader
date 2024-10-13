@@ -163,7 +163,7 @@ public class ScreenCategoryService(KaderDbContext context, IUnitOfWork unitOfWor
     {
         bool exists = false;
         exists = await _unitOfWork.ScreenCategories.ExistAsync(x => x.Screen_cat_title_ar.Trim() == model.Screen_cat_title_ar.Trim()
-        && x.Screen_cat_title_en.Trim() == model.Screen_cat_title_en.Trim());
+        || x.Screen_cat_title_en.Trim() == model.Screen_cat_title_en.Trim());
 
         if (exists)
         {
@@ -264,7 +264,9 @@ public class ScreenCategoryService(KaderDbContext context, IUnitOfWork unitOfWor
             };
 
         }
-        if (await _unitOfWork.ScreenCategories.ExistAsync(x => x.Id != id && (x.Screen_cat_title_ar.Trim() == model.Screen_cat_title_ar || x.Screen_cat_title_en == model.Screen_cat_title_en)))
+        if (await _unitOfWork.ScreenCategories.ExistAsync(x => x.Id != id
+        && (x.Screen_cat_title_ar.Trim() == model.Screen_cat_title_ar.Trim()
+        || x.Screen_cat_title_en.Trim() == model.Screen_cat_title_en.Trim())))
         {
             return new()
             {

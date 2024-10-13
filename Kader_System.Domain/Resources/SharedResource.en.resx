@@ -213,6 +213,9 @@
   <data name="Loan" xml:space="preserve">
     <value>Loan</value>
   </data>
+  <data name="LoanRequest" xml:space="preserve">
+    <value>Loan Request</value>
+  </data>
   <data name="MainScreen" xml:space="preserve">
     <value>Main screen</value>
   </data>
@@ -236,6 +239,9 @@
   </data>
   <data name="Qualification" xml:space="preserve">
     <value>Qualification</value>
+  </data>
+  <data name="Resignation" xml:space="preserve">
+    <value>Resignation</value>
   </data>
   <data name="Resonsiblities" xml:space="preserve">
     <value>Resonsiblities</value>

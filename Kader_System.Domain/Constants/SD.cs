@@ -332,7 +332,7 @@ public static class SD
             public const string DeleteTransVacation = "transVacation/delete/{id}";
         }
 
-        public class TransCovenant
+        public class TransCovenantRoute
         {
             public const string ListOfTransCovenants = "transCovenant/getListOftransCovenants";
             public const string GetTransCovenants = "transCovenant/getAll";
@@ -632,6 +632,7 @@ public static class SD
         public const string Approved = "Approved";
         public const string AlreadyExited = "AlreadyExited";
         public const string NotApproved = "NotApproved";
+        public const string LoanRequest = "LoanRequest";
         public const string ApprovedAready = "ApprovedAready";
         public const string CurrentIsNotExitedInCompanys = "CurrentIsNotExitedInCompanys";
         public const string CurrentIsNotExitedInTitle = "CurrentIsNotExitedInTitle";
@@ -640,6 +641,7 @@ public static class SD
         public const string ViewInclude = "ViewInclude";
         public const string Project = "Project";
         public const string Task = "Task";
+        public const string Resignation = "Resignation";
         public const string SalaryMoreThanInstallment = "SalaryMoreThanInstallment";
         public const string Notification = "Notification";
         public const string IsNotExistedIn = "IsNotExistedIn";

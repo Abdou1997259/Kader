@@ -213,6 +213,9 @@
   <data name="Loan" xml:space="preserve">
     <value>السلف</value>
   </data>
+  <data name="LoanRequest" xml:space="preserve">
+    <value>طلب السلف</value>
+  </data>
   <data name="MainScreen" xml:space="preserve">
     <value>الشاشة الرئيسية</value>
   </data>
@@ -236,6 +239,9 @@
   </data>
   <data name="Qualification" xml:space="preserve">
     <value>المؤهل</value>
+  </data>
+  <data name="Resignation" xml:space="preserve">
+    <value>طلب الاستقالة</value>
   </data>
   <data name="Resonsiblities" xml:space="preserve">
     <value>المسئوليات</value>

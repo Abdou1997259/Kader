@@ -294,7 +294,18 @@ public class SubScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, I
                 Msg = resultMsg
             };
         }
-
+        if (await _unitOfWork.SubScreens.ExistAsync(x => x.Id != id &&
+        (x.Screen_sub_title_ar.Trim() == model.screen_sub_title_ar.Trim())
+        || x.Screen_sub_title_en.Trim() == model.screen_sub_title_en.Trim()))
+        {
+            string resultMsg = string.Format(_sharLocalizer[Localization.AlreadyExitedWithSameName],
+              _sharLocalizer[Localization.MainScreenCategory]);
+            return new()
+            {
+                Check = false,
+                Msg = resultMsg
+            };
+        }
 
 
 

@@ -284,18 +284,18 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
                 query = query.Include(includeProperty).IgnoreQueryFilters();
         }
 
-
+        if (skip.HasValue)
+            query = query.Skip(skip.Value);
+        if (take.HasValue)
+            query = query.Take(take.Value);
 
         if (filter != null)
             query = query.Where(filter);
         if (orderBy != null)
             query = orderBy(query);
 
-        if (skip.HasValue)
-            query = query.Skip(skip.Value);
-        if (take.HasValue)
-            query = query.Take(take.Value);
 
+        var querystring = query.ToQueryString();
         return query.Select(select).ToList();
     }
 
