@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Interviews
 {
-    [Table("experiences")]
+    [Table("inter_experiences")]
     public class Experience : BaseEntity
     {
         public int id { get; set; }

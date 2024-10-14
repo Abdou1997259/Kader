@@ -26,6 +26,7 @@
         User = 5,
         EmployeeProfile = 6,
         Applicant = 7,
+        Deductions = 8,
     }
 
 

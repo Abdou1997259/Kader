@@ -1,14 +1,8 @@
 ﻿using Kader_System.DataAccesss.Context;
-using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.DTOs;
-using Kader_System.Domain.Models.HR;
 using Kader_System.Services.IServices.AppServices;
-using Kader_System.Services.Services.AppServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
-using System.Linq;
 
 namespace Kader_System.Services.Services.HR;
 
@@ -275,7 +269,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, Kad
                 Company_type_name = lang == Localization.Arabic ? obj.CompanyType!.Name : obj.CompanyType!.NameInEnglish,
                 Company_contracts = obj.ListOfsContract.Select(c => new CompanyContractResponse()
                 {
-                    file_path = _fileServer.GetFilePath(directoryCompanyContractsName, c.CompanyContracts),
+                    file_path = _fileServer.CombinePath(directoryCompanyContractsName, c.CompanyContracts),
                     id = c.Id,
                     file_name = c.CompanyContracts,
                     add_date = c.Add_date,
@@ -286,7 +280,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, Kad
                 Company_licenses = obj.Licenses.Select(l => new CompanyLicenseResponse()
                 {
 
-                    file_path = _fileServer.GetFilePath(directoryCompanyLicesnsesName, l.LicenseName),
+                    file_path = _fileServer.CombinePath(directoryCompanyLicesnsesName, l.LicenseName),
                     id = l.Id,
                     file_name = l.LicenseName,
                     add_date = l.Add_date,
@@ -418,7 +412,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, Kad
                 var directoryTypes = HrDirectoryTypes.CompanyLicesnses;
                 var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
                 getFileNameAnds = await _fileServer.UploadFilesAsync(directoryName, model.company_licenses);
-                var companyContract = getFileNameAnds.Select(x => new CompanyLicense { LicenseName = x.FileName, CompanyId = id,LicenseExtension = x.FileExtension }).ToList();
+                var companyContract = getFileNameAnds.Select(x => new CompanyLicense { LicenseName = x.FileName, CompanyId = id, LicenseExtension = x.FileExtension }).ToList();
                 await unitOfWork.CompanyLicenses.AddRangeAsync(companyContract);
                 await unitOfWork.CompleteAsync();
             }

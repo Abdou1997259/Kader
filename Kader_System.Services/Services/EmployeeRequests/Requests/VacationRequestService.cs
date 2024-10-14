@@ -2,17 +2,11 @@ using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
-using Kader_System.Domain.Models.EmployeeRequests;
-using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
-using System.Net.Mail;
-using static Kader_System.Domain.Constants.SD.ApiRoutes;
 using TransVacation = Kader_System.Domain.Models.Trans.TransVacation;
 
 
@@ -91,7 +85,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                                    ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                                    reason = x.StatuesOfRequest.StatusMessage,
                                    Notes = x.Notes,
-                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.VacationRequest.ToString(), x.AttachmentPath) : null
+                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.CombinePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.VacationRequest.ToString(), x.AttachmentPath) : null
                                }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             #region Pagination
 
@@ -311,8 +305,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
                 var emp = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == vacationrequest.EmployeeId);
                 var vacations = await _unitOfWork.Vacations.GetFirstOrDefaultAsync(x => x.Id == emp.VacationId);
-               
-                
+
+
                 transVacation.VacationId = vacations.Id;
                 transVacation.StartDate = vacationrequest.StartDate;
                 transVacation.EmployeeId = vacationrequest.EmployeeId;
@@ -322,10 +316,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 #region CopyFileAttachment
                 if (vacationrequest.AttachmentPath != null)
                 {
-                    var SourceFilePath = _fileServer.GetFilePathWithServerPath(moduleNameWithType, vacationrequest.AttachmentPath);
+                    var SourceFilePath = _fileServer.CombinePathWithServerPath(moduleNameWithType, vacationrequest.AttachmentPath);
                     var newFileName = $"{Guid.NewGuid()}{_fileServer.GetFileEXE(vacationrequest.AttachmentPath)}";
                     moduleNameWithType = hrEmployeeRequests.GetModuleNameWithType(Modules.Trans);
-                    var desitnationFile = _fileServer.GetFilePathWithServerPath(moduleNameWithType, newFileName);
+                    var desitnationFile = _fileServer.CombinePathWithServerPath(moduleNameWithType, newFileName);
                     _fileServer.CopyFile(SourceFilePath, desitnationFile);
                     transVacation.Attachment = desitnationFile;
                 }
@@ -333,7 +327,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 {
                     transVacation.Attachment = null;
 
-                } 
+                }
                 #endregion
 
                 await _unitOfWork.TransVacations.AddAsync(transVacation);

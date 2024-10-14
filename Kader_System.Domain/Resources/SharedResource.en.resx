@@ -126,8 +126,14 @@
   <data name="AlreadyExitedWithSameName" xml:space="preserve">
     <value>{0} is Already Exited With Same Name</value>
   </data>
+  <data name="AmountTypes" xml:space="preserve">
+    <value>Amount Type</value>
+  </data>
   <data name="Applicant" xml:space="preserve">
     <value>Applicant</value>
+  </data>
+  <data name="ApplicantJobNumber" xml:space="preserve">
+    <value>Number Of Applicants Fulfilled</value>
   </data>
   <data name="Approved" xml:space="preserve">
     <value>Approved Sucessfully</value>
@@ -179,6 +185,9 @@
   </data>
   <data name="Employee" xml:space="preserve">
     <value>Employee</value>
+  </data>
+  <data name="EndJobDate" xml:space="preserve">
+    <value>Time of Applicant of job is up</value>
   </data>
   <data name="Faculty" xml:space="preserve">
     <value>Faculty or Section</value>
@@ -252,8 +261,14 @@
   <data name="Role" xml:space="preserve">
     <value>Role</value>
   </data>
+  <data name="SalaryEffect" xml:space="preserve">
+    <value>Salary Effect</value>
+  </data>
   <data name="SalaryMoreThanInstallment" xml:space="preserve">
     <value>Salary More Than Installment</value>
+  </data>
+  <data name="SaveSuccessfully" xml:space="preserve">
+    <value>Saved Successfully</value>
   </data>
   <data name="ScreenInAction" xml:space="preserve">
     <value>This Screen Does'nt Have This Permssion</value>
@@ -266,6 +281,9 @@
   </data>
   <data name="TitleUser" xml:space="preserve">
     <value> this title has already a user</value>
+  </data>
+  <data name="TodayTrans" xml:space="preserve">
+    <value>You Already Made This Transation On This Employee {0} Today</value>
   </data>
   <data name="University" xml:space="preserve">
     <value>University or Institue</value>

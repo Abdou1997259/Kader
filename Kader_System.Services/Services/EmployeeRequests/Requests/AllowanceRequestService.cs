@@ -2,18 +2,15 @@ using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
-using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class AllowanceRequestService(IUnitOfWork unitOfWork, KaderDbContext context,ITransAllowanceService allowanceService , IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
+    public class AllowanceRequestService(IUnitOfWork unitOfWork, KaderDbContext context, ITransAllowanceService allowanceService, IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ITransAllowanceService _allowanceService = allowanceService;
@@ -89,7 +86,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                                    ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                                    reason = x.StatuesOfRequest.StatusMessage,
                                    Notes = x.notes,
-                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.AllowanceRequest.ToString(), x.AttachmentPath) : null
+                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.CombinePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.AllowanceRequest.ToString(), x.AttachmentPath) : null
                                }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
             #region Pagination
 
@@ -302,10 +299,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
         #region Status
-        public async Task<Response<string>> ApproveRequest(int requestId,string lang)
+        public async Task<Response<string>> ApproveRequest(int requestId, string lang)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-        
+
             var allownecesRequest = await _unitOfWork.AllowanceRequests.GetFirstOrDefaultAsync(x => x.Id == requestId);
 
             if (allownecesRequest == null)
@@ -334,7 +331,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 ActionMonth = new DateOnly(allownecesRequest.Add_date.Value.Year, allownecesRequest.Add_date.Value.Month, allownecesRequest.Add_date.Value.Day),
                 Amount = allownecesRequest.amount,
                 SalaryEffectId = allownecesRequest.allowance_type_id,
-               
+
                 EmployeeId = allownecesRequest.EmployeeId,
 
 

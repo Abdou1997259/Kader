@@ -120,7 +120,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
                   {
                       Id = x.Id,
                       Screen_main_title = Localization.Arabic == lang ? x.Screen_main_title_ar : x.Screen_main_title_en,
-                      Screen_main_image = x.Screen_main_image == null ? string.Empty : _fileServer.GetFilePath(moduleName, x.Screen_main_image)
+                      Screen_main_image = x.Screen_main_image == null ? string.Empty : _fileServer.CombinePath(moduleName, x.Screen_main_image)
 
                   }).ToList(),
             CurrentPage = model.PageNumber,
@@ -196,7 +196,7 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
     public async Task<Response<StGetMainScreenByIdResponse>> GetMainScreenByIdAsync(int id, string moduleName)
     {
         var obj = await _unitOfWork.MainScreens.GetFirstOrDefaultAsync(x => x.Id == id);
-        var imagePath = obj.Screen_main_image == null ? string.Empty : _fileServer.GetFilePath(moduleName, obj.Screen_main_image);
+        var imagePath = obj.Screen_main_image == null ? string.Empty : _fileServer.CombinePath(moduleName, obj.Screen_main_image);
         if (obj is null)
         {
             string resultMsg = _sharLocalizer[Localization.NotFoundData];
@@ -240,8 +240,8 @@ public class MainScreenService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRe
             };
         }
         if (await _unitOfWork.MainScreens.ExistAsync(x => x.Id != id
-        && (x.Screen_main_title_en == model.Screen_main_title_en
-        || x.Screen_main_title_ar == model.Screen_main_title_ar)))
+        && (x.Screen_main_title_en.Trim() == model.Screen_main_title_en.Trim()
+        || x.Screen_main_title_ar.Trim() == model.Screen_main_title_ar.Trim())))
         {
             string resultMsg = string.Format(_sharLocalizer[Localization.AlreadyExited],
                     _sharLocalizer[Localization.MainScreen]);

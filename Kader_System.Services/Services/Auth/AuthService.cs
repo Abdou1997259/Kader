@@ -1171,7 +1171,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
 
         var pathOfModule = hrDirectory.GetModuleNameWithType(moduleName);
-        var theFullPath = _fileServer.GetFilePath(pathOfModule, obj.ImagePath);
+        var theFullPath = _fileServer.CombinePath(pathOfModule, obj.ImagePath);
         return new()
         {
             Data = new()

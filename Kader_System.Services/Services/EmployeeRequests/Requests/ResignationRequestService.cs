@@ -76,7 +76,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,
                 Notes = x.Notes,
-                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.ResignationRequest.ToString(), x.AttachmentPath) : null
+                AttachmentPath = x.AttachmentPath != null ? _fileServer.CombinePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.ResignationRequest.ToString(), x.AttachmentPath) : null
             },
             orderBy: x => x.OrderByDescending(x => x.Id),
                 skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();

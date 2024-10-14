@@ -126,8 +126,14 @@
   <data name="AlreadyExitedWithSameName" xml:space="preserve">
     <value>موجود بافعل {0} بنفس الاسم </value>
   </data>
+  <data name="AmountTypes" xml:space="preserve">
+    <value>نوع الخصم او الزيادة </value>
+  </data>
   <data name="Applicant" xml:space="preserve">
     <value>المتقدم</value>
+  </data>
+  <data name="ApplicantJobNumber" xml:space="preserve">
+    <value>تم الاكتفاء بعدد المتقدمين</value>
   </data>
   <data name="Approved" xml:space="preserve">
     <value>تمت الموافقة بنجاج</value>
@@ -179,6 +185,9 @@
   </data>
   <data name="Employee" xml:space="preserve">
     <value>الموظف</value>
+  </data>
+  <data name="EndJobDate" xml:space="preserve">
+    <value>انتهي وقت التقديم </value>
   </data>
   <data name="Faculty" xml:space="preserve">
     <value>الكلية او القسم </value>
@@ -252,8 +261,14 @@
   <data name="Role" xml:space="preserve">
     <value>المسئولية</value>
   </data>
+  <data name="SalaryEffect" xml:space="preserve">
+    <value>كيفيه التاثير علي الراتب</value>
+  </data>
   <data name="SalaryMoreThanInstallment" xml:space="preserve">
     <value>الراتب اكثر من قيمة القست </value>
+  </data>
+  <data name="SaveSuccessfully" xml:space="preserve">
+    <value>تم الحفظ </value>
   </data>
   <data name="ScreenInAction" xml:space="preserve">
     <value>هذه الشاشة لاتحتوي علي صلاحيات </value>
@@ -266,6 +281,9 @@
   </data>
   <data name="TitleUser" xml:space="preserve">
     <value>هذه المسئوليه بلفعل لديها مستخدمة </value>
+  </data>
+  <data name="TodayTrans" xml:space="preserve">
+    <value>لقد نفذت هذا الحركة علي هذا الوظف {0} اليوم </value>
   </data>
   <data name="University" xml:space="preserve">
     <value>الجامعة او المعهد</value>

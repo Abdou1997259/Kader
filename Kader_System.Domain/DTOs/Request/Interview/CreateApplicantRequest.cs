@@ -29,7 +29,8 @@ namespace Kader_System.Domain.DTOs.Request.Interview
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public decimal expected_salary { get; set; }
-
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public int job_id { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [AllowedValues(1, 2, ErrorMessage = Annotations.OneTwoValueAllowed)]
         public int gender { get; set; }
@@ -44,6 +45,7 @@ namespace Kader_System.Domain.DTOs.Request.Interview
         public List<EducationDto> educations { get; set; } = new List<EducationDto>();
 
         public List<ExperienceDto> experiences { get; set; } = new List<ExperienceDto>();
+
 
 
 

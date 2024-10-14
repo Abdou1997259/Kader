@@ -31,7 +31,7 @@
                 }
 
                 var email = value as string;
-                var phoneProperty = validationContext.ObjectType.GetProperty("Phone");
+                var phoneProperty = validationContext.ObjectType.GetProperty("phone");
                 var phoneValue = phoneProperty?.GetValue(validationContext.ObjectInstance, null) as string;
 
                 if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(phoneValue))

@@ -1,7 +1,7 @@
 ﻿using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.HTTP;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Headers;
+using System.IO.Compression;
 
 namespace Kader_System.Services.Services.AppServices
 {
@@ -42,14 +42,34 @@ namespace Kader_System.Services.Services.AppServices
             return types.ContainsKey(ext) ? types[ext] : "application/octet-stream";
         }
 
-        public string GetFilePath(params string[] paths)
+        public string CombinePath(params string[] paths)
         {
+            var leftPath = string.Empty;
             if (paths.Any(string.IsNullOrEmpty) || paths is null)
-                return _stringLocalizer[Localization.PathNotFound];
-            return Path.Combine(paths);
+            {
+                var leftPathArr = paths?.Where(x => !string.IsNullOrEmpty(x)).Select(x => x).ToArray();
+                leftPath = Path.Combine(leftPathArr);
+                #region DefaultPath
+                if (leftPath.Contains("User"))
+                    return Path.Combine(leftPath, "Doctor.png");
+                else if (leftPath.Contains("News"))
+                    return Path.Combine(leftPath, "News.jpg");
+                else if (leftPath.Contains("Blog"))
+                    return Path.Combine(leftPath, "Blog.jpg");
+                else if (leftPath.Contains("Course"))
+                    return Path.Combine(leftPath, "Course.jpg");
+                else
+                    return Path.Combine("default.png");
+
+                #endregion
+            }
+
+            leftPath = Path.Combine(paths);
+            return leftPath;
+
         }
 
-        public string GetFilePathWithServerPath(params string[] paths)
+        public string CombinePathWithServerPath(params string[] paths)
         {
             if (paths.Any(string.IsNullOrEmpty) || paths is null)
                 return _stringLocalizer[Localization.PathNotFound];
@@ -149,7 +169,7 @@ namespace Kader_System.Services.Services.AppServices
 
         public string GetFilenameFromPath(params string[] paths)
         {
-            var fullPath = GetFilePathWithServerPath(paths);
+            var fullPath = CombinePath(paths);
             if (File.Exists(fullPath))
                 return Path.GetFileName(fullPath);
             else
@@ -158,7 +178,7 @@ namespace Kader_System.Services.Services.AppServices
 
         public async Task<FileContentResult> DownloadFileAsync(string module, string fileName)
         {
-            var filePath = GetFilePath(serverPath, module, fileName);
+            var filePath = CombinePath(serverPath, module, fileName);
             var fileBytes = await GetFileBytes(filePath);
             var contentType = GetContentType(fileName);
             return new FileContentResult(fileBytes, contentType)
@@ -177,6 +197,65 @@ namespace Kader_System.Services.Services.AppServices
             {
                 File.Copy(sourceFilePath, destFilePath);
             }
+        }
+
+        public async Task CompressFileAsync(string sourceFilePath)
+        {
+            try
+            {
+                var full_path = CombinePathWithServerPath($"Compress_{GetFilenameFromPath(sourceFilePath)}" + ".gz");
+                using FileStream sourceStream = new(sourceFilePath, FileMode.Open, FileAccess.Read, FileShare.None);
+                using FileStream compressedStream = new(full_path, FileMode.Create, FileAccess.Write, FileShare.None);
+                using GZipStream compressionStream = new(compressedStream, CompressionMode.Compress);
+                await sourceStream.CopyToAsync(compressionStream);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+        }
+        public void CreateNewFile(string fileName)
+        {
+            if (!File.Exists(fileName))
+            {
+                File.Create(fileName);
+            }
+
+        }
+        public double GetFileSizeInKB(IFormFile file)
+        {
+            var size = 0.0;
+            var Size_IN_KB = 1024;
+            if (file is not null)
+            {
+                var fileSize = (file.Length) / Size_IN_KB;
+                return fileSize;
+            }
+            return size;
+        }
+        public double GetFileSizeInMB(IFormFile file)
+        {
+            var size = 0.0;
+            var Size_IN_MB = 1024 * 1024;
+            if (file is not null)
+            {
+                var fileSize = (file.Length) / Size_IN_MB;
+                return fileSize;
+            }
+            return size;
+        }
+        public double GetFileSizeInGB(IFormFile file)
+        {
+            var size = 0.0;
+            var Size_IN_GB = 1024 * 1024 * 1024;
+            if (file is not null)
+            {
+                var fileSize = (file.Length) / Size_IN_GB;
+                return fileSize;
+            }
+            return size;
         }
     }
 }

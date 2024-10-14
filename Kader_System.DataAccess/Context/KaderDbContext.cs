@@ -97,6 +97,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<SPPermissionStruct> SPPermissionsBySubScreen { get; set; }
     public DbSet<SpGetAllScreens> SpGetAllScreens { get; set; }
     public DbSet<SPEmployeeDetails> SPEmployeeDetails { get; set; }
+    public DbSet<Job> InterJobs { get; set; }
     #endregion
 
     #region EmployeeRequest_Dbset

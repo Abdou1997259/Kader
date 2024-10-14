@@ -53,9 +53,10 @@ public class ScreenCategoryService(KaderDbContext context, IUnitOfWork unitOfWor
         for (int i = 0; i < orderedIds.Length; i++)
         {
             var id = orderedIds[i];
-            var result = await _context.MainScreens
+            var result = await _context.ScreenCategories
                  .Where(s => s.Id == id)
                  .ExecuteUpdateAsync(s => s.SetProperty(x => x.Order, x => i + 1));
+
         }
         return new() { Check = true };
     }

@@ -12,7 +12,7 @@ namespace Kader_System.Services.Services.Setting
             List<ScreenMainLookup> lookupsForMain = mains.Where(x => !x.IsDeleted).OrderBy(x => x.Order).Select(x => new ScreenMainLookup
             {
                 Id = x.Id,
-                main_image = _fileServer.GetFilePath(Modules.Setting, x.Screen_main_image),
+                main_image = _fileServer.CombinePath(Modules.Setting, x.Screen_main_image),
                 main_title = Localization.Arabic == lang ? x.Screen_main_title_ar : x.Screen_main_title_en
             }).ToList();
 
@@ -22,7 +22,7 @@ namespace Kader_System.Services.Services.Setting
                 cat_title = Localization.Arabic == lang ? x.Screen_cat_title_ar : x.Screen_cat_title_en,
                 main_id = x.ScreenMain.Id,
                 Main_Title = Localization.Arabic == lang ? x.ScreenMain.Screen_main_title_ar : x.ScreenMain.Screen_main_title_en,
-                main_image = _fileServer.GetFilePath(Modules.Setting, x.ScreenMain.Screen_main_image)
+                main_image = _fileServer.CombinePath(Modules.Setting, x.ScreenMain.Screen_main_image)
 
             }, includeProperties: "ScreenMain", orderBy: x => x.OrderBy(s => s.Order))).ToList();
 

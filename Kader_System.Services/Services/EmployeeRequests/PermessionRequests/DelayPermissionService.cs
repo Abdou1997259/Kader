@@ -8,14 +8,11 @@ using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.Services.EmployeeRequests.Requests;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using static Kader_System.Domain.Constants.SD.ApiRoutes.EmployeeRequests;
 
 namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 {
-    public class DelayPermissionService(IUnitOfWork unitOfWork, KaderDbContext context,IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IDelayPermissionService
+    public class DelayPermissionService(IUnitOfWork unitOfWork, KaderDbContext context, IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IDelayPermissionService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -90,7 +87,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             var _DelayPermissionRequest = await _unitOfWork.DelayPermission.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
             if (_DelayPermissionRequest != null)
             {
-                if(_DelayPermissionRequest.StatuesOfRequest.ApporvalStatus != 1)
+                if (_DelayPermissionRequest.StatuesOfRequest.ApporvalStatus != 1)
                 {
                     msg = _sharLocalizer[Localization.ApproveRejectDelte];
                     return new()
@@ -155,7 +152,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                                    ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                                    reason = x.StatuesOfRequest.StatusMessage,
                                    Notes = x.Notes,
-                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), x.AttachmentPath) : null
+                                   AttachmentPath = x.AttachmentPath != null ? _fileServer.CombinePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.DelayPermission.ToString(), x.AttachmentPath) : null
                                }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
 
 
@@ -290,7 +287,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<string>> ApproveRequest(int requestId)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.DelayPermission.UpdateApporvalStatus(x =>x.Id == requestId,RequestStatusTypes.Approved,userId);
+            var result = await _unitOfWork.DelayPermission.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
             if (result > 0)
             {
                 return new Response<string>()
@@ -302,7 +299,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             return new Response<string>()
             {
                 Check = false,
-                  Msg = "Cannot approve , request is not pending or is deleted"
+                Msg = "Cannot approve , request is not pending or is deleted"
             };
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)

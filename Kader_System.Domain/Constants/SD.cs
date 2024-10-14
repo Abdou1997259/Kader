@@ -564,6 +564,15 @@ public static class SD
             public const string DeleteApplicant = "Applicant/delete/{id}";
             public const string GetApplicantById = "Applicant/GetById/{id}";
         }
+        public class InterJobRoute
+        {
+            public const string ListOfInterJob = "InterJob/getListOfInterJob";
+            public const string CreateInterJob = "InterJob/create";
+            public const string UpdateInterJob = "InterJob/update/{id}";
+            public const string RestoreInterJob = "InterJob/Restore/{id}";
+            public const string DeleteInterJob = "InterJob/delete/{id}";
+            public const string GetInterJobById = "InterJob/GetById/{id}";
+        }
         public class Vacation
         {
             public const string ListOfVacations = "Vacation/getListOfVacations";
@@ -630,10 +639,12 @@ public static class SD
         public const string Arabic = "ar";
         public const string English = "en";
         public const string IsExist = "IsExist";
+        public const string SalaryEffect = "SalaryEffect";
         public const string Approved = "Approved";
         public const string AlreadyExited = "AlreadyExited";
         public const string NotApproved = "NotApproved";
         public const string LoanRequest = "LoanRequest";
+        public const string TodayTrans = "TodayTrans";
         public const string ApprovedAready = "ApprovedAready";
         public const string CurrentIsNotExitedInCompanys = "CurrentIsNotExitedInCompanys";
         public const string CurrentIsNotExitedInTitle = "CurrentIsNotExitedInTitle";
@@ -641,8 +652,10 @@ public static class SD
         public const string Applicant = "Applicant";
         public const string ViewInclude = "ViewInclude";
         public const string Project = "Project";
+        public const string SaveSuccessfully = "SaveSuccessfully";
         public const string Task = "Task";
         public const string Resignation = "Resignation";
+        public const string AmountTypes = "AmountTypes";
         public const string SalaryMoreThanInstallment = "SalaryMoreThanInstallment";
         public const string Notification = "Notification";
         public const string IsNotExistedIn = "IsNotExistedIn";
@@ -850,6 +863,9 @@ public static class SD
         public const string ReqAddvance = "ReqAddvance";
         public const string ThisCannotBeDoneDueToThePresenceOf = "ThisCannotBeDoneDueToThePresenceOf";
         public const string Resonsiblitites = "Resonsiblities";
+        public const string ApplicantJobNumber = "ApplicantJobNumber";
+        public const string EndJobDate = "EndJobDate";
+
     }
 
     public class LoggingMessages
@@ -910,6 +926,7 @@ public static class SD
         public const string StartDate = "Start date";
         public const string EndDate = "End date";
         public const string RememberMe = "Remember me?";
+
 
 
 

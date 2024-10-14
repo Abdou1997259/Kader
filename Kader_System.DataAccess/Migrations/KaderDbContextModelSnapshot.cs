@@ -255,7 +255,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "34000d78-6c9b-452f-92b8-1530b1f52571",
+                            ConcurrencyStamp = "36263cb5-5905-4e4c-8f85-369c17ea937e",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -269,10 +269,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHeALIgPBBeGA8RatftXso/dB09XiWepQmx3Qe9y7JzhLkcOFntvcq7T7Ih7l/9sMQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBMfpKF4fKVyQ0u/yKAZW89L6m/f7u4KO52FeH6oRWuviTMZh5fzW412wfkg8sN3Yw==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "683ddec8-19f9-404e-a29a-36827171f965",
+                            SecurityStamp = "1de6d164-3100-480a-9848-5ee14822d7bb",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -3349,11 +3349,11 @@ namespace Kader_System.DataAccess.Migrations
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Applicant", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
                     b.Property<DateTime?>("Add_date")
                         .HasColumnType("datetime2");
@@ -3361,37 +3361,11 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("CurrentSalary")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("CvFilesPath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateOnly?>("DateOfBirth")
-                        .HasColumnType("date");
-
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("ExpectedSalary")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Gender")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImagePath")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -3399,41 +3373,72 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<float?>("Rate")
-                        .HasColumnType("real");
-
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("YearOfExperiences")
+                    b.Property<decimal?>("current_salary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("cv_file_path")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly?>("date_of_birth")
+                        .HasColumnType("date");
+
+                    b.Property<string>("email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("expected_salary")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("full_name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("gender")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<string>("image_path")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("Email", "Phone")
+                    b.Property<int>("job_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<float?>("rate")
+                        .HasColumnType("real");
+
+                    b.Property<string>("state")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("year_of_experiences")
+                        .HasColumnType("int");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("job_id");
+
+                    b.HasIndex("email", "phone")
                         .IsUnique();
 
-                    b.ToTable("applicants");
+                    b.ToTable("inter_applicants");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Education", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
                     b.Property<DateTime?>("Add_date")
                         .HasColumnType("datetime2");
@@ -3441,20 +3446,11 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
-
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("FacultyId")
-                        .HasColumnType("int");
-
-                    b.Property<DateOnly>("From")
-                        .HasColumnType("date");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -3462,43 +3458,45 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<DateOnly>("To")
-                        .HasColumnType("date");
-
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.Property<int>("applicant_id")
+                        .HasColumnType("int");
 
-                    b.HasIndex("ApplicantId");
+                    b.Property<int>("faculty_id")
+                        .HasColumnType("int");
 
-                    b.HasIndex("FacultyId");
+                    b.Property<DateOnly>("from")
+                        .HasColumnType("date");
 
-                    b.ToTable("educations");
+                    b.Property<DateOnly>("to")
+                        .HasColumnType("date");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("applicant_id");
+
+                    b.HasIndex("faculty_id");
+
+                    b.ToTable("inter_educations");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Experience", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
                     b.Property<DateTime?>("Add_date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Added_by")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ApplicantId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeleteBy")
@@ -3507,21 +3505,11 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateOnly>("From")
-                        .HasColumnType("date");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
-
-                    b.Property<string>("JobTitle")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateOnly>("To")
-                        .HasColumnType("date");
 
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
@@ -3529,126 +3517,200 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("Id");
+                    b.Property<int>("applicant_id")
+                        .HasColumnType("int");
 
-                    b.HasIndex("ApplicantId");
+                    b.Property<string>("company_name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("experiences");
+                    b.Property<DateOnly>("from")
+                        .HasColumnType("date");
+
+                    b.Property<string>("job_title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("to")
+                        .HasColumnType("date");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("applicant_id");
+
+                    b.ToTable("inter_experiences");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Faculty", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<string>("NameAr")
+                    b.Property<string>("name_ar")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NameEn")
+                    b.Property<string>("name_en")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UniversityId")
+                    b.Property<int>("university_id")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
-                    b.HasIndex("UniversityId");
+                    b.HasIndex("university_id");
 
-                    b.ToTable("faculties");
+                    b.ToTable("inter_faculties");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            NameAr = "حاسبات ومعلومات ",
-                            NameEn = "Faculty Of University and Informatics",
-                            UniversityId = 1
+                            id = 1,
+                            name_ar = "حاسبات ومعلومات ",
+                            name_en = "Faculty Of University and Informatics",
+                            university_id = 1
                         },
                         new
                         {
-                            Id = 2,
-                            NameAr = "تجارة",
-                            NameEn = "Commercial Faculty",
-                            UniversityId = 1
+                            id = 2,
+                            name_ar = "تجارة",
+                            name_en = "Commercial Faculty",
+                            university_id = 1
                         },
                         new
                         {
-                            Id = 3,
-                            NameAr = "حقوق",
-                            NameEn = "Faculty Of law",
-                            UniversityId = 1
+                            id = 3,
+                            name_ar = "حقوق",
+                            name_en = "Faculty Of law",
+                            university_id = 1
                         },
                         new
                         {
-                            Id = 4,
-                            NameAr = "أداب",
-                            NameEn = "Faculty of Arts",
-                            UniversityId = 1
+                            id = 4,
+                            name_ar = "أداب",
+                            name_en = "Faculty of Arts",
+                            university_id = 1
                         },
                         new
                         {
-                            Id = 5,
-                            NameAr = "طب",
-                            NameEn = "Faculty of Medicine",
-                            UniversityId = 1
+                            id = 5,
+                            name_ar = "طب",
+                            name_en = "Faculty of Medicine",
+                            university_id = 1
                         });
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Job", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<DateTime?>("Add_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Added_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeleteBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UpdateBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("applicant_count")
+                        .HasColumnType("int");
+
+                    b.Property<string>("description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("from")
+                        .HasColumnType("date");
+
+                    b.Property<string>("name_ar")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("name_en")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("to")
+                        .HasColumnType("date");
+
+                    b.HasKey("id");
+
+                    b.ToTable("inter_job");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.University", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<string>("NameAr")
+                    b.Property<string>("name_ar")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("NameEn")
+                    b.Property<string>("name_en")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
-                    b.ToTable("universities");
+                    b.ToTable("inter_universities");
 
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            NameAr = "جامعة عين شمس",
-                            NameEn = "Ain Shams University"
+                            id = 1,
+                            name_ar = "جامعة عين شمس",
+                            name_en = "Ain Shams University"
                         },
                         new
                         {
-                            Id = 2,
-                            NameAr = "جامعة اسكندرية",
-                            NameEn = "Cairo University"
+                            id = 2,
+                            name_ar = "جامعة اسكندرية",
+                            name_en = "Cairo University"
                         },
                         new
                         {
-                            Id = 3,
-                            NameAr = "جامعة بنها",
-                            NameEn = "Banha University"
+                            id = 3,
+                            name_ar = "جامعة بنها",
+                            name_en = "Banha University"
                         },
                         new
                         {
-                            Id = 4,
-                            NameAr = "جامعة المنوفية",
-                            NameEn = "Manifouia University"
+                            id = 4,
+                            name_ar = "جامعة المنوفية",
+                            name_en = "Manifouia University"
                         },
                         new
                         {
-                            Id = 5,
-                            NameAr = "جامعة اسيوط",
-                            NameEn = "Asyuit University"
+                            id = 5,
+                            name_ar = "جامعة اسيوط",
+                            name_en = "Asyuit University"
                         });
                 });
 
@@ -8394,7 +8456,8 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Navigation("Employee");
 
-                    b.Navigation("StatuesOfRequest");
+                    b.Navigation("StatuesOfRequest")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.EmployeeRequests.Requests.SalaryIncreaseRequest", b =>
@@ -8812,45 +8875,56 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("Vacation");
                 });
 
+            modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Applicant", b =>
+                {
+                    b.HasOne("Kader_System.Domain.Models.Interviews.Job", "job")
+                        .WithMany("applicants")
+                        .HasForeignKey("job_id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("job");
+                });
+
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Education", b =>
                 {
-                    b.HasOne("Kader_System.Domain.Models.Interviews.Applicant", "Applicant")
-                        .WithMany("Educations")
-                        .HasForeignKey("ApplicantId")
+                    b.HasOne("Kader_System.Domain.Models.Interviews.Applicant", "applicant")
+                        .WithMany("educations")
+                        .HasForeignKey("applicant_id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Kader_System.Domain.Models.Interviews.Faculty", "Faculty")
-                        .WithMany("Educations")
-                        .HasForeignKey("FacultyId")
+                    b.HasOne("Kader_System.Domain.Models.Interviews.Faculty", "faculty")
+                        .WithMany("educations")
+                        .HasForeignKey("faculty_id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Applicant");
+                    b.Navigation("applicant");
 
-                    b.Navigation("Faculty");
+                    b.Navigation("faculty");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Experience", b =>
                 {
-                    b.HasOne("Kader_System.Domain.Models.Interviews.Applicant", "Applicant")
-                        .WithMany("Experiences")
-                        .HasForeignKey("ApplicantId")
+                    b.HasOne("Kader_System.Domain.Models.Interviews.Applicant", "applicant")
+                        .WithMany("experiences")
+                        .HasForeignKey("applicant_id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Applicant");
+                    b.Navigation("applicant");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Faculty", b =>
                 {
-                    b.HasOne("Kader_System.Domain.Models.Interviews.University", "University")
-                        .WithMany("Faculties")
-                        .HasForeignKey("UniversityId")
+                    b.HasOne("Kader_System.Domain.Models.Interviews.University", "university")
+                        .WithMany("faculties")
+                        .HasForeignKey("university_id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("University");
+                    b.Navigation("university");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.MainScreenTree", b =>
@@ -9195,19 +9269,24 @@ namespace Kader_System.DataAccess.Migrations
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Applicant", b =>
                 {
-                    b.Navigation("Educations");
+                    b.Navigation("educations");
 
-                    b.Navigation("Experiences");
+                    b.Navigation("experiences");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Faculty", b =>
                 {
-                    b.Navigation("Educations");
+                    b.Navigation("educations");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Interviews.Job", b =>
+                {
+                    b.Navigation("applicants");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.University", b =>
                 {
-                    b.Navigation("Faculties");
+                    b.Navigation("faculties");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.MainScreenTree", b =>

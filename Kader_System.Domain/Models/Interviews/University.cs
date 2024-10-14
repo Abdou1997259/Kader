@@ -1,13 +1,13 @@
 ﻿namespace Kader_System.Domain.Models.Interviews
 {
-    [Table("universities")]
+    [Table("inter_universities")]
     public class University
     {
-        public int Id { get; set; }
+        public int id { get; set; }
 
-        public string NameAr { get; set; } = null!;
-        public string NameEn { get; set; } = null!;
+        public string name_ar { get; set; } = null!;
+        public string name_en { get; set; } = null!;
 
-        public ICollection<Faculty> Faculties { get; set; } = new HashSet<Faculty>();
+        public ICollection<Faculty> faculties { get; set; } = new HashSet<Faculty>();
     }
 }
