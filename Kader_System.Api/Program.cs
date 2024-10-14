@@ -313,6 +313,7 @@ builder.Services.AddScoped<IGetAllScreensService, GetAllScreensService>();
 builder.Services.AddScoped<IHttpContextService, HttpContextService>();
 builder.Services.AddScoped<IEmployeeNotesServices, EmployeeNotesServices>();
 builder.Services.AddScoped<IApplicantServices, ApplicantServices>();
+builder.Services.AddScoped<IInterJobServices, InterJobServices>();
 #region Employee_Requests
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
 builder.Services.AddScoped<IVacationRequestService, VacationRequestService>();

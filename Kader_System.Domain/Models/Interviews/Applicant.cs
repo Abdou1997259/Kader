@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Interviews
 {
-    [Table("applicants")]
+    [Table("inter_applicants")]
     public class Applicant : BaseEntity
     {
         public int id { get; set; }
@@ -29,6 +29,9 @@
         public ICollection<Education> educations { get; set; } = new HashSet<Education>();
 
         public ICollection<Experience> experiences { get; set; } = new HashSet<Experience>();
+        [ForeignKey(nameof(job_id))]
+        public Job job { get; set; } = default!;
+        public int job_id { get; set; }
 
 
 

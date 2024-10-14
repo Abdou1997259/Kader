@@ -2,12 +2,9 @@
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request;
 using Kader_System.Services.IServices.AppServices;
-using Kader_System.Services.Services.AppServices;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel;
 using System.Transactions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.HR
 {
@@ -74,7 +71,7 @@ namespace Kader_System.Services.Services.HR
             directoryTypes = HrDirectoryTypes.Attachments;
 
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-            var pathOfroot = fileServer.GetFilePath(directoryName);
+            var pathOfroot = fileServer.CombinePath(directoryName);
             var attachments = unitOfWork.EmployeeAttachments.GetSpecificSelectAsync(x => x.EmployeeId == empId, x => new
             {
                 id = x.Id,
@@ -160,7 +157,7 @@ namespace Kader_System.Services.Services.HR
                     employee_attachments = obj.ListOfAttachments.Select(s => new EmployeeAttachmentForEmp
                     {
                         Id = s.Id,
-                        file_path = fileServer.GetFilePath(s.FileName),
+                        file_path = fileServer.CombinePath(s.FileName),
                         FileName = s.FileName,
                         Extention = s.FileExtension
                     }).ToList(),
@@ -170,7 +167,7 @@ namespace Kader_System.Services.Services.HR
                     ShiftId = obj.ShiftId,
                     TotalSalary = obj.TotalSalary,
                     Username = obj.User!.UserName,
-                    EmployeeImage = fileServer.GetFilePath(Modules.Employees, obj.EmployeeImage),
+                    EmployeeImage = fileServer.CombinePath(Modules.Employees, obj.EmployeeImage),
                     qualification_name = lang == Localization.Arabic ? obj.Qualification!.NameAr : obj.Qualification!.NameEn,
                     company_name = lang == Localization.Arabic ? obj.Company!.NameAr : obj.Company!.NameEn,
                     management_name = lang == Localization.Arabic ? obj.Management!.NameAr : obj.Management!.NameEn,
@@ -678,7 +675,7 @@ namespace Kader_System.Services.Services.HR
                 if (model.employee_attachments is not null)
                 {
                     getFileNameAnds = await fileServer.UploadFilesAsync(directoryAttachmentsName, model.employee_attachments);
-                    var employeeAttachment = getFileNameAnds.Select(x => new HrEmployeeAttachment { FileName = x.FileName, FileExtension = x.FileExtension,EmployeeId=id}).ToList();
+                    var employeeAttachment = getFileNameAnds.Select(x => new HrEmployeeAttachment { FileName = x.FileName, FileExtension = x.FileExtension, EmployeeId = id }).ToList();
                     await unitOfWork.EmployeeAttachments.AddRangeAsync(employeeAttachment);
                     await unitOfWork.CompleteAsync();
                 }

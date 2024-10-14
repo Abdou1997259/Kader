@@ -2,19 +2,15 @@
 using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Domain.DTOs.Response.EmployeesRequests;
-using Kader_System.Domain.Models.EmployeeRequests.PermessionRequests;
 using Kader_System.Domain.Models.EmployeeRequests.Requests;
-using Kader_System.Domain.Models.Trans;
 using Kader_System.Services.IServices;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class SalaryIncreaseRequestService(IUnitOfWork unitOfWork, ITransSalaryIncreaseService transSalaryIncrease, KaderDbContext context,IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ISalaryIncreaseRequestService
+    public class SalaryIncreaseRequestService(IUnitOfWork unitOfWork, ITransSalaryIncreaseService transSalaryIncrease, KaderDbContext context, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ISalaryIncreaseRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -32,7 +28,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
         public async Task<Response<IEnumerable<DTOSalaryIncreaseRequest>>> ListOfSalaryIncreaseRequest()
         {
-            var result =  await unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var result = await unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = _sharLocalizer[Localization.NotFound];
             if (result == null)
             {
@@ -84,7 +80,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,
                 Notes = x.Notes,
-                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.SalaryIncreaseRequest.ToString(), x.AttachmentPath) : null
+                AttachmentPath = x.AttachmentPath != null ? _fileServer.CombinePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.SalaryIncreaseRequest.ToString(), x.AttachmentPath) : null
             },
             orderBy: x => x.OrderByDescending(x => x.Id),
                 skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "employee,StatuesOfRequest")).ToList();
@@ -244,7 +240,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region DeleteSalaryIncrease
-        public async Task<Response<SalaryIncreaseRequest>> DeleteSalaryIncreaseRequest(int id,string moduleName)
+        public async Task<Response<SalaryIncreaseRequest>> DeleteSalaryIncreaseRequest(int id, string moduleName)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
@@ -291,10 +287,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region Status
-        public async Task<Response<string>> ApproveRequest(int requestId,string lang)
+        public async Task<Response<string>> ApproveRequest(int requestId, string lang)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var increaseRequest=await _unitOfWork.SalaryIncreaseRequest.GetFirstOrDefaultAsync(x=>x.Id == requestId);
+            var increaseRequest = await _unitOfWork.SalaryIncreaseRequest.GetFirstOrDefaultAsync(x => x.Id == requestId);
 
             if (increaseRequest == null)
             {
@@ -316,7 +312,6 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
             }
 
-           
 
 
 
@@ -325,12 +320,13 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
 
-           var createresult= await _transSalaryIncreaseService.CreateTransSalaryIncreaseAsync(new CreateTransSalaryIncreaseRequest
+
+            var createresult = await _transSalaryIncreaseService.CreateTransSalaryIncreaseAsync(new CreateTransSalaryIncreaseRequest
             {
                 Amount = increaseRequest.Amount,
                 Employee_id = increaseRequest.EmployeeId,
                 Increase_type = 1,
-                TransactionDate = new DateOnly(DateTime.Now.Year,DateTime.Now.Month,DateTime.Now.Day)
+                TransactionDate = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)
 
             }, lang);
 
@@ -361,7 +357,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.SalaryIncreaseRequest.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId,resoan);
+            var result = await _unitOfWork.SalaryIncreaseRequest.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId, resoan);
             if (result > 0)
             {
                 return new Response<string>()

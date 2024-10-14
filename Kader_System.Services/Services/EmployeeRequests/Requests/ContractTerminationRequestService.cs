@@ -6,8 +6,6 @@ using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
-using Microsoft.EntityFrameworkCore;
-using static Kader_System.Domain.Constants.SD.ApiRoutes.EmployeeRequests;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
@@ -73,7 +71,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,
                 Notes = x.Notes,
-                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.TerminateContract.ToString(), x.AttachmentPath) : null
+                AttachmentPath = x.AttachmentPath != null ? _fileServer.CombinePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.TerminateContract.ToString(), x.AttachmentPath) : null
             },
             orderBy: x => x.OrderByDescending(x => x.Id),
                 skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();

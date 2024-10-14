@@ -2,10 +2,10 @@
 using Kader_System.DataAccess.Repositories.EmployeeRequests.PermessionRequests;
 using Kader_System.DataAccess.Repositories.EmployeeRequests.Requests;
 using Kader_System.DataAccess.Repositories.InterviewRepositories;
-using Kader_System.Domain.Interfaces.EducationRepositories;
 using Kader_System.Domain.Interfaces.EmployeeRequest;
 using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
 using Kader_System.Domain.Interfaces.EmployeeRequest.Request;
+using Kader_System.Domain.Interfaces.InterViews;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Kader_System.DataAccess.Repositories;
@@ -114,7 +114,7 @@ public class UnitOfWork : IUnitOfWork
 
     public IEducationRepository Education { get; private set; }
     public IExperienceRepository Experience { get; private set; }
-
+    public IInterJobRepository InterJob { get; private set; }
 
 
     public UnitOfWork(KaderDbContext context, IConfiguration config)
@@ -197,6 +197,7 @@ public class UnitOfWork : IUnitOfWork
         Education = new EducationRepository(_context);
 
         Applicant = new ApplicantRepository(_context);
+        InterJob = new InterJobRepository(_context);
     }
 
     public IDatabaseTransaction BeginTransaction() =>

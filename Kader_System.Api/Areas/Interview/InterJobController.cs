@@ -8,11 +8,11 @@ namespace Kader_System.Api.Areas.Interview
     [ApiExplorerSettings(GroupName = Modules.Interview)]
     [Route("api/v1/")]
     [ApiController]
-    public class ApplicantController : ControllerBase
+    public class InterJobController : ControllerBase
     {
-        private readonly IApplicantServices _service;
+        private readonly IInterJobServices _service;
         private readonly IRequestService _requestService;
-        public ApplicantController(IApplicantServices service, IRequestService requestService)
+        public InterJobController(IInterJobServices service, IRequestService requestService)
         {
             _service = service;
             _requestService = requestService;
@@ -20,12 +20,12 @@ namespace Kader_System.Api.Areas.Interview
         }
         #region Retreive
 
-        [HttpGet(ApiRoutes.ApplicantRoute.ListOfApplicant)]
+        [HttpGet(ApiRoutes.InterJobRoute.ListOfInterJob)]
 
         public async Task<IActionResult> ListOfAsync()
             => Ok(await _service.ListOfAsync(_requestService.GetRequestHeaderLanguage));
 
-        [HttpGet(ApiRoutes.ApplicantRoute.GetApplicantById)]
+        [HttpGet(ApiRoutes.InterJobRoute.GetInterJobById)]
 
         public async Task<IActionResult> GetById(int id)
         {
@@ -44,9 +44,9 @@ namespace Kader_System.Api.Areas.Interview
 
         #region Insert
 
-        [HttpPost(ApiRoutes.ApplicantRoute.CreateApplicant)]
+        [HttpPost(ApiRoutes.InterJobRoute.CreateInterJob)]
         //[Permission(Permission.Add, 9)]
-        public async Task<IActionResult> CreateAsync([FromForm] CreateApplicantRequest model)
+        public async Task<IActionResult> CreateAsync([FromForm] CreateInterJobRequest model)
         {
             var response = await _service.CreateAsync(model, Modules.Interview, _requestService.GetRequestHeaderLanguage);
             if (response.Check)
@@ -60,9 +60,9 @@ namespace Kader_System.Api.Areas.Interview
 
 
         #region Update
-        [HttpPut(ApiRoutes.ApplicantRoute.UpdateApplicant)]
+        [HttpPut(ApiRoutes.InterJobRoute.UpdateInterJob)]
 
-        public async Task<IActionResult> UpdateAsync([FromForm] CreateApplicantRequest model, [FromRoute] int id)
+        public async Task<IActionResult> UpdateAsync([FromForm] CreateInterJobRequest model, [FromRoute] int id)
         {
             var response = await _service.UpdateAsync(id, model, _requestService.GetRequestHeaderLanguage);
             if (response.Check)
@@ -71,7 +71,7 @@ namespace Kader_System.Api.Areas.Interview
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
-        [HttpPut(ApiRoutes.ApplicantRoute.RestoreApplicant)]
+        [HttpPut(ApiRoutes.InterJobRoute.RestoreInterJob)]
 
         public async Task<IActionResult> RestoreAsync([FromRoute] int id)
         {
@@ -84,7 +84,7 @@ namespace Kader_System.Api.Areas.Interview
         }
         #endregion
         #region Delete
-        [HttpDelete(ApiRoutes.ApplicantRoute.DeleteApplicant)]
+        [HttpDelete(ApiRoutes.InterJobRoute.DeleteInterJob)]
         public async Task<IActionResult> DeleteAsync([FromRoute] int id)
         {
             var response = await _service.DeleteAsync(id);

@@ -647,19 +647,19 @@ public static class ModelBuilderExtensions
                }
            );
         modelBuilder.Entity<University>().HasData(
-            new University { Id = 1, NameAr = "جامعة عين شمس", NameEn = "Ain Shams University" },
-            new University { Id = 2, NameAr = "جامعة اسكندرية", NameEn = "Cairo University" },
-            new University { Id = 3, NameAr = "جامعة بنها", NameEn = "Banha University" },
-            new University { Id = 4, NameAr = "جامعة المنوفية", NameEn = "Manifouia University" },
-            new University { Id = 5, NameAr = "جامعة اسيوط", NameEn = "Asyuit University" }
+            new University { id = 1, name_ar = "جامعة عين شمس", name_en = "Ain Shams University" },
+            new University { id = 2, name_ar = "جامعة اسكندرية", name_en = "Cairo University" },
+            new University { id = 3, name_ar = "جامعة بنها", name_en = "Banha University" },
+            new University { id = 4, name_ar = "جامعة المنوفية", name_en = "Manifouia University" },
+            new University { id = 5, name_ar = "جامعة اسيوط", name_en = "Asyuit University" }
 
             );
         modelBuilder.Entity<Faculty>().HasData(
-            new Faculty { Id = 1, NameAr = "حاسبات ومعلومات ", NameEn = "Faculty Of University and Informatics", UniversityId = 1 },
-            new Faculty { Id = 2, NameAr = "تجارة", NameEn = "Commercial Faculty", UniversityId = 1 },
-            new Faculty { Id = 3, NameAr = "حقوق", NameEn = "Faculty Of law", UniversityId = 1 },
-            new Faculty { Id = 4, NameAr = "أداب", NameEn = "Faculty of Arts", UniversityId = 1 },
-            new Faculty { Id = 5, NameAr = "طب", NameEn = "Faculty of Medicine", UniversityId = 1 }
+            new Faculty { id = 1, name_ar = "حاسبات ومعلومات ", name_en = "Faculty Of University and Informatics", university_id = 1 },
+            new Faculty { id = 2, name_ar = "تجارة", name_en = "Commercial Faculty", university_id = 1 },
+            new Faculty { id = 3, name_ar = "حقوق", name_en = "Faculty Of law", university_id = 1 },
+            new Faculty { id = 4, name_ar = "أداب", name_en = "Faculty of Arts", university_id = 1 },
+            new Faculty { id = 5, name_ar = "طب", name_en = "Faculty of Medicine", university_id = 1 }
             );
 
 

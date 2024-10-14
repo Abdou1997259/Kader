@@ -1,9 +1,6 @@
 ﻿using Kader_System.Api.Helpers;
 using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Trans;
-using Kader_System.Services.Services.HR;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Kader_System.Api.Areas.Trans
 {
@@ -12,7 +9,7 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransDeductionController(ITransDeductionService service , IRequestService requestService) : ControllerBase
+    public class TransDeductionController(ITransDeductionService service, IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
         [HttpGet(ApiRoutes.TransDeduction.ListOfTransDeductions)]
@@ -28,7 +25,7 @@ namespace Kader_System.Api.Areas.Trans
         [Permission(Helpers.Permission.View, 21)]
         public async Task<IActionResult> GetTransDeductionById(int id)
         {
-            var response =await service.GetTransDeductionByIdAsync(id,requestService.GetRequestHeaderLanguage);
+            var response = await service.GetTransDeductionByIdAsync(id, requestService.GetRequestHeaderLanguage);
 
             var lookUps = await service.GetDeductionsLookUpsData(requestService.GetRequestHeaderLanguage);
 
@@ -38,11 +35,11 @@ namespace Kader_System.Api.Areas.Trans
                 response.LookUps = lookUps.Data;
                 return Ok(response);
             }
-                
+
             else if (!response.Check)
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-            
-               
+
+
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
 
@@ -50,21 +47,21 @@ namespace Kader_System.Api.Areas.Trans
         [Permission(Helpers.Permission.View, 21)]
         public async Task<IActionResult> GetLookUpsAsync()
         {
-            var response =await service.GetDeductionsLookUpsData(requestService.GetRequestHeaderLanguage);
+            var response = await service.GetDeductionsLookUpsData(requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
-            else 
+            else
                 return BadRequest(response);
         }
 
         [HttpPost(ApiRoutes.TransDeduction.CreateTransDeduction)]
 
         [Permission(Helpers.Permission.Add, 21)]
-        public async Task<IActionResult> CreateTransDeduction([FromBody] CreateTransDeductionRequest request)
+        public async Task<IActionResult> CreateTransDeduction([FromForm] CreateTransDeductionRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await service.CreateTransDeductionAsync(request);
+                var response = await service.CreateTransDeductionAsync(request, requestService.GetRequestHeaderLanguage);
                 if (response.Check)
                     return Ok(response);
                 else if (!response.Check)
@@ -79,11 +76,11 @@ namespace Kader_System.Api.Areas.Trans
 
         [HttpPut(ApiRoutes.TransDeduction.UpdateTransDeduction)]
         [Permission(Helpers.Permission.Edit, 21)]
-        public async Task<IActionResult> UpdateTransDeduction([FromRoute] int id, [FromBody] CreateTransDeductionRequest request)
+        public async Task<IActionResult> UpdateTransDeduction([FromRoute] int id, [FromForm] CreateTransDeductionRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await service.UpdateTransDeductionAsync(id,request);
+                var response = await service.UpdateTransDeductionAsync(id, request);
                 if (response.Check)
                     return Ok(response);
                 else if (!response.Check)
@@ -122,6 +119,6 @@ namespace Kader_System.Api.Areas.Trans
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
 
-        
+
     }
 }

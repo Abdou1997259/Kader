@@ -1,9 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kader_System.Services.IServices.AppServices
 {
@@ -43,17 +38,17 @@ namespace Kader_System.Services.IServices.AppServices
         public void RemoveDirectory(string folderName);
 
         /// <summary>
-        /// Get File Path from wwwroot by filename
+        /// Combine pathes together to get full path
         /// </summary>
         /// <param name="paths"></param>
-        /// <returns></returns>
-        public string GetFilePath(params string[] paths);
+        /// <returns>return new path except nullable paths</returns>
+        public string CombinePath(params string[] paths);
         /// <summary>
-        /// Get full file path with server path  from wwwroot  
+        /// Combine path with server path  from wwwroot  
         /// </summary>
         /// <param name="paths"></param>
-        /// <returns></returns>
-        public string GetFilePathWithServerPath(params string[] paths);
+        /// <returns>return new path except nullable paths</returns>
+        public string CombinePathWithServerPath(params string[] paths);
         /// <summary>
         /// Get filename with exetnesion from specific path
         /// </summary>
@@ -94,5 +89,35 @@ namespace Kader_System.Services.IServices.AppServices
         /// <param name="sourceFile"></param>
         /// <param name="destFile"></param>
         public void CopyFile(string sourceFilePath, string destFilePath);
+        /// <summary>
+        /// Compress file using GZipStream to reduce file size
+        /// </summary>
+        /// <param name="sourceFilePath"></param>
+        /// <param name="compressedFilePath"></param>
+        public Task CompressFileAsync(string sourceFilePath);
+        /// <summary>
+        /// Create new file on wwwroot 
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public void CreateNewFile(string fileName);
+        /// <summary>
+        /// Get file size by kilo bytes size (KB)
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>file size in (KB)</returns>
+        public double GetFileSizeInKB(IFormFile file);
+        /// <summary>
+        /// Get file size by mega bytes size (MB)
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>file size in (MB)</returns>
+        public double GetFileSizeInMB(IFormFile file);
+        /// <summary>
+        /// Get file size by Giga bytes size (GB)
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns>file size in (GB)</returns>
+        public double GetFileSizeInGB(IFormFile file);
     }
 }

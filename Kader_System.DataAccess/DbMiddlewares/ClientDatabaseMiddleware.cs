@@ -6,6 +6,7 @@ namespace Kader_System.DataAccess.DbMiddlewares
 {
     public class ClientDatabaseMiddleware(RequestDelegate next, IConfiguration configuration)
     {
+
         private readonly RequestDelegate _next = next;
         private readonly IConfiguration _configuration = configuration;
 

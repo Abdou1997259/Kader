@@ -1,7 +1,7 @@
-﻿using Kader_System.Domain.Interfaces.EducationRepositories;
-using Kader_System.Domain.Interfaces.EmployeeRequest;
+﻿using Kader_System.Domain.Interfaces.EmployeeRequest;
 using Kader_System.Domain.Interfaces.EmployeeRequest.PermessionRequests;
 using Kader_System.Domain.Interfaces.EmployeeRequest.Request;
+using Kader_System.Domain.Interfaces.InterViews;
 
 namespace Kader_System.Domain.Interfaces;
 
@@ -90,6 +90,7 @@ public interface IUnitOfWork : IDisposable
     IAllowanceRequestRepository AllowanceRequests { get; }
     ISalaryIncreaseRequestServicesReository SalaryIncreaseRequest { get; }
     IContractTerminationRequestRepositroy ContractTerminationRequest { get; }
+    IInterJobRepository InterJob { get; }
     #endregion
     Task<int> CompleteAsync();
 }

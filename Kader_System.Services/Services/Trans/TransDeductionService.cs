@@ -1,12 +1,13 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Response;
-using Microsoft.Extensions.Hosting;
+using Kader_System.Services.IServices.AppServices;
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransDeductionService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransDeductionService
+    public class TransDeductionService(IUnitOfWork unitOfWork, IFileServer fileServer, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransDeductionService
     {
         private TransDeduction _insatance;
+        private IFileServer _fileServer = fileServer;
         public async Task<Response<IEnumerable<SelectListOfTransDeductionResponse>>> ListOfTransDeductionsAsync(string lang)
         {
             var result =
@@ -51,7 +52,7 @@ namespace Kader_System.Services.Services.Trans
         }
 
         public async Task<Response<GetAllTransDeductionResponse>> GetAllTransDeductionsAsync(string lang,
-            GetAllFilterationForTransDeductionRequest model,string host)
+            GetAllFilterationForTransDeductionRequest model, string host)
         {
             Expression<Func<TransDeduction, bool>> filter = x =>
                 x.IsDeleted == model.IsDeleted &&
@@ -66,7 +67,7 @@ namespace Kader_System.Services.Services.Trans
                     && (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId)
                 );
 
-            Expression<Func<TransDeductionData, bool>> filterSearch = x => 
+            Expression<Func<TransDeductionData, bool>> filterSearch = x =>
                 (string.IsNullOrEmpty(model.Word)
                  || x.DeductionName.Contains(model.Word)
                  || x.EmployeeName.Contains(model.Word)
@@ -90,7 +91,7 @@ namespace Kader_System.Services.Services.Trans
                 TotalRecords = totalRecords,
 
                 Items = unitOfWork.TransDeductions.GetTransDeductionInfo(filter: filter, filterSearch: filterSearch, skip: (model.PageNumber - 1) * model.PageSize
-                    , take: model.PageSize, lang: lang).Where(x => !model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId).OrderByDescending(x=>x.Id).ToList()
+                    , take: model.PageSize, lang: lang).Where(x => !model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId).OrderByDescending(x => x.Id).ToList()
                 ,
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
@@ -142,8 +143,8 @@ namespace Kader_System.Services.Services.Trans
                 var deductions = await unitOfWork.Deductions.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
                     select: x => new
                     {
-                        Id=x.Id,
-                        Name=lang==Localization.Arabic?x.Name_ar:x.Name_en
+                        Id = x.Id,
+                        Name = lang == Localization.Arabic ? x.Name_ar : x.Name_en
                     });
 
                 var salaryEffect = await unitOfWork.TransSalaryEffects.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
@@ -160,7 +161,7 @@ namespace Kader_System.Services.Services.Trans
                         Name = lang == Localization.Arabic ? x.Name : x.NameInEnglish,
 
                     });
-                
+
                 return new Response<DeductionLookUps>()
                 {
                     Check = true,
@@ -169,10 +170,10 @@ namespace Kader_System.Services.Services.Trans
                     Msg = "",
                     Data = new DeductionLookUps()
                     {
-                       deductions = deductions.ToArray(),
-                       employees = employees.ToArray(),
-                       salary_effects = salaryEffect.ToArray(),
-                       trans_amount_types = amountType.ToArray()
+                        deductions = deductions.ToArray(),
+                        employees = employees.ToArray(),
+                        salary_effects = salaryEffect.ToArray(),
+                        trans_amount_types = amountType.ToArray()
                     }
                 };
             }
@@ -180,7 +181,7 @@ namespace Kader_System.Services.Services.Trans
             {
                 return new Response<DeductionLookUps>()
                 {
-                    Error = exception.InnerException!=null ? exception.InnerException.Message:exception.Message,
+                    Error = exception.InnerException != null ? exception.InnerException.Message : exception.Message,
                     Msg = "Can not able to Get Data",
                     Check = false,
                     Data = null,
@@ -190,7 +191,8 @@ namespace Kader_System.Services.Services.Trans
 
         }
 
-        public async Task<Response<CreateTransDeductionRequest>> CreateTransDeductionAsync(CreateTransDeductionRequest model)
+        public async Task<Response<CreateTransDeductionRequest>> CreateTransDeductionAsync
+            (CreateTransDeductionRequest model, string lang)
         {
             var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
             if (contract is null)
@@ -199,26 +201,64 @@ namespace Kader_System.Services.Services.Trans
 
                 return new()
                 {
+                    Check = false,
                     Error = resultMsg,
                     Msg = resultMsg
                 };
             }
+            if (!await unitOfWork.TransDeductions.ExistAsync(model.DeductionId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Deduction]]
+                };
+            }
+            if (!await unitOfWork.TransSalaryEffects.ExistAsync(model.SalaryEffectId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.SalaryEffect]]
+                };
+            }
+            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            if (emp is null)
+            {
+
+
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
+                };
+            }
+            if (await unitOfWork.TransDeductions.ExistAsync(x => x.EmployeeId == model.EmployeeId &&
+            x.DeductionId == model.DeductionId &&
+            DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now)))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.TodayTrans,
+                    Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn]
+                };
+            }
             var newTrans = mapper.Map<TransDeduction>(model);
 
-            if (!string.IsNullOrEmpty(model.Attachment))
+
+
+
+            if (model.Attachment is not null)
             {
-                var fileNameAndExt = ManageFilesHelper.SaveBase64StringToFile(model.Attachment!, GoRootPath.TransFilesPath, model.FileName!);
-                if (fileNameAndExt != null)
-                {
-                    newTrans.Attachment = fileNameAndExt.FileName;
-                    newTrans.AttachmentExtension = fileNameAndExt.FileExtension;
-                }
-                else
-                {
-                    newTrans.Attachment = null;
-                    newTrans.AttachmentExtension = null;
-                }
+                var dirType = HrDirectoryTypes.Deductions;
+                var dir = dirType.GetModuleNameWithType(Modules.Trans);
+                newTrans.Attachment = await _fileServer.UploadFileAsync(dir, model.Attachment);
+
             }
+
+
+
 
             await unitOfWork.TransDeductions.AddAsync(newTrans);
             await unitOfWork.CompleteAsync();
@@ -230,9 +270,9 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<GetTransDeductionById>> GetTransDeductionByIdAsync(int id,string lang)
+        public async Task<Response<GetTransDeductionById>> GetTransDeductionByIdAsync(int id, string lang)
         {
-            var obj = await unitOfWork.TransDeductions.GetFirstOrDefaultAsync(d=>d.Id==id,
+            var obj = await unitOfWork.TransDeductions.GetFirstOrDefaultAsync(d => d.Id == id,
                 includeProperties: $"{nameof(_insatance.Deduction)},{nameof(_insatance.Employee)}," +
                                    $"{nameof(_insatance.SalaryEffect)}" +
                                    $",{nameof(_insatance.AmountType)}");
@@ -256,17 +296,17 @@ namespace Kader_System.Services.Services.Trans
                     ActionMonth = obj.ActionMonth,
                     AddedOn = obj.Add_date,
                     DeductionId = obj.DeductionId,
-                    DeductionName =lang==Localization.Arabic? obj.Deduction!.Name_ar:obj.Deduction!.Name_en,
+                    DeductionName = lang == Localization.Arabic ? obj.Deduction!.Name_ar : obj.Deduction!.Name_en,
                     EmployeeId = obj.EmployeeId,
-                    EmployeeName = lang==Localization.Arabic?obj.Employee!.FullNameAr:obj.Employee.FullNameEn,
+                    EmployeeName = lang == Localization.Arabic ? obj.Employee!.FullNameAr : obj.Employee.FullNameEn,
                     Id = obj.Id,
-                    SalaryEffect = lang==Localization.Arabic?obj.SalaryEffect!.Name: obj.SalaryEffect!.NameInEnglish,
+                    SalaryEffect = lang == Localization.Arabic ? obj.SalaryEffect!.Name : obj.SalaryEffect!.NameInEnglish,
                     SalaryEffectId = obj.SalaryEffectId,
                     Notes = obj.Notes,
                     AmountTypeId = obj.AmountTypeId,
                     Amount = obj.Amount,
-                    discount_type =lang==Localization.Arabic ? obj.AmountType.Name:obj.AmountType.NameInEnglish,
-                    
+                    discount_type = lang == Localization.Arabic ? obj.AmountType.Name : obj.AmountType.NameInEnglish,
+
                 },
                 Check = true
             };
@@ -292,27 +332,46 @@ namespace Kader_System.Services.Services.Trans
                 ManageFilesHelper.RemoveFile(Path.Combine(GoRootPath.TransFilesPath, obj.Attachment));
             }
 
-            if (!string.IsNullOrEmpty(model.Attachment))
+            if (model.Attachment is not null)
             {
-                var fileNameAndExt = ManageFilesHelper.SaveBase64StringToFile(model.Attachment!, GoRootPath.TransFilesPath, model.FileName!);
-
-                obj.Attachment = fileNameAndExt?.FileName;
-                obj.AttachmentExtension = fileNameAndExt?.FileExtension;
+                var dirType = HrDirectoryTypes.Deductions;
+                var dir = dirType.GetModuleNameWithType(Modules.Trans);
+                obj.Attachment = await _fileServer.UploadFileAsync(dir, model.Attachment);
 
             }
-            else
+            if (!await unitOfWork.TransDeductions.ExistAsync(model.DeductionId))
             {
-                obj.Attachment = null;
-                obj.AttachmentExtension = null;
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Deduction]]
+                };
             }
+            if (!await unitOfWork.TransSalaryEffects.ExistAsync(model.SalaryEffectId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.SalaryEffect]]
+                };
+            }
+            if (!await unitOfWork.TransAmountTypes.ExistAsync(x => x.Id == model.AmountTypeId))
+
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.AmountTypes]]
+                };
+
+
 
             obj.Amount = model.Amount;
-            obj.AmountTypeId=model.AmountTypeId;
-            obj.SalaryEffectId=model.SalaryEffectId;
-            obj.DeductionId=model.DeductionId;
-            obj.ActionMonth=model.ActionMonth;
-            obj.Notes=model.Notes;
-            obj.EmployeeId=model.EmployeeId;
+            obj.AmountTypeId = model.AmountTypeId;
+            obj.SalaryEffectId = model.SalaryEffectId;
+            obj.DeductionId = model.DeductionId;
+            obj.ActionMonth = model.ActionMonth;
+            obj.Notes = model.Notes;
+            obj.EmployeeId = model.EmployeeId;
             unitOfWork.TransDeductions.Update(obj);
             await unitOfWork.CompleteAsync();
             return new()
@@ -351,7 +410,7 @@ namespace Kader_System.Services.Services.Trans
                 LookUps = null,
                 Msg = sharLocalizer[Localization.Restored]
             };
-        } 
+        }
 
 
         public Task<Response<string>> UpdateActiveOrNotTransDeductionAsync(int id)
@@ -376,7 +435,7 @@ namespace Kader_System.Services.Services.Trans
 
             if (!string.IsNullOrEmpty(obj.Attachment))
             {
-                ManageFilesHelper.RemoveFile(GoRootPath.TransFilesPath+obj.Attachment);
+                ManageFilesHelper.RemoveFile(GoRootPath.TransFilesPath + obj.Attachment);
             }
 
             unitOfWork.TransDeductions.Remove(obj);

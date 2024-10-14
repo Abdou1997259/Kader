@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Interviews
 {
-    [Table("educations")]
+    [Table("inter_educations")]
     public class Education : BaseEntity
     {
 

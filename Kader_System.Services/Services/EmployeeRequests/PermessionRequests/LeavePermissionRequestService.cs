@@ -8,11 +8,10 @@ using Kader_System.Domain.Models.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.HTTP;
-using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 {
-    public class LeavePermissionRequestService(IUnitOfWork unitOfWork ,IRequestService requestService, KaderDbContext context, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ILeavePermissionRequestService
+    public class LeavePermissionRequestService(IUnitOfWork unitOfWork, IRequestService requestService, KaderDbContext context, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ILeavePermissionRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -51,7 +50,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-            var  leaveRequest = await _unitOfWork.LeavePermissionRequest.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
+            var leaveRequest = await _unitOfWork.LeavePermissionRequest.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
             if (leaveRequest != null)
             {
                 if (leaveRequest.StatuesOfRequest.ApporvalStatus != 1)
@@ -63,12 +62,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                         Check = false,
                     };
                 }
-                var result = await _unitOfWork.LeavePermissionRequest.SoftDeleteAsync(leaveRequest,DeletedBy : userId);
+                var result = await _unitOfWork.LeavePermissionRequest.SoftDeleteAsync(leaveRequest, DeletedBy: userId);
                 if (result > 0)
                 {
                     if (!string.IsNullOrWhiteSpace(leaveRequest.AttachmentPath))
                     {
-                        _fileServer.RemoveFile(fullPath,HrEmployeeRequestTypesEnums.LeavePermission.ToString(), leaveRequest.AttachmentPath);
+                        _fileServer.RemoveFile(fullPath, HrEmployeeRequestTypesEnums.LeavePermission.ToString(), leaveRequest.AttachmentPath);
                     }
                     msg = _sharLocalizer[Localization.Deleted];
                     return new()
@@ -117,7 +116,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,
                 Notes = x.Notes,
-                AttachmentPath = x.AttachmentPath != null ? _fileServer.GetFilePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.LeavePermission.ToString(), x.AttachmentPath) : null
+                AttachmentPath = x.AttachmentPath != null ? _fileServer.CombinePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.LeavePermission.ToString(), x.AttachmentPath) : null
             },
             orderBy: x => x.OrderByDescending(x => x.Id),
                 skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, includeProperties: "Employee,StatuesOfRequest")).ToList();
@@ -245,7 +244,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.LeavePermissionRequest.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId,resoan);
+            var result = await _unitOfWork.LeavePermissionRequest.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId, resoan);
             if (result > 0)
             {
                 return new Response<string>()
