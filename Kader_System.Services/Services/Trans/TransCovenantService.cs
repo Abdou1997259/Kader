@@ -1,10 +1,12 @@
 ﻿using Kader_System.Domain.DTOs;
+using Kader_System.Services.IServices.AppServices;
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransCovenantService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransCovenantService
+    public class TransCovenantService(IUnitOfWork unitOfWork, IFileServer fileServer, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransCovenantService
     {
         private TransCovenant _insatance;
+        private IFileServer _fileServer = fileServer;
         public async Task<Response<IEnumerable<SelectListOfCovenantResponse>>> ListOfTransCovenantsAsync(string lang)
         {
             var result =
@@ -128,8 +130,19 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<CreateTransCovenantRequest>> CreateTransCovenantAsync(CreateTransCovenantRequest model)
+        public async Task<Response<CreateTransCovenantRequest>> CreateTransCovenantAsync(CreateTransCovenantRequest model, string lang)
         {
+            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            if (emp is null)
+            {
+
+
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
+                };
+            }
             var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
             if (contract is null)
             {
@@ -137,26 +150,33 @@ namespace Kader_System.Services.Services.Trans
 
                 return new()
                 {
+                    Check = false,
                     Error = resultMsg,
                     Msg = resultMsg
                 };
             }
+
+            if (await unitOfWork.TransCovenants.ExistAsync(x => x.NameAr.Trim() == model.NameAr.Trim() ||
+            x.NameEn.Trim() == model.NameEn.Trim()))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.AlreadyExitedWithSameName, lang == Localization.Arabic ? model.NameAr : model.NameEn]
+
+                };
+            }
+
             var newTrans = mapper.Map<TransCovenant>(model);
 
-            if (!string.IsNullOrEmpty(model.Attachment))
+            if (model.Attachment_File is not null)
             {
-                var fileNameAndExt = ManageFilesHelper.SaveBase64StringToFile(model.Attachment!, GoRootPath.TransFilesPath, model.FileName!);
-                if (fileNameAndExt != null)
-                {
-                    newTrans.Attachment = fileNameAndExt.FileName;
-                    newTrans.AttachmentExtension = fileNameAndExt.FileExtension;
-                }
-                else
-                {
-                    newTrans.Attachment = null;
-                    newTrans.AttachmentExtension = null;
-                }
+                var dirType = HrDirectoryTypes.Covenant;
+                var dir = dirType.GetModuleNameWithType(Modules.Trans);
+                newTrans.Attachment = await _fileServer.UploadFileAsync(dir, model.Attachment_File);
+
             }
+
 
             await unitOfWork.TransCovenants.AddAsync(newTrans);
             await unitOfWork.CompleteAsync();
@@ -188,6 +208,8 @@ namespace Kader_System.Services.Services.Trans
             }
 
             var lookups = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang);
+            var dirType = HrDirectoryTypes.Covenant;
+            var dir = dirType.GetModuleNameWithType(Modules.Trans);
             return new()
             {
                 Data = new GetTransCovenantById()
@@ -200,7 +222,8 @@ namespace Kader_System.Services.Services.Trans
                     Notes = obj.Notes,
                     EmployeeId = obj.EmployeeId,
                     EmployeeName = lang == Localization.Arabic ? obj.Employee!.FullNameAr : obj.Employee!.FullNameEn,
-                    Id = obj.Id
+                    Id = obj.Id,
+
                 },
                 Check = true,
                 LookUps = new
@@ -210,7 +233,7 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<CreateTransCovenantRequest>> UpdateTransCovenantAsync(int id, CreateTransCovenantRequest model)
+        public async Task<Response<CreateTransCovenantRequest>> UpdateTransCovenantAsync(int id, CreateTransCovenantRequest model, string lang)
         {
             var obj = await unitOfWork.TransCovenants.GetByIdAsync(id);
             if (obj is null)
@@ -224,25 +247,51 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-
-            if (!string.IsNullOrEmpty(obj.Attachment))
+            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            if (emp is null)
             {
-                ManageFilesHelper.RemoveFile(Path.Combine(GoRootPath.TransFilesPath, obj.Attachment));
+
+
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
+                };
+            }
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+            if (contract is null)
+            {
+                string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
+
+                return new()
+                {
+                    Check = false,
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
             }
 
-            if (!string.IsNullOrEmpty(model.Attachment))
+            if (await unitOfWork.TransCovenants.ExistAsync(x => x.Id != id && (x.NameAr.Trim() == model.NameAr.Trim() ||
+           x.NameEn.Trim() == model.NameEn.Trim())))
             {
-                var fileNameAndExt = ManageFilesHelper.SaveBase64StringToFile(model.Attachment!, GoRootPath.TransFilesPath, model.FileName!);
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.AlreadyExitedWithSameName, lang == Localization.Arabic ? model.NameAr : model.NameEn]
 
-                obj.Attachment = fileNameAndExt?.FileName;
-                obj.AttachmentExtension = fileNameAndExt?.FileExtension;
-
+                };
             }
-            else
+
+            if (model.Attachment_File is not null)
             {
-                obj.Attachment = null;
-                obj.AttachmentExtension = null;
+                var dirType = HrDirectoryTypes.Covenant;
+                var dir = dirType.GetModuleNameWithType(Modules.Trans);
+                if (!string.IsNullOrEmpty(obj?.Attachment))
+                    _fileServer.RemoveFile(dir, obj.Attachment);
+                obj.Attachment = await _fileServer.UploadFileAsync(dir, model.Attachment_File);
             }
+
+
 
             obj.Amount = model.Amount;
             obj.Date = model.Date;

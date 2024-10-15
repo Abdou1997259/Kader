@@ -255,7 +255,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "36263cb5-5905-4e4c-8f85-369c17ea937e",
+                            ConcurrencyStamp = "c23e90f0-fc3c-44c3-907d-af47e5056634",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -269,10 +269,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBMfpKF4fKVyQ0u/yKAZW89L6m/f7u4KO52FeH6oRWuviTMZh5fzW412wfkg8sN3Yw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELDwnz+wTg6xSFHel6MCJRnxtTvl+pd6+svyxviB6gnIsPRWRp12ultEKVdQ84OwPA==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "1de6d164-3100-480a-9848-5ee14822d7bb",
+                            SecurityStamp = "6d1e2f36-8edb-4c0a-93e0-7a73762a7567",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -7433,9 +7433,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Attachment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AttachmentExtension")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("BenefitId")
                         .HasColumnType("int");
 
@@ -7505,9 +7502,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Attachment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("AttachmentExtension")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
@@ -7574,9 +7568,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Attachment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AttachmentExtension")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CalculateSalaryDetailsId")
@@ -8029,9 +8020,6 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Attachment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AttachmentExtension")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("CalculateSalaryDetailsId")

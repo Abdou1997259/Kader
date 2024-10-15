@@ -15,7 +15,7 @@
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public int BenefitId { get; set; }
         public string? Notes { get; set; }
-        public string? Attachment { get; set; }
-        public string? FileName { get; set; }
+        public IFormFile? Attachment_File { get; set; }
+
     }
 }

@@ -26,7 +26,7 @@ public class TransBenefit : BaseEntity
     public HrBenefit Benefit { get; set; } = default!;
     public string? Notes { get; set; }
     public string? Attachment { get; set; }
-    public string? AttachmentExtension { get; set; }
+
     public int? CalculateSalaryId { get; set; }
     public int? CalculateSalaryDetailsId { get; set; }
 }

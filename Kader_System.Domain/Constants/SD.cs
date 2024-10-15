@@ -668,6 +668,7 @@ public static class SD
         public const string TaskComment = "TaskComment";
         public const string EmployeeVacation = "EmployeeVacation";
         public const string DepartmentManager = "DepartmentManager";
+
         public const string Done = "Done";
         public const string HaveContract = "HaveContract";
         public const string BalanceNotEnough = "BalanceNotEnough";

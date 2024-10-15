@@ -1,8 +1,6 @@
 ﻿using Kader_System.Api.Helpers;
 using Kader_System.Services.IServices.HTTP;
 using Kader_System.Services.IServices.Trans;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Kader_System.Api.Areas.Trans
 {
@@ -11,7 +9,7 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransVacationController(ITransVacationService service , IRequestService requestService) : ControllerBase
+    public class TransVacationController(ITransVacationService service, IRequestService requestService) : ControllerBase
     {
         #region Retrieve
 
@@ -37,7 +35,7 @@ namespace Kader_System.Api.Areas.Trans
         public async Task<IActionResult> GetTransVacationById([FromRoute] int id)
         {
             var response = await service.GetTransVacationByIdAsync(id, requestService.GetRequestHeaderLanguage);
-            var lookUps =await service.GetTransVacationLookUpsData(requestService.GetRequestHeaderLanguage);
+            var lookUps = await service.GetTransVacationLookUpsData(requestService.GetRequestHeaderLanguage);
             if (response.Check)
             {
                 response.LookUps = lookUps.Data;
@@ -48,18 +46,18 @@ namespace Kader_System.Api.Areas.Trans
                 return BadRequest(response);
             }
         }
-           
+
         #endregion
 
         #region Create
 
         [HttpPost(ApiRoutes.TransVacation.CreateTransVacation)]
         [Permission(Helpers.Permission.Add, 25)]
-        public async Task<IActionResult> CreateTransVacation([FromBody] CreateTransVacationRequest request)
+        public async Task<IActionResult> CreateTransVacation([FromForm] CreateTransVacationRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await service.CreateTransVacationAsync(request,requestService.GetRequestHeaderLanguage);
+                var response = await service.CreateTransVacationAsync(request, requestService.GetRequestHeaderLanguage);
                 if (response.Check)
                     return Ok(response);
                 else if (!response.Check)
@@ -76,11 +74,11 @@ namespace Kader_System.Api.Areas.Trans
         #region Update
         [HttpPut(ApiRoutes.TransVacation.UpdateTransVacation)]
         [Permission(Helpers.Permission.Edit, 25)]
-        public async Task<IActionResult> UpdateTransVacation([FromRoute] int id, [FromBody] CreateTransVacationRequest request)
+        public async Task<IActionResult> UpdateTransVacation([FromRoute] int id, [FromForm] CreateTransVacationRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await service.UpdateTransVacationAsync(id, request);
+                var response = await service.UpdateTransVacationAsync(id, request, requestService.GetRequestHeaderLanguage);
                 if (response.Check)
                     return Ok(response);
                 else if (!response.Check)
@@ -123,6 +121,6 @@ namespace Kader_System.Api.Areas.Trans
 
         #endregion
 
-        
+
     }
 }

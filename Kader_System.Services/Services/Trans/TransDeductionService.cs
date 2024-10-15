@@ -194,6 +194,17 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<CreateTransDeductionRequest>> CreateTransDeductionAsync
             (CreateTransDeductionRequest model, string lang)
         {
+            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            if (emp is null)
+            {
+
+
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
+                };
+            }
             var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
             if (contract is null)
             {
@@ -206,7 +217,8 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-            if (!await unitOfWork.TransDeductions.ExistAsync(model.DeductionId))
+
+            if (!await unitOfWork.Deductions.ExistAsync(model.DeductionId))
             {
                 return new()
                 {
@@ -222,17 +234,17 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.SalaryEffect]]
                 };
             }
-            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
-            if (emp is null)
+            if (!await unitOfWork.TransAmountTypes.ExistAsync(x => x.Id == model.AmountTypeId))
+
             {
-
-
                 return new()
                 {
                     Check = false,
-                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.AmountTypes]]
                 };
+
             }
+
             if (await unitOfWork.TransDeductions.ExistAsync(x => x.EmployeeId == model.EmployeeId &&
             x.DeductionId == model.DeductionId &&
             DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now)))
@@ -249,11 +261,11 @@ namespace Kader_System.Services.Services.Trans
 
 
 
-            if (model.Attachment is not null)
+            if (model.Attachment_File is not null)
             {
                 var dirType = HrDirectoryTypes.Deductions;
                 var dir = dirType.GetModuleNameWithType(Modules.Trans);
-                newTrans.Attachment = await _fileServer.UploadFileAsync(dir, model.Attachment);
+                newTrans.Attachment = await _fileServer.UploadFileAsync(dir, model.Attachment_File);
 
             }
 
@@ -288,7 +300,8 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-
+            var dirType = HrDirectoryTypes.Deductions;
+            var dir = dirType.GetModuleNameWithType(Modules.Trans);
             return new()
             {
                 Data = new GetTransDeductionById()
@@ -306,13 +319,13 @@ namespace Kader_System.Services.Services.Trans
                     AmountTypeId = obj.AmountTypeId,
                     Amount = obj.Amount,
                     discount_type = lang == Localization.Arabic ? obj.AmountType.Name : obj.AmountType.NameInEnglish,
-
+                    AttachmentFile = _fileServer.CombinePath(dir, obj.Attachment)
                 },
                 Check = true
             };
         }
 
-        public async Task<Response<GetTransDeductionById>> UpdateTransDeductionAsync(int id, CreateTransDeductionRequest model)
+        public async Task<Response<GetTransDeductionById>> UpdateTransDeductionAsync(int id, CreateTransDeductionRequest model, string lang)
         {
             var obj = await unitOfWork.TransDeductions.GetByIdAsync(id);
             if (obj is null)
@@ -326,19 +339,34 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-
-            if (!string.IsNullOrEmpty(obj.Attachment))
+            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            if (emp is null)
             {
-                ManageFilesHelper.RemoveFile(Path.Combine(GoRootPath.TransFilesPath, obj.Attachment));
+
+
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
+                };
+            }
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+            if (contract is null)
+            {
+                string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
+
+                return new()
+                {
+                    Check = false,
+                    Error = resultMsg,
+                    Msg = resultMsg
+                };
             }
 
-            if (model.Attachment is not null)
-            {
-                var dirType = HrDirectoryTypes.Deductions;
-                var dir = dirType.GetModuleNameWithType(Modules.Trans);
-                obj.Attachment = await _fileServer.UploadFileAsync(dir, model.Attachment);
 
-            }
+
+
+
             if (!await unitOfWork.TransDeductions.ExistAsync(model.DeductionId))
             {
                 return new()
@@ -347,6 +375,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Deduction]]
                 };
             }
+
             if (!await unitOfWork.TransSalaryEffects.ExistAsync(model.SalaryEffectId))
             {
                 return new()
@@ -365,6 +394,8 @@ namespace Kader_System.Services.Services.Trans
 
 
 
+
+
             obj.Amount = model.Amount;
             obj.AmountTypeId = model.AmountTypeId;
             obj.SalaryEffectId = model.SalaryEffectId;
@@ -372,8 +403,17 @@ namespace Kader_System.Services.Services.Trans
             obj.ActionMonth = model.ActionMonth;
             obj.Notes = model.Notes;
             obj.EmployeeId = model.EmployeeId;
+            if (model.Attachment_File is not null)
+            {
+                var dirType = HrDirectoryTypes.Deductions;
+                var dir = dirType.GetModuleNameWithType(Modules.Trans);
+                if (!string.IsNullOrEmpty(obj?.Attachment))
+                    _fileServer.RemoveFile(dir, obj.Attachment);
+                obj.Attachment = await _fileServer.UploadFileAsync(dir, model.Attachment_File);
+            }
             unitOfWork.TransDeductions.Update(obj);
             await unitOfWork.CompleteAsync();
+
             return new()
             {
                 Msg = sharLocalizer[Localization.Done],
@@ -435,9 +475,12 @@ namespace Kader_System.Services.Services.Trans
 
             if (!string.IsNullOrEmpty(obj.Attachment))
             {
-                ManageFilesHelper.RemoveFile(GoRootPath.TransFilesPath + obj.Attachment);
-            }
+                var dirType = HrDirectoryTypes.Deductions;
+                var dir = dirType.GetModuleNameWithType(Modules.Trans);
+                if (!string.IsNullOrEmpty(obj?.Attachment))
+                    _fileServer.RemoveFile(dir, obj.Attachment);
 
+            }
             unitOfWork.TransDeductions.Remove(obj);
             await unitOfWork.CompleteAsync();
             return new()

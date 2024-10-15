@@ -54,11 +54,11 @@ namespace Kader_System.Api.Areas.Trans
 
         [HttpPost(ApiRoutes.TransCovenantRoute.CreateTransCovenant)]
         [Permission(Helpers.Permission.Add, 18)]
-        public async Task<IActionResult> CreateTransCovenant([FromBody] CreateTransCovenantRequest request)
+        public async Task<IActionResult> CreateTransCovenant([FromForm] CreateTransCovenantRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await service.CreateTransCovenantAsync(request);
+                var response = await service.CreateTransCovenantAsync(request, requestService.GetRequestHeaderLanguage);
                 if (response.Check)
                     return Ok(response);
                 else if (!response.Check)
@@ -75,11 +75,11 @@ namespace Kader_System.Api.Areas.Trans
         #region Put
         [HttpPut(ApiRoutes.TransCovenantRoute.UpdateTransCovenant)]
         [Permission(Helpers.Permission.Edit, 18)]
-        public async Task<IActionResult> UpdateTransCovenant([FromRoute] int id, [FromBody] CreateTransCovenantRequest request)
+        public async Task<IActionResult> UpdateTransCovenant([FromRoute] int id, [FromForm] CreateTransCovenantRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await service.UpdateTransCovenantAsync(id, request);
+                var response = await service.UpdateTransCovenantAsync(id, request, requestService.GetRequestHeaderLanguage);
                 if (response.Check)
                     return Ok(response);
                 else if (!response.Check)
