@@ -1,9 +1,5 @@
 ﻿using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.DTOs.Response.HR;
-using Kader_System.Domain.Models.HR;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
 namespace Kader_System.DataAccess.Repositories.HR;
 
@@ -250,7 +246,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
 
     }
 
-    public async Task<List<EmployeesData>> GetAllEmployeeDetails(bool isDeleted, int skip = 0, int take = 10, string lang = "en")
+    public async Task<List<EmployeesData>> GetAllEmployeeDetails(bool isDeleted, int companyId, int skip = 0, int take = 10, string lang = "en")
     {
         HrDirectoryTypes directoryTypes = new();
         directoryTypes = HrDirectoryTypes.Attachments;
@@ -258,11 +254,12 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
         directoryTypes = HrDirectoryTypes.EmployeeProfile;
         var directoryProfileName = directoryTypes.GetModuleNameWithType(Modules.Employees);
 
-        var isDeletedParam = new SqlParameter("@IsDeleted", isDeleted);
-        var langParam = new SqlParameter("@Lang", lang);
+
 
         var query = await _context.SPEmployeeDetails
-            .FromSqlRaw("EXEC SP_GetEmployeeDetails @IsDeleted, @Lang", isDeletedParam, langParam)
+            .FromSql($"EXEC SP_GetEmployeeDetails {isDeleted}, {lang} ,{companyId}")
+
+
             .AsNoTracking().
             ToListAsync();
 

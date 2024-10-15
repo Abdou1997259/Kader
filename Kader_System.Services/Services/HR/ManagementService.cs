@@ -1,5 +1,4 @@
 ﻿using Kader_System.Domain.DTOs;
-using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.HR
 {
@@ -9,7 +8,7 @@ namespace Kader_System.Services.Services.HR
 
         #region Retrieve
 
-    
+
         public async Task<Response<IEnumerable<HrListOfManagementsResponse>>> ListOfManagementsAsync(string lang)
         {
             var result =
@@ -17,7 +16,7 @@ namespace Kader_System.Services.Services.HR
                     select: x => new HrListOfManagementsResponse
                     {
                         Id = x.Id,
-                        NameAr =x.NameAr,
+                        NameAr = x.NameAr,
                         NameEn = x.NameEn,
                         CompanyId = x.CompanyId,
                         ManagerId = x.ManagerId
@@ -43,8 +42,8 @@ namespace Kader_System.Services.Services.HR
             };
         }
 
-        public async Task<Response<GetAllManagementsResponse>> GetAllManagementsAsync(string lang, 
-            HrGetAllFiltrationsFoManagementsRequest model,string host)
+        public async Task<Response<GetAllManagementsResponse>> GetAllManagementsAsync(string lang,
+            HrGetAllFiltrationsFoManagementsRequest model, string host)
         {
             Expression<Func<HrManagement, bool>> filter = x => x.IsDeleted == model.IsDeleted;
             var totalRecords = await unitOfWork.Managements.CountAsync(filter: filter);
@@ -61,7 +60,7 @@ namespace Kader_System.Services.Services.HR
             {
                 TotalRecords = totalRecords,
 
-                Items = (await unitOfWork.Managements.GetSpecificSelectAsync(filter: filter,includeProperties:$"{nameof(_instanceManagement.Company)},{nameof(_instanceManagement.Manager)}",
+                Items = (await unitOfWork.Managements.GetSpecificSelectAsync(filter: filter, includeProperties: $"{nameof(_instanceManagement.Company)},{nameof(_instanceManagement.Manager)}",
                     take: model.PageSize,
                     skip: (model.PageNumber - 1) * model.PageSize,
                     select: x => new ManagementData
@@ -110,9 +109,9 @@ namespace Kader_System.Services.Services.HR
             };
         }
 
-      
 
-        public async Task<Response<HrGetManagementByIdResponse>> GetManagementByIdAsync(int id,string lang)
+
+        public async Task<Response<HrGetManagementByIdResponse>> GetManagementByIdAsync(int id, string lang)
         {
             Expression<Func<HrManagement, bool>> filter = x => x.Id == id;
             var obj = await unitOfWork.Managements.GetFirstOrDefaultAsync(filter, includeProperties: $"{nameof(_instanceManagement.Company)},{nameof(_instanceManagement.Manager)}");
@@ -171,7 +170,7 @@ namespace Kader_System.Services.Services.HR
                 NameAr = model.NameAr,
                 CompanyId = model.CompanyId,
                 ManagerId = model.ManagerId,
-                
+
             });
             await unitOfWork.CompleteAsync();
 
@@ -192,11 +191,13 @@ namespace Kader_System.Services.Services.HR
             var mangements = await unitOfWork.Managements.GetAllAsync();
             var obj = await unitOfWork.Managements.GetByIdAsync(id);
 
-            foreach (var item in mangements) {
+            foreach (var item in mangements)
+            {
 
-                if (item.ManagerId == model.ManagerId) {
+                if (item.ManagerId == model.ManagerId)
+                {
                     string resultMsg = string.Format(shareLocalizer[Localization.MangerAlready]);
-                    
+
                     return new()
                     {
 
@@ -221,17 +222,17 @@ namespace Kader_System.Services.Services.HR
             }
 
             obj.NameAr = model.NameAr;
-            obj.NameEn=model.NameEn;
-            obj.CompanyId=model.CompanyId;
-            obj.ManagerId=model.ManagerId;
+            obj.NameEn = model.NameEn;
+            obj.CompanyId = model.CompanyId;
+            obj.ManagerId = model.ManagerId;
 
-           await unitOfWork.CompleteAsync();
-           return new()
-           {
-               Msg = shareLocalizer[Localization.Done],
-               Check = true,
-               Data = model
-           };
+            await unitOfWork.CompleteAsync();
+            return new()
+            {
+                Msg = shareLocalizer[Localization.Done],
+                Check = true,
+                Data = model
+            };
 
         }
         #endregion
@@ -245,7 +246,7 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<string>> DeleteManagementAsync(int id)
         {
-            var obj=await unitOfWork.Managements.GetByIdAsync(id);
+            var obj = await unitOfWork.Managements.GetByIdAsync(id);
             if (obj == null)
             {
                 string resultMsg = string.Format(shareLocalizer[Localization.CannotBeFound],
@@ -258,6 +259,21 @@ namespace Kader_System.Services.Services.HR
                     Msg = resultMsg
                 };
             }
+            Expression<Func<HrEmployee, bool>> filter = x => x.ManagementId == id;
+            var isUsed = await unitOfWork.Employees.GetFirstOrDefaultAsync(filter);
+            if (isUsed == null)
+            {
+                string resultMsg = string.Format(shareLocalizer[Localization.CannotDeleteItemHasRelativeData],
+                     shareLocalizer[Localization.Management]);
+
+                return new()
+                {
+                    Check = false,
+                    Data = string.Empty,
+                    Msg = resultMsg
+                };
+            }
+
 
             unitOfWork.Managements.Remove(obj);
             await unitOfWork.CompleteAsync();

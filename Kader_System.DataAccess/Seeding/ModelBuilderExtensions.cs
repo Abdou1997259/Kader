@@ -12,9 +12,9 @@ public static class ModelBuilderExtensions
             .HasData(
             new ApplicationRole()
             {
-                Id = SuperAdmin.RoleId,
+                Id = SuperAdmins.RoleId,
                 Name = RolesEnums.Superadmin.ToString(),
-                Title_name_ar = SuperAdmin.RoleNameInAr,
+                Title_name_ar = SuperAdmins.RoleNameInAr,
                 ConcurrencyStamp = "1",
                 NormalizedName = "SUPERADMIN"
             }, new ApplicationRole()
@@ -59,7 +59,7 @@ public static class ModelBuilderExtensions
             .HasData(
             new ApplicationUser()
             {
-                Id = SuperAdmin.Id,
+                Id = SuperAdmins.Ids[0],
                 UserName = "admin",
 
                 NormalizedUserName = "ADMIN",
@@ -76,8 +76,8 @@ public static class ModelBuilderExtensions
                 EmailConfirmed = true,
                 CompanyYearId = 1,
                 IsActive = true,
-                PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, SuperAdmin.Password),
-                VisiblePassword = SuperAdmin.Password
+                PasswordHash = new PasswordHasher<ApplicationUser>().HashPassword(null!, SuperAdmins.Password),
+                VisiblePassword = SuperAdmins.Password
             }
             );
 
@@ -85,8 +85,8 @@ public static class ModelBuilderExtensions
             .HasData(
            new ApplicationUserRole()
            {
-               RoleId = SuperAdmin.RoleId,
-               UserId = SuperAdmin.Id
+               RoleId = SuperAdmins.RoleId,
+               UserId = SuperAdmins.Ids[0]
            });
 
         #endregion

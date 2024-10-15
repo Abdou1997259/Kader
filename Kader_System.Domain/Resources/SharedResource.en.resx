@@ -162,6 +162,12 @@
   <data name="Company" xml:space="preserve">
     <value>Company</value>
   </data>
+  <data name="CompanyContainsEmployee" xml:space="preserve">
+    <value>Can't Remove Company Cause It Contains Employee</value>
+  </data>
+  <data name="CompanyLinkedToUser" xml:space="preserve">
+    <value>Can't Remove Company Cause It Is Linked To A User</value>
+  </data>
   <data name="ContractNotFound" xml:space="preserve">
     <value>Doesn't have a contract</value>
   </data>

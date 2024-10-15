@@ -1,9 +1,8 @@
 ﻿using Kader_System.Domain.DTOs;
-using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.HR
 {
-    public class DepartmentService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) :IDepartmentService
+    public class DepartmentService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : IDepartmentService
     {
         private HrDepartment _instanceDepartment;
 
@@ -43,7 +42,7 @@ namespace Kader_System.Services.Services.HR
         }
 
         public async Task<Response<GetAllDepartmentsResponse>> GetAllDepartmentsAsync(string lang
-            , GetAllFiltrationsForDepartmentsRequest model,string host)
+            , GetAllFiltrationsForDepartmentsRequest model, string host)
         {
             Expression<Func<HrDepartment, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
                                                                (string.IsNullOrEmpty(model.Word) || x.NameAr.Contains(model.Word) || x.NameEn.Contains(model.Word));
@@ -236,7 +235,20 @@ namespace Kader_System.Services.Services.HR
                     Msg = resultMsg
                 };
             }
+            Expression<Func<HrEmployee, bool>> filter = x => x.DepartmentId == id;
+            var inUsed = await unitOfWork.Employees.GetFirstOrDefaultAsync(filter);
+            if (inUsed == null)
+            {
+                string resultMsg = string.Format(shareLocalizer[Localization.CannotDeleteItemHasRelativeData],
+                     shareLocalizer[Localization.Department]);
 
+                return new()
+                {
+                    Check = false,
+                    Data = string.Empty,
+                    Msg = resultMsg
+                };
+            }
             unitOfWork.Departments.Remove(obj);
             await unitOfWork.CompleteAsync();
             return new()
@@ -247,16 +259,17 @@ namespace Kader_System.Services.Services.HR
             };
         }
 
-        public async Task<Response<string>> AddEmployee(int id,AddEmpolyeeToDepartmentRequest model)
+        public async Task<Response<string>> AddEmployee(int id, AddEmpolyeeToDepartmentRequest model)
         {
-            var empolyee = await unitOfWork.Employees.GetByIdAsync( model.EmpolyeeId);
-            if (empolyee is  null) {
-                var msg=$"{shareLocalizer[Localization.Employee]} {shareLocalizer[Localization.NotFound]}" ;
+            var empolyee = await unitOfWork.Employees.GetByIdAsync(model.EmpolyeeId);
+            if (empolyee is null)
+            {
+                var msg = $"{shareLocalizer[Localization.Employee]} {shareLocalizer[Localization.NotFound]}";
                 return new()
                 {
-                    Check=false,
-                    Data=null,
-                    Msg= msg    
+                    Check = false,
+                    Data = null,
+                    Msg = msg
 
                 };
             }
@@ -286,7 +299,7 @@ namespace Kader_System.Services.Services.HR
                 };
 
             }
-            if(department.ManagementId!= management.Id)
+            if (department.ManagementId != management.Id)
             {
                 var msg = $"{shareLocalizer[Localization.IsDepartmentInMang]}";
                 return new()
@@ -298,16 +311,16 @@ namespace Kader_System.Services.Services.HR
                 };
             }
             //return $"{FirstNameEn} {FatherNameEn} {GrandFatherNameEn} {FamilyNameEn}";
-             empolyee.DepartmentId = id;
+            empolyee.DepartmentId = id;
             empolyee.ManagementId = model.MangamentId;
             unitOfWork.Employees.Update(empolyee);
-           await unitOfWork.CompleteAsync();
+            await unitOfWork.CompleteAsync();
 
             return new()
             {
                 Check = true,
                 Data = shareLocalizer[Localization.Updated],
-                Msg=null
+                Msg = null
             };
 
         }

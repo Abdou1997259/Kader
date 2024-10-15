@@ -6,9 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.HR;
 
-public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, KaderDbContext _context, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : ICompanyService
+public class CompanyService(IUnitOfWork unitOfWork, KaderDbContext context, IFileServer _fileServer, KaderDbContext _context, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : ICompanyService
 {
     private HrCompany _instance;
+    private KaderDbContext _context = context;
 
     #region Retrieve
 
@@ -501,6 +502,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, Kad
             Expression<Func<HrCompany, bool>> filter = x => x.Id == id;
             var obj = await unitOfWork.Companies.GetFirstOrDefaultAsync(filter, includeProperties: $"{nameof(_instance.Licenses)},{nameof(_instance.ListOfsContract)}");
 
+
             if (obj == null)
             {
                 string resultMsg = string.Format(shareLocalizer[Localization.CannotBeFound],
@@ -512,6 +514,29 @@ public class CompanyService(IUnitOfWork unitOfWork, IFileServer _fileServer, Kad
                     Error = resultMsg,
                     Msg = resultMsg
                 };
+            }
+            var users = await _context.Users
+                .Where(x => !string.IsNullOrEmpty(x.CompanyId))
+                .ToListAsync();
+
+            // Check if any user has the company linked
+            if (users.Any(x => x.CompanyId.Splitter().Contains(id)))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = shareLocalizer[Localization.CompanyLinkedToUser]
+                };
+            }
+            var companyEmps = _context.Companys.Include("HrEmployees").Where(x => x.Id == id).Any(x => x.HrEmployees.Any());
+            if (companyEmps)
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = shareLocalizer[Localization.CompanyContainsEmployee]
+                };
+
             }
 
             if (obj.Licenses.Any())
