@@ -4,8 +4,17 @@ public static class ClaimsPrincipalExtensions
 {
     public static string GetUserId(this ClaimsPrincipal principal) =>
         principal.FindFirstValue(RequestClaims.UserId)!;
-    public static string GetCurrentCompany(this ClaimsPrincipal principal) =>
-    principal.FindFirstValue(RequestClaims.CurrentCompany)!;
+    public static int GetCurrentCompany(this ClaimsPrincipal principal)
+    {
+        var currentCompany = principal.FindFirstValue(RequestClaims.CurrentCompany);
+
+        if (int.TryParse(currentCompany, out var convertedId))
+        {
+            return convertedId;
+        }
+        return 0;
+    }
+
 
     public static string GetCompaines(this ClaimsPrincipal principal) =>
   principal.FindFirstValue(RequestClaims.Company)!;

@@ -322,6 +322,7 @@ namespace Kader_System.Services.Services.Setting
                 };
             }
 
+
             var titleResult = await _context.Titles.Where(x => x.Id == id).ExecuteUpdateAsync(x => x.
                SetProperty(p => p.IsDeleted, true).
                SetProperty(p => p.DeleteDate, DateTime.Now));
@@ -352,6 +353,7 @@ namespace Kader_System.Services.Services.Setting
                 return new Response<string>()
                 {
                     Check = true,
+                    Msg = sharLocalizer[Localization.Deleted],
                     Data = "Data deleted sucessfully",
                 };
             }

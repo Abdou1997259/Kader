@@ -60,13 +60,25 @@ public static class SD
         public const string Interview = "Interview";
 
     }
-    public static class SuperAdmin
+    public static class SuperAdmins
     {
-        public const string Id = "b74ddd14-6340-4840-95c2-db12554843e5basb1";
+
 
         public const string RoleId = "fab4fac1-c546-41de-aebc-a14da68957ab1";
         public static string Password = "123456";
         public static string RoleNameInAr = "سوبر أدمن";
+
+        public static readonly string[] Ids = new string[100]; // 
+
+        static SuperAdmins()
+        {
+            // Initialize the first element explicitly
+            Ids[0] = "b74ddd14-6340-4840-95c2-db12554843e5basb1"; ;
+
+
+        }
+
+
     }
     public static class UserRole
     {
@@ -645,6 +657,8 @@ public static class SD
         public const string NotApproved = "NotApproved";
         public const string LoanRequest = "LoanRequest";
         public const string TodayTrans = "TodayTrans";
+        public const string CompanyLinkedToUser = "CompanyLinkedToUser";
+        public const string CompanyContainsEmployee = "CompanyContainsEmployee";
         public const string ApprovedAready = "ApprovedAready";
         public const string CurrentIsNotExitedInCompanys = "CurrentIsNotExitedInCompanys";
         public const string CurrentIsNotExitedInTitle = "CurrentIsNotExitedInTitle";

@@ -10,20 +10,23 @@ namespace Kader_System.Api.Helpers
         public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
             PermissionAttribute permssionAttribute = context.ActionDescriptor.EndpointMetadata.FirstOrDefault(p => p is PermissionAttribute) as PermissionAttribute;
-            if (permssionAttribute != null) {
+            if (permssionAttribute != null)
+            {
                 var user = context.HttpContext.User;
                 var claimidentity = user.Identity as ClaimsIdentity;
-                if (claimidentity == null || !claimidentity.IsAuthenticated) {
+                if (claimidentity == null || !claimidentity.IsAuthenticated)
+                {
 
                     context.Result = new ForbidResult();
                 }
-               
-               
-                var userId = user.GetUserId();
-                var currentTitle =(await db.Users.FirstOrDefaultAsync(u=>u.Id==userId)).CurrentTitleId;
 
-                var isAdmin = await db.UserRoles.FirstOrDefaultAsync(s => s.UserId == userId && s.RoleId == SuperAdmin.RoleId);
-                if (isAdmin != null) {
+
+                var userId = user.GetUserId();
+                var currentTitle = (await db.Users.FirstOrDefaultAsync(u => u.Id == userId)).CurrentTitleId;
+
+                var isAdmin = await db.UserRoles.FirstOrDefaultAsync(s => s.UserId == userId && s.RoleId == SuperAdmins.RoleId);
+                if (isAdmin != null)
+                {
 
                     goto Checked;
 
@@ -32,7 +35,7 @@ namespace Kader_System.Api.Helpers
 
 
 
-                var permssionOnScreen = (await db.UserPermissions.FirstOrDefaultAsync(p => p.UserId == userId && p.SubScreenId == permssionAttribute.SubScreenId &&p.TitleId== currentTitle))?.Permission;
+                var permssionOnScreen = (await db.UserPermissions.FirstOrDefaultAsync(p => p.UserId == userId && p.SubScreenId == permssionAttribute.SubScreenId && p.TitleId == currentTitle))?.Permission;
                 if (permssionOnScreen == null)
                 {
                     context.Result = new ForbidResult();
@@ -42,13 +45,14 @@ namespace Kader_System.Api.Helpers
                 bool isPermitted = false;
                 foreach (var perm in listOfPermssionAsIntergers)
                 {
-                    if(perm.CastToPerssmison() == permssionAttribute.Permission)
+                    if (perm.CastToPerssmison() == permssionAttribute.Permission)
                     {
                         isPermitted = true;
                     }
                 }
-                if (!isPermitted) { 
-                  context.Result=new ForbidResult();
+                if (!isPermitted)
+                {
+                    context.Result = new ForbidResult();
                 }
 
 

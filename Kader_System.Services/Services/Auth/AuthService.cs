@@ -16,7 +16,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                    RoleManager<ApplicationRole> roleManager,
                    KaderDbContext db,
                    IMainScreenService mainScreenService,
-                   IHttpContextAccessor httpContextAccessor
+                   IHttpContextAccessor httpContextAccessor,
+                   IUserContextService userContext
                 ) : IAuthService
 
 {
@@ -34,6 +35,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
     private readonly IMainScreenService _mainScreenService = mainScreenService;
     private readonly KaderDbContext _db = db;
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly IUserContextService _userContext = userContext;
 
     #region Authentication
 
@@ -409,12 +411,12 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
         using var transaction = _unitOfWork.BeginTransaction();
 
-        var user = await _userManager.FindByIdAsync(SuperAdmin.Id);
+        var user = await _userManager.FindByIdAsync(SuperAdmins.Ids[0]);
 
         if (user is null)
         {
             string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                _sharLocalizer[Localization.User], SuperAdmin.Id);
+                _sharLocalizer[Localization.User], SuperAdmins.Ids[0]);
 
             return new Response<string>()
             {
@@ -425,13 +427,13 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         }
 
 
-        var result = await _userManager.ChangePasswordAsync(user, SuperAdmin.Password, newPassword);
+        var result = await _userManager.ChangePasswordAsync(user, SuperAdmins.Password, newPassword);
 
 
         //var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         //var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
 
-        user.VisiblePassword = SuperAdmin.Password = newPassword;
+        user.VisiblePassword = SuperAdmins.Password = newPassword;
 
         _unitOfWork.Users.Update(user);
         await _unitOfWork.CompleteAsync();
@@ -993,9 +995,10 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
         // Fetch the necessary data from the database
         var users = await _unitOfWork.Users.GetSpecificSelectAsync(
-            filter: filter,
+          filter: filter,
             take: model.PageSize,
             skip: (model.PageNumber - 1) * model.PageSize,
+
             select: x => new
             {
                 x.Id,
@@ -1011,8 +1014,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
                 x.ImagePath
 
-            },
-            orderBy: x => x.OrderByDescending(x => x.Add_date)
+            }
+
         );
 
 
@@ -1300,7 +1303,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
     public async Task<Response<GetMyProfileResponse>> GetMyProfile(string lang, string moduleName, HrDirectoryTypes hrDirectory)
     {
-        var userId = _accessor!.HttpContext!.User.GetUserId();
+        var userId = _userContext.UserId;
 
         var user = await _unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == userId);
 

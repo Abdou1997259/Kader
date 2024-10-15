@@ -13,12 +13,13 @@ namespace Kader_System.Services.Services.HR
           IHttpContextAccessor _accessor,
           IFileServer fileServer,
           IAuthService authService,
+          IUserContextService userContext,
           KaderDbContext _context
     , UserManager<ApplicationUser> userManager) : IEmployeeService
     {
         private readonly IAuthService _authService = authService;
         private HrEmployee _instanceEmployee;
-
+        private IUserContextService _userContext = userContext;
         #region Retreive
 
         public async Task<Response<IEnumerable<ListOfEmployeesResponse>>> ListOfEmployeesAsync(string lang)
@@ -93,8 +94,8 @@ namespace Kader_System.Services.Services.HR
             HrDirectoryTypes directoryTypes = new();
             directoryTypes = HrDirectoryTypes.Attachments;
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-
-            Expression<Func<HrEmployee, bool>> filter = x => x.Id == id;
+            var currentCompany = _accessor.HttpContext == null ? 0 : _accessor.HttpContext.User.GetCurrentCompany();
+            Expression<Func<HrEmployee, bool>> filter = x => x.Id == id && x.CompanyId == currentCompany;
             var obj = await unitOfWork.Employees.GetFirstOrDefaultAsync(filter,
                 includeProperties: $"{nameof(_instanceEmployee.Management)},{nameof(_instanceEmployee.Job)}," +
                                    $"{nameof(_instanceEmployee.User)},{nameof(_instanceEmployee.Company)}," +
@@ -113,7 +114,8 @@ namespace Kader_System.Services.Services.HR
                     Msg = resultMsg
                 };
             }
-            var empFiles = await unitOfWork.EmployeeAttachments.GetSpecificSelectAsync(x => x.EmployeeId == id, x => x);
+            var empFiles = await unitOfWork.EmployeeAttachments.GetSpecificSelectAsync(x => x.EmployeeId == id,
+                x => x);
 
 
             return new()
@@ -195,16 +197,18 @@ namespace Kader_System.Services.Services.HR
         public async Task<Response<GetAllEmployeesResponse>> GetAllEmployeesAsync(string lang,
             GetAllEmployeesFilterRequest model, string host)
         {
-            Expression<Func<HrEmployee, bool>> filter = x => x.IsDeleted == model.IsDeleted;
 
-            Expression<Func<EmployeesData, bool>> filterSearch = x =>
-                (string.IsNullOrEmpty(model.Word)
-                 || x.FullName.Contains(model.Word));
+
+
+
+            var currentCompany = _accessor.HttpContext == null ? 0 : _accessor.HttpContext.User.GetCurrentCompany();
             //|| x.Job.Contains(model.Word)
             //|| x.Department.Contains(model.Word)
             //|| x.Nationality.Contains(model.Word)
             //|| x.Company.Contains(model.Word)
             //|| x.Management.Contains(model.Word));
+
+            Expression<Func<HrEmployee, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany;
 
 
             var totalRecords = await unitOfWork.Employees.CountAsync(filter: filter);
@@ -222,7 +226,7 @@ namespace Kader_System.Services.Services.HR
             {
                 TotalRecords = totalRecords,
 
-                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, lang: lang),
+                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, currentCompany, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, lang: lang),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -272,7 +276,7 @@ namespace Kader_System.Services.Services.HR
                                                               || x.Nationality.Contains(model.Word)
                                                               || x.Company.Contains(model.Word)
                                                               || x.Management.Contains(model.Word));
-
+            var currentCompany = _accessor.HttpContext == null ? 0 : _accessor.HttpContext.User.GetCurrentCompany();
 
             var totalRecords = await unitOfWork.Employees.CountAsync(filter: filter);
             int page = 1;
@@ -288,7 +292,7 @@ namespace Kader_System.Services.Services.HR
             {
                 TotalRecords = totalRecords,
 
-                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, lang: lang),
+                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, currentCompany, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, lang: lang),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -328,7 +332,7 @@ namespace Kader_System.Services.Services.HR
             try
             {
                 var user = _accessor!.HttpContext!.User as ClaimsPrincipal;
-                var currentCompany = int.Parse(user.GetCurrentCompany());
+                var currentCompany = user.GetCurrentCompany();
                 var companies = await unitOfWork.Companies.GetSpecificSelectAsync(filter => filter.IsDeleted == false && filter.Id == currentCompany,
                     select: x => new
                     {

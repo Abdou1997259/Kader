@@ -162,6 +162,12 @@
   <data name="Company" xml:space="preserve">
     <value>الشركة</value>
   </data>
+  <data name="CompanyContainsEmployee" xml:space="preserve">
+    <value>لايمكن مسح هذا الشركة لانها تحتوي علي موظفين </value>
+  </data>
+  <data name="CompanyLinkedToUser" xml:space="preserve">
+    <value>لايمكن مسح هذا الشركه لانها مربوطة بالمستخدمين </value>
+  </data>
   <data name="ContractNotFound" xml:space="preserve">
     <value>ليس لديه عقد عمل </value>
   </data>

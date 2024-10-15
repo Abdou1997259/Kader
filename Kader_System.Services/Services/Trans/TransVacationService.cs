@@ -180,7 +180,7 @@ namespace Kader_System.Services.Services.Trans
                 return new()
                 {
                     Check = false,
-                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
+                    Msg = sharLocalizer[Localization.IsNotExisted, sharLocalizer[Localization.Employee]]
                 };
             }
             var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
