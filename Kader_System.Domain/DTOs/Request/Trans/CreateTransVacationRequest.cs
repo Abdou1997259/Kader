@@ -6,14 +6,14 @@
         public DateOnly StartDate { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public double DaysCount { get; set; }
- 
+
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public int EmployeeId { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public int VacationId { get; set; }
-       
+
         public string? Notes { get; set; }
-        public string? Attachment { get; set; }
+
         public IFormFile? AttachmentFile { get; set; }
 
     }

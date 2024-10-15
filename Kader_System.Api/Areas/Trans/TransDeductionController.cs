@@ -80,7 +80,7 @@ namespace Kader_System.Api.Areas.Trans
         {
             if (ModelState.IsValid)
             {
-                var response = await service.UpdateTransDeductionAsync(id, request);
+                var response = await service.UpdateTransDeductionAsync(id, request, requestService.GetRequestHeaderLanguage);
                 if (response.Check)
                     return Ok(response);
                 else if (!response.Check)

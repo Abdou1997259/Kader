@@ -27,6 +27,9 @@
         EmployeeProfile = 6,
         Applicant = 7,
         Deductions = 8,
+        Benefits = 9,
+        Covenant = 10,
+        Vacation = 11,
     }
 
 

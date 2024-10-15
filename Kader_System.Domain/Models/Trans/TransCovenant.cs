@@ -16,6 +16,5 @@ public class TransCovenant : BaseEntity
     public HrEmployee Employee { get; set; } = default!;
 
     public string? Attachment { get; set; }
-    public string? AttachmentExtension { get; set; }
 
 }

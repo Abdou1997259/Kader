@@ -65,11 +65,11 @@ namespace Kader_System.Api.Areas.Trans
         [HttpPost(ApiRoutes.TransBenefit.CreateTransBenefit)]
         [Permission(Helpers.Permission.Add, 22)]
 
-        public async Task<IActionResult> CreateTransBenefit([FromBody] CreateTransBenefitRequest request)
+        public async Task<IActionResult> CreateTransBenefit([FromForm] CreateTransBenefitRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await service.CreateTransBenefitAsync(request);
+                var response = await service.CreateTransBenefitAsync(request, requestService.GetRequestHeaderLanguage);
                 if (response.Check)
                     return Ok(response);
                 else if (!response.Check)
@@ -88,11 +88,11 @@ namespace Kader_System.Api.Areas.Trans
 
         [HttpPut(ApiRoutes.TransBenefit.UpdateTransBenefit)]
         [Permission(Helpers.Permission.Edit, 22)]
-        public async Task<IActionResult> UpdateTransBenefit([FromRoute] int id, [FromBody] CreateTransBenefitRequest request)
+        public async Task<IActionResult> UpdateTransBenefit([FromRoute] int id, [FromForm] CreateTransBenefitRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await service.UpdateTransBenefitAsync(id, request);
+                var response = await service.UpdateTransBenefitAsync(id, request, requestService.GetRequestHeaderLanguage);
                 if (response.Check)
                     return Ok(response);
                 else if (!response.Check)

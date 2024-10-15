@@ -15,7 +15,7 @@
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public int DeductionId { get; set; }
         public string? Notes { get; set; }
-        public IFormFile? Attachment { get; set; }
+        public IFormFile? Attachment_File { get; set; }
 
     }
 }

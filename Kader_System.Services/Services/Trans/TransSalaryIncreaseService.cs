@@ -260,6 +260,17 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<CreateTransSalaryIncreaseRequest>> CreateTransSalaryIncreaseAsync(CreateTransSalaryIncreaseRequest model, string lang)
         {
+            var emp = await unitOfWork.Employees.GetByIdAsync(model.Employee_id);
+            if (emp is null)
+            {
+
+
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
+                };
+            }
             var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.Employee_id, x => x)).FirstOrDefault();
             if (contract is null)
             {
@@ -267,6 +278,7 @@ namespace Kader_System.Services.Services.Trans
 
                 return new()
                 {
+                    Check = false,
                     Error = resultMsg,
                     Msg = resultMsg
                 };
@@ -364,20 +376,29 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<CreateTransSalaryIncreaseRequest>> UpdateTransSalaryIncreaseAsync(int id, CreateTransSalaryIncreaseRequest model)
         {
             var obj = await _unitOfWork.TransSalaryIncrease.GetByIdAsync(id);
-            var emp = await _unitOfWork.Employees.GetByIdAsync(model.Employee_id);
+            var emp = await unitOfWork.Employees.GetByIdAsync(model.Employee_id);
             if (emp is null)
             {
-                string empMsg = sharLocalizer[Localization.Employee];
-                string resultMsg = sharLocalizer[Localization.IsNotExisted, empMsg];
+
 
                 return new()
                 {
-                    Data = new(),
+                    Check = false,
+                    Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
+                };
+            }
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.Employee_id, x => x)).FirstOrDefault();
+            if (contract is null)
+            {
+                string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
+
+                return new()
+                {
+                    Check = false,
                     Error = resultMsg,
                     Msg = resultMsg
                 };
             }
-
             var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.EmployeeId == model.Employee_id)).FixedSalary;
             if (obj is null)
 

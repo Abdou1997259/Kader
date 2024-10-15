@@ -7,7 +7,7 @@ public interface ITransVacationService
     Task<Response<TransVacationLookUpsData>> GetTransVacationLookUpsData(string lang);
     Task<Response<CreateTransVacationRequest>> CreateTransVacationAsync(CreateTransVacationRequest model, string lang);
     Task<Response<GetTransVacationById>> GetTransVacationByIdAsync(int id, string lang);
-    Task<Response<GetTransVacationById>> UpdateTransVacationAsync(int id, CreateTransVacationRequest model);
+    Task<Response<GetTransVacationById>> UpdateTransVacationAsync(int id, CreateTransVacationRequest model, string lang);
     Task<Response<string>> UpdateActiveOrNotTransVacationAsync(int id);
     Task<Response<object>> RestoreTransVacationAsync(int id);
     Task<Response<string>> DeleteTransVacationAsync(int id);

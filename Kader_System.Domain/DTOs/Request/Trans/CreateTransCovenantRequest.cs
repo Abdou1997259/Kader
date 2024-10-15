@@ -3,9 +3,9 @@
     public class CreateTransCovenantRequest
     {
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public  string NameEn { get; set; }
+        public string NameEn { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public  string NameAr { get; set; }
+        public string NameAr { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public DateOnly Date { get; set; }
         public string? Notes { get; set; }
@@ -13,7 +13,7 @@
         public double Amount { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         public int EmployeeId { get; set; }
-        public string? Attachment { get; set; }
-        public string? FileName { get; set; }
+        public IFormFile? Attachment_File { get; set; }
+
     }
 }
