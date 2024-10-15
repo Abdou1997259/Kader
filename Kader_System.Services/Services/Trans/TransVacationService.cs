@@ -425,10 +425,6 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
-            if (!string.IsNullOrEmpty(obj.Attachment))
-            {
-                ManageFilesHelper.RemoveFile(GoRootPath.TransFilesPath + obj.Attachment);
-            }
 
             unitOfWork.TransVacations.Remove(obj);
             await unitOfWork.CompleteAsync();
