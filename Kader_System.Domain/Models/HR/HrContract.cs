@@ -10,12 +10,12 @@ public class HrContract : BaseEntity
     public double HousingAllowance { get; set; }
     public DateOnly StartDate { get; set; }
     public DateOnly EndDate { get; set; }
-    public  string FileName { get; set; }
-    public  string FileExtension { get; set; }
+    public string FileName { get; set; }
+    public string FileExtension { get; set; }
 
     public int EmployeeId { get; set; }
     [ForeignKey(nameof(EmployeeId))]
     public HrEmployee Employee { get; set; } = default!;
-
+    public int CompanyId { get; set; }
     public ICollection<HrContractAllowancesDetail> ListOfAllowancesDetails { get; set; } = [];
 }

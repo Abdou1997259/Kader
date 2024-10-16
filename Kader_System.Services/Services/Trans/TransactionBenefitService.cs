@@ -3,33 +3,35 @@ using Kader_System.Services.IServices.AppServices;
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransBenefitService(IUnitOfWork unitOfWork, IFileServer fileServer, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransBenefitService
+    public class TransBenefitService(IUnitOfWork unitOfWork, IUserContextService userContextService, IFileServer fileServer, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransBenefitService
     {
         private TransBenefit _insatance;
         private IFileServer _fileServer = fileServer;
+        private IUserContextService _userContextService = userContextService;
         public async Task<Response<IEnumerable<SelectListOfTransBenefitResponse>>> ListOfTransBenefitsAsync(string lang)
         {
-            var result =
-                await unitOfWork.TransBenefits.GetSpecificSelectAsync(null!,
-                    includeProperties: $"{nameof(_insatance.Benefit)},{nameof(_insatance.Employee)},{nameof(_insatance.SalaryEffect)}" +
-                                       $",{nameof(_insatance.AmountType)}",
-                    select: x => new SelectListOfTransBenefitResponse
-                    {
-                        Id = x.Id,
-                        ActionMonth = x.ActionMonth,
-                        SalaryEffect = lang == Localization.Arabic ? x.SalaryEffect!.Name : x.SalaryEffect!.NameInEnglish,
-                        AddedOn = x.Add_date,
-                        BenefitId = x.BenefitId,
-                        BenefitName = lang == Localization.Arabic ? x.Benefit!.Name_ar : x.Benefit!.Name_en,
-                        Amount = x.Amount,
-                        EmployeeId = x.EmployeeId,
-                        EmployeeName = lang == Localization.Arabic ? x.Employee!.FullNameAr : x.Employee!.FullNameEn,
-                        Notes = x.Notes,
-                        SalaryEffectId = x.SalaryEffectId,
-                        AmountTypeId = x.AmountTypeId,
-                        ValueTypeName = lang == Localization.Arabic ? x.AmountType!.Name : x.AmountType!.NameInEnglish
-                    }, orderBy: x =>
-                        x.OrderByDescending(x => x.Id));
+
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var result = await unitOfWork.TransBenefits.GetSpecificSelectAsync(x => x.CompanyId == currentCompany,
+                includeProperties: $"{nameof(_insatance.Benefit)},{nameof(_insatance.Employee)},{nameof(_insatance.SalaryEffect)}" +
+                                   $",{nameof(_insatance.AmountType)}",
+                select: x => new SelectListOfTransBenefitResponse
+                {
+                    Id = x.Id,
+                    ActionMonth = x.ActionMonth,
+                    SalaryEffect = lang == Localization.Arabic ? x.SalaryEffect!.Name : x.SalaryEffect!.NameInEnglish,
+                    AddedOn = x.Add_date,
+                    BenefitId = x.BenefitId,
+                    BenefitName = lang == Localization.Arabic ? x.Benefit!.Name_ar : x.Benefit!.Name_en,
+                    Amount = x.Amount,
+                    EmployeeId = x.EmployeeId,
+                    EmployeeName = lang == Localization.Arabic ? x.Employee!.FullNameAr : x.Employee!.FullNameEn,
+                    Notes = x.Notes,
+                    SalaryEffectId = x.SalaryEffectId,
+                    AmountTypeId = x.AmountTypeId,
+                    ValueTypeName = lang == Localization.Arabic ? x.AmountType!.Name : x.AmountType!.NameInEnglish
+                }, orderBy: x =>
+                    x.OrderByDescending(x => x.Id));
 
             if (!result.Any())
             {
@@ -54,8 +56,8 @@ namespace Kader_System.Services.Services.Trans
             GetAllFilterationForTransBenefitRequest model, string host)
         {
 
-
-            Expression<Func<TransBenefit, bool>> filter = x => x.IsDeleted == model.IsDeleted
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            Expression<Func<TransBenefit, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany
                 && (string.IsNullOrEmpty(model.Word) || x.ActionMonth.ToString().Contains(model.Word)
                 || x.AmountType!.Name.Contains(model.Word) || x.AmountType!.NameInEnglish.Contains(model.Word)
                 || x.Benefit!.Name_en.Contains(model.Word)
@@ -130,14 +132,15 @@ namespace Kader_System.Services.Services.Trans
         {
             try
             {
-                var employees = await unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
+                var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+                var employees = await unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false && filter.CompanyId == currentCompany,
                     select: x => new
                     {
                         Id = x.Id,
                         Name = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn
                     });
 
-                var benefits = await unitOfWork.Benefits.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
+                var benefits = await unitOfWork.Benefits.GetSpecificSelectAsync(filter => filter.IsDeleted,
                     select: x => new
                     {
                         Id = x.Id,
@@ -190,8 +193,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<CreateTransBenefitRequest>> CreateTransBenefitAsync(CreateTransBenefitRequest model, string lang)
         {
-
-            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
             if (emp is null)
             {
 
@@ -202,7 +205,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -234,7 +237,7 @@ namespace Kader_System.Services.Services.Trans
             }
 
 
-            if (await unitOfWork.TransBenefits.ExistAsync(x => x.EmployeeId == model.EmployeeId &&
+            if (await unitOfWork.TransBenefits.ExistAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany &&
                 x.BenefitId == model.BenefitId &&
                 DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now)))
             {
@@ -255,7 +258,7 @@ namespace Kader_System.Services.Services.Trans
                 newTrans.Attachment = await _fileServer.UploadFileAsync(dir, model.Attachment_File);
 
             }
-
+            newTrans.CompanyId = currentCompany;
             await unitOfWork.TransBenefits.AddAsync(newTrans);
             await unitOfWork.CompleteAsync();
             return new()
@@ -268,7 +271,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetTransBenefitById>> GetTransBenefitByIdAsync(int id, string lang)
         {
-            var obj = await unitOfWork.TransBenefits.GetFirstOrDefaultAsync(b => b.Id == id,
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await unitOfWork.TransBenefits.GetFirstOrDefaultAsync(b => b.Id == id && b.IsDeleted == false && b.CompanyId == currentCompany,
                 includeProperties: $"{nameof(_insatance.Benefit)},{nameof(_insatance.Employee)}," +
                                    $"{nameof(_insatance.SalaryEffect)}" +
                                    $",{nameof(_insatance.AmountType)}");
@@ -312,7 +316,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetTransBenefitById>> UpdateTransBenefitAsync(int id, CreateTransBenefitRequest model, string lang)
         {
-            var obj = await unitOfWork.TransBenefits.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await unitOfWork.TransBenefits.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
             if (obj is null)
             {
                 string resultMsg = sharLocalizer[Localization.NotFoundData];
@@ -324,7 +329,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
             if (emp is null)
             {
 
@@ -335,7 +340,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -385,6 +390,7 @@ namespace Kader_System.Services.Services.Trans
             obj.ActionMonth = model.ActionMonth;
             obj.Notes = model.Notes;
             obj.EmployeeId = model.EmployeeId;
+            obj.CompanyId = currentCompany;
             unitOfWork.TransBenefits.Update(obj);
             await unitOfWork.CompleteAsync();
             return new()
@@ -403,7 +409,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<object>> RestoreTransBenefitAsync(int id)
         {
-            var obj = await unitOfWork.TransBenefits.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await unitOfWork.TransBenefits.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
 
             if (obj is null)
             {
@@ -433,7 +440,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<string>> DeleteTransBenefitAsync(int id)
         {
-            var obj = await unitOfWork.TransBenefits.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await unitOfWork.TransBenefits.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
             if (obj is null)
             {
                 string resultMsg = sharLocalizer[Localization.NotFoundData];

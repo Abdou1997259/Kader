@@ -1,19 +1,18 @@
 ﻿using Kader_System.Domain.DTOs.Response.Trans;
-using Kader_System.Domain.Interfaces;
 
 namespace Kader_System.DataAccess.Repositories.Trans
 {
     public class TransVacationRepository(KaderDbContext context) : BaseRepository<TransVacation>(context), ITransVacationRepository
-    { 
-            public List<TransVacationData> GetTransVacationInfo(
-         Expression<Func<TransVacation, bool>> filter,
-         Expression<Func<TransVacationData, bool>> filterSearch,
-         int? skip = null,
-         int? take = null, string lang = "ar"
-          )
+    {
+        public List<TransVacationData> GetTransVacationInfo(
+     Expression<Func<TransVacation, bool>> filter,
+     Expression<Func<TransVacationData, bool>> filterSearch,
+     int? skip = null,
+     int? take = null, string lang = "ar"
+      )
         {
 
-            var transVacations = context.TransVacations.Where(filter).OrderByDescending(v=>v.Id);
+            var transVacations = context.TransVacations.Where(filter).OrderByDescending(v => v.Id);
 
 
             var query = from trans in transVacations
@@ -26,7 +25,7 @@ namespace Kader_System.DataAccess.Repositories.Trans
                         join vacationType in context.VacationDistributions on trans.VacationId equals vacationType.Id into vacationTypeGroup
                         from vacationType in vacationTypeGroup.DefaultIfEmpty()
 
-                         
+
                         select new TransVacationData()
                         {
                             StartDate = trans.StartDate,
@@ -39,9 +38,9 @@ namespace Kader_System.DataAccess.Repositories.Trans
                             Id = trans.Id,
                             Notes = trans.Notes,
                             EndDate = trans.StartDate.AddDays((int)trans.DaysCount - 1),
-                            VacationType = lang==Localization.Arabic ? vacationType.NameAr: vacationType.NameEn,
+                            VacationType = lang == Localization.Arabic ? vacationType.NameAr : vacationType.NameEn,
                             AddedDate = trans.Add_date,
-                            TotalBalance=vacation.TotalBalance - (int)trans.DaysCount
+                            TotalBalance = vacation.TotalBalance - (int)trans.DaysCount
 
 
 
@@ -60,33 +59,33 @@ namespace Kader_System.DataAccess.Repositories.Trans
 
         }
 
-        public async Task<GetTransVacationById> GetTransVacationByIdAsync(int id, string lang)
+        public async Task<GetTransVacationById> GetTransVacationByIdAsync(int id, string lang, int companyId)
         {
             var query = from trans in context.TransVacations
-                join emp in context.Employees on trans.EmployeeId equals emp.Id
-                join vac in context.Vacations on emp.VacationId equals vac.Id
-                join vacType in context.VacationDistributions on trans.VacationId equals vacType.Id
-                where trans.Id == id
-                select new GetTransVacationById()
-                {
-                    DaysCount = trans.DaysCount,
-                    EmployeeId = trans.EmployeeId,
-                    EmployeeName = lang == Localization.Arabic ? emp!.FullNameAr : emp!.FullNameEn,
-                    StartDate = trans.StartDate,
-                    Id = trans.Id,
-                    Notes = trans.Notes,
-                    VacationId = trans.VacationId,
-                    VacationName = lang == Localization.Arabic ? vac!.NameAr : vac!.NameEn,
-                    VacationType = lang==Localization.Arabic ? vacType.NameAr : vacType.NameEn
-                };
+                        join emp in context.Employees on trans.EmployeeId equals emp.Id
+                        join vac in context.Vacations on emp.VacationId equals vac.Id
+                        join vacType in context.VacationDistributions on trans.VacationId equals vacType.Id
+                        where trans.Id == id && trans.CompanyId == companyId
+                        select new GetTransVacationById()
+                        {
+                            DaysCount = trans.DaysCount,
+                            EmployeeId = trans.EmployeeId,
+                            EmployeeName = lang == Localization.Arabic ? emp!.FullNameAr : emp!.FullNameEn,
+                            StartDate = trans.StartDate,
+                            Id = trans.Id,
+                            Notes = trans.Notes,
+                            VacationId = trans.VacationId,
+                            VacationName = lang == Localization.Arabic ? vac!.NameAr : vac!.NameEn,
+                            VacationType = lang == Localization.Arabic ? vacType.NameAr : vacType.NameEn
+                        };
 
             return await query!.FirstOrDefaultAsync();
         }
-        public async Task<Response<TransVacationLookUpsData>> GetTransVacationLookUpsData(string lang)
+        public async Task<Response<TransVacationLookUpsData>> GetTransVacationLookUpsData(string lang, int companyId)
         {
             try
             {
-                var employees = await context.Employees.Where(e => !e.IsDeleted && e.IsActive)
+                var employees = await context.Employees.Where(e => !e.IsDeleted && e.IsActive && e.CompanyId == companyId)
                     .Select(x => new
                     {
                         id = x.Id,
@@ -137,14 +136,14 @@ namespace Kader_System.DataAccess.Repositories.Trans
 
         }
 
-        public async Task<double> GetVacationDaysUsedByEmployee(int empId, int vacationId)
+        public async Task<double> GetVacationDaysUsedByEmployee(int empId, int vacationId, int companyId)
         {
-          return await context.TransVacations.Where(v => v.EmployeeId == empId && v.VacationId == vacationId
-              && !v.IsDeleted)
-                .SumAsync(c => c.DaysCount);
+            return await context.TransVacations.Where(v => v.EmployeeId == empId && v.CompanyId == companyId && v.VacationId == vacationId
+                && !v.IsDeleted)
+                  .SumAsync(c => c.DaysCount);
         }
 
-        public async Task<double> GetVacationTotalBalance( int vacationId)
+        public async Task<double> GetVacationTotalBalance(int vacationId, int companyId)
         {
             return await context.VacationDistributions.Where(v => v.Id == vacationId)
                 .SumAsync(c => c.DaysCount);

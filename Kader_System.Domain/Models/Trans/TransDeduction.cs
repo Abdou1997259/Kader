@@ -25,7 +25,8 @@ public class TransDeduction : BaseEntity
     public HrDeduction Deduction { get; set; } = default!;
     public string? Notes { get; set; }
     public string? Attachment { get; set; }
-
+    public int CompanyId { get; set; }
     public int? CalculateSalaryId { get; set; }
     public int? CalculateSalaryDetailsId { get; set; }
+
 }

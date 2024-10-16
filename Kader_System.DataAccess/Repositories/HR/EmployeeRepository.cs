@@ -200,11 +200,11 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
             }).ToListAsync();
     }
 
-    public async Task<object> GetEmployeesDataNameAndIdAsLookUp(string lang)
+    public async Task<object> GetEmployeesDataNameAndIdAsLookUp(string lang, int companyId)
     {
 
         return await context.Employees.
-            Where(e => !e.IsDeleted && e.IsActive)
+            Where(e => !e.IsDeleted && e.IsActive && e.CompanyId == companyId)
 
             .Select(e => new
             {
@@ -224,14 +224,14 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                 Salary = e.FixedSalary
             }).ToArrayAsync();
     }
-    public async Task<object> GetEmployeesNameIdSalaryWithoutContractAsLookUp(string lang)
+    public async Task<object> GetEmployeesNameIdSalaryWithoutContractAsLookUp(string lang, int companyId)
     {
 
         var employees = from e in context.Employees
                         join c in context.Contracts
                         on e.Id equals c.EmployeeId into ecgroup
                         from u in ecgroup.DefaultIfEmpty()
-                        where u.EmployeeId == null && !e.IsDeleted
+                        where u.EmployeeId == null && !e.IsDeleted && e.CompanyId == companyId
                         select new
                         {
                             Id = e.Id,

@@ -1,4 +1,7 @@
-﻿namespace Kader_System.DataAccess.Repositories;
+﻿using Kader_System.Domain.Constants.Enums;
+using Kader_System.Domain.Models.EmployeeRequests.Requests;
+
+namespace Kader_System.DataAccess.Repositories;
 
 public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> where T : class
 {

@@ -4,11 +4,12 @@ using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransSalaryIncreaseService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransSalaryIncreaseService
+    public class TransSalaryIncreaseService(IUnitOfWork unitOfWork, IUserContextService userContextService, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransSalaryIncreaseService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
+        private readonly IUserContextService _userContextService = userContextService;
 
 
         #region Old_Code
@@ -120,8 +121,9 @@ namespace Kader_System.Services.Services.Trans
         private TransSalaryIncrease _insatance;
         public async Task<Response<IEnumerable<SelectListOfTransSalaryIncrementResponse>>> ListOfTransSalaryIncreaseAsync(string lang)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var result =
-                await _unitOfWork.TransSalaryIncrease.GetSpecificSelectAsync(null!,
+                await _unitOfWork.TransSalaryIncrease.GetSpecificSelectAsync(x => x.CompanyId == currentCompany,
                     includeProperties: $"{nameof(_insatance.Employee)}",
                     select: x => new SelectListOfTransSalaryIncrementResponse
                     {
@@ -157,8 +159,9 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<GetAllSalaryIncreaseResponse>> GetAllTransSalaryIncreaseAsync(string lang,
             GetAlFilterationForSalaryIncreaseRequest model, string host)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             Expression<Func<TransSalaryIncrease, bool>> filter = x =>
-           x.IsDeleted == model.IsDeleted &&
+           x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany &&
            (string.IsNullOrEmpty(model.Word) ||
            x.transactionDate.ToString().Contains(model.Word)
         || x.Employee.FullNameAr.Contains(model.Word) || x.Employee.FullNameEn.Contains(model.Word) || x.Employee.User.FullName.Contains(model.Word));
@@ -260,7 +263,9 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<CreateTransSalaryIncreaseRequest>> CreateTransSalaryIncreaseAsync(CreateTransSalaryIncreaseRequest model, string lang)
         {
-            var emp = await unitOfWork.Employees.GetByIdAsync(model.Employee_id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+
+            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.Employee_id && x.CompanyId == currentCompany);
             if (emp is null)
             {
 
@@ -271,7 +276,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.Employee_id, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.Employee_id && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -284,8 +289,9 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
             var newTrans = _mapper.Map<TransSalaryIncrease>(model);
+            newTrans.CompanyId = currentCompany;
             newTrans.transactionDate = model.TransactionDate;
-            var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.EmployeeId == model.Employee_id)).FixedSalary;
+            var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.EmployeeId == model.Employee_id && x.CompanyId == currentCompany)).FixedSalary;
             #region SalaryTypesCases
             double salaryAfterIncrease = (SalaryIncreaseTypes)model.Increase_type switch
             {
@@ -312,8 +318,9 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetSalaryIncreaseByIdResponse>> GetTransSalaryIncreaseByIdAsync(int id, string lang)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var obj = await _unitOfWork.TransSalaryIncrease.GetFirstOrDefaultAsync(
-       c => c.Id == id,
+       c => c.Id == id && c.CompanyId == currentCompany,
        includeProperties: $"{nameof(_insatance.ValueType)},{nameof(_insatance.Employee)}");
 
             if (obj is null)
@@ -332,13 +339,13 @@ namespace Kader_System.Services.Services.Trans
                 .Select(x => new { x.Id, Name = lang == Localization.Arabic ? x.Name : x.NameInEnglish })
                 .ToList();
 
-            var employee = await _unitOfWork.Employees.GetByIdAsync(obj.Employee_id);
+            var employee = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == obj.Employee_id && x.CompanyId == currentCompany);
             var employeeName = lang == Localization.Arabic ? employee?.FullNameAr : employee?.FullNameEn;
 
-            var previousSalary = (await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang))
+            var previousSalary = (await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang, currentCompany))
                 .FirstOrDefault(x => x.Id == obj.Employee_id)?.Salary ?? 0;
 
-            var lookups = await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang);
+            var lookups = await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang, currentCompany);
             var typeLookup = await _unitOfWork.SalaryIncreaseTypeRepository.GetSalaryIncreaseType(lang);
 
             return new()
@@ -365,18 +372,20 @@ namespace Kader_System.Services.Services.Trans
         }
         public async Task<Response<IEnumerable<EmployeeWithSalary>>> GetEmployeesLookups(string lang)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             return new()
             {
                 Check = true,
-                Data = await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang)
+                Data = await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang, currentCompany)
             };
 
         }
 
         public async Task<Response<CreateTransSalaryIncreaseRequest>> UpdateTransSalaryIncreaseAsync(int id, CreateTransSalaryIncreaseRequest model)
         {
-            var obj = await _unitOfWork.TransSalaryIncrease.GetByIdAsync(id);
-            var emp = await unitOfWork.Employees.GetByIdAsync(model.Employee_id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await _unitOfWork.TransSalaryIncrease.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
+            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.Employee_id && x.CompanyId == currentCompany);
             if (emp is null)
             {
 
@@ -387,7 +396,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.Employee_id, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.Employee_id && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -399,7 +408,8 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-            var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.EmployeeId == model.Employee_id)).FixedSalary;
+            var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.EmployeeId ==
+            model.Employee_id && x.CompanyId == currentCompany)).FixedSalary;
             if (obj is null)
 
 
@@ -441,7 +451,7 @@ namespace Kader_System.Services.Services.Trans
             obj.Amount = model.Amount;
             obj.Increase_type = model.Increase_type;
             obj.transactionDate = model.TransactionDate;
-
+            obj.CompanyId = currentCompany;
             obj.salaryAfterIncrease = salaryAfterIncrease;
             _unitOfWork.TransSalaryIncrease.Update(obj);
             await _unitOfWork.CompleteAsync();
@@ -453,7 +463,8 @@ namespace Kader_System.Services.Services.Trans
         }
         public async Task<Response<object>> RestoreTransSalaryIncreaseAsync(int id)
         {
-            var obj = await _unitOfWork.TransSalaryIncrease.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await _unitOfWork.TransSalaryIncrease.GetFirstOrDefaultAsync(x => x.CompanyId == currentCompany && x.Id == id);
 
             if (obj is null)
             {
@@ -487,7 +498,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<string>> DeleteTransSalaryIncreaseAsync(int id)
         {
-            var obj = await _unitOfWork.TransSalaryIncrease.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await _unitOfWork.TransSalaryIncrease.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
             if (obj is null)
             {
                 string resultMsg = sharLocalizer[Localization.NotFoundData];

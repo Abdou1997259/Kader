@@ -255,7 +255,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "c23e90f0-fc3c-44c3-907d-af47e5056634",
+                            ConcurrencyStamp = "2739314a-2ef1-4f34-b925-4de4eb7758e5",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -269,10 +269,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAELDwnz+wTg6xSFHel6MCJRnxtTvl+pd6+svyxviB6gnIsPRWRp12ultEKVdQ84OwPA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEB9EGDZAjEpp+BjHY7rzbGKpjDxmrJGy/VtJJFgDZAD4eme+LndcSoeW9Q4tDXoK8A==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6d1e2f36-8edb-4c0a-93e0-7a73762a7567",
+                            SecurityStamp = "987c8fa8-973c-4c87-a9e0-c5839dedab18",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -1401,6 +1401,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
@@ -7298,6 +7301,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int?>("CalculateSalaryId")
                         .HasColumnType("int");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -7442,6 +7448,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int?>("CalculateSalaryId")
                         .HasColumnType("int");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -7501,6 +7510,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("Attachment")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
@@ -7576,6 +7588,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int?>("CalculateSalaryId")
                         .HasColumnType("int");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<int>("DeductionId")
                         .HasColumnType("int");
 
@@ -7640,6 +7655,9 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("CalculateSalaryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
@@ -7957,6 +7975,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -8026,6 +8047,9 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("CalculateSalaryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<double>("DaysCount")

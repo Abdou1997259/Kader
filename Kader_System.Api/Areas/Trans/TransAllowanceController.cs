@@ -21,20 +21,20 @@ namespace Kader_System.Api.Areas.Trans
         [HttpGet(ApiRoutes.TransAllowance.GetAllTransAllowances)]
         [Permission(Helpers.Permission.View, 24)]
         public async Task<IActionResult> GetAllTransAllowances([FromQuery] GetAllFilterationAllowanceRequest model) =>
-            Ok(await service.GetAllTransAllowancesAsync(requestService.GetRequestHeaderLanguage,model, requestService.GetCurrentHost));
+            Ok(await service.GetAllTransAllowancesAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
         [HttpGet(ApiRoutes.TransAllowance.GetTransAllowanceById)]
         [Permission(Helpers.Permission.View, 24)]
-        public async Task<IActionResult> GetTransAllowanceById([FromRoute]int id)
+        public async Task<IActionResult> GetTransAllowanceById([FromRoute] int id)
         {
-            var response = await service.GetTransAllowanceByIdAsync(id,requestService.GetRequestHeaderLanguage);
+            var response = await service.GetTransAllowanceByIdAsync(id, requestService.GetRequestHeaderLanguage);
             var lookUps = await service.GetAllowancesLookUpsData(requestService.GetRequestHeaderLanguage);
             if (response.Check)
             {
                 response.LookUps = lookUps.Data;
                 return Ok(response);
             }
-                
+
             else if (!response.Check)
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
@@ -61,7 +61,7 @@ namespace Kader_System.Api.Areas.Trans
         {
             if (ModelState.IsValid)
             {
-                var response = await service.CreateTransAllowanceAsync(request);
+                var response = await service.CreateTransAllowanceAsync(request, requestService.GetRequestHeaderLanguage);
                 if (response.Check)
                     return Ok(response);
                 else if (!response.Check)
@@ -81,11 +81,11 @@ namespace Kader_System.Api.Areas.Trans
 
         [HttpPut(ApiRoutes.TransAllowance.UpdateTransAllowance)]
         [Permission(Helpers.Permission.Edit, 24)]
-        public async Task<IActionResult> UpdateTransAllowance([FromRoute]int id,[FromBody]CreateTransAllowanceRequest request)
+        public async Task<IActionResult> UpdateTransAllowance([FromRoute] int id, [FromBody] CreateTransAllowanceRequest request)
         {
             if (ModelState.IsValid)
             {
-                var response = await service.UpdateTransAllowanceAsync(id,request);
+                var response = await service.UpdateTransAllowanceAsync(id, request);
                 if (response.Check)
                     return Ok(response);
                 else if (!response.Check)
@@ -102,13 +102,13 @@ namespace Kader_System.Api.Areas.Trans
         [Permission(Helpers.Permission.Edit, 24)]
         public async Task<IActionResult> RestoreTransAllowance([FromRoute] int id)
         {
-       
-                var response = await service.RestoreTransAllowanceAsync(id);
-                if (response.Check)
-                    return Ok(response);
-                else if (!response.Check)
-                    return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-                return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+
+            var response = await service.RestoreTransAllowanceAsync(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
         #endregion
 
@@ -129,6 +129,6 @@ namespace Kader_System.Api.Areas.Trans
         #endregion
 
 
-        
+
     }
 }

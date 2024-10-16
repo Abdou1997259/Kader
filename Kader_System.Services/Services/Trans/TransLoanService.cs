@@ -4,16 +4,18 @@ using Kader_System.Domain.DTOs.Response.Loan;
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransLoanService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransLoanService
+    public class TransLoanService(IUnitOfWork unitOfWork, IUserContextService userContextService, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransLoanService
     {
 
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
+        private readonly IUserContextService _userContextService = userContextService;
         public async Task<Response<IEnumerable<ListOfLoansResponse>>> ListLoansAsync(string lang)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var result =
-                  await _unitOfWork.LoanRepository.GetSpecificSelectAsync(null!,
+                  await _unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.CompanyId == currentCompany,
                   select: x => new ListOfLoansResponse
                   {
                       Id = x.Id,
@@ -22,7 +24,7 @@ namespace Kader_System.Services.Services.Trans
                       StartCalculationDate = x.StartCalculationDate,
                       EndCalculationDate = x.EndCalculationDate,
                       StartLoanDate = x.StartLoanDate,
-                   
+
                       AdvanceType = x.AdvanceType,
                       MonthlyDeducted = x.MonthlyDeducted,
                       InstallmentCount = x.InstallmentCount,
@@ -63,9 +65,10 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<CreateLoanReponse>> CreateLoanAsync(CreateLoanRequest model, string lang)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
 
-            var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
-            var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == empolyee.Id, x => x)).FirstOrDefault();
+            var empolyee = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
+            var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == empolyee.Id && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.ContractNotFound]}";
@@ -109,7 +112,7 @@ namespace Kader_System.Services.Services.Trans
             }
 
             var loan = _mapper.Map<TransLoan>(model);
-
+            loan.CompanyId = currentCompany;
             await _unitOfWork.LoanRepository.AddAsync(loan);
             await _unitOfWork.CompleteAsync();
 
@@ -129,7 +132,7 @@ namespace Kader_System.Services.Services.Trans
                 });
                 startMonth = startMonth.AddMonths(1);
             }
-           
+
             await _unitOfWork.CompleteAsync();
 
 
@@ -144,8 +147,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<string>> DeleteLoanAsync(int id)
         {
-
-            var obj = await _unitOfWork.LoanRepository.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await _unitOfWork.LoanRepository.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
 
             if (obj == null)
             {
@@ -176,8 +179,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetAllLoansResponse>> GetAllLoanAsync(string lang, GetAllFilltrationForLoanRequest model, string host)
         {
-
-            Expression<Func<TransLoan, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            Expression<Func<TransLoan, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany &&
 
                                                            (string.IsNullOrEmpty(model.Word) || x.StartLoanDate.ToString() == model.Word)
                                                              && (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
@@ -185,7 +188,7 @@ namespace Kader_System.Services.Services.Trans
 
 
             var totalRecords = await _unitOfWork.LoanRepository.CountAsync(filter: filter);
-            
+
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
             if (model.PageNumber < 1)
@@ -209,22 +212,22 @@ namespace Kader_System.Services.Services.Trans
                          LoanType = x.LoanType == 1 ? (Localization.Arabic == lang ? "أنشاء سند دفع" : "Create Payment Voucher ") :
                     x.LoanType == 2 ? (Localization.Arabic == lang ? " تخصم من الراتب" : "Deducted From Salary ") :
                    "",
-                    
+
                          LoanAmount = x.LoanAmount,
                          StartCalculationDate = x.StartCalculationDate,
                          EndCalculationDate = x.EndCalculationDate,
-                         
+
                          StartLoanDate = x.StartLoanDate,
-                         LoanDate= new DateOnly(x.Add_date.Value.Year, x.Add_date.Value.Month, x.Add_date.Value.Month),
+                         LoanDate = new DateOnly(x.Add_date.Value.Year, x.Add_date.Value.Month, x.Add_date.Value.Month),
                          AdvanceType = x.AdvanceType,
                          MonthlyDeducted = x.MonthlyDeducted,
                          InstallmentCount = x.InstallmentCount,
                          Notes = x.Notes,
-                         AddedOn=x.Add_date.Value,
-                         PaidInstallmentCount=x.TransLoanDetails.Where(x=>x.PaymentDate !=null&x.IsDeleted==false).Count(),
+                         AddedOn = x.Add_date.Value,
+                         PaidInstallmentCount = x.TransLoanDetails.Where(x => x.PaymentDate != null & x.IsDeleted == false).Count(),
 
-                         PaidTotalBalance = x.TransLoanDetails.Where(x => x.PaymentDate != null & x.IsDeleted == false).Sum(x=>x.Amount),
-                         UnPaidTotalBalance= x.TransLoanDetails.Where(x => x.PaymentDate == null & x.IsDeleted == false).Sum(x => x.Amount),
+                         PaidTotalBalance = x.TransLoanDetails.Where(x => x.PaymentDate != null & x.IsDeleted == false).Sum(x => x.Amount),
+                         UnPaidTotalBalance = x.TransLoanDetails.Where(x => x.PaymentDate == null & x.IsDeleted == false).Sum(x => x.Amount),
 
                          PrevDedcutedAmount = x.PrevDedcutedAmount,
 
@@ -269,9 +272,10 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetLoanByIdReponse>> GetLoanByIdAsync(int id, string lang)
         {
-            var obj = (await _unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.Id == id, x => x, includeProperties: "TransLoanDetails")).FirstOrDefault();
-            var empolyee = await _unitOfWork.Employees.GetByIdAsync(obj.EmployeeId);
-            var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == empolyee.Id, x => x)).FirstOrDefault();
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = (await _unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.Id == id && x.CompanyId == currentCompany, x => x, includeProperties: "TransLoanDetails")).FirstOrDefault();
+            var empolyee = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == obj.EmployeeId && x.CompanyId == currentCompany);
+            var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == empolyee.Id && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             var empolyees = await _unitOfWork.Employees.GetAllAsync();
             var advancedTypes = await _unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes();
 
@@ -293,9 +297,9 @@ namespace Kader_System.Services.Services.Trans
                 {
                     Id = id,
                     EmployeeId = obj.EmployeeId,
-                
+
                     StartLoanDate = obj.StartLoanDate,
-                 
+
                     LoanType = obj.LoanType,
                     MonthlyDeducted = obj.MonthlyDeducted,
                     LoanAmount = obj.LoanAmount,
@@ -331,7 +335,8 @@ namespace Kader_System.Services.Services.Trans
         {
             try
             {
-                var employees = await _unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
+                var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+                var employees = await _unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false && filter.CompanyId == currentCompany,
                     select: x => new EmployeeLookup
                     {
                         Id = x.Id,
@@ -376,7 +381,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<object>> RestoreLoanAsync(int id, string lang)
         {
-            var obj = await _unitOfWork.LoanRepository.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await _unitOfWork.LoanRepository.GetFirstOrDefaultAsync(x => x.CompanyId == currentCompany);
 
             if (obj == null)
             {
@@ -416,9 +422,10 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<UpdateLoanReponse>> UpdateLoanAsync(int id, UpdateLoanRequest model, string lang)
         {
-            Expression<Func<TransLoan, bool>> filter = x => x.Id == id;
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            Expression<Func<TransLoan, bool>> filter = x => x.Id == id && x.CompanyId == currentCompany;
             var obj = (await _unitOfWork.LoanRepository.GetSpecificSelectAsync(filter: filter, select: x => x, includeProperties: "TransLoanDetails")).FirstOrDefault();
-            var empolyee = await _unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            var empolyee = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
 
             if (empolyee is null)
             {
@@ -448,7 +455,7 @@ namespace Kader_System.Services.Services.Trans
             }
 
             _mapper.Map(model, obj);
-
+            obj.CompanyId = currentCompany;
             var startMonth = model.StartCalculationDate;
             var objOfDetails = await _unitOfWork.TransLoanDetails.GetSpecificSelectAsync(x => x.TransLoanId == id, x => x);
             _unitOfWork.TransLoanDetails.RemoveRange(objOfDetails);

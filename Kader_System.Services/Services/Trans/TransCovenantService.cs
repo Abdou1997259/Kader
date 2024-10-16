@@ -3,14 +3,16 @@ using Kader_System.Services.IServices.AppServices;
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransCovenantService(IUnitOfWork unitOfWork, IFileServer fileServer, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransCovenantService
+    public class TransCovenantService(IUnitOfWork unitOfWork, IUserContextService userContextService, IFileServer fileServer, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransCovenantService
     {
         private TransCovenant _insatance;
         private IFileServer _fileServer = fileServer;
+        private IUserContextService _userContextService = userContextService;
         public async Task<Response<IEnumerable<SelectListOfCovenantResponse>>> ListOfTransCovenantsAsync(string lang)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var result =
-                await unitOfWork.TransCovenants.GetSpecificSelectAsync(null!,
+                await unitOfWork.TransCovenants.GetSpecificSelectAsync(x => x.CompanyId == currentCompany,
                     includeProperties: $"{nameof(_insatance.Employee)}",
                     select: x => new SelectListOfCovenantResponse
                     {
@@ -48,8 +50,9 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<GetAllTransCovenantResponse>> GetAllTransCovenantsAsync(string lang,
             GetAllFilterationForTransCovenant model, string host)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             Expression<Func<TransCovenant, bool>> filter = x =>
-            x.IsDeleted == model.IsDeleted &&
+            x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany &&
             (string.IsNullOrEmpty(model.Word) ||
                 x.NameAr.Contains(model.Word) ||
                 x.NameEn.Contains(model.Word) ||
@@ -132,7 +135,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<CreateTransCovenantRequest>> CreateTransCovenantAsync(CreateTransCovenantRequest model, string lang)
         {
-            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
             if (emp is null)
             {
 
@@ -143,7 +147,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -156,8 +160,8 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
-            if (await unitOfWork.TransCovenants.ExistAsync(x => x.NameAr.Trim() == model.NameAr.Trim() ||
-            x.NameEn.Trim() == model.NameEn.Trim()))
+            if (await unitOfWork.TransCovenants.ExistAsync(x => x.CompanyId == currentCompany && (x.NameAr.Trim() == model.NameAr.Trim() ||
+            x.NameEn.Trim() == model.NameEn.Trim())))
             {
                 return new()
                 {
@@ -177,7 +181,7 @@ namespace Kader_System.Services.Services.Trans
 
             }
 
-
+            newTrans.CompanyId = currentCompany;
             await unitOfWork.TransCovenants.AddAsync(newTrans);
             await unitOfWork.CompleteAsync();
             return new()
@@ -190,7 +194,9 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetTransCovenantById>> GetTransCovenantByIdAsync(int id, string lang)
         {
-            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(c => c.Id == id,
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+
+            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(c => c.Id == id && c.CompanyId == currentCompany,
                 includeProperties: $"{nameof(_insatance.Employee)}");
 
 
@@ -207,7 +213,7 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
-            var lookups = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang);
+            var lookups = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany);
             var dirType = HrDirectoryTypes.Covenant;
             var dir = dirType.GetModuleNameWithType(Modules.Trans);
             return new()
@@ -235,7 +241,9 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<CreateTransCovenantRequest>> UpdateTransCovenantAsync(int id, CreateTransCovenantRequest model, string lang)
         {
-            var obj = await unitOfWork.TransCovenants.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+
+            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
             if (obj is null)
             {
                 string resultMsg = sharLocalizer[Localization.NotFoundData];
@@ -258,7 +266,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -271,7 +279,7 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
-            if (await unitOfWork.TransCovenants.ExistAsync(x => x.Id != id && (x.NameAr.Trim() == model.NameAr.Trim() ||
+            if (await unitOfWork.TransCovenants.ExistAsync(x => x.Id != id && x.CompanyId == currentCompany && (x.NameAr.Trim() == model.NameAr.Trim() ||
            x.NameEn.Trim() == model.NameEn.Trim())))
             {
                 return new()
@@ -299,6 +307,7 @@ namespace Kader_System.Services.Services.Trans
             obj.NameEn = model.NameEn;
             obj.Notes = model.Notes;
             obj.EmployeeId = model.EmployeeId;
+            obj.CompanyId = currentCompany;
             unitOfWork.TransCovenants.Update(obj);
             await unitOfWork.CompleteAsync();
             return new()
@@ -310,7 +319,9 @@ namespace Kader_System.Services.Services.Trans
         }
         public async Task<Response<object>> RestoreTransCovenantAsync(int id)
         {
-            var obj = await unitOfWork.TransCovenants.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+
+            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
 
             if (obj is null)
             {
@@ -344,7 +355,9 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<string>> DeleteTransCovenantAsync(int id)
         {
-            var obj = await unitOfWork.TransCovenants.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+
+            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
             if (obj is null)
             {
                 string resultMsg = sharLocalizer[Localization.NotFoundData];

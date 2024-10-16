@@ -22,4 +22,5 @@ public class TransAllowance : BaseEntity
     public HrAllowance Allowance { get; set; } = default!;
     public int? CalculateSalaryId { get; set; }
     public int? CalculateSalaryDetailsId { get; set; }
+    public int CompanyId { get; set; }
 }

@@ -159,6 +159,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
         model.current_title ??= model.title_id.FirstOrDefault();
         model.current_company ??= model.company_id.FirstOrDefault();
+
         string err = _sharLocalizer[Localization.Error];
         var obj = await _userManager.FindByIdAsync(id);
 
@@ -1408,7 +1409,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
 
 
-
+        await ChangeSpecificClaim(user.Id, RequestClaims.CurrentTitle, title.ToString());
         user.CurrentTitleId = title;
         _unitOfWork.Users.Update(user);
 
@@ -1440,6 +1441,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
 
         user.CurrentCompanyId = company;
+        await ChangeSpecificClaim(user.Id, RequestClaims.CurrentCompany, company.ToString());
         _unitOfWork.Users.Update(user);
         await _unitOfWork.CompleteAsync();
 
@@ -1475,6 +1477,41 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 Id = x.Id,
                 TitleName = Localization.Arabic == lang ? x.TitleNameAr : x.TitleNameEn
             })
+        };
+    }
+
+    public async Task<Response<string>> ChangeSpecificClaim(string userId, string claimType, string newValue)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user is null)
+        {
+            return new()
+            {
+                Check = false,
+                Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.User]]
+            };
+
+
+        }
+        var existingClaims = await _userManager.GetClaimsAsync(user);
+
+        var claimToRemove = existingClaims.FirstOrDefault(x => x.Type == claimType);
+
+        if (claimToRemove != null)
+        {
+
+            await _userManager.RemoveClaimAsync(user, claimToRemove);
+        }
+
+        var newClaim = new Claim(RequestClaims.CurrentCompany, newValue);
+
+        await _userManager.AddClaimAsync(user, newClaim);
+
+        return new()
+        {
+            Check = true,
+            Msg = _sharLocalizer[Localization.Updated]
         };
     }
 

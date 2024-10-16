@@ -7,11 +7,12 @@
 
         // Cached user ID
         private string? _cachedUserId;
-
-        public UserContextService(IHttpContextAccessor httpContextAccessor, ILogger<UserContextService> logger)
+        private IUnitOfWork _unitOfWork;
+        public UserContextService(IHttpContextAccessor httpContextAccessor, IUnitOfWork unitOfWork, ILogger<UserContextService> logger)
         {
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _unitOfWork = unitOfWork;
         }
 
         public string? UserId
@@ -62,6 +63,17 @@
             }
 
             return SuperAdmins.Ids.Contains(userId);
+        }
+        public async Task<int> GetLoggedCurrentCompany()
+        {
+
+            var user = await _unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == UserId);
+            if (user is null)
+            {
+                return 0;
+            }
+
+            return user.CurrentCompanyId;
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Kader_System.Api.Helpers;
+﻿using Kader_System.Api.Helpers;
 using Kader_System.Services.IServices;
 using Kader_System.Services.IServices.HTTP;
 
@@ -10,7 +9,7 @@ namespace Kader_System.Api.Areas.Trans
     [ApiExplorerSettings(GroupName = Modules.Trans)]
     [ApiController]
     [Route("api/v1/")]
-    public class TransSalaryIncrease(ITransSalaryIncreaseService service,IRequestService requestService) : ControllerBase
+    public class TransSalaryIncrease(ITransSalaryIncreaseService service, IRequestService requestService) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
         private readonly ITransSalaryIncreaseService _service = service;
@@ -29,7 +28,7 @@ namespace Kader_System.Api.Areas.Trans
         #region Read
         [HttpGet(ApiRoutes.SalaryIncrease.GetAllSalaryIncrease)]
         [Permission(Helpers.Permission.View, 28)]
-        public async Task<IActionResult> GetAllSalaryIncrease([FromQuery]  GetAlFilterationForSalaryIncreaseRequest model)
+        public async Task<IActionResult> GetAllSalaryIncrease([FromQuery] GetAlFilterationForSalaryIncreaseRequest model)
         {
             var result = await _service.GetAllTransSalaryIncreaseAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost);
             return Ok(result);
@@ -48,7 +47,7 @@ namespace Kader_System.Api.Areas.Trans
         [Permission(Helpers.Permission.Edit, 28)]
         public async Task<IActionResult> UpdateSalaryIncrease(int id, CreateTransSalaryIncreaseRequest model)
         {
-            var result = await _service.UpdateTransSalaryIncreaseAsync(id,model);
+            var result = await _service.UpdateTransSalaryIncreaseAsync(id, model);
             return Ok(result);
         }
         [HttpPut(ApiRoutes.SalaryIncrease.RestoreSalaryIncrease)]
@@ -62,7 +61,7 @@ namespace Kader_System.Api.Areas.Trans
         public async Task<IActionResult> GetEmployeesLookups()
         {
             var result = await _service.GetEmployeesLookups(requestService.GetRequestHeaderLanguage);
-            return Ok(result);  
+            return Ok(result);
         }
         #endregion
 
@@ -76,7 +75,7 @@ namespace Kader_System.Api.Areas.Trans
         }
         #endregion
 
-   
+
 
     }
 }

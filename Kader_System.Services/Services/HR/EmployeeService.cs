@@ -15,11 +15,16 @@ namespace Kader_System.Services.Services.HR
           IAuthService authService,
           IUserContextService userContext,
           KaderDbContext _context
+
+
+
+
     , UserManager<ApplicationUser> userManager) : IEmployeeService
     {
         private readonly IAuthService _authService = authService;
         private HrEmployee _instanceEmployee;
         private IUserContextService _userContext = userContext;
+
         #region Retreive
 
         public async Task<Response<IEnumerable<ListOfEmployeesResponse>>> ListOfEmployeesAsync(string lang)
@@ -201,13 +206,13 @@ namespace Kader_System.Services.Services.HR
 
 
 
-            var currentCompany = _accessor.HttpContext == null ? 0 : _accessor.HttpContext.User.GetCurrentCompany();
+            var currentUser = _accessor.HttpContext == null ? "" : _accessor.HttpContext.User.GetUserId();
             //|| x.Job.Contains(model.Word)
             //|| x.Department.Contains(model.Word)
             //|| x.Nationality.Contains(model.Word)
             //|| x.Company.Contains(model.Word)
             //|| x.Management.Contains(model.Word));
-
+            var currentCompany = (await userManager.FindByIdAsync(currentUser)).CurrentCompanyId;
             Expression<Func<HrEmployee, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany;
 
 
@@ -331,8 +336,10 @@ namespace Kader_System.Services.Services.HR
         {
             try
             {
-                var user = _accessor!.HttpContext!.User as ClaimsPrincipal;
-                var currentCompany = user.GetCurrentCompany();
+                var userID = _accessor!.HttpContext == null ? "" : _accessor.HttpContext.User.GetUserId();
+
+                var currentCompany = (await unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == userID)).CurrentCompanyId;
+
                 var companies = await unitOfWork.Companies.GetSpecificSelectAsync(filter => filter.IsDeleted == false && filter.Id == currentCompany,
                     select: x => new
                     {
@@ -492,9 +499,10 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<object>> GetEmployeesDataNameAndIdAsLookUp(string lang)
         {
+            var currentCompany = await _userContext.GetLoggedCurrentCompany();
             var result = new
             {
-                employees = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang)
+                employees = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany)
             };
 
             return new()
@@ -728,6 +736,9 @@ namespace Kader_System.Services.Services.HR
                 obj.EmployeeImageExtension = imageFile?.FileExtension;
                 obj.ReligionId = model.religion_id;
                 obj.MaritalStatusId = model.marital_status_id;
+                obj.SalaryPaymentWayId = model.salary_payment_way_id;
+
+
                 if (model.children_number != null)
                 {
                     obj.ChildrenNumber = model.children_number;
