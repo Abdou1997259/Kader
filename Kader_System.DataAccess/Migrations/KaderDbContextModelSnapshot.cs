@@ -255,7 +255,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "dc220610-4e4b-42c7-bde4-94c9e543d760",
+                            ConcurrencyStamp = "cccba2c9-f173-4003-9932-0b6a4afa0db4",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -269,10 +269,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHkFnotAQKePwOI3IjmbB82pfhZTamm1JCKsWI2/YtaL6mYA/u2G81Yk93ASxlwF6A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGljzfHgQweEof4l9JFROJpnlL56pZR15Oq4w2frTQuSIxOkI7u2cILlqpyJIO8Shw==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "daaec55d-1828-449f-b7d2-2fadc59dec9c",
+                            SecurityStamp = "333bbdd9-3bf2-4c2a-96f0-904351ec2b37",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -3748,7 +3748,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("applicant_id");
 
-                    b.ToTable("job_offer");
+                    b.ToTable("inter_job_offer");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Interviews.JobState", b =>
