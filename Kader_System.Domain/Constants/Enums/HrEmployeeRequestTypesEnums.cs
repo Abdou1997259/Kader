@@ -30,6 +30,7 @@
         Benefits = 9,
         Covenant = 10,
         Vacation = 11,
+        JobOffers = 12
     }
 
 

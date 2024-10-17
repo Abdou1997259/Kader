@@ -22,8 +22,8 @@
         [Required]
         public int gender { get; set; }
         public float? rate { get; set; }
-        public ApplicantStates state { get; set; } = ApplicantStates.Applied;
 
+        public int age { get; set; }
         public string? image_path { get; set; }
         public string? cv_file_path { get; set; } = default!;
         public ICollection<Education> educations { get; set; } = new HashSet<Education>();
@@ -32,7 +32,9 @@
         [ForeignKey(nameof(job_id))]
         public Job job { get; set; } = default!;
         public int job_id { get; set; }
-
+        public int state_id { get; set; }
+        [ForeignKey(nameof(state_id))]
+        public ApplicantState state { get; set; } = default!;
 
 
 

@@ -662,7 +662,24 @@ public static class ModelBuilderExtensions
             new Faculty { id = 5, name_ar = "طب", name_en = "Faculty of Medicine", university_id = 1 }
             );
 
+        modelBuilder.Entity<ApplicantState>().HasData(
 
+
+            new ApplicantState { id = 1, name_ar = "مقبلة", name_en = "Interviewed" },
+            new ApplicantState { id = 2, name_ar = "مقبول", name_en = "Accepted" },
+            new ApplicantState { id = 3, name_ar = "مرفوض", name_en = "Rejected" },
+            new ApplicantState { id = 4, name_ar = "معلق", name_en = "Suspended" }
+
+            );
+
+
+        modelBuilder.Entity<JobState>().HasData(
+
+
+            new JobState { id = 1, name_ar = "تشغيل", name_en = "Resume" },
+            new JobState { id = 2, name_ar = "معلق", name_en = "Suspended" },
+            new JobState { id = 3, name_ar = "انهاء", name_en = "Finish" }
+            );
     }
 
     public static void AddQueryFilterToAllEntitiesAssignableFrom<T>(this ModelBuilder modelBuilder,

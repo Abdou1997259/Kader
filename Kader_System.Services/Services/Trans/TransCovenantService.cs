@@ -75,21 +75,22 @@ namespace Kader_System.Services.Services.Trans
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
 
-            var items = await unitOfWork.TransCovenants.GetSpecificSelectAsync(filter, includeProperties: "Employee,Employee.User,Employee.Job", select: x => new TransCovenantData
-            {
-                AddedBy = x.Employee.User.FullName,
-                AddedOn = x.Add_date,
-                Amount = x.Amount,
-                EmployeeId = x.EmployeeId,
-                EmployeeName = lang == Localization.Arabic ? x.Employee.FullNameAr : x.Employee.FullNameEn,
-                Id = x.Id,
-                Notes = x.Notes,
-                NameAr = x.NameAr,
-                NameEn = x.NameEn,
-                Date = x.Date,
-                JobName = lang == Localization.Arabic ? x.Employee.Job.NameAr : x.Employee.Job.NameEn,
+            var items = await unitOfWork.TransCovenants.GetSpecificSelectAsync(filter,
+                includeProperties: "Employee,Employee.User,Employee.Job", select: x => new TransCovenantData
+                {
+                    AddedBy = x.Employee.User.FullName,
+                    AddedOn = x.Add_date,
+                    Amount = x.Amount,
+                    EmployeeId = x.EmployeeId,
+                    EmployeeName = lang == Localization.Arabic ? x.Employee.FullNameAr : x.Employee.FullNameEn,
+                    Id = x.Id,
+                    Notes = x.Notes,
+                    NameAr = x.NameAr,
+                    NameEn = x.NameEn,
+                    Date = x.Date,
+                    JobName = lang == Localization.Arabic ? x.Employee.Job.NameAr : x.Employee.Job.NameEn,
 
-            }, skip: model.PageSize * (model.PageNumber - 1), take: model.PageSize);
+                }, skip: model.PageSize * (model.PageNumber - 1), take: model.PageSize);
             var result = new GetAllTransCovenantResponse
             {
                 TotalRecords = totalRecords,

@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Accepted" xml:space="preserve">
+    <value>تم القبول</value>
+  </data>
   <data name="Allowance" xml:space="preserve">
     <value>البدل</value>
   </data>
@@ -201,6 +204,9 @@
   <data name="FileHasNoDirectory" xml:space="preserve">
     <value>هذا الملف ليس له مسار او ليس موجود</value>
   </data>
+  <data name="FinishedSuccessfully" xml:space="preserve">
+    <value>تم الأيقاف بنجاح</value>
+  </data>
   <data name="HasNoDocument" xml:space="preserve">
     <value>ليس له وثيقة{0} </value>
   </data>
@@ -255,6 +261,12 @@
   <data name="Qualification" xml:space="preserve">
     <value>المؤهل</value>
   </data>
+  <data name="Rated" xml:space="preserve">
+    <value>تم التقييم</value>
+  </data>
+  <data name="Rejected" xml:space="preserve">
+    <value>الرفض</value>
+  </data>
   <data name="Resignation" xml:space="preserve">
     <value>طلب الاستقالة</value>
   </data>
@@ -263,6 +275,9 @@
   </data>
   <data name="Restored" xml:space="preserve">
     <value>تمت الاستعاده بنجاح</value>
+  </data>
+  <data name="ResumeSuccessfully" xml:space="preserve">
+    <value>تم التشغيل بنجاح </value>
   </data>
   <data name="Role" xml:space="preserve">
     <value>المسئولية</value>
@@ -281,6 +296,12 @@
   </data>
   <data name="SubMainScreen" xml:space="preserve">
     <value>الشاشة الفرعية</value>
+  </data>
+  <data name="SuspendedJob" xml:space="preserve">
+    <value>وظيفة معلقة</value>
+  </data>
+  <data name="SuspendedSuccessfully" xml:space="preserve">
+    <value>تم التعليق بنجاح </value>
   </data>
   <data name="TitlePermisson" xml:space="preserve">
     <value>من فضلك ارسل المسئولية</value>
