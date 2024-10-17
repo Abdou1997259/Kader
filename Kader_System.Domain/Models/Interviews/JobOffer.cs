@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.Models.Interviews
 {
-    [Table("job_offer")]
+    [Table("inter_job_offer")]
     public class JobOffer
     {
         public int id { get; set; }
