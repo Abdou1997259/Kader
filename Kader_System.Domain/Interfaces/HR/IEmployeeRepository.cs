@@ -6,11 +6,11 @@ public interface IEmployeeRepository : IBaseRepository<HrEmployee>
 {
     Response<GetEmployeeByIdResponse> GetEmployeeByIdAsync(int id, string lang);
     Task<object> GetEmployeesDataAsLookUp(string lang);
-    Task<object> GetEmployeesDataNameAndIdAsLookUp(string lang);
+    Task<object> GetEmployeesDataNameAndIdAsLookUp(string lang, int companyId);
     Task<object> GetEmployeesNameIdSalaryAsLookUp(string lang);
     public Task<List<EmployeesData>> GetAllEmployeeDetails(bool isDeleted, int currentCompany, int skip = 0, int take = 10, string lang = "en");
 
-    Task<object> GetEmployeesNameIdSalaryWithoutContractAsLookUp(string lang);
+    Task<object> GetEmployeesNameIdSalaryWithoutContractAsLookUp(string lang, int companyId);
     //List<EmployeesData> GetEmployeesInfo(
     //    Expression<Func<HrEmployee, bool>> filter,
     //    Expression<Func<EmployeesData, bool>> filterSearch,

@@ -3,17 +3,18 @@ using Kader_System.Domain.DTOs;
 
 
 namespace Kader_System.Services.Services.Trans;
-public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) :ITransAllowanceService
+public class TransAllowanceService(IUnitOfWork unitOfWork, IUserContextService userContextService, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransAllowanceService
 {
     private TransAllowance _insatance;
-
+    private IUserContextService _userContextService = userContextService;
     #region Retreive
 
     public async Task<Response<IEnumerable<SelectListForTransAllowancesResponse>>> ListOfTransAllowancesAsync(string lang)
     {
         var result =
             await unitOfWork.TransAllowances.GetSpecificSelectAsync(null!,
-                includeProperties: $"{nameof(_insatance.Allowance)},{nameof(_insatance.Employee)},{nameof(_insatance.SalaryEffect)}",
+                includeProperties: $"{nameof(_insatance.Allowance)},{nameof(_insatance.Employee)}" +
+                $",{nameof(_insatance.SalaryEffect)}",
                 select: x => new SelectListForTransAllowancesResponse
                 {
                     Id = x.Id,
@@ -49,11 +50,12 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
         };
     }
 
-    public async Task<Response<TransAllowanceGetAllResponse>> GetAllTransAllowancesAsync(string lang, 
-        GetAllFilterationAllowanceRequest model,string host)
+    public async Task<Response<TransAllowanceGetAllResponse>> GetAllTransAllowancesAsync(string lang,
+        GetAllFilterationAllowanceRequest model, string host)
     {
-        Expression<Func<TransAllowance, bool>> filter = x => x.IsDeleted == model.IsDeleted
-                                                             && (string.IsNullOrEmpty(model.Word) 
+        var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+        Expression<Func<TransAllowance, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany
+                                                             && (string.IsNullOrEmpty(model.Word)
                                                                || x.ActionMonth.ToString().Contains(model.Word)
                                                                  || x.Allowance!.Name_en.Contains(model.Word)
                                                                  || x.Allowance!.Name_ar.Contains(model.Word)
@@ -70,8 +72,8 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
 
         var totalRecords = await unitOfWork.TransAllowances.CountAsync(filter: filter,
             includeProperties: $"{nameof(_insatance.Allowance)},{nameof(_insatance.Employee)},{nameof(_insatance.SalaryEffect)}");
-        
-        
+
+
         int page = 1;
         int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
         if (model.PageNumber < 1)
@@ -85,8 +87,8 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
         {
             TotalRecords = totalRecords,
 
-            Items = unitOfWork.TransAllowances.GetTransAllowanceInfo(filter:filter,filterSearch:filterSearch,skip: (model.PageNumber - 1) * model.PageSize
-            ,take: model.PageSize,lang:lang).Where(x => !model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId).OrderByDescending(x=>x.Id).ToList()
+            Items = unitOfWork.TransAllowances.GetTransAllowanceInfo(filter: filter, filterSearch: filterSearch, skip: (model.PageNumber - 1) * model.PageSize
+            , take: model.PageSize, lang: lang).Where(x => !model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId).OrderByDescending(x => x.Id).ToList()
             ,
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
@@ -123,9 +125,10 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
         };
     }
 
-    public async Task<Response<TransactionAllowanceGetByIdResponse>> GetTransAllowanceByIdAsync(int id,string lang)
+    public async Task<Response<TransactionAllowanceGetByIdResponse>> GetTransAllowanceByIdAsync(int id, string lang)
     {
-        var obj = await unitOfWork.TransAllowances.GetFirstOrDefaultAsync(a=>a.Id==id,
+        var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+        var obj = await unitOfWork.TransAllowances.GetFirstOrDefaultAsync(a => a.Id == id && a.IsDeleted == false && a.CompanyId == currentCompany,
             includeProperties: $"{nameof(_insatance.Allowance)},{nameof(_insatance.Employee)},{nameof(_insatance.SalaryEffect)}");
 
         if (obj is null)
@@ -152,9 +155,9 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
                 Id = obj.Id,
                 SalaryEffectId = obj.SalaryEffectId,
                 Notes = obj.Notes,
-                AllowanceName =lang==Localization.Arabic?  obj.Allowance!.Name_ar: obj.Allowance!.Name_en,
-                EmployeeName = lang==Localization.Arabic?obj.Employee!.FullNameAr:obj.Employee!.FullNameEn,
-                SalaryEffectName = lang==Localization.Arabic?obj.SalaryEffect!.Name:obj.SalaryEffect!.NameInEnglish
+                AllowanceName = lang == Localization.Arabic ? obj.Allowance!.Name_ar : obj.Allowance!.Name_en,
+                EmployeeName = lang == Localization.Arabic ? obj.Employee!.FullNameAr : obj.Employee!.FullNameEn,
+                SalaryEffectName = lang == Localization.Arabic ? obj.SalaryEffect!.Name : obj.SalaryEffect!.NameInEnglish
             },
             Check = true
         };
@@ -165,7 +168,8 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
     {
         try
         {
-            var employees = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var employees = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany);
 
             var allowances = await unitOfWork.Allowances.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
                 select: x => new
@@ -212,22 +216,49 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
     #endregion
 
     #region Create
-    public async Task<Response<CreateTransAllowanceRequest>> CreateTransAllowanceAsync(CreateTransAllowanceRequest model)
+    public async Task<Response<CreateTransAllowanceRequest>> CreateTransAllowanceAsync
+        (CreateTransAllowanceRequest model, string lang)
     {
-        var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+        var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+        var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
+        if (emp is null)
+        {
+
+
+            return new()
+            {
+                Check = false,
+                Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
+            };
+        }
+        var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
         if (contract is null)
         {
             string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
 
             return new()
             {
+                Check = false,
                 Error = resultMsg,
                 Msg = resultMsg
             };
         }
-
+        if (await unitOfWork.TransAllowances.ExistAsync(x => x.EmployeeId ==
+        model.EmployeeId && x.CompanyId == currentCompany &&
+          x.AllowanceId == model.AllowanceId &&
+          DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now)))
+        {
+            return new()
+            {
+                Check = false,
+                Msg = sharLocalizer[Localization.TodayTrans,
+                Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn]
+            };
+        }
         var newTrans = mapper.Map<TransAllowance>(model);
+        newTrans.CompanyId = currentCompany;
         await unitOfWork.TransAllowances.AddAsync(newTrans);
+
         await unitOfWork.CompleteAsync();
         return new()
         {
@@ -238,11 +269,14 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
     }
 
     #endregion
-      
+
     #region Update
     public async Task<Response<TransactionAllowanceGetByIdResponse>> UpdateTransAllowanceAsync(int id, CreateTransAllowanceRequest model)
     {
+
         var obj = await unitOfWork.TransAllowances.GetByIdAsync(id);
+        var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+
         if (obj is null)
         {
             string resultMsg = sharLocalizer[Localization.NotFoundData];
@@ -254,13 +288,36 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
                 Msg = resultMsg
             };
         }
+        var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
+        if (emp is null)
+        {
 
+
+            return new()
+            {
+                Check = false,
+                Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
+            };
+        }
+        var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
+        if (contract is null)
+        {
+            string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
+
+            return new()
+            {
+                Check = false,
+                Error = resultMsg,
+                Msg = resultMsg
+            };
+        }
         obj.AllowanceId = model.AllowanceId;
         obj.Amount = model.Amount;
         obj.EmployeeId = model.EmployeeId;
         obj.Notes = model.Notes;
         obj.SalaryEffectId = model.SalaryEffectId;
         obj.ActionMonth = model.ActionMonth;
+        obj.CompanyId = currentCompany;
         unitOfWork.TransAllowances.Update(obj);
         await unitOfWork.CompleteAsync();
         return new()
@@ -278,7 +335,8 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
 
     public async Task<Response<object>> RestoreTransAllowanceAsync(int id)
     {
-        var obj = await unitOfWork.TransAllowances.GetByIdAsync(id);
+        var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+        var obj = await unitOfWork.TransAllowances.GetFirstOrDefaultAsync(x => x.CompanyId == currentCompany && x.Id == id);
 
         if (obj is null)
         {
@@ -310,7 +368,8 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<Shar
     #region Delete
     public async Task<Response<string>> DeleteTransAllowanceAsync(int id)
     {
-        var obj = await unitOfWork.TransAllowances.GetByIdAsync(id);
+        var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+        var obj = await unitOfWork.TransAllowances.GetFirstOrDefaultAsync(x => x.CompanyId == currentCompany && x.Id == id);
         if (obj is null)
         {
             string resultMsg = sharLocalizer[Localization.NotFoundData];

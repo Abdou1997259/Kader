@@ -11,5 +11,5 @@ public interface IContractRepository : IBaseRepository<HrContract>
         int? skip = null,
         int? take = null);
 
-    GetContractDataByIdResponse GetContractById(int id, string lang);
+    GetContractDataByIdResponse GetContractById(int id, string lang, int companyId);
 }

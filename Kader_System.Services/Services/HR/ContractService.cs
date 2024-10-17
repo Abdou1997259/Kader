@@ -2,10 +2,6 @@
 using Kader_System.Domain.DTOs;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.HTTP;
-using Kader_System.Services.Services.AppServices;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Razor;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Kader_System.Services.Services.HR
 {
@@ -19,6 +15,7 @@ namespace Kader_System.Services.Services.HR
         private readonly IMapper mapper;
         private HrContract instanceContract;
         private readonly string serverPath;
+        private readonly IUserContextService _userContextService;
 
         // Constructor
         public ContractService(
@@ -26,6 +23,7 @@ namespace Kader_System.Services.Services.HR
             IStringLocalizer<SharedResource> _shareLocalizer,
             IFileServer _fileServer,
             IHttpContextService _httpContextService,
+            IUserContextService userContextService,
             IMapper _mapper)
         {
             unitOfWork = _unitOfWork;
@@ -33,6 +31,7 @@ namespace Kader_System.Services.Services.HR
             fileServer = _fileServer;
             httpContextService = _httpContextService;
             mapper = _mapper;
+            _userContextService = userContextService;
             instanceContract = new HrContract(); // Initialize if needed
             serverPath = _httpContextService.GetPhysicalServerPath(); // Initialize here
         }
@@ -42,8 +41,9 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<IEnumerable<ListOfContractsResponse>>> ListOfContractsAsync(string lang)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var result =
-                await unitOfWork.Contracts.GetSpecificSelectAsync(null!
+                await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.CompanyId == currentCompany
                     , includeProperties: $"{nameof(instanceContract.Employee)}",
                     select: x => new ListOfContractsResponse
                     {
@@ -79,10 +79,11 @@ namespace Kader_System.Services.Services.HR
         }
 
         public async Task<Response<GetAllContractsResponse>> GetAllContractAsync(string lang,
-            GetAlFilterationForContractRequest model,string host)
+            GetAlFilterationForContractRequest model, string host)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
 
-            Expression<Func<HrContract, bool>> filter = x => x.IsDeleted == model.IsDeleted
+            Expression<Func<HrContract, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany
                                                              && (string.IsNullOrEmpty(model.Word) ||
                                                                  x.Employee!.FullNameEn!.Contains(model.Word)
                                                                  || x.Employee!.FullNameAr!.Contains(model.Word)
@@ -102,11 +103,11 @@ namespace Kader_System.Services.Services.HR
             {
                 TotalRecords = totalRecords,
 
-                Items = ( unitOfWork.Contracts.GetAllContractsAsync
+                Items = (unitOfWork.Contracts.GetAllContractsAsync
                 (contractFilter: filter,
                     lang: lang,
                     take: model.PageSize,
-                    skip: (model.PageNumber - 1) * model.PageSize)).OrderByDescending(x=>x.Id).ToList(),
+                    skip: (model.PageNumber - 1) * model.PageSize)).OrderByDescending(x => x.Id).ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -150,9 +151,10 @@ namespace Kader_System.Services.Services.HR
         public async Task<Response<GetAllContractsResponse>> GetAllEndContractsAsync(string lang,
             GetAlFilterationForContractRequest model, string host)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
 
             Expression<Func<HrContract, bool>> filter = x => x.IsDeleted == model.IsDeleted
-
+                                                             && x.CompanyId == currentCompany
                                                              && x.EndDate < DateOnly.FromDateTime(DateTime.UtcNow)
                                                              && x.IsDeleted == model.IsDeleted
                                                              && (string.IsNullOrEmpty(model.Word) ||
@@ -218,14 +220,14 @@ namespace Kader_System.Services.Services.HR
 
         }
 
-        public async Task<Response<GetContractByIdResponse>> GetContractByIdAsync(int id,string lang)
+        public async Task<Response<GetContractByIdResponse>> GetContractByIdAsync(int id, string lang)
         {
             //Expression<Func<HrContract, bool>> filter = x => x.Id == id;
             //var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync(filter,
             //    includeProperties:
             //    $"{nameof(_instanceContract.Employee)},{nameof(_instanceContract.ListOfAllowancesDetails)}");
-
-            var obj = unitOfWork.Contracts.GetContractById(id, lang);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = unitOfWork.Contracts.GetContractById(id, lang, currentCompany);
 
 
             if (obj is null)
@@ -245,7 +247,7 @@ namespace Kader_System.Services.Services.HR
                 Data = new()
                 {
                     Master = obj,
-                    allowances =await unitOfWork.Allowances.GetAllowancesDataAsLookUp(lang:lang),
+                    allowances = await unitOfWork.Allowances.GetAllowancesDataAsLookUp(lang: lang),
                     employees = new[]
                         {
                             new
@@ -260,9 +262,11 @@ namespace Kader_System.Services.Services.HR
         }
 
 
-        public async Task<Response<object> > GetLookUps(string lang)
+        public async Task<Response<object>> GetLookUps(string lang)
         {
-            var employees =await unitOfWork.Employees.GetEmployeesNameIdSalaryWithoutContractAsLookUp(lang);
+
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var employees = await unitOfWork.Employees.GetEmployeesNameIdSalaryWithoutContractAsLookUp(lang, currentCompany);
             var allowances = await unitOfWork.Allowances.GetAllowancesDataAsLookUp(lang);
             return new()
             {
@@ -275,15 +279,16 @@ namespace Kader_System.Services.Services.HR
                     allowances
                 },
                 IsActive = true
-              
+
             };
         }
 
         public async Task<Response<CreateContractRequest>> CreateContractAsync(CreateContractRequest model, string moduleName)
         {
 
-
-           var haveContract= await unitOfWork.Contracts.ExistAsync(x=>x.EmployeeId==model.employee_id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var haveContract = await unitOfWork.Contracts.ExistAsync(x => x.EmployeeId ==
+            model.employee_id && x.CompanyId == currentCompany);
             if (haveContract)
             {
                 var Msg = string.Format(shareLocalizer[Localization.HaveContract],
@@ -322,13 +327,15 @@ namespace Kader_System.Services.Services.HR
             directoryTypes = HrDirectoryTypes.Contracts;
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
             newContract.FileName = model.contract_file == null ? string.Empty : await fileServer.UploadFileAsync(directoryName, model.contract_file);
-            if (model.contract_file != null) {
+            if (model.contract_file != null)
+            {
                 newContract.FileExtension = Path.GetExtension(model.contract_file.FileName);
             }
             else
             {
                 newContract.FileExtension = "";
             }
+            newContract.CompanyId = currentCompany;
             await unitOfWork.Contracts.AddAsync(newContract);
             await unitOfWork.CompleteAsync();
 
@@ -348,12 +355,13 @@ namespace Kader_System.Services.Services.HR
             throw new NotImplementedException();
         }
 
-        public async Task<Response<CreateContractRequest>> UpdateContractAsync(int id, CreateContractRequest model,string  moduleName)
+        public async Task<Response<CreateContractRequest>> UpdateContractAsync(int id, CreateContractRequest model, string moduleName)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             using var transaction = unitOfWork.BeginTransaction();
             {
-               
-                var obj = await unitOfWork.Contracts.GetByIdAsync(id);
+
+                var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
                 if (obj is null)
                 {
                     string resultMsg = string.Format(shareLocalizer[Localization.CannotBeFound],
@@ -367,14 +375,14 @@ namespace Kader_System.Services.Services.HR
                     };
                 }
 
-             
+
                 obj.EmployeeId = model.employee_id;
                 obj.EndDate = model.end_date;
                 obj.StartDate = model.start_date;
                 obj.TotalSalary = model.total_salary;
                 obj.FixedSalary = model.fixed_salary;
                 obj.HousingAllowance = model.housing_allowance;
-
+                obj.CompanyId = currentCompany;
 
                 var lstNewInserted = model.details?.Where(d => d.status == RowStatus.Inserted).ToList();
                 var lstUpdatedDetails = model.details?.Where(d => d.status == RowStatus.Updated).ToList();
@@ -451,14 +459,14 @@ namespace Kader_System.Services.Services.HR
                         if (fileServer.FileExist(directoryName, obj.FileName))
                             fileServer.RemoveFile(directoryName, obj.FileName);
                         contractFile.FileName = await fileServer.UploadFileAsync(directoryName, model.contract_file);
-                        contractFile.FileExtension = Path.GetExtension(contractFile.FileName);  
+                        contractFile.FileExtension = Path.GetExtension(contractFile.FileName);
                     }
                     obj.FileName = contractFile?.FileName;
                     obj.FileExtension = contractFile?.FileExtension;
 
                 }
 
-               
+
                 unitOfWork.Contracts.Update(obj);
                 await unitOfWork.CompleteAsync();
                 transaction.Commit();
@@ -470,7 +478,7 @@ namespace Kader_System.Services.Services.HR
                     Data = model
                 };
             }
-           
+
 
         }
 
@@ -480,8 +488,10 @@ namespace Kader_System.Services.Services.HR
             using var transaction = unitOfWork.BeginTransaction();
             try
             {
-
-                var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync(c => c.Id == id,
+                var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+                var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync(c => c.Id ==
+                id && c.CompanyId == currentCompany
+                ,
                     includeProperties: $"{nameof(instanceContract.ListOfAllowancesDetails)}");
                 if (obj is null)
                 {
@@ -524,7 +534,7 @@ namespace Kader_System.Services.Services.HR
                         end_date = obj.EndDate,
                         fixed_salary = obj.FixedSalary,
                         housing_allowance = obj.HousingAllowance,
-                        total_salary= obj.TotalSalary,
+                        total_salary = obj.TotalSalary,
                     }
                 };
             }
@@ -535,7 +545,7 @@ namespace Kader_System.Services.Services.HR
                     Msg = ex.Message,
                     Check = true,
                     Data = null,
-                    Error = ex.InnerException!=null ? ex.InnerException.Message :ex.Message
+                    Error = ex.InnerException != null ? ex.InnerException.Message : ex.Message
                 };
             }
 
@@ -547,7 +557,8 @@ namespace Kader_System.Services.Services.HR
             using var transaction = unitOfWork.BeginTransaction();
             try
             {
-                var contractExist = await unitOfWork.Contracts.GetByIdAsync(id);
+                var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+                var contractExist = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
                 if (contractExist is null)
                 {
                     string resultMsg = string.Format(shareLocalizer[Localization.CannotBeFound],
@@ -613,13 +624,15 @@ namespace Kader_System.Services.Services.HR
             throw new NotImplementedException();
         }
 
-        public async Task<Response<GetContractForUserResponse>> GetContractByUser(int EmpId ,string lang)
+        public async Task<Response<GetContractForUserResponse>> GetContractByUser(int EmpId, string lang)
         {
-            var emp = await unitOfWork.Employees.GetByIdAsync(EmpId);
-            if (emp is null) {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == EmpId && x.CompanyId == currentCompany);
+            if (emp is null)
+            {
 
 
-                var msg = shareLocalizer[Localization.IsNotExisted,shareLocalizer[Localization.Employee]];
+                var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Employee]];
                 return new Response<GetContractForUserResponse>()
                 {
                     Msg = msg,
@@ -629,9 +642,10 @@ namespace Kader_System.Services.Services.HR
 
 
             }
-            var contract=await unitOfWork.Contracts.GetFirstOrDefaultAsync(x=>x.EmployeeId==EmpId);
+            var contract = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.EmployeeId == EmpId && x.CompanyId == currentCompany);
 
-            if (contract == null) {
+            if (contract == null)
+            {
 
 
                 var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
@@ -646,11 +660,11 @@ namespace Kader_System.Services.Services.HR
             }
             return new Response<GetContractForUserResponse>()
             {
-                Check=true,
+                Check = true,
                 Data = new GetContractForUserResponse
                 {
-                  Id=contract.Id,
-                  Items=new List<Items>
+                    Id = contract.Id,
+                    Items = new List<Items>
                   {
                       new Items
                       {
@@ -666,18 +680,18 @@ namespace Kader_System.Services.Services.HR
                       HousingAllowance = contract.HousingAllowance,
                   }
                       }
-                  }
-                  
+                }
 
-                
+
+
             };
 
         }
 
         public async Task<Response<byte[]>> GetFileStreamResultAsync(int contractId)
         {
-
-            var contractAttachment = await unitOfWork.Contracts.GetByIdAsync(contractId);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var contractAttachment = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.Id == contractId && x.CompanyId == currentCompany);
             if (contractAttachment is null)
             {
                 var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];

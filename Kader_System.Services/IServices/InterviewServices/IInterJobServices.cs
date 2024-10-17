@@ -1,4 +1,5 @@
 ﻿using Kader_System.Domain.DTOs.Request.Interview;
+using Kader_System.Domain.DTOs.Response.Interview;
 
 namespace Kader_System.Services.IServices.InterviewServices
 {
@@ -6,7 +7,8 @@ namespace Kader_System.Services.IServices.InterviewServices
     {
         Task<Response<IEnumerable<object>>> ListOfAsync(string lang);
 
-
+        Task<Response<GetAllResponse>> GetPaginatedJobs
+                (GetAllFilteredJobRequests model, string lang, string host);
 
 
 
@@ -19,5 +21,11 @@ namespace Kader_System.Services.IServices.InterviewServices
         Task<Response<string>> RestoreAsync(int id);
 
         Task<Response<string>> DeleteAsync(int id);
+        Task<Response<string>> SuspendJob(int id);
+        Task<Response<string>> ResumeJob(int id);
+        Task<Response<string>> FinishJob(int id);
+        Task<Response<string>> ReplayJob(int id, ReplayJobRequest model);
+
+
     }
 }

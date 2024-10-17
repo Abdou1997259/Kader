@@ -38,7 +38,9 @@ public static class SD
     {
         public const string SpecialChar = @"|!#$%&[]=?»«@£§€{};<>";
         public const int Length = 50;
+
         public const string AllowedExtension = ".jpg,.png,.jpeg,.docx,.pdf";
+        public const string AllowedFileExtension = ".pdf,.docx";
     }
     public static class SysFileServer
     {
@@ -575,15 +577,24 @@ public static class SD
             public const string RestoreApplicant = "Applicant/Restore/{id}";
             public const string DeleteApplicant = "Applicant/delete/{id}";
             public const string GetApplicantById = "Applicant/GetById/{id}";
+            public const string GetAllApplicants = "Applicant/GetAll";
+            public const string GetDetailedApplicant = "Applicant/GetDetails/{id}";
+            public const string Reject = "Applicant/Reject/{id}";
+            public const string Accept = "Applicant/Accept/{id}";
+            public const string RateMe = "Applicant/RateMe/{id}/{rate}";
         }
         public class InterJobRoute
         {
-            public const string ListOfInterJob = "InterJob/getListOfInterJob";
+            public const string GetAll = "InterJob/GetAll";
             public const string CreateInterJob = "InterJob/create";
             public const string UpdateInterJob = "InterJob/update/{id}";
             public const string RestoreInterJob = "InterJob/Restore/{id}";
             public const string DeleteInterJob = "InterJob/delete/{id}";
             public const string GetInterJobById = "InterJob/GetById/{id}";
+            public const string ResumeJob = "InterJob/Resume/{id}";
+            public const string SuspendedJob = "InterJob/Suspended/{id}";
+            public const string FinishJob = "InterJob/FinishJob/{id}";
+            public const string ReplayJob = "InterJob/Replay/{id}";
         }
         public class Vacation
         {
@@ -656,6 +667,9 @@ public static class SD
         public const string AlreadyExited = "AlreadyExited";
         public const string NotApproved = "NotApproved";
         public const string LoanRequest = "LoanRequest";
+        public const string SuspendedSuccessfully = "SuspendedSuccessfully";
+        public const string FinishedSuccessfully = "FinishedSuccessfully";
+        public const string ResumeSuccessfully = "ResumeSuccessfully";
         public const string TodayTrans = "TodayTrans";
         public const string CompanyLinkedToUser = "CompanyLinkedToUser";
         public const string CompanyContainsEmployee = "CompanyContainsEmployee";
@@ -666,6 +680,9 @@ public static class SD
         public const string Applicant = "Applicant";
         public const string ViewInclude = "ViewInclude";
         public const string Project = "Project";
+        public const string Accepted = "Accepted";
+        public const string Rejected = "Rejected";
+        public const string Rated = "Rated";
         public const string SaveSuccessfully = "SaveSuccessfully";
         public const string Task = "Task";
         public const string Resignation = "Resignation";
@@ -880,7 +897,7 @@ public static class SD
         public const string Resonsiblitites = "Resonsiblities";
         public const string ApplicantJobNumber = "ApplicantJobNumber";
         public const string EndJobDate = "EndJobDate";
-
+        public const string SuspendedJob = "SuspendedJob";
     }
 
     public class LoggingMessages

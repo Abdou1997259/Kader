@@ -4,14 +4,17 @@ using Kader_System.Services.IServices.AppServices;
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransDeductionService(IUnitOfWork unitOfWork, IFileServer fileServer, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransDeductionService
+    public class TransDeductionService(IUnitOfWork unitOfWork, IUserContextService userContextService, IFileServer fileServer, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransDeductionService
     {
         private TransDeduction _insatance;
         private IFileServer _fileServer = fileServer;
+        private IUserContextService _userContextService = userContextService;
         public async Task<Response<IEnumerable<SelectListOfTransDeductionResponse>>> ListOfTransDeductionsAsync(string lang)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+
             var result =
-                await unitOfWork.TransDeductions.GetSpecificSelectAsync(null!,
+                await unitOfWork.TransDeductions.GetSpecificSelectAsync(x => x.CompanyId == currentCompany,
                     includeProperties: $"{nameof(_insatance.Deduction)},{nameof(_insatance.Employee)},{nameof(_insatance.SalaryEffect)}" +
                                        $",{nameof(_insatance.AmountType)}",
                     select: x => new SelectListOfTransDeductionResponse
@@ -54,8 +57,9 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<GetAllTransDeductionResponse>> GetAllTransDeductionsAsync(string lang,
             GetAllFilterationForTransDeductionRequest model, string host)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             Expression<Func<TransDeduction, bool>> filter = x =>
-                x.IsDeleted == model.IsDeleted &&
+                x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany &&
                 (
                     (string.IsNullOrEmpty(model.Word) || x.ActionMonth.ToString().Contains(model.Word)
                      || x.AmountType!.Name.Contains(model.Word)
@@ -133,7 +137,8 @@ namespace Kader_System.Services.Services.Trans
         {
             try
             {
-                var employees = await unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
+                var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+                var employees = await unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false && filter.CompanyId == currentCompany,
                     select: x => new
                     {
                         Id = x.Id,
@@ -194,7 +199,8 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<CreateTransDeductionRequest>> CreateTransDeductionAsync
             (CreateTransDeductionRequest model, string lang)
         {
-            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
             if (emp is null)
             {
 
@@ -205,7 +211,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -245,7 +251,7 @@ namespace Kader_System.Services.Services.Trans
 
             }
 
-            if (await unitOfWork.TransDeductions.ExistAsync(x => x.EmployeeId == model.EmployeeId &&
+            if (await unitOfWork.TransDeductions.ExistAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany &&
             x.DeductionId == model.DeductionId &&
             DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now)))
             {
@@ -271,7 +277,7 @@ namespace Kader_System.Services.Services.Trans
 
 
 
-
+            newTrans.CompanyId = currentCompany;
             await unitOfWork.TransDeductions.AddAsync(newTrans);
             await unitOfWork.CompleteAsync();
             return new()
@@ -284,7 +290,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetTransDeductionById>> GetTransDeductionByIdAsync(int id, string lang)
         {
-            var obj = await unitOfWork.TransDeductions.GetFirstOrDefaultAsync(d => d.Id == id,
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await unitOfWork.TransDeductions.GetFirstOrDefaultAsync(d => d.Id == id && d.CompanyId == currentCompany,
                 includeProperties: $"{nameof(_insatance.Deduction)},{nameof(_insatance.Employee)}," +
                                    $"{nameof(_insatance.SalaryEffect)}" +
                                    $",{nameof(_insatance.AmountType)}");
@@ -327,6 +334,7 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetTransDeductionById>> UpdateTransDeductionAsync(int id, CreateTransDeductionRequest model, string lang)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var obj = await unitOfWork.TransDeductions.GetByIdAsync(id);
             if (obj is null)
             {
@@ -339,7 +347,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
             if (emp is null)
             {
 
@@ -350,7 +358,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -403,6 +411,7 @@ namespace Kader_System.Services.Services.Trans
             obj.ActionMonth = model.ActionMonth;
             obj.Notes = model.Notes;
             obj.EmployeeId = model.EmployeeId;
+            obj.CompanyId = currentCompany;
             if (model.Attachment_File is not null)
             {
                 var dirType = HrDirectoryTypes.Deductions;
@@ -424,7 +433,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<object>> RestoreTransDeductionAsync(int id)
         {
-            var obj = await unitOfWork.TransDeductions.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await unitOfWork.TransDeductions.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
 
             if (obj is null)
             {
@@ -460,7 +470,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<string>> DeleteTransDeductionAsync(int id)
         {
-            var obj = await unitOfWork.TransDeductions.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await unitOfWork.TransDeductions.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
             if (obj is null)
             {
                 string resultMsg = sharLocalizer[Localization.NotFoundData];

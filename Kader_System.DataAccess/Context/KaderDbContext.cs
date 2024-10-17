@@ -98,6 +98,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<SpGetAllScreens> SpGetAllScreens { get; set; }
     public DbSet<SPEmployeeDetails> SPEmployeeDetails { get; set; }
     public DbSet<Job> InterJobs { get; set; }
+    public DbSet<JobOffer> JobOffers { get; set; }
     #endregion
 
     #region EmployeeRequest_Dbset
@@ -243,7 +244,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .WithOne(x => x.ScreenSub);
 
 
-        modelBuilder.Entity<Applicant>().Property(x => x.state).HasConversion(x => x.ToString(), d => (ApplicantStates)Enum.Parse(typeof(ApplicantStates), d));
+
         modelBuilder.Entity<Applicant>().HasIndex(x => new { x.email, x.phone }).IsUnique();
         #endregion
 

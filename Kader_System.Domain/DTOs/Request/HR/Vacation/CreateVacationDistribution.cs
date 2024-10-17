@@ -6,5 +6,6 @@
         public required string NameAr { get; set; }
         public int DaysCount { get; set; }
         public int SalaryCalculatorId { get; set; }
+        public int CompanyId { get; set; }
     }
 }

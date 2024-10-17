@@ -5,7 +5,7 @@
     {
         [Key]
         public int Id { get; set; }
- 
+
         public DateOnly StartLoanDate { get; set; }
 
 
@@ -28,7 +28,7 @@
         public HrEmployee HrEmployee { get; set; } = default!;
         public int? CalculateSalaryId { get; set; }
         public int? CalculateSalaryDetailsId { get; set; }
-
+        public int CompanyId { get; set; }
         public ICollection<TransLoanDetails> TransLoanDetails { get; set; }
 
 

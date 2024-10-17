@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Accepted" xml:space="preserve">
+    <value>Accepted</value>
+  </data>
   <data name="Allowance" xml:space="preserve">
     <value>Allowance</value>
   </data>
@@ -201,6 +204,9 @@
   <data name="FileHasNoDirectory" xml:space="preserve">
     <value>File Has No Directory or not Exited</value>
   </data>
+  <data name="FinishedSuccessfully" xml:space="preserve">
+    <value>Finished Successfully</value>
+  </data>
   <data name="HasNoDocument" xml:space="preserve">
     <value>{0} has no document</value>
   </data>
@@ -255,6 +261,12 @@
   <data name="Qualification" xml:space="preserve">
     <value>Qualification</value>
   </data>
+  <data name="Rated" xml:space="preserve">
+    <value>Rated</value>
+  </data>
+  <data name="Rejected" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
   <data name="Resignation" xml:space="preserve">
     <value>Resignation</value>
   </data>
@@ -263,6 +275,9 @@
   </data>
   <data name="Restored" xml:space="preserve">
     <value>Restored Successfully</value>
+  </data>
+  <data name="ResumeSuccessfully" xml:space="preserve">
+    <value>Resume Successfully</value>
   </data>
   <data name="Role" xml:space="preserve">
     <value>Role</value>
@@ -281,6 +296,12 @@
   </data>
   <data name="SubMainScreen" xml:space="preserve">
     <value>Sub main screen</value>
+  </data>
+  <data name="SuspendedJob" xml:space="preserve">
+    <value>Suspended Job</value>
+  </data>
+  <data name="SuspendedSuccessfully" xml:space="preserve">
+    <value>Suspended Successfully</value>
   </data>
   <data name="TitlePermisson" xml:space="preserve">
     <value>Please send the Title</value>

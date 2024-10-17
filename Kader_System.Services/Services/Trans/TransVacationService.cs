@@ -6,13 +6,15 @@ using TransVacation = Kader_System.Domain.Models.Trans.TransVacation;
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransVacationService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> sharLocalizer, IFileServer _fileServer, IMapper mapper) : ITransVacationService
+    public class TransVacationService(IUnitOfWork unitOfWork, IUserContextService userContextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer _fileServer, IMapper mapper) : ITransVacationService
     {
         private TransVacation _insatance;
+        private readonly IUserContextService _userContextService = userContextService;
         public async Task<Response<IEnumerable<SelectListOfTransVacationResponse>>> ListOfTransVacationsAsync(string lang)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var result =
-                await unitOfWork.TransVacations.GetSpecificSelectAsync(null!,
+                await unitOfWork.TransVacations.GetSpecificSelectAsync(x => x.CompanyId == currentCompany,
                     includeProperties: $"{nameof(_insatance.Vacation)},{nameof(_insatance.Employee)}"
                                        ,
                     select: x => new SelectListOfTransVacationResponse
@@ -50,7 +52,8 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<GetAllTransVacationResponse>> GetAllTransVacationsAsync(string lang,
             GetAllFilterationForTransVacationRequest model, string host)
         {
-            Expression<Func<TransVacation, bool>> filter = x => x.IsDeleted == model.IsDeleted
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            Expression<Func<TransVacation, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany
                 && (string.IsNullOrEmpty(model.Word)
                 || x.Employee!.FullNameEn.Contains(model.Word)
                 || x.Employee!.FullNameAr.Contains(model.Word)
@@ -123,8 +126,8 @@ namespace Kader_System.Services.Services.Trans
         {
             try
             {
-
-                return await unitOfWork.TransVacations.GetTransVacationLookUpsData(lang);
+                var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+                return await unitOfWork.TransVacations.GetTransVacationLookUpsData(lang, currentCompany);
 
                 //var employees = await unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
                 //    select: x => new
@@ -172,7 +175,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<CreateTransVacationRequest>> CreateTransVacationAsync(CreateTransVacationRequest model, string lang)
         {
-            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.CompanyId == currentCompany && x.Id == model.EmployeeId);
             if (emp is null)
             {
 
@@ -183,7 +187,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.IsNotExisted, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -205,7 +209,8 @@ namespace Kader_System.Services.Services.Trans
             }
 
 
-            if (await unitOfWork.TransVacations.ExistAsync(x => x.EmployeeId == model.EmployeeId &&
+            if (await unitOfWork.TransVacations.ExistAsync(x =>
+            x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany &&
             x.VacationId == model.VacationId &&
             DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now)))
             {
@@ -217,11 +222,11 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
             var newTrans = mapper.Map<TransVacation>(model);
-
+            newTrans.CompanyId = currentCompany;
             var usedDays =
-                await unitOfWork.TransVacations.GetVacationDaysUsedByEmployee(model.EmployeeId, model.VacationId);
+                await unitOfWork.TransVacations.GetVacationDaysUsedByEmployee(model.EmployeeId, model.VacationId, currentCompany);
             var totalBalance =
-                await unitOfWork.TransVacations.GetVacationTotalBalance(model.VacationId);
+                await unitOfWork.TransVacations.GetVacationTotalBalance(model.VacationId, currentCompany);
             var reminderDays = totalBalance - usedDays;
             if (model.DaysCount > reminderDays)
             {
@@ -256,7 +261,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetTransVacationById>> GetTransVacationByIdAsync(int id, string lang)
         {
-            var obj = await unitOfWork.TransVacations.GetTransVacationByIdAsync(id, lang);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await unitOfWork.TransVacations.GetTransVacationByIdAsync(id, lang, currentCompany);
 
 
             if (obj == null)
@@ -280,7 +286,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetTransVacationById>> UpdateTransVacationAsync(int id, CreateTransVacationRequest model, string lang)
         {
-            var obj = await unitOfWork.TransVacations.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await unitOfWork.TransVacations.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
             if (obj is null)
             {
                 string resultMsg = sharLocalizer[Localization.NotFoundData];
@@ -292,7 +299,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
             if (emp is null)
             {
 
@@ -303,7 +310,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -328,9 +335,11 @@ namespace Kader_System.Services.Services.Trans
 
 
             var usedDays =
-                await unitOfWork.TransVacations.GetVacationDaysUsedByEmployee(model.EmployeeId, model.VacationId);
+                await unitOfWork.TransVacations.GetVacationDaysUsedByEmployee(model.EmployeeId,
+
+                model.VacationId, currentCompany);
             var totalBalance =
-                await unitOfWork.TransVacations.GetVacationTotalBalance(model.VacationId);
+                await unitOfWork.TransVacations.GetVacationTotalBalance(model.VacationId, currentCompany);
             var reminderDays = totalBalance + obj.DaysCount - usedDays;
             if (model.DaysCount > reminderDays)
             {
@@ -365,6 +374,7 @@ namespace Kader_System.Services.Services.Trans
             obj.StartDate = model.StartDate;
             obj.VacationId = model.VacationId;
             obj.Notes = model.Notes;
+            obj.CompanyId = currentCompany;
             obj.EmployeeId = model.EmployeeId;
             unitOfWork.TransVacations.Update(obj);
             await unitOfWork.CompleteAsync();
@@ -382,7 +392,8 @@ namespace Kader_System.Services.Services.Trans
         }
         public async Task<Response<object>> RestoreTransVacationAsync(int id)
         {
-            var obj = await unitOfWork.TransVacations.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await unitOfWork.TransVacations.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
 
             if (obj is null)
             {
@@ -412,7 +423,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<string>> DeleteTransVacationAsync(int id)
         {
-            var obj = await unitOfWork.TransVacations.GetByIdAsync(id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var obj = await unitOfWork.TransVacations.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
             if (obj is null)
             {
                 string resultMsg = sharLocalizer[Localization.NotFoundData];

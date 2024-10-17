@@ -20,10 +20,17 @@ namespace Kader_System.Api.Areas.Interview
         }
         #region Retreive
 
-        [HttpGet(ApiRoutes.InterJobRoute.ListOfInterJob)]
+        [HttpGet(ApiRoutes.InterJobRoute.GetAll)]
 
-        public async Task<IActionResult> ListOfAsync()
-            => Ok(await _service.ListOfAsync(_requestService.GetRequestHeaderLanguage));
+        public async Task<IActionResult> GetPaginatedJobs([FromQuery] GetAllFilteredJobRequests model)
+        {
+            var response = await _service.GetPaginatedJobs(model, _requestService.GetRequestHeaderLanguage, _requestService.GetCurrentHost);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
 
         [HttpGet(ApiRoutes.InterJobRoute.GetInterJobById)]
 
@@ -71,11 +78,56 @@ namespace Kader_System.Api.Areas.Interview
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
+        [HttpPut(ApiRoutes.InterJobRoute.ReplayJob)]
+
+        public async Task<IActionResult> ReplayJob([FromForm] ReplayJobRequest model, [FromRoute] int id)
+        {
+            var response = await _service.ReplayJob(id, model);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
         [HttpPut(ApiRoutes.InterJobRoute.RestoreInterJob)]
 
         public async Task<IActionResult> RestoreAsync([FromRoute] int id)
         {
             var response = await _service.RestoreAsync(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+
+        [HttpPut(ApiRoutes.InterJobRoute.SuspendedJob)]
+
+        public async Task<IActionResult> SuspendJob([FromRoute] int id)
+        {
+            var response = await _service.SuspendJob(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        [HttpPut(ApiRoutes.InterJobRoute.ResumeJob)]
+
+        public async Task<IActionResult> ResumeJob([FromRoute] int id)
+        {
+            var response = await _service.ResumeJob(id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
+        [HttpPut(ApiRoutes.InterJobRoute.FinishJob)]
+
+        public async Task<IActionResult> FinishJob([FromRoute] int id)
+        {
+            var response = await _service.FinishJob(id);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

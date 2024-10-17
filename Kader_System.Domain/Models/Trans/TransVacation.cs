@@ -21,4 +21,5 @@ public class TransVacation : BaseEntity
 
     public int? CalculateSalaryId { get; set; }
     public int? CalculateSalaryDetailsId { get; set; }
+    public int CompanyId { get; set; }
 }

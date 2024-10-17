@@ -4,6 +4,9 @@ namespace Kader_System.Domain.DTOs.Request.Interview
 {
     public class CreateApplicantRequest
     {
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+
+        public int age { get; set; }
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
 
@@ -38,8 +41,8 @@ namespace Kader_System.Domain.DTOs.Request.Interview
         [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
         public IFormFile? image_file { get; set; }
 
-        [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length),
-       FileExtensionValidation(FileSettings.AllowedExtension)]
+        [AllowedLetters(FileSettings.SpecialChar),
+       FileExtensionValidation(FileSettings.AllowedFileExtension)]
         public IFormFile? cv_file { get; set; }
 
         public List<EducationDto> educations { get; set; } = new List<EducationDto>();

@@ -86,7 +86,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                                    reason = x.StatuesOfRequest.StatusMessage,
                                    Notes = x.Notes,
                                    AttachmentPath = x.AttachmentPath != null ? _fileServer.CombinePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.VacationRequest.ToString(), x.AttachmentPath) : null
-                               }).OrderByDescending(x => x.Id).Skip((model.PageNumber - 1) * model.PageSize).Take(model.PageSize).ToListAsync();
+                               }).OrderByDescending(x => x.Id)
+                               .Skip((model.PageNumber - 1) * model.PageSize)
+                               .Take(model.PageSize).ToListAsync();
             #region Pagination
 
             int page = 1;

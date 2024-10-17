@@ -9,7 +9,11 @@
         public int applicant_count { get; set; }
         public string name_ar { get; set; }
         public string name_en { get; set; }
+        public bool is_finished { get; set; }
         public string? description { get; set; }
-        public ICollection<Applicant> applicants { get; set; } = default!;
+        public int state_id { get; set; }
+        [ForeignKey(nameof(state_id))]
+        public JobState state { get; set; } = default!;
+        public ICollection<Applicant> applicants { get; set; } = new HashSet<Applicant>();
     }
 }

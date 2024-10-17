@@ -4,5 +4,6 @@
     {
         string? UserId { get; }
         public bool IsAdmin();
+        Task<int> GetLoggedCurrentCompany();
     }
 }
