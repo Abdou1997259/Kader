@@ -665,6 +665,7 @@ public static class SD
         public const string SalaryEffect = "SalaryEffect";
         public const string Approved = "Approved";
         public const string AlreadyExited = "AlreadyExited";
+        public const string NoAdminCreate = "NoAdminCreate";
         public const string NotApproved = "NotApproved";
         public const string LoanRequest = "LoanRequest";
         public const string SuspendedSuccessfully = "SuspendedSuccessfully";

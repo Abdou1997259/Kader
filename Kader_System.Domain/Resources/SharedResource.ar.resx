@@ -246,6 +246,9 @@
   <data name="MangerAlready" xml:space="preserve">
     <value>مدير لاداره اخري  لا يمكن تعيين اكثر من مدير </value>
   </data>
+  <data name="NoAdminCreate" xml:space="preserve">
+    <value>لايمكن أضافة لان المستخدم ليس رئيسي</value>
+  </data>
   <data name="NotApproved" xml:space="preserve">
     <value>لم تتم الموافقة</value>
   </data>
