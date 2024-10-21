@@ -6,15 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.HR;
 
-public class CompanyService(IUnitOfWork unitOfWork, KaderDbContext context, IFileServer _fileServer, KaderDbContext _context, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : ICompanyService
+public class CompanyService(IUnitOfWork unitOfWork, IUserContextService userContextService, KaderDbContext context, IFileServer _fileServer, KaderDbContext _context, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : ICompanyService
 {
     private HrCompany _instance;
     private KaderDbContext _context = context;
-
+    private readonly IUserContextService _userContextService = userContextService;
     #region Retrieve
 
     public async Task<Response<IEnumerable<HrListOfCompaniesResponse>>> ListOfCompaniesAsync(string lang)
     {
+
         var result =
                 await unitOfWork.Companies.GetSpecificSelectAsync(null!,
                 select: x => new HrListOfCompaniesResponse
@@ -46,7 +47,9 @@ public class CompanyService(IUnitOfWork unitOfWork, KaderDbContext context, IFil
 
     public async Task<Response<HrGetAllCompaniesResponse>> GetAllCompaniesAsync(string lang, HrGetAllFiltrationsForCompaniesRequest model, string host)
     {
+        var currentCompanyIds = await _userContextService.GetLoggedCurrentCompanies();
         Expression<Func<HrCompany, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
+           currentCompanyIds.Contains(x.Id) &&
             (string.IsNullOrEmpty(model.Word) || x.NameAr.Contains(model.Word) || x.NameEn.Contains(model.Word)
              || x.CompanyOwner == model.Word
              || x.CompanyType!.Name.Contains(model.Word));

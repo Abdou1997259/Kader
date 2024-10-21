@@ -2,7 +2,6 @@
 using Kader_System.Domain.Constants.Enums;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.HTTP;
-using Kader_System.Services.Services.AppServices;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -157,11 +156,11 @@ public class CompaniesController(ICompanyService service, IRequestService reques
         var response = new Response<string>();
         if (types == HrDirectoryTypes.CompanyContracts)
         {
-            response = await service.RemoveCompanyContractsAttachement(id, HrDirectoryTypes.CompanyContracts,false);
+            response = await service.RemoveCompanyContractsAttachement(id, HrDirectoryTypes.CompanyContracts, false);
         }
         else if (types == HrDirectoryTypes.CompanyLicesnses)
         {
-            response = await service.RemoveCompanyLicensesAttachement(id, HrDirectoryTypes.CompanyLicesnses,false);
+            response = await service.RemoveCompanyLicensesAttachement(id, HrDirectoryTypes.CompanyLicesnses, false);
         }
 
         if (response.Check)
