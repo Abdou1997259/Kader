@@ -3,19 +3,19 @@
     public class CreateTransDeductionRequest
     {
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public DateOnly ActionMonth { get; set; }
+        public DateOnly action_month { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public double Amount { get; set; }
+        public double amount { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public int AmountTypeId { get; set; }
+        public int amount_type_id { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public int SalaryEffectId { get; set; }
+        public int salary_effect_id { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public int EmployeeId { get; set; }
+        public int employee_id { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public int DeductionId { get; set; }
-        public string? Notes { get; set; }
-        public IFormFile? Attachment_File { get; set; }
+        public int deduction_id { get; set; }
+        public string? notes { get; set; }
+        public IFormFile? attachment_file { get; set; }
 
     }
 }

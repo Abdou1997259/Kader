@@ -12,8 +12,10 @@ public class TransCovenantRepository(KaderDbContext context) : BaseRepository<Tr
       )
     {
 
-        var query = from trans in context.TransCovenants.Where(filter).OrderByDescending(c=>c.Id)
-                    join employee in context.Employees on trans.EmployeeId equals employee.Id into empGroup
+        var query = from trans in context.TransCovenants.Where(filter)
+                    .OrderByDescending(c => c.id)
+                    join employee in context.Employees on trans.employee_id
+                    equals employee.Id into empGroup
                     from employee in empGroup.DefaultIfEmpty()
                     join job in context.HrJobs on employee.JobId equals job.Id into jobGroup
                     from job in jobGroup.DefaultIfEmpty()
@@ -21,18 +23,18 @@ public class TransCovenantRepository(KaderDbContext context) : BaseRepository<Tr
                     from u in userGroup.DefaultIfEmpty()
                     select new TransCovenantData()
                     {
-                        
+
                         AddedBy = u.UserName,
                         AddedOn = trans.Add_date,
-                        Amount = trans.Amount,
-                        EmployeeId = trans.EmployeeId,
+                        Amount = trans.amount,
+                        EmployeeId = trans.employee_id,
                         EmployeeName = lang == Localization.Arabic ? employee.FullNameAr : employee.FullNameEn,
-                        Id = trans.Id,
-                        Notes = trans.Notes,
-                        NameAr = trans.NameAr,
-                        NameEn = trans.NameEn,
-                        Date = trans.Date,
-                        JobName = lang==Localization.Arabic ? job.NameAr : job.NameEn,
+                        Id = trans.id,
+                        Notes = trans.notes,
+                        NameAr = trans.name_ar,
+                        NameEn = trans.name_en,
+                        Date = trans.date,
+                        JobName = lang == Localization.Arabic ? job.NameAr : job.NameEn,
                     };
 
         if (filterSearch != null)
@@ -42,7 +44,7 @@ public class TransCovenantRepository(KaderDbContext context) : BaseRepository<Tr
             query = query.Skip(skip.Value);
         if (take.HasValue)
             query = query.Take(take.Value);
-       
+
 
         return query.ToList();
 

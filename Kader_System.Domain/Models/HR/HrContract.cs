@@ -4,18 +4,18 @@
 public class HrContract : BaseEntity
 {
     [Key]
-    public int Id { get; set; }
-    public double TotalSalary { get; set; }
-    public double FixedSalary { get; set; }
-    public double HousingAllowance { get; set; }
-    public DateOnly StartDate { get; set; }
-    public DateOnly EndDate { get; set; }
-    public string FileName { get; set; }
-    public string FileExtension { get; set; }
+    public int id { get; set; }
+    public double total_salary { get; set; }
+    public double fixed_salary { get; set; }
+    public double housing_allowance { get; set; }
+    public DateOnly start_date { get; set; }
+    public DateOnly end_date { get; set; }
+    public string file_name { get; set; }
 
-    public int EmployeeId { get; set; }
-    [ForeignKey(nameof(EmployeeId))]
-    public HrEmployee Employee { get; set; } = default!;
-    public int CompanyId { get; set; }
-    public ICollection<HrContractAllowancesDetail> ListOfAllowancesDetails { get; set; } = [];
+
+    public int employee_id { get; set; }
+    [ForeignKey(nameof(employee_id))]
+    public HrEmployee employee { get; set; } = default!;
+    public int company_id { get; set; }
+    public ICollection<HrContractAllowancesDetail> list_of_allowances_details { get; set; } = [];
 }

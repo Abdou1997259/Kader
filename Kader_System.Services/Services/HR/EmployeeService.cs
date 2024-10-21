@@ -19,6 +19,7 @@ namespace Kader_System.Services.Services.HR
 
 
 
+
     , UserManager<ApplicationUser> userManager) : IEmployeeService
     {
         private readonly IAuthService _authService = authService;
@@ -502,7 +503,8 @@ namespace Kader_System.Services.Services.HR
             var currentCompany = await _userContext.GetLoggedCurrentCompany();
             var result = new
             {
-                employees = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany)
+                employees = await unitOfWork.Employees
+                .GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany)
             };
 
             return new()
@@ -561,7 +563,24 @@ namespace Kader_System.Services.Services.HR
             {
                 try
                 {
+
+                    var user = await _authService.CreateUserAsync(new Domain.DTOs.Request.Auth.CreateUserRequest
+                    {
+                        user_name = model.username,
+                        phone = model.phone,
+                        job_title = model.job_id,
+                        email = model.email,
+                        is_active = true,
+                        full_name = model.family_name_ar,
+                        current_company = model.CompanyId,
+                        current_title = model.title_id,
+                        financial_year = CurrentCompanyYearId,
+                        password = model.password,
+                        title_id = new List<int?> { model.title_id },
+                        company_id = new List<int?> { model.CompanyId }
+                    }, Modules.Auth, HrDirectoryTypes.User);
                     var newEmployee = mapper.Map<HrEmployee>(model);
+                    newEmployee.IsActive = model.is_active;
 
                     GetFileNameAndExtension imageFile = new();
                     if (model.employee_image != null)
@@ -588,24 +607,13 @@ namespace Kader_System.Services.Services.HR
                         FileName = f.FileName,
                         IsActive = true
                     }).ToList();
-                    await unitOfWork.Employees.AddAsync(newEmployee);
-                    var user = await _authService.CreateUserAsync(new Domain.DTOs.Request.Auth.CreateUserRequest
-                    {
-                        user_name = model.username,
-                        phone = model.phone,
-                        job_title = newEmployee.JobId,
-                        email = newEmployee.Email,
-                        is_active = true,
-                        full_name = newEmployee.FullNameAr,
-                        current_company = newEmployee.CompanyId,
-                        current_title = model.title_id,
-                        financial_year = CurrentCompanyYearId,
-                        password = model.password,
-                        title_id = new List<int?> { model.title_id },
-                        company_id = new List<int?> { model.CompanyId }
-                    }, Modules.Auth, HrDirectoryTypes.User);
 
-                    await unitOfWork.CompleteAsync(); // Commit changes in unit of work
+                    newEmployee.UserId = user.DynamicData;
+                    await unitOfWork.Employees.AddAsync(newEmployee);
+                    await unitOfWork.CompleteAsync();
+
+
+                    // Commit changes in unit of work
                     transaction.Complete(); // Commit the transaction scope
 
                     return new()
@@ -929,11 +937,16 @@ namespace Kader_System.Services.Services.HR
                     };
                 }
 
-                var transactionAllowance = await unitOfWork.TransAllowances.ExistAsync(t => t.EmployeeId == id);
-                var transactionVacations = await unitOfWork.TransVacations.ExistAsync(t => t.EmployeeId == id);
-                var transactionBenefits = await unitOfWork.TransBenefits.ExistAsync(t => t.EmployeeId == id);
-                var transactionDeductions = await unitOfWork.TransDeductions.ExistAsync(t => t.EmployeeId == id);
-                var transactionCovenants = await unitOfWork.TransCovenants.ExistAsync(t => t.EmployeeId == id);
+                var transactionAllowance = await unitOfWork.TransAllowances.
+                    ExistAsync(t => t.EmployeeId == id);
+                var transactionVacations =
+                    await unitOfWork.TransVacations.ExistAsync(t => t.employee_id == id);
+                var transactionBenefits =
+                    await unitOfWork.TransBenefits.ExistAsync(t => t.employee_id == id);
+                var transactionDeductions = await unitOfWork.TransDeductions
+                    .ExistAsync(t => t.employee_id == id);
+                var transactionCovenants = await unitOfWork.
+                    TransCovenants.ExistAsync(t => t.employee_id == id);
                 if (transactionAllowance || transactionVacations || transactionBenefits || transactionDeductions ||
                     transactionCovenants)
                 {

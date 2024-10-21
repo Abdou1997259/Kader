@@ -1,5 +1,4 @@
-﻿using Kader_System.Domain.DTOs.Response.HR;
-using Kader_System.Domain.DTOs.Response.Trans;
+﻿using Kader_System.Domain.DTOs.Response.Trans;
 
 namespace Kader_System.DataAccess.Repositories.Trans;
 
@@ -18,33 +17,33 @@ public class TransBenefitRepository(KaderDbContext context) : BaseRepository<Tra
 
 
         var query = from trans in transBenefits
-                    join employee in context.Employees on trans.EmployeeId equals employee.Id into empGroup
+                    join employee in context.Employees on trans.employee_id equals employee.Id into empGroup
                     from employee in empGroup.DefaultIfEmpty()
                     join u in context.Users on trans.Added_by equals u.Id into userGroup
                     from u in userGroup.DefaultIfEmpty()
-                    join benefit in context.Benefits on trans.BenefitId equals benefit.Id into benefitGroup
+                    join benefit in context.Benefits on trans.benefit_id equals benefit.Id into benefitGroup
                     from benefit in benefitGroup.DefaultIfEmpty()
-                    join salary in context.TransSalaryEffects on trans.SalaryEffectId equals salary.Id into salaryGroup
+                    join salary in context.TransSalaryEffects on trans.salary_effect_id equals salary.Id into salaryGroup
                     from salary in salaryGroup.DefaultIfEmpty()
-                    join amountType in context.TransAmountTypes on trans.AmountTypeId equals amountType.Id into amountTypeGroup
+                    join amountType in context.TransAmountTypes on trans.amount_type_id equals amountType.Id into amountTypeGroup
                     from amountType in amountTypeGroup.DefaultIfEmpty()
-            
+
                     select new TransBenefitData()
                     {
-                       ActionMonth = trans.ActionMonth,
-                       AddedBy = u.UserName,
-                       AddedOn = trans.Add_date,
-                       Amount = trans.Amount,
-                       AmountTypeId = trans.AmountTypeId,
-                       BenefitId = trans.BenefitId,
-                       BenefitName = lang==Localization.Arabic? benefit.Name_ar:benefit.Name_en,
-                       EmployeeId = trans.EmployeeId,
-                       EmployeeName = lang == Localization.Arabic ? employee.FullNameAr : employee.FullNameEn,
-                       Id = trans.Id,
-                       Notes = trans.Notes,
-                       SalaryEffect = lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
-                       SalaryEffectId = trans.SalaryEffectId,
-                       ValueTypeName = lang == Localization.Arabic ? amountType.Name : amountType.NameInEnglish,
+                        ActionMonth = trans.action_month,
+                        AddedBy = u.UserName,
+                        AddedOn = trans.Add_date,
+                        Amount = trans.amount,
+                        AmountTypeId = trans.amount_type_id,
+                        BenefitId = trans.benefit_id,
+                        BenefitName = lang == Localization.Arabic ? benefit.Name_ar : benefit.Name_en,
+                        EmployeeId = trans.employee_id,
+                        EmployeeName = lang == Localization.Arabic ? employee.FullNameAr : employee.FullNameEn,
+                        Id = trans.Id,
+                        Notes = trans.notes,
+                        SalaryEffect = lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
+                        SalaryEffectId = trans.salary_effect_id,
+                        ValueTypeName = lang == Localization.Arabic ? amountType.Name : amountType.NameInEnglish,
                     };
 
         if (filterSearch != null)
@@ -54,7 +53,7 @@ public class TransBenefitRepository(KaderDbContext context) : BaseRepository<Tra
             query = query.Skip(skip.Value);
         if (take.HasValue)
             query = query.Take(take.Value);
-      
+
 
         return query.ToList();
 

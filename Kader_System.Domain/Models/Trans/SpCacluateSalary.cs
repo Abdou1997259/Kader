@@ -7,14 +7,14 @@ public class SpCacluateSalary
 {
 
 
-    public int EmployeeId { get; set; }
+    public int? EmployeeId { get; set; }
 
-    public string FullNameAr { get; set; }
-    public string FullNameEn { get; set; }
-    public double AccommodationAllowance { get; set; }
+    public string? FullNameAr { get; set; }
+    public string? FullNameEn { get; set; }
+    public double? AccommodationAllowance { get; set; }
 
-    public double CalculatedSalary { get; set; }
-    public double FixedSalary { get; set; }
+    public double? CalculatedSalary { get; set; }
+    public double? FixedSalary { get; set; }
     public override bool Equals(object? obj)
     {
         if (obj == null || !(obj is SpCacluateSalary))

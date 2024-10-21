@@ -169,7 +169,8 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IUserContextService u
         try
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-            var employees = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany);
+            var employees = await unitOfWork.Employees.
+                GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany);
 
             var allowances = await unitOfWork.Allowances.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
                 select: x => new
@@ -231,7 +232,8 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IUserContextService u
                 Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
             };
         }
-        var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
+        var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x
+            => x.employee_id == model.EmployeeId && x.company_id == currentCompany, x => x)).FirstOrDefault();
         if (contract is null)
         {
             string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -299,10 +301,13 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IUserContextService u
                 Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
             };
         }
-        var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
+        var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(
+            x => x.employee_id == model.EmployeeId && x.company_id == currentCompany,
+            x => x)).FirstOrDefault();
         if (contract is null)
         {
-            string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
+            string resultMsg = $" {sharLocalizer[Localization.Employee]} " +
+                $"{sharLocalizer[Localization.ContractNotFound]}";
 
             return new()
             {
@@ -369,7 +374,8 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IUserContextService u
     public async Task<Response<string>> DeleteTransAllowanceAsync(int id)
     {
         var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-        var obj = await unitOfWork.TransAllowances.GetFirstOrDefaultAsync(x => x.CompanyId == currentCompany && x.Id == id);
+        var obj = await unitOfWork.TransAllowances.GetFirstOrDefaultAsync(x =>
+        x.CompanyId == currentCompany && x.Id == id);
         if (obj is null)
         {
             string resultMsg = sharLocalizer[Localization.NotFoundData];

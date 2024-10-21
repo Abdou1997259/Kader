@@ -12,21 +12,22 @@ namespace Kader_System.Services.Services.Trans
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var result =
-                await unitOfWork.TransCovenants.GetSpecificSelectAsync(x => x.CompanyId == currentCompany,
-                    includeProperties: $"{nameof(_insatance.Employee)}",
+                await unitOfWork.TransCovenants.GetSpecificSelectAsync(x => x.company_id == currentCompany,
+                    includeProperties: $"{nameof(_insatance.employee)}",
                     select: x => new SelectListOfCovenantResponse
                     {
-                        Id = x.Id,
-                        Date = x.Date,
-                        NameAr = x.NameAr,
-                        NameEn = x.NameEn,
-                        Amount = x.Amount,
-                        EmployeeId = x.EmployeeId,
-                        EmployeeName = lang == Localization.Arabic ? x.Employee!.FullNameAr : x.Employee!.FullNameEn,
-                        Notes = x.Notes
+                        Id = x.id,
+                        Date = x.date,
+                        NameAr = x.name_ar,
+                        NameEn = x.name_en,
+                        Amount = x.amount,
+                        EmployeeId = x.employee_id,
+                        EmployeeName = lang == Localization.Arabic ? x.employee!.FullNameAr
+                        : x.employee!.FullNameEn,
+                        Notes = x.notes
 
                     }, orderBy: x =>
-               x.OrderByDescending(x => x.Id));
+               x.OrderByDescending(x => x.id));
 
             if (!result.Any())
             {
@@ -52,17 +53,18 @@ namespace Kader_System.Services.Services.Trans
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             Expression<Func<TransCovenant, bool>> filter = x =>
-            x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany &&
+            x.IsDeleted == model.IsDeleted && x.company_id == currentCompany &&
             (string.IsNullOrEmpty(model.Word) ||
-                x.NameAr.Contains(model.Word) ||
-                x.NameEn.Contains(model.Word) ||
-                (x.Employee != null && (x.Employee.FullNameAr.Contains(model.Word) || x.Employee.FullNameEn.Contains(model.Word)))) &&
-            (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
+                x.name_ar.Contains(model.Word) ||
+                x.name_en.Contains(model.Word) ||
+                (x.employee != null && (x.employee.FullNameAr.Contains(model.Word) ||
+                x.employee.FullNameEn.Contains(model.Word)))) &&
+            (!model.EmployeeId.HasValue || x.employee_id == model.EmployeeId);
 
 
 
             var totalRecords = await unitOfWork.TransCovenants.CountAsync(filter: filter,
-                includeProperties: $"{nameof(_insatance.Employee)}");
+                includeProperties: $"{nameof(_insatance.employee)}");
 
 
             int page = 1;
@@ -76,19 +78,20 @@ namespace Kader_System.Services.Services.Trans
                 .ToList();
 
             var items = await unitOfWork.TransCovenants.GetSpecificSelectAsync(filter,
-                includeProperties: "Employee,Employee.User,Employee.Job", select: x => new TransCovenantData
+                includeProperties: "employee,employee.User,employee.Job", select: x => new TransCovenantData
                 {
-                    AddedBy = x.Employee.User.FullName,
+                    AddedBy = x.employee.User.FullName,
                     AddedOn = x.Add_date,
-                    Amount = x.Amount,
-                    EmployeeId = x.EmployeeId,
-                    EmployeeName = lang == Localization.Arabic ? x.Employee.FullNameAr : x.Employee.FullNameEn,
-                    Id = x.Id,
-                    Notes = x.Notes,
-                    NameAr = x.NameAr,
-                    NameEn = x.NameEn,
-                    Date = x.Date,
-                    JobName = lang == Localization.Arabic ? x.Employee.Job.NameAr : x.Employee.Job.NameEn,
+                    Amount = x.amount,
+                    EmployeeId = x.employee_id,
+                    EmployeeName = lang == Localization.Arabic ? x.employee.FullNameAr
+                    : x.employee.FullNameEn,
+                    Id = x.id,
+                    Notes = x.notes,
+                    NameAr = x.name_ar,
+                    NameEn = x.name_en,
+                    Date = x.date,
+                    JobName = lang == Localization.Arabic ? x.employee.Job.NameAr : x.employee.Job.NameEn,
 
                 }, skip: model.PageSize * (model.PageNumber - 1), take: model.PageSize);
             var result = new GetAllTransCovenantResponse
@@ -137,7 +140,8 @@ namespace Kader_System.Services.Services.Trans
         public async Task<Response<CreateTransCovenantRequest>> CreateTransCovenantAsync(CreateTransCovenantRequest model, string lang)
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
+            var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id
+            == model.employee_id && x.CompanyId == currentCompany);
             if (emp is null)
             {
 
@@ -148,7 +152,8 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.employee_id ==
+            model.employee_id && x.company_id == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -161,28 +166,30 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
-            if (await unitOfWork.TransCovenants.ExistAsync(x => x.CompanyId == currentCompany && (x.NameAr.Trim() == model.NameAr.Trim() ||
-            x.NameEn.Trim() == model.NameEn.Trim())))
+            if (await unitOfWork.TransCovenants.ExistAsync(x => x.company_id
+            == currentCompany && (x.name_ar.Trim() == model.name_ar.Trim() ||
+            x.name_en.Trim() == model.name_en.Trim())))
             {
                 return new()
                 {
                     Check = false,
-                    Msg = sharLocalizer[Localization.AlreadyExitedWithSameName, lang == Localization.Arabic ? model.NameAr : model.NameEn]
+                    Msg = sharLocalizer[Localization.AlreadyExitedWithSameName, lang == Localization.Arabic ?
+                    model.name_ar : model.name_en]
 
                 };
             }
 
             var newTrans = mapper.Map<TransCovenant>(model);
 
-            if (model.Attachment_File is not null)
+            if (model.attachment_file is not null)
             {
                 var dirType = HrDirectoryTypes.Covenant;
                 var dir = dirType.GetModuleNameWithType(Modules.Trans);
-                newTrans.Attachment = await _fileServer.UploadFileAsync(dir, model.Attachment_File);
+                newTrans.attachment = await _fileServer.UploadFileAsync(dir, model.attachment_file);
 
             }
 
-            newTrans.CompanyId = currentCompany;
+            newTrans.company_id = currentCompany;
             await unitOfWork.TransCovenants.AddAsync(newTrans);
             await unitOfWork.CompleteAsync();
             return new()
@@ -197,8 +204,9 @@ namespace Kader_System.Services.Services.Trans
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
 
-            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(c => c.Id == id && c.CompanyId == currentCompany,
-                includeProperties: $"{nameof(_insatance.Employee)}");
+            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(c =>
+            c.id == id && c.company_id == currentCompany,
+                includeProperties: $"{nameof(_insatance.employee)}");
 
 
 
@@ -222,14 +230,15 @@ namespace Kader_System.Services.Services.Trans
                 Data = new GetTransCovenantById()
                 {
                     AddedOn = obj.Add_date,
-                    Amount = obj.Amount,
-                    Date = obj.Date,
-                    NameAr = obj.NameAr,
-                    NameEn = obj.NameEn,
-                    Notes = obj.Notes,
-                    EmployeeId = obj.EmployeeId,
-                    EmployeeName = lang == Localization.Arabic ? obj.Employee!.FullNameAr : obj.Employee!.FullNameEn,
-                    Id = obj.Id,
+                    Amount = obj.amount,
+                    Date = obj.date,
+                    NameAr = obj.name_ar,
+                    NameEn = obj.name_en,
+                    Notes = obj.notes,
+                    EmployeeId = obj.employee_id,
+                    EmployeeName = lang == Localization.Arabic ?
+                    obj.employee!.FullNameAr : obj.employee!.FullNameEn,
+                    Id = obj.id,
 
                 },
                 Check = true,
@@ -244,7 +253,8 @@ namespace Kader_System.Services.Services.Trans
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
 
-            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
+            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync
+                (x => x.id == id && x.company_id == currentCompany);
             if (obj is null)
             {
                 string resultMsg = sharLocalizer[Localization.NotFoundData];
@@ -256,7 +266,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-            var emp = await unitOfWork.Employees.GetByIdAsync(model.EmployeeId);
+            var emp = await unitOfWork.Employees.GetByIdAsync(model.employee_id);
             if (emp is null)
             {
 
@@ -267,7 +277,9 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x
+                => x.employee_id == model.employee_id
+                && x.company_id == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -280,35 +292,37 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
-            if (await unitOfWork.TransCovenants.ExistAsync(x => x.Id != id && x.CompanyId == currentCompany && (x.NameAr.Trim() == model.NameAr.Trim() ||
-           x.NameEn.Trim() == model.NameEn.Trim())))
+            if (await unitOfWork.TransCovenants.ExistAsync(x => x.id != id && x.company_id
+            == currentCompany && (x.name_ar.Trim() == model.name_ar.Trim() ||
+           x.name_en.Trim() == model.name_en.Trim())))
             {
                 return new()
                 {
                     Check = false,
-                    Msg = sharLocalizer[Localization.AlreadyExitedWithSameName, lang == Localization.Arabic ? model.NameAr : model.NameEn]
+                    Msg = sharLocalizer[Localization.AlreadyExitedWithSameName, lang
+                    == Localization.Arabic ? model.name_ar : model.name_en]
 
                 };
             }
 
-            if (model.Attachment_File is not null)
+            if (model.attachment_file is not null)
             {
                 var dirType = HrDirectoryTypes.Covenant;
                 var dir = dirType.GetModuleNameWithType(Modules.Trans);
-                if (!string.IsNullOrEmpty(obj?.Attachment))
-                    _fileServer.RemoveFile(dir, obj.Attachment);
-                obj.Attachment = await _fileServer.UploadFileAsync(dir, model.Attachment_File);
+                if (!string.IsNullOrEmpty(obj?.attachment))
+                    _fileServer.RemoveFile(dir, obj.attachment);
+                obj.attachment = await _fileServer.UploadFileAsync(dir, model.attachment_file);
             }
 
 
 
-            obj.Amount = model.Amount;
-            obj.Date = model.Date;
-            obj.NameAr = model.NameAr;
-            obj.NameEn = model.NameEn;
-            obj.Notes = model.Notes;
-            obj.EmployeeId = model.EmployeeId;
-            obj.CompanyId = currentCompany;
+            obj.amount = model.amount;
+            obj.date = model.date;
+            obj.name_ar = model.name_ar;
+            obj.name_en = model.name_en;
+            obj.notes = model.notes;
+            obj.employee_id = model.employee_id;
+            obj.company_id = currentCompany;
             unitOfWork.TransCovenants.Update(obj);
             await unitOfWork.CompleteAsync();
             return new()
@@ -322,7 +336,8 @@ namespace Kader_System.Services.Services.Trans
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
 
-            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
+            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync
+                (x => x.id == id && x.company_id == currentCompany);
 
             if (obj is null)
             {
@@ -358,7 +373,8 @@ namespace Kader_System.Services.Services.Trans
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
 
-            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
+            var obj = await unitOfWork.TransCovenants.GetFirstOrDefaultAsync(x => x.id == id && x.company_id
+            == currentCompany);
             if (obj is null)
             {
                 string resultMsg = sharLocalizer[Localization.NotFoundData];
@@ -371,9 +387,9 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
-            if (!string.IsNullOrEmpty(obj.Attachment))
+            if (!string.IsNullOrEmpty(obj.attachment))
             {
-                ManageFilesHelper.RemoveFile(GoRootPath.TransFilesPath + obj.Attachment);
+                ManageFilesHelper.RemoveFile(GoRootPath.TransFilesPath + obj.attachment);
             }
 
             unitOfWork.TransCovenants.Remove(obj);

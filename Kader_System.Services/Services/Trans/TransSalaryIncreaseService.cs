@@ -276,7 +276,8 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.Employee_id && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x
+                => x.employee_id == model.Employee_id && x.company_id == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -291,7 +292,8 @@ namespace Kader_System.Services.Services.Trans
             var newTrans = _mapper.Map<TransSalaryIncrease>(model);
             newTrans.CompanyId = currentCompany;
             newTrans.transactionDate = model.TransactionDate;
-            var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.EmployeeId == model.Employee_id && x.CompanyId == currentCompany)).FixedSalary;
+            var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x
+                => x.employee_id == model.Employee_id && x.company_id == currentCompany)).fixed_salary;
             #region SalaryTypesCases
             double salaryAfterIncrease = (SalaryIncreaseTypes)model.Increase_type switch
             {
@@ -396,7 +398,8 @@ namespace Kader_System.Services.Services.Trans
                     Msg = sharLocalizer[Localization.CannotBeFound, sharLocalizer[Localization.Employee]]
                 };
             }
-            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == model.Employee_id && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
+            var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x =>
+            x.employee_id == model.Employee_id && x.company_id == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -408,8 +411,9 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-            var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.EmployeeId ==
-            model.Employee_id && x.CompanyId == currentCompany)).FixedSalary;
+            var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x =>
+            x.employee_id ==
+            model.Employee_id && x.company_id == currentCompany)).fixed_salary;
             if (obj is null)
 
 
