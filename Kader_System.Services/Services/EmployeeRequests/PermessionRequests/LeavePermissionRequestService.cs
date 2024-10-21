@@ -11,7 +11,7 @@ using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 {
-    public class LeavePermissionRequestService(IUnitOfWork unitOfWork, IRequestService requestService, KaderDbContext context, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ILeavePermissionRequestService
+    public class LeavePermissionRequestService(IUnitOfWork unitOfWork, IUserContextService userContextService, IRequestService requestService, KaderDbContext context, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ILeavePermissionRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -21,18 +21,31 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
         private readonly IRequestService _requestService = requestService;
+        private readonly IUserContextService _userContextService = userContextService;
         #region Create
         public async Task<Response<DTOLeavePermissionRequest>> AddNewLeavePermissionRequest(DTOCreateLeavePermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId
+            && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+            }
             var newRequest = _mapper.Map<LeavePermissionRequest>(model);
             StatuesOfRequest statues = new()
             {
                 ApporvalStatus = (int)RequestStatusTypes.Pending
             };
             newRequest.StatuesOfRequest = statues;
+
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
+            newRequest.CompanyId = currentCompanyId;
             await _unitOfWork.LeavePermissionRequest.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
             return new()
@@ -45,12 +58,15 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
         #endregion
 
+
         #region Delete
         public async Task<Response<string>> DeleteLeavePermissionRequest(int id, string fullPath)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-            var leaveRequest = await _unitOfWork.LeavePermissionRequest.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
+            var leaveRequest = await _unitOfWork.LeavePermissionRequest.GetEntityWithIncludeAsync(
+                x => x.Id == id && x.CompanyId == currentCompanyId, "StatuesOfRequest");
             if (leaveRequest != null)
             {
                 if (leaveRequest.StatuesOfRequest.ApporvalStatus != 1)
@@ -62,7 +78,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                         Check = false,
                     };
                 }
-                var result = await _unitOfWork.LeavePermissionRequest.SoftDeleteAsync(leaveRequest, DeletedBy: userId);
+                var result = await _unitOfWork.LeavePermissionRequest.SoftDeleteAsync
+                    (leaveRequest, DeletedBy: userId);
                 if (result > 0)
                 {
                     if (!string.IsNullOrWhiteSpace(leaveRequest.AttachmentPath))
@@ -90,10 +107,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Read
         public async Task<Response<GetAllLeavePermissionRequestRequestResponse>> GetAllLeavePermissionRequsts(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host)
         {
-
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             #region ApprovalExpression
             Expression<Func<LeavePermissionRequest, bool>> filter = x =>
-                x.IsDeleted == false &&
+                x.IsDeleted == false && x.CompanyId == currentCompanyId &&
                 (model.ApporvalStatus == RequestStatusTypes.All ||
                 (model.ApporvalStatus == RequestStatusTypes.Approved && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved) ||
                 (model.ApporvalStatus == RequestStatusTypes.ApprovedRejected &&
@@ -178,8 +195,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Update
         public async Task<Response<DTOLeavePermissionRequest>> UpdateLeavePermissionRequest(int id, DTOCreateLeavePermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
-
-            var leave = await _unitOfWork.LeavePermissionRequest.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            var leave = await _unitOfWork.LeavePermissionRequest.GetFirstOrDefaultAsync(
+                x => x.Id == id && x.CompanyId == currentCompanyId);
             if (leave == null || leave.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
                 var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotPending];
@@ -192,7 +210,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             }
             var mappedleave = _mapper.Map(model, leave);
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
-
+            mappedleave.CompanyId = currentCompanyId;
             #region UpdateFile
             if (model.Attachment is not null)
             {
@@ -223,8 +241,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Status
         public async Task<Response<string>> ApproveRequest(int requestId)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.LeavePermissionRequest.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+            var result = await _unitOfWork.LeavePermissionRequest.UpdateApporvalStatus
+                (x => x.Id == requestId && x.CompanyId == currentCompanyId, RequestStatusTypes.Approved, userId);
 
             if (result > 0)
             {
@@ -244,7 +264,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.LeavePermissionRequest.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId, resoan);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var result = await _unitOfWork.LeavePermissionRequest.UpdateApporvalStatus(
+                x => x.Id == requestId && x.CompanyId == currentCompany, RequestStatusTypes.Rejected, userId, resoan);
             if (result > 0)
             {
                 return new Response<string>()

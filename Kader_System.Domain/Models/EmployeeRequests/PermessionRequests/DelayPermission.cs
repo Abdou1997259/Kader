@@ -1,17 +1,11 @@
 ﻿using Kader_System.Domain.Models.EmployeeRequests.Requests;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kader_System.Domain.Models.EmployeeRequests.PermessionRequests
 {
     [Table("hr_delay_permission")]
     public class DelayPermission : BaseEntity
     {
-         [Key]
+        [Key]
         public int Id { get; set; }
         public string? AttachmentPath { get; set; }
         public string? Notes { get; set; }
@@ -19,7 +13,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.PermessionRequests
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public virtual HrEmployee Employee { get; set; }
-
+        public int CompanyId { get; set; }
         public StatuesOfRequest StatuesOfRequest { get; set; }
 
 

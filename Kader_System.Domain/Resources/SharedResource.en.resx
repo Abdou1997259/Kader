@@ -327,6 +327,9 @@
   <data name="UserInTitle" xml:space="preserve">
     <value>There is not such title in your loging User</value>
   </data>
+  <data name="UserNotActive" xml:space="preserve">
+    <value>this user is not active</value>
+  </data>
   <data name="UserPermission" xml:space="preserve">
     <value>This user dosen't have permssions</value>
   </data>

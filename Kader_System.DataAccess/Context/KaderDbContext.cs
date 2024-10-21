@@ -151,7 +151,9 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasForeignKey(detail => detail.ContractId)
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
-
+        modelBuilder.Entity<SpCacluateSalary>().HasNoKey().ToView(null);
+        modelBuilder.Entity<SpCaclauateSalaryDetailedTrans>().HasNoKey().ToView(null);
+        modelBuilder.Entity<SpCaclauateSalaryDetails>().HasNoKey().ToView(null);
         modelBuilder.Entity<MainScreenTree>()
             .HasOne(p => p.Parent)
             .WithMany(p => p.Children)

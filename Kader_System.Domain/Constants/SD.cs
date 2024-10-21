@@ -759,6 +759,7 @@ public static class SD
         public const string Email = "Email";
         public const string PasswordNotmatch = "PasswordNotmatch";
         public const string Role = "Role";
+        public const string UserNotActive = "UserNotActive";
         public const string IsNotExisted = "IsNotExisted";
         public const string Employee = "Employee";
         public const string Contract = "Contract";

@@ -84,6 +84,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 {
                     UserName = model.UserName
                 },
+                Msg = _sharLocalizer[Localization.UserNotActive],
                 Error = resultMsg,
             };
         }

@@ -327,6 +327,9 @@
   <data name="UserInTitle" xml:space="preserve">
     <value>لاتوجد هذا المسئولية في المتسخدم خاصتك</value>
   </data>
+  <data name="UserNotActive" xml:space="preserve">
+    <value>هذا المتسخدم ليس مفعل </value>
+  </data>
   <data name="UserPermission" xml:space="preserve">
     <value>هذه المسئولية ليس لها صلاحيات في هذا المستخدم </value>
   </data>

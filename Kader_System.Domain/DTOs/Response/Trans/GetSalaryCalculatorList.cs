@@ -2,15 +2,15 @@
 {
     public class GetSalaryCalculatorList
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
 
         public DateTime? AddedDate { get; set; }
         public DateOnly CalculationDate { get; set; }
-        public double Total { get; set; }
-        public string Description { get; set; }
-        public Status Status { get; set; }
-        public string JobName { get; set; }
-        public string AddedBy { get; set; }
+        public double? Total { get; set; }
+        public string? Description { get; set; }
+        public Status? Status { get; set; }
+        public string? JobName { get; set; }
+        public string? AddedBy { get; set; }
 
 
 

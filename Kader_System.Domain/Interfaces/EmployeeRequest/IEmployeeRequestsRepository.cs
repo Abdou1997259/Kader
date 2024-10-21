@@ -6,6 +6,7 @@ namespace Kader_System.Domain.Interfaces.EmployeeRequest
     public interface IEmployeeRequestsRepository : IBaseRepository<HrEmployeeRequests>
     {
         //public Task<Domain.Dtos.Response.Response<GetAlVacationRequstsResponse>> GetAlVacationRequstsAsync(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host, RequestStatusTypes types);
-        public Task<Domain.Dtos.Response.Response<EmployeeRequestsLookUpsData>> GetEmployeeRequestsLookUpsData(string lang);
+        public Task<Domain.Dtos.Response.Response<EmployeeRequestsLookUpsData>> GetEmployeeRequestsLookUpsData(
+            string lang, int companyId);
     }
 }
