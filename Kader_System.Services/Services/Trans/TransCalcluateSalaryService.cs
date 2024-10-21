@@ -96,7 +96,7 @@ namespace Kader_System.Services.Services.Trans
                     {
                         var transDetails = new TransSalaryCalculatorDetail
                         {
-                            EmployeeId = empolyee.EmployeeId,
+                            EmployeeId = empolyee.EmployeeId ?? 0,
                             NetSalary = empolyee.CalculatedSalary ?? 0 + empolyee.FixedSalary ?? 0,
                             BasicSalary = empolyee.FixedSalary ?? 0,
                             TotalAllownces = spcaculatedSalarytransDetils.Where(x => x.EmployeeId == empolyee.EmployeeId && x.JournalType == JournalType.Allowance).Sum(x => x.CalculatedSalary),
@@ -435,7 +435,7 @@ namespace Kader_System.Services.Services.Trans
 
             var Data = employeeWithCalculatedSalary.Select(x => new GetSalariesEmployeeResponse
             {
-                EmployeeId = x.EmployeeId,
+                EmployeeId = x.EmployeeId ?? 0,
                 EmployeeName = Localization.Arabic == lang ? x.FullNameAr : x.FullNameEn,
                 AccommodationAllowance = x.AccommodationAllowance ?? 0,
                 BasicSalary = x.FixedSalary ?? 0,
@@ -543,7 +543,7 @@ namespace Kader_System.Services.Services.Trans
 
             var details = employeeWithCalculatedSalary.Select(x => new GetSalariesEmployeeResponse
             {
-                EmployeeId = x.EmployeeId,
+                EmployeeId = x.EmployeeId ?? 0,
                 EmployeeName = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn,
                 AccommodationAllowance = x.AccommodationAllowance ?? 0,
                 BasicSalary = x.FixedSalary ?? 0,
