@@ -67,8 +67,11 @@ namespace Kader_System.Services.Services.Trans
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
 
-            var empolyee = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
-            var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == empolyee.Id && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
+            var empolyee = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x
+                => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
+            var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x
+                => x.employee_id == empolyee.Id &&
+                x.company_id == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.ContractNotFound]}";
@@ -78,7 +81,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-            double? salary = contract?.FixedSalary;
+            double? salary = contract?.fixed_salary;
 
 
 
@@ -275,7 +278,9 @@ namespace Kader_System.Services.Services.Trans
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var obj = (await _unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.Id == id && x.CompanyId == currentCompany, x => x, includeProperties: "TransLoanDetails")).FirstOrDefault();
             var empolyee = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == obj.EmployeeId && x.CompanyId == currentCompany);
-            var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == empolyee.Id && x.CompanyId == currentCompany, x => x)).FirstOrDefault();
+            var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x =>
+            x.employee_id == empolyee.Id && x.company_id
+            == currentCompany, x => x)).FirstOrDefault();
             var empolyees = await _unitOfWork.Employees.GetAllAsync();
             var advancedTypes = await _unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes();
 
@@ -336,7 +341,8 @@ namespace Kader_System.Services.Services.Trans
             try
             {
                 var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-                var employees = await _unitOfWork.Employees.GetSpecificSelectAsync(filter => filter.IsDeleted == false && filter.CompanyId == currentCompany,
+                var employees = await _unitOfWork.Employees.GetSpecificSelectAsync(
+                    filter => filter.IsDeleted == false && filter.IsActive && filter.CompanyId == currentCompany,
                     select: x => new EmployeeLookup
                     {
                         Id = x.Id,

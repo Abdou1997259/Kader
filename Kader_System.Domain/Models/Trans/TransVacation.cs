@@ -4,22 +4,22 @@
 public class TransVacation : BaseEntity
 {
     [Key]
-    public int Id { get; set; }
-    public DateOnly StartDate { get; set; }
-    public double? SalaryAmount { get; set; }
+    public int id { get; set; }
+    public DateOnly start_date { get; set; }
+    public double? salary_amount { get; set; }
 
-    public double DaysCount { get; set; }
-    public int EmployeeId { get; set; }
-    [ForeignKey(nameof(EmployeeId))]
-    public HrEmployee Employee { get; set; } = default!;
+    public double days_count { get; set; }
+    public int employee_id { get; set; }
+    [ForeignKey(nameof(employee_id))]
+    public HrEmployee employee { get; set; } = default!;
 
-    public int VacationId { get; set; }
-    [ForeignKey(nameof(VacationId))]
-    public HrVacationDistribution Vacation { get; set; } = default!;
-    public string? Notes { get; set; }
-    public string? Attachment { get; set; }
+    public int vacation_id { get; set; }
+    [ForeignKey(nameof(vacation_id))]
+    public HrVacationDistribution vacation { get; set; } = default!;
+    public string? notes { get; set; }
+    public string? attachment { get; set; }
 
-    public int? CalculateSalaryId { get; set; }
-    public int? CalculateSalaryDetailsId { get; set; }
-    public int CompanyId { get; set; }
+    public int? calculate_salary_id { get; set; }
+    public int? calculate_salary_details_id { get; set; }
+    public int company_id { get; set; }
 }

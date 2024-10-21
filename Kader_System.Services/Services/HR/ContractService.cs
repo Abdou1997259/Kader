@@ -43,20 +43,20 @@ namespace Kader_System.Services.Services.HR
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var result =
-                await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.CompanyId == currentCompany
-                    , includeProperties: $"{nameof(instanceContract.Employee)}",
+                await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.company_id == currentCompany
+                    , includeProperties: $"{nameof(instanceContract.employee)}",
                     select: x => new ListOfContractsResponse
                     {
-                        Id = x.Id,
-                        TotalSalary = x.TotalSalary,
-                        FixedSalary = x.FixedSalary,
-                        EmployeeId = x.EmployeeId,
-                        EmployeeName = lang == Localization.Arabic ? x.Employee!.FullNameAr : x.Employee!.FullNameEn,
-                        StartDate = x.StartDate,
-                        EndDate = x.EndDate,
-                        HousingAllowance = x.HousingAllowance
+                        Id = x.id,
+                        TotalSalary = x.total_salary,
+                        FixedSalary = x.fixed_salary,
+                        EmployeeId = x.employee_id,
+                        EmployeeName = lang == Localization.Arabic ? x.employee!.FullNameAr : x.employee!.FullNameEn,
+                        StartDate = x.start_date,
+                        EndDate = x.end_date,
+                        HousingAllowance = x.housing_allowance
 
-                    }, orderBy: x => x.OrderByDescending(x => x.Id));
+                    }, orderBy: x => x.OrderByDescending(x => x.id));
 
             var listOfEmployeesResponses = result.ToList();
             if (!listOfEmployeesResponses.Any())
@@ -83,12 +83,12 @@ namespace Kader_System.Services.Services.HR
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
 
-            Expression<Func<HrContract, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany
+            Expression<Func<HrContract, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.company_id == currentCompany
                                                              && (string.IsNullOrEmpty(model.Word) ||
-                                                                 x.Employee!.FullNameEn!.Contains(model.Word)
-                                                                 || x.Employee!.FullNameAr!.Contains(model.Word)
-                                                                 || x.StartDate.ToString().Contains(model.Word)
-                                                                 || x.EndDate.ToString().Contains(model.Word));
+                                                                 x.employee!.FullNameEn!.Contains(model.Word)
+                                                                 || x.employee!.FullNameAr!.Contains(model.Word)
+                                                                 || x.start_date.ToString().Contains(model.Word)
+                                                                 || x.end_date.ToString().Contains(model.Word));
             var totalRecords = await unitOfWork.Contracts.CountAsync(filter: filter);
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
@@ -154,14 +154,14 @@ namespace Kader_System.Services.Services.HR
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
 
             Expression<Func<HrContract, bool>> filter = x => x.IsDeleted == model.IsDeleted
-                                                             && x.CompanyId == currentCompany
-                                                             && x.EndDate < DateOnly.FromDateTime(DateTime.UtcNow)
+                                                             && x.company_id == currentCompany
+                                                             && x.end_date < DateOnly.FromDateTime(DateTime.UtcNow)
                                                              && x.IsDeleted == model.IsDeleted
                                                              && (string.IsNullOrEmpty(model.Word) ||
-                                                                 x.Employee!.FullNameEn!.Contains(model.Word)
-                                                                 || x.Employee!.FullNameAr!.Contains(model.Word)
-                                                                 || x.StartDate.ToString().Contains(model.Word)
-                                                                 || x.EndDate.ToString().Contains(model.Word));
+                                                                 x.employee!.FullNameEn!.Contains(model.Word)
+                                                                 || x.employee!.FullNameAr!.Contains(model.Word)
+                                                                 || x.start_date.ToString().Contains(model.Word)
+                                                                 || x.end_date.ToString().Contains(model.Word));
             var totalRecords = await unitOfWork.Contracts.CountAsync(filter: filter);
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
@@ -266,7 +266,8 @@ namespace Kader_System.Services.Services.HR
         {
 
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-            var employees = await unitOfWork.Employees.GetEmployeesNameIdSalaryWithoutContractAsLookUp(lang, currentCompany);
+            var employees = await unitOfWork.Employees.
+                GetEmployeesNameIdSalaryWithoutContractAsLookUp(lang, currentCompany);
             var allowances = await unitOfWork.Allowances.GetAllowancesDataAsLookUp(lang);
             return new()
             {
@@ -287,8 +288,9 @@ namespace Kader_System.Services.Services.HR
         {
 
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-            var haveContract = await unitOfWork.Contracts.ExistAsync(x => x.EmployeeId ==
-            model.employee_id && x.CompanyId == currentCompany);
+            var haveContract = await unitOfWork.Contracts.ExistAsync
+                (x => x.employee_id ==
+            model.employee_id && x.company_id == currentCompany);
             if (haveContract)
             {
                 var Msg = string.Format(shareLocalizer[Localization.HaveContract],
@@ -302,17 +304,17 @@ namespace Kader_System.Services.Services.HR
             }
             var newContract = new HrContract()
             {
-                StartDate = model.start_date,
-                EndDate = model.end_date,
-                FixedSalary = model.fixed_salary,
-                EmployeeId = model.employee_id,
-                HousingAllowance = model.housing_allowance,
-
+                start_date = model.start_date,
+                end_date = model.end_date,
+                fixed_salary = model.fixed_salary,
+                employee_id = model.employee_id,
+                housing_allowance = model.housing_allowance,
+                company_id = currentCompany
 
             };
             if (model.details != null)
             {
-                newContract.ListOfAllowancesDetails =
+                newContract.list_of_allowances_details =
 
                     model.details.Select(d => new HrContractAllowancesDetail()
                     {
@@ -326,16 +328,9 @@ namespace Kader_System.Services.Services.HR
             HrDirectoryTypes directoryTypes = new();
             directoryTypes = HrDirectoryTypes.Contracts;
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-            newContract.FileName = model.contract_file == null ? string.Empty : await fileServer.UploadFileAsync(directoryName, model.contract_file);
-            if (model.contract_file != null)
-            {
-                newContract.FileExtension = Path.GetExtension(model.contract_file.FileName);
-            }
-            else
-            {
-                newContract.FileExtension = "";
-            }
-            newContract.CompanyId = currentCompany;
+            newContract.file_name = model.contract_file == null ? string.Empty : await fileServer.UploadFileAsync(directoryName, model.contract_file);
+
+            newContract.company_id = currentCompany;
             await unitOfWork.Contracts.AddAsync(newContract);
             await unitOfWork.CompleteAsync();
 
@@ -361,7 +356,8 @@ namespace Kader_System.Services.Services.HR
             using var transaction = unitOfWork.BeginTransaction();
             {
 
-                var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
+                var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.id == id
+                && x.company_id == currentCompany);
                 if (obj is null)
                 {
                     string resultMsg = string.Format(shareLocalizer[Localization.CannotBeFound],
@@ -376,13 +372,13 @@ namespace Kader_System.Services.Services.HR
                 }
 
 
-                obj.EmployeeId = model.employee_id;
-                obj.EndDate = model.end_date;
-                obj.StartDate = model.start_date;
-                obj.TotalSalary = model.total_salary;
-                obj.FixedSalary = model.fixed_salary;
-                obj.HousingAllowance = model.housing_allowance;
-                obj.CompanyId = currentCompany;
+                obj.employee_id = model.employee_id;
+                obj.end_date = model.end_date;
+                obj.start_date = model.start_date;
+                obj.total_salary = model.total_salary;
+                obj.fixed_salary = model.fixed_salary;
+                obj.housing_allowance = model.housing_allowance;
+                obj.company_id = currentCompany;
 
                 var lstNewInserted = model.details?.Where(d => d.status == RowStatus.Inserted).ToList();
                 var lstUpdatedDetails = model.details?.Where(d => d.status == RowStatus.Updated).ToList();
@@ -456,13 +452,13 @@ namespace Kader_System.Services.Services.HR
                         HrDirectoryTypes directoryTypes = new();
                         directoryTypes = HrDirectoryTypes.Contracts;
                         var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-                        if (fileServer.FileExist(directoryName, obj.FileName))
-                            fileServer.RemoveFile(directoryName, obj.FileName);
+                        if (fileServer.FileExist(directoryName, obj.file_name))
+                            fileServer.RemoveFile(directoryName, obj.file_name);
                         contractFile.FileName = await fileServer.UploadFileAsync(directoryName, model.contract_file);
                         contractFile.FileExtension = Path.GetExtension(contractFile.FileName);
                     }
-                    obj.FileName = contractFile?.FileName;
-                    obj.FileExtension = contractFile?.FileExtension;
+                    obj.file_name = contractFile?.FileName;
+
 
                 }
 
@@ -489,10 +485,10 @@ namespace Kader_System.Services.Services.HR
             try
             {
                 var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-                var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync(c => c.Id ==
-                id && c.CompanyId == currentCompany
+                var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync(c => c.id ==
+                id && c.company_id == currentCompany
                 ,
-                    includeProperties: $"{nameof(instanceContract.ListOfAllowancesDetails)}");
+                    includeProperties: $"{nameof(instanceContract.list_of_allowances_details)}");
                 if (obj is null)
                 {
                     string resultMsg = string.Format(shareLocalizer[Localization.CannotBeFound],
@@ -507,14 +503,14 @@ namespace Kader_System.Services.Services.HR
                 }
 
                 obj.IsDeleted = false;
-                if (obj != null && obj.ListOfAllowancesDetails.Any())
+                if (obj != null && obj.list_of_allowances_details.Any())
                 {
-                    foreach (var detail in obj.ListOfAllowancesDetails.ToList())
+                    foreach (var detail in obj.list_of_allowances_details.ToList())
                     {
                         detail.IsDeleted = false;
                     }
 
-                    unitOfWork.ContractAllowancesDetails.UpdateRange(obj.ListOfAllowancesDetails);
+                    unitOfWork.ContractAllowancesDetails.UpdateRange(obj.list_of_allowances_details);
                 }
 
 
@@ -529,12 +525,12 @@ namespace Kader_System.Services.Services.HR
                     Check = true,
                     Data = new()
                     {
-                        employee_id = obj.EmployeeId,
-                        start_date = obj.StartDate,
-                        end_date = obj.EndDate,
-                        fixed_salary = obj.FixedSalary,
-                        housing_allowance = obj.HousingAllowance,
-                        total_salary = obj.TotalSalary,
+                        employee_id = obj.employee_id,
+                        start_date = obj.start_date,
+                        end_date = obj.end_date,
+                        fixed_salary = obj.fixed_salary,
+                        housing_allowance = obj.housing_allowance,
+                        total_salary = obj.total_salary,
                     }
                 };
             }
@@ -558,7 +554,8 @@ namespace Kader_System.Services.Services.HR
             try
             {
                 var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-                var contractExist = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompany);
+                var contractExist = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x
+                    => x.id == id && x.company_id == currentCompany);
                 if (contractExist is null)
                 {
                     string resultMsg = string.Format(shareLocalizer[Localization.CannotBeFound],
@@ -572,9 +569,10 @@ namespace Kader_System.Services.Services.HR
                     };
                 }
 
-                if (!string.IsNullOrEmpty(contractExist.FileName))
+                if (!string.IsNullOrEmpty(contractExist.file_name))
                 {
-                    ManageFilesHelper.RemoveFile(Path.Combine(GoRootPath.HRFilesPath, contractExist.FileName));
+                    ManageFilesHelper.RemoveFile(Path.Combine(GoRootPath.HRFilesPath,
+                        contractExist.file_name));
                 }
 
                 var contractDetails = await unitOfWork.ContractAllowancesDetails.GetAllAsync(c => c.ContractId == id);
@@ -642,7 +640,8 @@ namespace Kader_System.Services.Services.HR
 
 
             }
-            var contract = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.EmployeeId == EmpId && x.CompanyId == currentCompany);
+            var contract = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.employee_id
+            == EmpId && x.company_id == currentCompany);
 
             if (contract == null)
             {
@@ -663,21 +662,21 @@ namespace Kader_System.Services.Services.HR
                 Check = true,
                 Data = new GetContractForUserResponse
                 {
-                    Id = contract.Id,
+                    Id = contract.id,
                     Items = new List<Items>
                   {
                       new Items
                       {
-                          Id=contract.Id,
+                          Id=contract.id,
                        EmployeeName = Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn,
-                      ContractFile = Path.Combine(SD.GoRootPath.GetSettingImagesPath, contract.FileName),
-                      SalaryFixed = contract.FixedSalary,
-                      SalaryTotal = contract.FixedSalary + contract.HousingAllowance,
+                      ContractFile = Path.Combine(SD.GoRootPath.GetSettingImagesPath, contract.file_name),
+                      SalaryFixed = contract.fixed_salary,
+                      SalaryTotal = contract.fixed_salary + contract.housing_allowance,
                       Active = contract.IsActive,
-                      StartDate = contract.StartDate,
-                      EndDate = contract.EndDate,
+                      StartDate = contract.start_date,
+                      EndDate = contract.end_date,
                       AddedBy =( await unitOfWork.Users.GetFirstOrDefaultAsync(x=>x.Id==contract.Added_by )).FullName,
-                      HousingAllowance = contract.HousingAllowance,
+                      HousingAllowance = contract.housing_allowance,
                   }
                       }
                 }
@@ -691,7 +690,8 @@ namespace Kader_System.Services.Services.HR
         public async Task<Response<byte[]>> GetFileStreamResultAsync(int contractId)
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-            var contractAttachment = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.Id == contractId && x.CompanyId == currentCompany);
+            var contractAttachment = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.id
+            == contractId && x.company_id == currentCompany);
             if (contractAttachment is null)
             {
                 var msg = shareLocalizer[Localization.IsNotExisted, shareLocalizer[Localization.Contract]];
@@ -702,7 +702,7 @@ namespace Kader_System.Services.Services.HR
                 };
             }
 
-            if (string.IsNullOrEmpty(contractAttachment.FileName))
+            if (string.IsNullOrEmpty(contractAttachment.file_name))
             {
                 var msg = shareLocalizer[Localization.HasNoDocument, shareLocalizer[Localization.Contract]];
                 return new Response<byte[]>
@@ -714,7 +714,7 @@ namespace Kader_System.Services.Services.HR
             HrDirectoryTypes directoryTypes = new();
             directoryTypes = HrDirectoryTypes.Contracts;
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.HR);
-            if (!fileServer.FileExist(directoryName, contractAttachment.FileName))
+            if (!fileServer.FileExist(directoryName, contractAttachment.file_name))
             {
                 var msg = shareLocalizer[Localization.FileHasNoDirectory, shareLocalizer[Localization.Contract]];
                 return new Response<byte[]>
@@ -726,12 +726,12 @@ namespace Kader_System.Services.Services.HR
             }
             try
             {
-                var fileStream = await fileServer.GetFileBytes(directoryName, contractAttachment.FileName);
+                var fileStream = await fileServer.GetFileBytes(directoryName, contractAttachment.file_name);
                 return new Response<byte[]>
                 {
                     Data = fileStream,
                     Check = true,
-                    DynamicData = contractAttachment.FileName
+                    DynamicData = contractAttachment.file_name
                 };
 
             }

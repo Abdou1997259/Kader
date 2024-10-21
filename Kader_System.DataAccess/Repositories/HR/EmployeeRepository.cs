@@ -17,8 +17,10 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
             var directoryAttachmentsName = directoryTypes.GetModuleNameWithType(Modules.Employees);
             directoryTypes = HrDirectoryTypes.EmployeeProfile;
             var directoryProfileName = directoryTypes.GetModuleNameWithType(Modules.Employees);
-            var employeeAllowances = context.TransAllowances.Where(e => e.EmployeeId == id && !e.IsDeleted);
-            var employeeVacations = context.TransVacations.Where(e => e.EmployeeId == id && !e.IsDeleted);
+            var employeeAllowances = context.TransAllowances
+                .Where(e => e.EmployeeId == id && !e.IsDeleted);
+            var employeeVacations = context.TransVacations.Where(e => e.employee_id
+            == id && !e.IsDeleted);
 
             var result = from employee in context.Employees
 
@@ -51,7 +53,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                          from sh in shiftGroup.DefaultIfEmpty()
 
                          join c in _context.Contracts
-                         on employee.Id equals c.EmployeeId
+                         on employee.Id equals c.employee_id
                          into contractGroup
                          from cGroup in contractGroup.DefaultIfEmpty()
 
@@ -82,7 +84,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              EmployeeTypeId = employee.EmployeeTypeId,
                              FingerPrintCode = employee.FingerPrintCode,
                              FingerPrintId = employee.FingerPrintId,
-                             FixedSalary = cGroup == null ? employee.FixedSalary : cGroup.FixedSalary,
+                             FixedSalary = cGroup == null ? employee.FixedSalary : cGroup.fixed_salary,
                              GenderId = employee.GenderId,
                              HiringDate = employee.HiringDate,
                              ImmediatelyDate = employee.ImmediatelyDate,
@@ -98,7 +100,8 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              ReligionId = employee.ReligionId,
                              SalaryPaymentWayId = employee.SalaryPaymentWayId,
                              ShiftId = employee.ShiftId,
-                             TotalSalary = cGroup.FixedSalary == null ? 0 : cGroup.FixedSalary + cGroup.HousingAllowance == null ? cGroup.HousingAllowance : cGroup.HousingAllowance,
+                             TotalSalary = cGroup.fixed_salary == null ? 0 : cGroup.fixed_salary +
+                             cGroup.housing_allowance == null ? cGroup.housing_allowance : cGroup.housing_allowance,
                              EmployeeImage = Path.Combine(directoryProfileName, employee.EmployeeImage == null ? " " : employee.EmployeeImage),
                              qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
                              company_name = lang == Localization.Arabic ? com.NameAr : com.NameEn,
@@ -108,7 +111,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
 
                                  .AsEnumerable()
                                  .Where(v => v != null) // Optional: Filter out null values to avoid runtime exceptions
-                                 .Sum(v => v.DaysCount),
+                                 .Sum(v => v.days_count),
                              job_name = lang == Localization.Arabic ? j.NameAr : j.NameEn,
                              department_name = lang == Localization.Arabic ? dept.NameAr : dept.NameEn,
                              marital_status_name = lang == Localization.Arabic ? ms.Name : ms.NameInEnglish,
@@ -227,19 +230,20 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
     public async Task<object> GetEmployeesNameIdSalaryWithoutContractAsLookUp(string lang, int companyId)
     {
 
-        var employees = from e in context.Employees
-                        join c in context.Contracts
-                        on e.Id equals c.EmployeeId into ecgroup
-                        from u in ecgroup.DefaultIfEmpty()
-                        where u.EmployeeId == null && !e.IsDeleted && e.CompanyId == companyId
-                        select new
-                        {
-                            Id = e.Id,
-                            Name = Localization.Arabic == lang ? e.FullNameAr : e.FullNameEn,
 
-                        };
+        var employees = await _context.QueryLookups.FromSql($@"
+                select Id,FullNameAr,FullNameEn from hr_employees
+                where CompanyId={companyId} 
+               and IsDeleted=0 and IsActive=1 and Id not in (
+                select employee_id from hr_contracts
+                where company_id={companyId}  and IsDeleted=0 and IsActive=1)")
+           .ToListAsync();
+        return employees.Select(e => new
+        {
+            Id = e.Id,
+            Name = Localization.Arabic == lang ? e.FullNameAr : e.FullNameEn,
 
-        return employees;
+        });
 
 
 

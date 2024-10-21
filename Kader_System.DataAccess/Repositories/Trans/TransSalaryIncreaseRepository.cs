@@ -10,27 +10,33 @@ namespace Kader_System.DataAccess.Repositories.Trans
             var today = DateOnly.FromDateTime(DateTime.Now);
             var query = from e in _context.Employees
                         join c in _context.Contracts
-                        on e.Id equals c.EmployeeId
-                        where e.IsDeleted == false && c.IsDeleted == false && e.CompanyId == companyId && c.CompanyId == companyId
+                        on e.Id equals c.employee_id
+                        where e.IsDeleted == false && c.IsDeleted == false && e.CompanyId == companyId &&
+                        c.company_id == companyId
                         select new
                         {
                             Name = Localization.Arabic == lang ? e.FullNameAr : e.FullNameEn,
                             e.Id,
-                            c.FixedSalary
+                            c.fixed_salary
                         }
                         into ecemps
                         join i in _context.TransSalaryIncreases
                         on ecemps.Id equals i.Employee_id into iemps
                         from grouIcemp in iemps.DefaultIfEmpty()
-                        group new { ecemps, grouIcemp } by new { ecemps.Name, ecemps.Id, ecemps.FixedSalary } into g
+                        group new { ecemps, grouIcemp } by new
+                        {
+                            ecemps.Name,
+                            ecemps.Id,
+                            ecemps.fixed_salary
+                        } into g
                         select new EmployeeWithSalary
                         {
                             Name = g.Key.Name,
                             Id = g.Key.Id,
-                            Salary = g.Key.FixedSalary + g.Sum(x =>
+                            Salary = g.Key.fixed_salary + g.Sum(x =>
                                 x.grouIcemp != null && x.grouIcemp.transactionDate <= today
                                     ? (x.grouIcemp.Increase_type == 2
-                                        ? (x.grouIcemp.Amount / 100) * g.Key.FixedSalary
+                                        ? (x.grouIcemp.Amount / 100) * g.Key.fixed_salary
                                         : x.grouIcemp.Amount)
                                     : 0)
                         };

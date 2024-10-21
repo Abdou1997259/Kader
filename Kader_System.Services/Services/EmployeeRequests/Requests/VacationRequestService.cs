@@ -309,11 +309,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 var vacations = await _unitOfWork.Vacations.GetFirstOrDefaultAsync(x => x.Id == emp.VacationId);
 
 
-                transVacation.VacationId = vacations.Id;
-                transVacation.StartDate = vacationrequest.StartDate;
-                transVacation.EmployeeId = vacationrequest.EmployeeId;
-                transVacation.Notes = vacationrequest.Notes;
-                transVacation.DaysCount = vacationrequest.DayCounts;
+                transVacation.vacation_id = vacations.Id;
+                transVacation.start_date = vacationrequest.StartDate;
+                transVacation.employee_id = vacationrequest.EmployeeId;
+                transVacation.notes = vacationrequest.Notes;
+                transVacation.days_count = vacationrequest.DayCounts;
 
                 #region CopyFileAttachment
                 if (vacationrequest.AttachmentPath != null)
@@ -323,11 +323,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     moduleNameWithType = hrEmployeeRequests.GetModuleNameWithType(Modules.Trans);
                     var desitnationFile = _fileServer.CombinePathWithServerPath(moduleNameWithType, newFileName);
                     _fileServer.CopyFile(SourceFilePath, desitnationFile);
-                    transVacation.Attachment = desitnationFile;
+                    transVacation.attachment = desitnationFile;
                 }
                 else
                 {
-                    transVacation.Attachment = null;
+                    transVacation.attachment = null;
 
                 }
                 #endregion

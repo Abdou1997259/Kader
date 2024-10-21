@@ -50,6 +50,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrEmployeeAttendance> EmployeeAttendances { get; set; }
     public DbSet<HrDepartment> Departments { get; set; }
     public DbSet<HrEmployee> Employees { get; set; }
+    public DbSet<QueryLookup> QueryLookups { get; set; }
     public DbSet<HrEmployeeAttachment> EmployeeAttachments { get; set; }
     public DbSet<HrEmployeeType> EmployeeTypes { get; set; }
     public DbSet<HrFingerPrint> FingerPrints { get; set; }
@@ -145,7 +146,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasComputedColumnSql("[FirstNameEn]+' '+[FatherNameEn]+' '+[GrandFatherNameEn]+' '+[FamilyNameEn]");
 
         modelBuilder.Entity<HrContract>()
-            .HasMany(contract => contract.ListOfAllowancesDetails)
+            .HasMany(contract => contract.list_of_allowances_details)
             .WithOne(detail => detail.Contract)
             .HasForeignKey(detail => detail.ContractId)
             .IsRequired()

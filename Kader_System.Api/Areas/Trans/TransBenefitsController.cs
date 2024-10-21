@@ -65,7 +65,8 @@ namespace Kader_System.Api.Areas.Trans
         [HttpPost(ApiRoutes.TransBenefit.CreateTransBenefit)]
         [Permission(Helpers.Permission.Add, 22)]
 
-        public async Task<IActionResult> CreateTransBenefit([FromForm] CreateTransBenefitRequest request)
+        public async Task<IActionResult> CreateTransBenefit(
+            [FromForm] CreateTransBenefitRequest request)
         {
             if (ModelState.IsValid)
             {
@@ -88,7 +89,8 @@ namespace Kader_System.Api.Areas.Trans
 
         [HttpPut(ApiRoutes.TransBenefit.UpdateTransBenefit)]
         [Permission(Helpers.Permission.Edit, 22)]
-        public async Task<IActionResult> UpdateTransBenefit([FromRoute] int id, [FromForm] CreateTransBenefitRequest request)
+        public async Task<IActionResult> UpdateTransBenefit([FromRoute] int id,
+            [FromForm] CreateTransBenefitRequest request)
         {
             if (ModelState.IsValid)
             {

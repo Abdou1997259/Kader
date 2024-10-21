@@ -4,29 +4,29 @@
 public class TransDeduction : BaseEntity
 {
     [Key]
-    public int Id { get; set; }
+    public int id { get; set; }
 
-    public DateOnly ActionMonth { get; set; }
-    public double Amount { get; set; }
-    public int AmountTypeId { get; set; }
-    [ForeignKey(nameof(AmountTypeId))]
-    public TransAmountType AmountType { get; set; } = default!;
+    public DateOnly action_month { get; set; }
+    public double amount { get; set; }
+    public int amount_type_id { get; set; }
+    [ForeignKey(nameof(amount_type_id))]
+    public TransAmountType amount_type { get; set; } = default!;
 
-    public int SalaryEffectId { get; set; }
-    [ForeignKey(nameof(SalaryEffectId))]
-    public TransSalaryEffect SalaryEffect { get; set; } = default!;
+    public int salary_effect_id { get; set; }
+    [ForeignKey(nameof(salary_effect_id))]
+    public TransSalaryEffect salary_effect { get; set; } = default!;
 
-    public int EmployeeId { get; set; }
-    [ForeignKey(nameof(EmployeeId))]
-    public HrEmployee Employee { get; set; } = default!;
+    public int employee_id { get; set; }
+    [ForeignKey(nameof(employee_id))]
+    public HrEmployee employee { get; set; } = default!;
 
-    public int DeductionId { get; set; }
-    [ForeignKey(nameof(DeductionId))]
-    public HrDeduction Deduction { get; set; } = default!;
-    public string? Notes { get; set; }
-    public string? Attachment { get; set; }
-    public int CompanyId { get; set; }
-    public int? CalculateSalaryId { get; set; }
-    public int? CalculateSalaryDetailsId { get; set; }
+    public int deduction_id { get; set; }
+    [ForeignKey(nameof(deduction_id))]
+    public HrDeduction deduction { get; set; } = default!;
+    public string? notes { get; set; }
+    public string? attachment { get; set; }
+    public int company_id { get; set; }
+    public int? calculate_salary_id { get; set; }
+    public int? calculate_salary_details_id { get; set; }
 
 }

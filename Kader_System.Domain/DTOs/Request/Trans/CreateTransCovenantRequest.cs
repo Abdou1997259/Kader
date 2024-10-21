@@ -3,17 +3,17 @@
     public class CreateTransCovenantRequest
     {
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public string NameEn { get; set; }
+        public string name_en { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public string NameAr { get; set; }
+        public string name_ar { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public DateOnly Date { get; set; }
-        public string? Notes { get; set; }
+        public DateOnly date { get; set; }
+        public string? notes { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public double Amount { get; set; }
+        public double amount { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public int EmployeeId { get; set; }
-        public IFormFile? Attachment_File { get; set; }
+        public int employee_id { get; set; }
+        public IFormFile? attachment_file { get; set; }
 
     }
 }

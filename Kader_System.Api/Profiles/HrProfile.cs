@@ -71,7 +71,8 @@ public class HrProfile : Profile
 
         #region Contract
         CreateMap<HrContract, CreateContractRequest>()
-            .ForMember(dest => dest.details, opt => opt.MapFrom(src => src.ListOfAllowancesDetails.Select(d => new CreateContractDetailsRequest
+            .ForMember(dest => dest.details, opt => opt.MapFrom(src =>
+            src.list_of_allowances_details.Select(d => new CreateContractDetailsRequest
             {
                 allowance_id = d.AllowanceId,
                 value = d.Value,

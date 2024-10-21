@@ -721,6 +721,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                 {
                     Check = true,
                     Data = response,
+                    DynamicData = user.Id
                 };
             }
             catch (Exception ex)
