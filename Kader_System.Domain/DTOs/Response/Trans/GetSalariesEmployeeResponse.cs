@@ -36,20 +36,20 @@
 
     public class Loan
     {
-        public int Id { get; set; }
-        public double Value { get; set; }
+        public int? Id { get; set; }
+        public double? Value { get; set; }
     }
     public class Deduction
     {
-        public int Id { get; set; }
-        public double Value { get; set; }
+        public int? Id { get; set; }
+        public double? Value { get; set; }
 
     }
     public class AdditionalValues
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public double Value { get; set; }
+        public int? Id { get; set; }
+        public string? Name { get; set; }
+        public double? Value { get; set; }
     }
 
     public class Header

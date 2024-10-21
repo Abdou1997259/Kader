@@ -255,7 +255,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "7e21afa9-d9e4-4e21-b3e3-6f1b535320ff",
+                            ConcurrencyStamp = "588ea475-0ddf-4e8f-9e25-40359d23d87e",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -269,10 +269,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOtR903JWJVlucWKCNDxde2udyT7G9Bg0azdfsx0eZrS1Y9xKxJg02gV/gXXWpFiEQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMLmRx/S8Hd3PxTCPai/x8Brue7cVpOSKqJqEdY2UePPABUEGrpuF6yKkxjsd6FU/w==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "59b538d5-f52c-4096-b039-d228a6b766ea",
+                            SecurityStamp = "03095568-f46e-46bb-a502-fee60bbfb667",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -615,6 +615,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("DelayHours")
                         .HasColumnType("int");
 
@@ -668,6 +671,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<TimeOnly?>("BackTime")
                         .HasColumnType("time");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
@@ -735,6 +741,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<int>("SalaryEffectId")
+                        .HasColumnType("int");
+
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -753,6 +762,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<double>("amount")
                         .HasColumnType("float");
 
+                    b.Property<int>("company_id")
+                        .HasColumnType("int");
+
                     b.Property<string>("notes")
                         .HasColumnType("nvarchar(max)");
 
@@ -760,9 +772,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.HasIndex("allowance_id");
+                    b.HasIndex("SalaryEffectId");
 
-                    b.HasIndex("allowance_type_id");
+                    b.HasIndex("allowance_id");
 
                     b.ToTable("hr_allowance_request");
                 });
@@ -7344,10 +7356,10 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int?>("CalculateSalaryId")
                         .HasColumnType("int");
 
-                    b.Property<double>("CalculatedSalary")
+                    b.Property<double?>("CalculatedSalary")
                         .HasColumnType("float");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("FullNameAr")
@@ -7356,14 +7368,13 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("FullNameEn")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateOnly>("JournalDate")
+                    b.Property<DateOnly?>("JournalDate")
                         .HasColumnType("date");
 
                     b.Property<string>("JournalType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TransId")
+                    b.Property<int?>("TransId")
                         .HasColumnType("int");
 
                     b.Property<string>("TransNameAr")
@@ -7372,47 +7383,50 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("TransNameEn")
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("SpCaclauateSalaryDetailedTransModel");
+                    b.ToTable((string)null);
+
+                    b.ToView(null, (string)null);
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCaclauateSalaryDetails", b =>
                 {
-                    b.Property<double>("CalculatedSalary")
+                    b.Property<double?>("CalculatedSalary")
                         .HasColumnType("float");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<string>("JournalType")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("SpCaclauateSalaryDetailsModel");
+                    b.ToTable((string)null);
+
+                    b.ToView(null, (string)null);
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCacluateSalary", b =>
                 {
-                    b.Property<double>("AccommodationAllowance")
+                    b.Property<double?>("AccommodationAllowance")
                         .HasColumnType("float");
 
-                    b.Property<double>("CalculatedSalary")
+                    b.Property<double?>("CalculatedSalary")
                         .HasColumnType("float");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<double>("FixedSalary")
+                    b.Property<double?>("FixedSalary")
                         .HasColumnType("float");
 
                     b.Property<string>("FullNameAr")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullNameEn")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("SpCacluateSalariesModel");
+                    b.ToTable((string)null);
+
+                    b.ToView(null, (string)null);
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransAllowance", b =>
@@ -7933,6 +7947,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateOnly>("CalculationDate")
                         .HasColumnType("date");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -7971,11 +7988,11 @@ namespace Kader_System.DataAccess.Migrations
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransSalaryCalculatorDetail", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
                     b.Property<DateTime?>("Add_date")
                         .HasColumnType("datetime2");
@@ -7983,8 +8000,11 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Added_by")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("BasicSalary")
+                    b.Property<double?>("BasicSalary")
                         .HasColumnType("float");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
@@ -7992,7 +8012,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<DateTime?>("DeleteDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EmployeeId")
+                    b.Property<int?>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -8001,28 +8021,28 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<double>("NetSalary")
+                    b.Property<double?>("NetSalary")
                         .HasColumnType("float");
 
-                    b.Property<double>("Total")
+                    b.Property<double?>("Total")
                         .HasColumnType("float");
 
-                    b.Property<double>("TotalAllownces")
+                    b.Property<double?>("TotalAllownces")
                         .HasColumnType("float");
 
-                    b.Property<double>("TotalBenefits")
+                    b.Property<double?>("TotalBenefits")
                         .HasColumnType("float");
 
-                    b.Property<double>("TotalDeductions")
+                    b.Property<double?>("TotalDeductions")
                         .HasColumnType("float");
 
-                    b.Property<double>("TotalLoans")
+                    b.Property<double?>("TotalLoans")
                         .HasColumnType("float");
 
-                    b.Property<int>("TransSalaryCalculatorsId")
+                    b.Property<int?>("TransSalaryCalculatorsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TransferId")
+                    b.Property<int?>("TransferId")
                         .HasColumnType("int");
 
                     b.Property<string>("UpdateBy")
@@ -8425,15 +8445,15 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Kader_System.Domain.Models.HR.HrAllowance", "HrAllowance")
+                    b.HasOne("Kader_System.Domain.Models.Trans.TransSalaryEffect", "SalaryEffect")
                         .WithMany()
-                        .HasForeignKey("allowance_id")
+                        .HasForeignKey("SalaryEffectId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Kader_System.Domain.Models.Trans.TransSalaryEffect", "SalaryEffect")
+                    b.HasOne("Kader_System.Domain.Models.HR.HrAllowance", "HrAllowance")
                         .WithMany()
-                        .HasForeignKey("allowance_type_id")
+                        .HasForeignKey("allowance_id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -9350,8 +9370,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasOne("Kader_System.Domain.Models.Trans.TransSalaryCalculator", "TransSalaryCalculators")
                         .WithMany("TransSalaryCalculatorsDetails")
                         .HasForeignKey("TransSalaryCalculatorsId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("TransSalaryCalculators");
                 });

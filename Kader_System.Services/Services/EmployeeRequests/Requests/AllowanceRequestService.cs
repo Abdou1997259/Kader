@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class AllowanceRequestService(IUnitOfWork unitOfWork, KaderDbContext context, ITransAllowanceService allowanceService, IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
+    public class AllowanceRequestService(IUnitOfWork unitOfWork, IUserContextService userContextService, KaderDbContext context, ITransAllowanceService allowanceService, IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IAllowanceRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly ITransAllowanceService _allowanceService = allowanceService;
@@ -20,13 +20,16 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
         private readonly IRequestService _requestService = requestService;
-
+        private readonly IUserContextService _userContextService = userContextService;
 
         #region ListOfAllwanceRequest
 
         public async Task<Response<IEnumerable<DTOAllowanceRequest>>> ListOfAllowanceRequest()
         {
-            var result = await unitOfWork.AllowanceRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderByDescending(x => x.Id));
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+
+            var result = await unitOfWork.AllowanceRequests.
+                GetSpecificSelectAsync(x => x.IsDeleted == false && x.company_id == currentCompanyId, x => x, orderBy: x => x.OrderByDescending(x => x.Id));
             var msg = sharLocalizer[Localization.NotFound];
             if (result == null)
             {
@@ -52,9 +55,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedAllwanceRequest
         public async Task<Response<GetAllowanceRequestRequestResponse>> GetAllowanceRequest(GetAllFilterationAllowanceRequest model, string host)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             #region ApprovalExpression
             Expression<Func<AllowanceRequest, bool>> filter = x =>
-                x.IsDeleted == false &&
+                x.IsDeleted == false && x.company_id == currentCompanyId &&
                 (model.ApporvalStatus == RequestStatusTypes.All ||
                 (model.ApporvalStatus == RequestStatusTypes.Approved && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved) ||
                 (model.ApporvalStatus == RequestStatusTypes.ApprovedRejected &&
@@ -147,7 +151,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<ListOfAllowanceRequestResponse>> GetById(int id)
 
         {
-            var result = await unitOfWork.AllowanceRequests.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            var result = await unitOfWork.AllowanceRequests.GetFirstOrDefaultAsync(x => x.Id == id && x.company_id == currentCompanyId);
             if (result == null)
             {
                 var msg = sharLocalizer[Localization.NotFoundData];
@@ -177,7 +182,19 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<GetAllowanceRequestRequestResponse>> AddNewAllowanceRequest(DTOAllowanceRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.AllowanceRequest)
         {
 
+
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+            }
+
             var newRequest = _mapper.Map<AllowanceRequest>(model);
+            newRequest.company_id = currentCompanyId;
             StatuesOfRequest statues = new()
             {
                 ApporvalStatus = (int)RequestStatusTypes.Pending
@@ -186,6 +203,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
+            newRequest.company_id = currentCompanyId;
             await _unitOfWork.AllowanceRequests.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
             return new()
@@ -201,7 +219,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region UpdateAllowanceRequest
         public async Task<Response<AllowanceRequest>> UpdateAllowanceRequest(int id, DTOAllowanceRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.AllowanceRequest)
         {
-            var allowance = await _unitOfWork.AllowanceRequests.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            var allowance = await _unitOfWork.AllowanceRequests.GetFirstOrDefaultAsync(x => x.company_id == currentCompanyId && x.Id == id);
             if (allowance == null || allowance.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
                 var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotPending];
@@ -210,6 +229,14 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     Check = false,
                     Msg = msg,
                     Data = null
+                };
+            }
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
                 };
             }
             var mappedleave = _mapper.Map(model, allowance);
@@ -246,9 +273,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region DeleteAllowance
         public async Task<Response<AllowanceRequest>> DeleteAllowanceRequest(int id, string ModuleName)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-            var _AllowanceRequests = await _unitOfWork.AllowanceRequests.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
+            var _AllowanceRequests = await
+                _unitOfWork.AllowanceRequests.GetEntityWithIncludeAsync(x => x.Id == id && x.company_id == currentCompanyId, "StatuesOfRequest");
             if (_AllowanceRequests != null)
             {
                 if (_AllowanceRequests.StatuesOfRequest.ApporvalStatus != 1)
@@ -301,9 +330,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region Status
         public async Task<Response<string>> ApproveRequest(int requestId, string lang)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
 
-            var allownecesRequest = await _unitOfWork.AllowanceRequests.GetFirstOrDefaultAsync(x => x.Id == requestId);
+            var allownecesRequest = await
+                _unitOfWork.AllowanceRequests.GetFirstOrDefaultAsync(x =>
+                x.Id == requestId && x.company_id == currentCompanyId);
 
             if (allownecesRequest == null)
             {
@@ -337,6 +369,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
             }, lang);
+
             if (!createresult.Check)
             {
                 return new Response<string>()
@@ -346,7 +379,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 };
             }
 
-            var result = await _unitOfWork.AllowanceRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+            var result = await _unitOfWork.AllowanceRequests.UpdateApporvalStatus(x => x.Id
+            == requestId, RequestStatusTypes.Approved, userId);
             if (result > 0)
             {
                 return new Response<string>()
@@ -363,8 +397,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.AllowanceRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId, resoan);
+            var result = await _unitOfWork.AllowanceRequests
+                .UpdateApporvalStatus(x => x.Id == requestId && x.company_id == currentCompanyId, RequestStatusTypes.Rejected, userId, resoan);
             if (result > 0)
             {
                 return new Response<string>()

@@ -75,5 +75,16 @@
 
             return user.CurrentCompanyId;
         }
+
+        public async Task<List<int>> GetLoggedCurrentCompanies()
+        {
+            var user = await _unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == UserId);
+            if (user is null)
+            {
+                return null;
+            }
+
+            return user.CompanyId.Splitter();
+        }
     }
 }

@@ -3,14 +3,15 @@ using Kader_System.Domain.DTOs;
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransCalcluateSalaryService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, IStringLocalizer<SharedResource> localizer) : ITransCalcluateSalaryService
+    public class TransCalcluateSalaryService(IUnitOfWork unitOfWork, IUserContextService userContextService, UserManager<ApplicationUser> userManager, IStringLocalizer<SharedResource> localizer) : ITransCalcluateSalaryService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _localizer = localizer;
-
+        private readonly IUserContextService _userContextService = userContextService;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         public async Task<Response<string>> CalculateSalaryDetailedTrans(CalcluateSalaryModelRequest model)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
 
             var empolyees = await _unitOfWork.Employees.GetSpecificSelectAsync(x =>
             model.EmployeeIds.Any(e => e == x.Id)
@@ -29,7 +30,8 @@ namespace Kader_System.Services.Services.Trans
 
             foreach (var e in empolyees)
             {
-                if (!await _unitOfWork.Contracts.ExistAsync(x => x.employee_id == e.Id))
+                if (!await _unitOfWork.Contracts.ExistAsync(x => x.employee_id == e.Id &&
+                x.company_id == currentCompanyId))
                 {
                     var msg = $"{_localizer[Localization.Contract]}  {_localizer[Localization.NotFound]}";
                     return new()
@@ -75,11 +77,13 @@ namespace Kader_System.Services.Services.Trans
 
                         Status = Status.Waiting,
                         CalculationDate = model.StartCalculationDate,
-                        IsMigrated = true
+                        IsMigrated = true,
+                        CompanyId = currentCompanyId
                     };
 
 
-                    TransCalculatorMaster = await _unitOfWork.TransSalaryCalculator.AddAsync(TransCalculatorMaster);
+                    TransCalculatorMaster = await _unitOfWork.TransSalaryCalculator
+                        .AddAsync(TransCalculatorMaster);
                     await _unitOfWork.CompleteAsync();
 
                 }
@@ -99,13 +103,14 @@ namespace Kader_System.Services.Services.Trans
                             EmployeeId = empolyee.EmployeeId ?? 0,
                             NetSalary = empolyee.CalculatedSalary ?? 0 + empolyee.FixedSalary ?? 0,
                             BasicSalary = empolyee.FixedSalary ?? 0,
-                            TotalAllownces = spcaculatedSalarytransDetils.Where(x => x.EmployeeId == empolyee.EmployeeId && x.JournalType == JournalType.Allowance).Sum(x => x.CalculatedSalary),
+                            TotalAllownces = spcaculatedSalarytransDetils.Where(x => x.EmployeeId == empolyee.EmployeeId &&
+                            x.JournalType == JournalType.Allowance).Sum(x => x.CalculatedSalary),
                             TotalBenefits = spcaculatedSalarytransDetils.Where(x => x.EmployeeId == empolyee.EmployeeId && x.JournalType == JournalType.Benefit).Sum(x => x.CalculatedSalary),
                             TotalLoans = spcaculatedSalarytransDetils.Where(x => x.EmployeeId == empolyee.EmployeeId && x.JournalType == JournalType.Loan).Sum(x => x.CalculatedSalary),
                             TotalDeductions = spcaculatedSalarytransDetils.Where(x => x.EmployeeId == empolyee.EmployeeId && x.JournalType == JournalType.Deduction).Sum(x => x.CalculatedSalary),
                             TransSalaryCalculatorsId = TransCalculatorMaster.Id,
                             Total = empolyee.CalculatedSalary ?? 0,
-
+                            CompanyId = currentCompanyId
 
                         };
                         listoftransDetails.Add(transDetails);
@@ -127,10 +132,19 @@ namespace Kader_System.Services.Services.Trans
 
                     if (trans.CalculateSalaryDetailsId is null)
                     {
-                        var cacluateSalaryId = (await _unitOfWork.TransSalaryCalculatorDetailsRepo.GetSpecificSelectAsync(x => x.TransSalaryCalculatorsId == TransCalculatorMaster.Id && x.EmployeeId == trans.EmployeeId, x => x)).FirstOrDefault();
+                        var cacluateSalaryId = (await _unitOfWork.
+                            TransSalaryCalculatorDetailsRepo
+                            .GetSpecificSelectAsync(x =>
+                            x.TransSalaryCalculatorsId == TransCalculatorMaster.Id
+                            && x.EmployeeId == trans.EmployeeId, x => x)).FirstOrDefault();
+
+
+
+
                         if (trans.JournalType == JournalType.Allowance)
                         {
-                            var allownce = await _unitOfWork.TransAllowances.GetByIdAsync(trans.TransId);
+                            var allownce = await _unitOfWork.TransAllowances.GetFirstOrDefaultAsync
+                                (x => x.Id == trans.TransId && x.CompanyId == currentCompanyId);
 
                             allownce.CalculateSalaryDetailsId = cacluateSalaryId?.Id;
                             allownce.CalculateSalaryId = TransCalculatorMaster.Id;
@@ -140,7 +154,8 @@ namespace Kader_System.Services.Services.Trans
                         }
                         else if (trans.JournalType == JournalType.Deduction)
                         {
-                            var deduction = await _unitOfWork.TransDeductions.GetByIdAsync(trans.TransId);
+                            var deduction = await _unitOfWork.TransDeductions
+                                .GetFirstOrDefaultAsync(x => x.id == trans.TransId && x.company_id == currentCompanyId);
 
 
 
@@ -152,7 +167,8 @@ namespace Kader_System.Services.Services.Trans
                         else if (trans.JournalType == JournalType.Benefit)
                         {
                             var benefit = await _unitOfWork.TransBenefits
-                                .GetByIdAsync(trans.TransId);
+                                .GetFirstOrDefaultAsync
+                                (x => x.Id == trans.TransId && x.company_id == currentCompanyId);
 
 
 
@@ -163,7 +179,8 @@ namespace Kader_System.Services.Services.Trans
                         }
                         else if (trans.JournalType == JournalType.Loan)
                         {
-                            var loan = await _unitOfWork.LoanRepository.GetByIdAsync(trans.TransId);
+                            var loan = await _unitOfWork.LoanRepository.GetFirstOrDefaultAsync
+                                (x => x.Id == trans.TransId && x.CompanyId == currentCompanyId);
 
 
 
@@ -177,7 +194,8 @@ namespace Kader_System.Services.Services.Trans
                         {
 
 
-                            var vacation = await _unitOfWork.TransVacations.GetByIdAsync(trans.TransId);
+                            var vacation = await _unitOfWork.TransVacations.GetFirstOrDefaultAsync
+                                (x => x.id == trans.TransId && x.company_id == currentCompanyId);
 
 
 
@@ -237,7 +255,8 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<string>> DeleteCalculator(int Id)
         {
-            var transaction = await _unitOfWork.TransSalaryCalculator.GetByIdAsync(Id);
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var transaction = await _unitOfWork.TransSalaryCalculator.GetFirstOrDefaultAsync(x => x.Id == Id && x.CompanyId == currentCompany);
             if (transaction == null)
             {
                 string msgs = _localizer[Localization.NotFoundData];
@@ -250,7 +269,8 @@ namespace Kader_System.Services.Services.Trans
 
             }
             _unitOfWork.TransSalaryCalculator.Remove(transaction);
-            var transactions = await _unitOfWork.TransSalaryCalculatorDetailsRepo.GetSpecificSelectAsync(x => x.TransSalaryCalculatorsId == transaction.Id, x => x);
+            var transactions = await _unitOfWork.TransSalaryCalculatorDetailsRepo
+                .GetSpecificSelectAsync(x => x.TransSalaryCalculatorsId == transaction.Id && x.CompanyId == currentCompany, x => x);
 
             _unitOfWork.TransSalaryCalculatorDetailsRepo.RemoveRange(transactions);
             await _unitOfWork.CompleteAsync();
@@ -270,7 +290,11 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetSalaryCalculatorResponse>> GetAllCalculators(GetSalaryCalculatorFilterRequest model, string host, string lang)
         {
-            Expression<Func<TransSalaryCalculator, bool>> filter = x => x.IsDeleted == model.IsDeleted;
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            Expression<Func<TransSalaryCalculator, bool>> filter =
+                x => x.IsDeleted == model.IsDeleted
+                && x.CompanyId == currentCompany
+                ;
 
             var empolyeeWithJobs = await _unitOfWork.Employees.GetSpecificSelectAsync(x => true, x => x, includeProperties: "Job");
             var totalRecords = await _unitOfWork.TransSalaryCalculator.CountAsync(filter: filter);
@@ -376,7 +400,10 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>> GetById(int id, string lang)
         {
-            var transcation = (await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.Id == id, x => x, includeProperties: "TransSalaryCalculatorsDetails")).FirstOrDefault();
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var transcation = (await _unitOfWork.TransSalaryCalculator
+                .GetSpecificSelectAsync(x => x.Id == id && x.CompanyId == currentCompany, x => x,
+                includeProperties: "TransSalaryCalculatorsDetails")).FirstOrDefault();
 
 
             if (transcation == null)
@@ -389,7 +416,8 @@ namespace Kader_System.Services.Services.Trans
                     Check = false
                 };
             }
-            var employees = transcation?.TransSalaryCalculatorsDetails?.Select(x => x.EmployeeId).ToList();
+            var employees = transcation?.TransSalaryCalculatorsDetails?
+                .Select(x => x.EmployeeId).ToList();
 
 
 
@@ -411,8 +439,8 @@ namespace Kader_System.Services.Services.Trans
             var spCalculatedSalaryTransDetails = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedInfo(
                transcation.CalculationDate, transcation.DocumentDate.Day, employeeIds)).Where(x => x.CalculateSalaryId != null);
 
-            var vacations = await _unitOfWork.TransVacations.GetAllAsync();
-            var contracts = await _unitOfWork.Contracts.GetAllAsync();
+            var vacations = await _unitOfWork.TransVacations.GetSpecificSelectAsync(x => x.company_id == currentCompany && x.IsDeleted == false, x => x);
+            var contracts = await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.company_id == currentCompany && x.IsDeleted == false, x => x);
             var headers = new Header
             {
                 WorkedDays = lang == Localization.Arabic ? "ايام العمل" : "Working Days",
@@ -428,7 +456,8 @@ namespace Kader_System.Services.Services.Trans
                     .Select(s => s.JournalType.ToString())
                     .ToList(),
                 MinuesValues = spCalculatedSalaryTransDetails
-                    .Where(e => e.JournalType == JournalType.Deduction || e.JournalType == JournalType.Loan)
+                    .Where(e => e.JournalType == JournalType.Deduction
+                    || e.JournalType == JournalType.Loan)
                     .Select(s => s.JournalType.ToString())
                     .ToList()
             };
@@ -449,9 +478,9 @@ namespace Kader_System.Services.Services.Trans
                 .Where(e => e.EmployeeId == x.EmployeeId && (e.JournalType == JournalType.Allowance || e.JournalType == JournalType.Benefit))
                 .Select(t => new AdditionalValues
                 {
-                    Id = t.TransId,
+                    Id = t.TransId ?? 0,
                     Name = Localization.Arabic == lang ? t.TransNameAr : t.TransNameEn,
-                    Value = t.CalculatedSalary
+                    Value = t.CalculatedSalary ?? 0
                 }).ToList(),
                 MinuesValues = new MinuesValues
                 {
@@ -494,7 +523,9 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>> GetDetailsOfCalculation(CalcluateEmpolyeeFilters model, string lang)
         {
+            var currentCompanies = await _userContextService.GetLoggedCurrentCompanies();
             var employees = await _unitOfWork.Employees.GetSpecificSelectAsync(x =>
+                x.IsDeleted == false && currentCompanies.Contains(x.CompanyId) &&
                 (!model.EmployeeId.HasValue || x.Id == model.EmployeeId) &&
                 (!model.CompanyId.HasValue || x.CompanyId == model.CompanyId) &&
                 (!model.ManagerId.HasValue || x.ManagementId == model.ManagerId) &&
@@ -518,8 +549,9 @@ namespace Kader_System.Services.Services.Trans
             var spCalculatedSalaryTransDetails = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedInfo(
                 model.StartCalculationDate, model.StartActionDay, employeeIds)).Where(x => x.CalculateSalaryId == null);
 
-            var vacations = await _unitOfWork.TransVacations.GetAllAsync();
-            var contracts = await _unitOfWork.Contracts.GetAllAsync();
+            var vacations = await _unitOfWork.TransVacations.GetSpecificSelectAsync(x =>
+            currentCompanies.Contains(x.company_id) && x.IsDeleted == false, x => x);
+            var contracts = await _unitOfWork.Contracts.GetSpecificSelectAsync(x => currentCompanies.Contains(x.company_id) && x.IsDeleted == false, x => x);
 
             var headers = new Header
             {
@@ -600,7 +632,10 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<GetLookupsCalculatedSalaries>> GetLookups(string lang)
         {
-            var emps = await _unitOfWork.Employees.GetSpecificSelectAsync(x => true, x => x, includeProperties: "Management,Department");
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var currentCompnies = await _userContextService.GetLoggedCurrentCompanies();
+            var emps = await _unitOfWork.Employees.GetSpecificSelectAsync(
+                x => x.IsDeleted == false && x.IsActive == true && x.CompanyId == currentCompany, x => x, includeProperties: "Management,Department");
 
             if (emps is null)
             {
@@ -613,7 +648,7 @@ namespace Kader_System.Services.Services.Trans
 
                 };
             }
-            var companies = await _unitOfWork.Companies.GetAllAsync();
+            var companies = await _unitOfWork.Companies.GetSpecificSelectAsync(x => currentCompnies.Contains(x.Id) && x.IsDeleted == false, x => x);
             if (companies is null)
             {
                 var msg = _localizer[Localization.NotFoundData];
@@ -625,7 +660,10 @@ namespace Kader_System.Services.Services.Trans
 
                 };
             }
-            var mangements = await _unitOfWork.Managements.GetSpecificSelectAsync(x => true, x => x, includeProperties: "Company,Manager");
+            var mangements = await _unitOfWork.
+                Managements.GetSpecificSelectAsync
+                (x => currentCompnies.Contains(x.CompanyId) && x.IsDeleted == false
+                , x => x, includeProperties: "Company,Manager");
 
             if (mangements is null)
             {
@@ -638,7 +676,11 @@ namespace Kader_System.Services.Services.Trans
 
                 };
             }
-            var departments = await _unitOfWork.Departments.GetSpecificSelectAsync(x => true, x => x, includeProperties: "Management,Manager");
+            var mangementsIds = (await _unitOfWork.
+              Managements.GetSpecificSelectAsync
+              (x => currentCompnies.Contains(x.CompanyId) && x.IsDeleted == false
+              , x => x, includeProperties: "Company,Manager")).Select(x => x.Id);
+            var departments = await _unitOfWork.Departments.GetSpecificSelectAsync(x => mangementsIds.Contains(x.ManagementId), x => x, includeProperties: "Management,Manager");
             if (departments is null)
             {
                 var msg = _localizer[Localization.NotFoundData];

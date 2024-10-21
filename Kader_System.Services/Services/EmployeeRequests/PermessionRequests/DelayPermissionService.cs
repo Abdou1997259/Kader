@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 {
-    public class DelayPermissionService(IUnitOfWork unitOfWork, KaderDbContext context, IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IDelayPermissionService
+    public class DelayPermissionService(IUnitOfWork unitOfWork, IUserContextService userContextService, KaderDbContext context, IRequestService requestService, IStringLocalizer<SharedResource> sharLocalizer, IHttpContextAccessor httpContextAccessor, IFileServer fileServer, IMapper mapper) : IDelayPermissionService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -21,7 +21,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
         private readonly IRequestService _requestService = requestService;
-
+        private readonly IUserContextService _userContextService = userContextService;
         #region ListOfIncreaseSalaryRequest
 
         public async Task<Response<IEnumerable<DTODelayPermissionRequest>>> ListOfDelayPermissionRequest()
@@ -55,6 +55,15 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
         public async Task<Response<DTODelayPermissionRequest>> AddNewDelayPermissionRequest(DTODelayPermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.None)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new Response<DTODelayPermissionRequest>()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+            }
             var newRequest = _mapper.Map<DelayPermission>(model);
             StatuesOfRequest statues = new()
             {
@@ -64,6 +73,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
+
+            newRequest.CompanyId = currentCompanyId;
             await _unitOfWork.DelayPermission.AddAsync(newRequest);
             var result = await _unitOfWork.CompleteAsync();
 
@@ -82,9 +93,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Delete
         public async Task<Response<string>> DeleteDelayPermissionRequest(int id, string fullPath)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-            var _DelayPermissionRequest = await _unitOfWork.DelayPermission.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
+            var msg = $"{_sharLocalizer[Localization.Employee]} " +
+                $"{_sharLocalizer[Localization.NotFound]}";
+            var _DelayPermissionRequest = await _unitOfWork.DelayPermission
+                .GetEntityWithIncludeAsync(x => x.Id == id && x.CompanyId == currentCompanyId, "StatuesOfRequest");
             if (_DelayPermissionRequest != null)
             {
                 if (_DelayPermissionRequest.StatuesOfRequest.ApporvalStatus != 1)
@@ -96,7 +110,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                         Check = false,
                     };
                 }
-                var result = await _unitOfWork.DelayPermission.SoftDeleteAsync(_DelayPermissionRequest, DeletedBy: userId);
+                var result = await _unitOfWork.DelayPermission.SoftDeleteAsync(
+                    _DelayPermissionRequest, DeletedBy: userId);
                 if (result > 0)
                 {
                     if (!string.IsNullOrWhiteSpace(_DelayPermissionRequest.AttachmentPath))
@@ -123,9 +138,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Read
         public async Task<Response<GetAllDelayPermissionRequestRequestResponse>> GetAllDelayPermissionRequsts(GetAlFilterationDelayPermissionReuquest model, string host)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             #region ApprovalExpression
             Expression<Func<DelayPermission, bool>> filter = x =>
-                x.IsDeleted == false &&
+                x.IsDeleted == false && x.CompanyId == currentCompanyId &&
                 (model.ApporvalStatus == RequestStatusTypes.All ||
                 (model.ApporvalStatus == RequestStatusTypes.Approved && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved) ||
                 (model.ApporvalStatus == RequestStatusTypes.ApprovedRejected &&
@@ -213,7 +229,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
 
         public async Task<Response<DtoListOfDelayRequestReponse>> UpdateDelayPermissionRequest(int id, DTODelayPermissionRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest)
         {
-            var delay = await _unitOfWork.DelayPermission.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+
+            var delay = await _unitOfWork.DelayPermission.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompanyId);
             if (delay == null || delay.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
                 var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotApproval];
@@ -224,7 +242,17 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                     Data = null
                 };
             }
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+            }
+
             var mappedDelay = _mapper.Map(model, delay);
+            mappedDelay.CompanyId = currentCompanyId;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
 
 
@@ -258,7 +286,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region GetById
         public async Task<Response<DtoListOfDelayRequestReponse>> GetById(int id)
         {
-            var result = await unitOfWork.DelayPermission.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            var result = await unitOfWork.DelayPermission.GetFirstOrDefaultAsync(x => x.Id
+            == id && x.CompanyId == currentCompanyId);
             if (result == null)
             {
                 var msg = sharLocalizer[Localization.NotFoundData];
@@ -286,8 +316,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         #region Status
         public async Task<Response<string>> ApproveRequest(int requestId)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.DelayPermission.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+            var result = await _unitOfWork.DelayPermission.UpdateApporvalStatus(x
+                => x.Id == requestId && x.CompanyId == currentCompanyId, RequestStatusTypes.Approved, userId);
             if (result > 0)
             {
                 return new Response<string>()
@@ -304,8 +336,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.DelayPermission.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId, resoan);
+            var result = await _unitOfWork.DelayPermission
+                .UpdateApporvalStatus(x => x.Id == requestId && x.CompanyId == currentCompanyId, RequestStatusTypes.Rejected, userId, resoan);
             if (result > 0)
             {
                 return new Response<string>()

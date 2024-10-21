@@ -463,7 +463,8 @@ namespace Kader_System.Services.Services.Trans
             _mapper.Map(model, obj);
             obj.CompanyId = currentCompany;
             var startMonth = model.StartCalculationDate;
-            var objOfDetails = await _unitOfWork.TransLoanDetails.GetSpecificSelectAsync(x => x.TransLoanId == id, x => x);
+            var objOfDetails = await _unitOfWork.TransLoanDetails
+                .GetSpecificSelectTrackingAsync(x => x.TransLoanId == id, x => x);
             _unitOfWork.TransLoanDetails.RemoveRange(objOfDetails);
             await _unitOfWork.CompleteAsync();
             for (int i = 1; i <= model.InstallmentCount; i++)
@@ -480,7 +481,7 @@ namespace Kader_System.Services.Services.Trans
 
                 startMonth = startMonth.AddMonths(1);
             }
-            await _unitOfWork.CompleteAsync();
+
 
             _unitOfWork.LoanRepository.Update(obj);
             await _unitOfWork.CompleteAsync();

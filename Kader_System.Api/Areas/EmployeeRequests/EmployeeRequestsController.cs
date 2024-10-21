@@ -1,6 +1,4 @@
-using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
 using Kader_System.Domain.Interfaces.EmployeeRequest;
-using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.HTTP;
 namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests
 {
@@ -9,15 +7,18 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests
     [ApiController]
     //[Authorize(Permissions.Setting.View)]
     [Route("api/v1/")]
-    public class EmployeeRequestsController(IEmployeeRequestsRepository service, IRequestService requestService) : ControllerBase
+    public class EmployeeRequestsController(IEmployeeRequestsRepository service, IUserContextService userContextService, IRequestService requestService) : ControllerBase
+
     {
         private readonly IRequestService requestService = requestService;
-
+        private readonly IUserContextService _userContextService = userContextService;
         #region Insert
         [HttpGet(ApiRoutes.EmployeeRequests.GetEmployeeRequestsLookups)]
         public async Task<IActionResult> GetEmployeeRequestsLookups()
         {
-            var response = await service.GetEmployeeRequestsLookUpsData(requestService.GetRequestHeaderLanguage);
+
+            var response = await service.GetEmployeeRequestsLookUpsData(
+                requestService.GetRequestHeaderLanguage, await _userContextService.GetLoggedCurrentCompany());
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
