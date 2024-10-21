@@ -246,6 +246,9 @@
   <data name="MangerAlready" xml:space="preserve">
     <value>Manger Already , Can't Assgin more than Manger</value>
   </data>
+  <data name="NoAdminCreate" xml:space="preserve">
+    <value>Can't Added Cause User is not Admin</value>
+  </data>
   <data name="NotApproved" xml:space="preserve">
     <value>Approved Failed</value>
   </data>

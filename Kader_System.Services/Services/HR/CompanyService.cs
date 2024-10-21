@@ -47,9 +47,12 @@ public class CompanyService(IUnitOfWork unitOfWork, IUserContextService userCont
 
     public async Task<Response<HrGetAllCompaniesResponse>> GetAllCompaniesAsync(string lang, HrGetAllFiltrationsForCompaniesRequest model, string host)
     {
+        var isAdmin = _userContextService.IsAdmin();
         var currentCompanyIds = await _userContextService.GetLoggedCurrentCompanies();
-        Expression<Func<HrCompany, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-           currentCompanyIds.Contains(x.Id) &&
+        Expression<Func<HrCompany, bool>> filter = x => x.IsDeleted ==
+        model.IsDeleted
+        &&
+             (isAdmin || currentCompanyIds.Contains(x.Id)) &&
             (string.IsNullOrEmpty(model.Word) || x.NameAr.Contains(model.Word) || x.NameEn.Contains(model.Word)
              || x.CompanyOwner == model.Word
              || x.CompanyType!.Name.Contains(model.Word));
@@ -310,6 +313,15 @@ public class CompanyService(IUnitOfWork unitOfWork, IUserContextService userCont
 
     public async Task<Response<HrCreateCompanyRequest>> CreateCompanyAsync(HrCreateCompanyRequest model)
     {
+        if (!_userContextService.IsAdmin())
+        {
+            return new()
+            {
+                Check = false,
+                Msg = shareLocalizer[Localization.NoAdminCreate]
+            };
+
+        }
         var exists = await unitOfWork.Companies.ExistAsync(x => x.NameAr.Trim() == model.Name_ar
                                                                 && x.NameEn.Trim() == model.Name_en.Trim());
 
