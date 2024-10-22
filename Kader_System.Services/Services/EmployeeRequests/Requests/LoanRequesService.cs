@@ -11,15 +11,18 @@ using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class LoanRequesService(IUnitOfWork _unitOfWork, ITransLoanService loanService, IStringLocalizer<SharedResource> _sharLocalizer, IRequestService _requestService, IFileServer _fileServer, IHttpContextAccessor _httpContextAccessor, KaderDbContext _context, IMapper _mapper) : ILoanRequestService
+    public class LoanRequesService(IUnitOfWork _unitOfWork, IUserContextService userContextService, ITransLoanService loanService, IStringLocalizer<SharedResource> _sharLocalizer, IRequestService _requestService, IFileServer _fileServer, IHttpContextAccessor _httpContextAccessor, KaderDbContext _context, IMapper _mapper) : ILoanRequestService
     {
 
         private readonly ITransLoanService _loanService = loanService;
+        private readonly IUserContextService _userContextService = userContextService;
         #region ListOfLoanRequest
 
         public async Task<Response<IEnumerable<ListOfLoanRequestResponse>>> ListOfLoanRequest()
         {
-            var result = _unitOfWork.LoanRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            var result = _unitOfWork.LoanRepository
+                .GetSpecificSelectAsync(x => x.IsDeleted == false && x.CompanyId == currentCompanyId, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = _sharLocalizer[Localization.NotFound];
             if (result == null)
             {
@@ -44,10 +47,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedLoanRequest
         public async Task<Response<GetAllLoanRequestResponse>> GetAllLoanRequest(GetFilterationLoanRequest model, string host)
         {
-
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             #region ApprovalExpression
             Expression<Func<LoanRequest, bool>> filter = x =>
-                x.IsDeleted == false &&
+                x.IsDeleted == false && x.CompanyId == currentCompanyId &&
                 (model.ApporvalStatus == RequestStatusTypes.All ||
                 (model.ApporvalStatus == RequestStatusTypes.Approved && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved) ||
                 (model.ApporvalStatus == RequestStatusTypes.ApprovedRejected &&
@@ -129,10 +132,13 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         #endregion
 
+
         #region GetLoanRequetById
         public async Task<Response<ListOfLoanRequestResponse>> GetById(int id)
         {
-            var result = await _unitOfWork.LoanRequestRepository.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            var result = await _unitOfWork.LoanRequestRepository.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompanyId);
+
             if (result == null)
             {
                 var msg = _sharLocalizer[Localization.NotFoundData];
@@ -159,7 +165,17 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region AddLoanRequest
         public async Task<Response<LoanRequest>> AddNewLoanRequest(DTOLoanRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.LoanRequest)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+            }
             var newRequest = _mapper.Map<LoanRequest>(model);
+            newRequest.CompanyId = currentCompanyId;
             StatuesOfRequest statues = new()
             {
                 ApporvalStatus = (int)RequestStatusTypes.Pending
@@ -182,8 +198,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region DeleteLoanRequets
         public async Task<Response<LoanRequest>> DeleteLoanRequest(int id, string fullPath)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var loanRequest = await _unitOfWork.LoanRequestRepository.GetByIdAsync(id);
+            var loanRequest = await _unitOfWork.LoanRequestRepository
+                .GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompanyId);
             if (loanRequest == null)
             {
                 return new()
@@ -226,7 +244,17 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region UpdateLoanRequest
         public async Task<Response<LoanRequest>> UpdateLoanRequest(int id, DTOLoanRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.LoanRequest)
         {
-            var loan = await _unitOfWork.LoanRequestRepository.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+            }
+            var loan = await _unitOfWork.LoanRequestRepository.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompanyId);
             if (loan == null || loan.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
                 var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotPending];
@@ -272,8 +300,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region Status
         public async Task<Response<string>> ApproveRequest(int requestId, string lang)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var loanRequest = await _unitOfWork.LoanRequestRepository.GetFirstOrDefaultAsync(x => x.Id == requestId);
+            var loanRequest = await _unitOfWork.LoanRequestRepository
+                .GetFirstOrDefaultAsync(x => x.Id == requestId && x.CompanyId == currentCompanyId);
             if (loanRequest == null)
             {
                 var msg = _sharLocalizer[Localization.NotFound];

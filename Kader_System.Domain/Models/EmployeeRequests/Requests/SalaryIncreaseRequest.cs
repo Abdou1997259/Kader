@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kader_System.Domain.Models.EmployeeRequests.Requests
+﻿namespace Kader_System.Domain.Models.EmployeeRequests.Requests
 {
     [Table("Hr_SalaryIncreaseRequest")]
 
@@ -12,10 +6,11 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
     {
         [Key]
         public int Id { get; set; }
-    
-        public double  Amount { get; set; }
+
+        public double Amount { get; set; }
         public string? AttachmentPath { get; set; }
         public string? Notes { get; set; }
+        public int CompanyId { get; set; }
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public HrEmployee employee { get; set; }
