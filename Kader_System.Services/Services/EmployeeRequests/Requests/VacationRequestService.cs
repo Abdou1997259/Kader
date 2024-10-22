@@ -12,7 +12,7 @@ using TransVacation = Kader_System.Domain.Models.Trans.TransVacation;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class VacationRequestService(IUnitOfWork unitOfWork, KaderDbContext context, ITransVacationService transVacation, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IVacationRequestService
+    public class VacationRequestService(IUnitOfWork unitOfWork, IUserContextService userContextService, KaderDbContext context, ITransVacationService transVacation, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IVacationRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -23,11 +23,14 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly KaderDbContext _context = context;
         private readonly IRequestService _requestService = requestService;
         private readonly ITransVacationService _vacationService = transVacation;
-
+        private readonly IUserContextService _userContextService = userContextService;
         #region ListOfVacationRequest
         public async Task<Response<IEnumerable<DTOVacationRequest>>> ListOfVacationRequest()
         {
-            var result = await unitOfWork.VacationRequests.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+
+            var result = await unitOfWork.VacationRequests
+                .GetSpecificSelectAsync(x => x.IsDeleted == false && x.CompanyId == currentCompany, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = _sharLocalizer[Localization.NotFound];
             if (result == null)
             {
@@ -52,9 +55,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedVacationRequest
         public async Task<Response<GetAllVacationRequestReponse>> GetAllVacationRequest(GetFilterationVacationRequestRequest model, string host)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             #region ApprovalExpression
             Expression<Func<VacationRequests, bool>> filter = x =>
-                x.IsDeleted == false &&
+                x.IsDeleted == false && x.CompanyId == currentCompanyId &&
                 (model.ApporvalStatus == RequestStatusTypes.All ||
                 (model.ApporvalStatus == RequestStatusTypes.Approved && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved) ||
                 (model.ApporvalStatus == RequestStatusTypes.ApprovedRejected &&
@@ -146,7 +150,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region GetVacationRequetById
         public async Task<Response<ListOfVacationRequestResponse>> GetById(int id)
         {
-            var result = await unitOfWork.VacationRequests.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+
+            var result = await unitOfWork.VacationRequests.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompanyId);
             if (result == null)
             {
                 var msg = _sharLocalizer[Localization.NotFoundData];
@@ -173,7 +179,18 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region AddVacationRequest
         public async Task<Response<VacationRequests>> AddNewVacationRequest(DTOVacationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.VacationRequest)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+            }
+
             var newRequest = _mapper.Map<VacationRequests>(model);
+            newRequest.CompanyId = currentCompanyId;
             StatuesOfRequest statues = new()
             {
                 ApporvalStatus = (int)RequestStatusTypes.Pending
@@ -196,9 +213,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region DeleteVacationRequets
         public async Task<Response<VacationRequests>> DeleteVacationRequest(int id, string moduleName)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-            var vacationRequest = await _unitOfWork.VacationRequests.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
+            var vacationRequest = await _unitOfWork.VacationRequests.GetEntityWithIncludeAsync(x => x.Id == id && x.CompanyId == currentCompanyId, "StatuesOfRequest");
             if (vacationRequest != null)
             {
                 if (vacationRequest.StatuesOfRequest.ApporvalStatus != 1)
@@ -237,7 +255,22 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region UpdateVacationRequest
         public async Task<Response<VacationRequests>> UpdateVacationRequest(int id, DTOVacationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.VacationRequest)
         {
-            var vacation = await _unitOfWork.VacationRequests.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+            }
+
+
+
+            var vacation =
+
+                await _unitOfWork.VacationRequests.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompanyId);
             if (vacation == null || vacation.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
                 var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotPending];
@@ -285,8 +318,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region Status
         public async Task<Response<string>> ApproveRequest(int requestId, string lang)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var vacationrequest = await _unitOfWork.VacationRequests.GetFirstOrDefaultAsync(x => x.Id == requestId);
+            var vacationrequest = await _unitOfWork.
+                VacationRequests.GetFirstOrDefaultAsync(x => x.Id == requestId && x.CompanyId == currentCompany);
 
 
             if (vacationrequest.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved)
@@ -353,8 +388,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.VacationRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId, resoan);
+            var result = await _unitOfWork.VacationRequests
+                .UpdateApporvalStatus(x => x.Id == requestId &&
+                x.CompanyId == currentCompanyId, RequestStatusTypes.Rejected, userId, resoan);
             if (result > 0)
             {
                 return new Response<string>()

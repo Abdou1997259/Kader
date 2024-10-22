@@ -9,7 +9,7 @@ using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class ContractTerminationRequestService(IUnitOfWork unitOfWork, IRequestService requestService, IHttpContextAccessor httpContextAccessor, KaderDbContext context, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper)
+    public class ContractTerminationRequestService(IUnitOfWork unitOfWork, IUserContextService userContextService, IRequestService requestService, IHttpContextAccessor httpContextAccessor, KaderDbContext context, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper)
         : IContractTerminationRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -19,11 +19,13 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly KaderDbContext _context = context;
         private readonly IRequestService _requestService = requestService;
-
+        private readonly IUserContextService _userContextService = userContextService;
         #region ListOfContractTerminationRequest
         public async Task<Response<IEnumerable<ListOfContractTerminationRequestResponse>>> ListOfContractTerminationRequest()
         {
-            var result = unitOfWork.ContractTerminationRequest.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            var result = unitOfWork.ContractTerminationRequest
+                .GetSpecificSelectAsync(x => x.IsDeleted == false && x.CompanyId == currentCompany, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = _sharLocalizer[Localization.NotFound];
             if (result == null)
             {
@@ -48,9 +50,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedContractTerminationRequest
         public async Task<Response<GetAllContractTermiantionRequestResponse>> GetAllContractTerminationRequest(GetFilterationContractTerminationRequest model, string host)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+
             #region ApprovalExpression
             Expression<Func<Domain.Models.EmployeeRequests.Requests.ContractTerminationRequest, bool>> filter = x =>
-                x.IsDeleted == false &&
+                x.IsDeleted == false && x.CompanyId == currentCompany &&
                 (model.ApporvalStatus == RequestStatusTypes.All ||
                 (model.ApporvalStatus == RequestStatusTypes.Approved && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved) ||
                 (model.ApporvalStatus == RequestStatusTypes.ApprovedRejected &&
@@ -132,7 +136,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region GetContractTerminationRequestById
         public async Task<Response<ListOfContractTerminationRequestResponse>> GetById(int id)
         {
-            var result = await unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            var result = await unitOfWork.ContractTerminationRequest
+                .GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompanyId);
+
             if (result == null)
             {
                 var msg = _sharLocalizer[Localization.NotFoundData];
@@ -157,9 +164,24 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddContractTerminationRequest
-        public async Task<Response<Domain.Models.EmployeeRequests.Requests.ContractTerminationRequest>> AddNewContractTerminationRequest(DTOContractTerminationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.TerminateContract)
+        public async Task<Response<
+            Domain.Models.EmployeeRequests.Requests.ContractTerminationRequest>>
+            AddNewContractTerminationRequest(DTOContractTerminationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.TerminateContract)
         {
-            var newRequest = _mapper.Map<Domain.Models.EmployeeRequests.Requests.ContractTerminationRequest>(model);
+
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]
+                };
+            }
+            var newRequest =
+                _mapper.Map<Domain.Models.EmployeeRequests.Requests
+                .ContractTerminationRequest>(model);
+            newRequest.CompanyId = currentCompanyId;
             StatuesOfRequest statues = new()
             {
                 ApporvalStatus = (int)RequestStatusTypes.Pending
@@ -183,8 +205,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         public async Task<Response<string>> DeleteContracTermniationRequest(int id, string fullPath)
         {
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+
             var msg = $"{_sharLocalizer[Localization.Employee]} {_sharLocalizer[Localization.NotFound]}";
-            var _contractTerminationRequest = await _unitOfWork.ContractTerminationRequest.GetEntityWithIncludeAsync(x => x.Id == id, "StatuesOfRequest");
+            var _contractTerminationRequest = await
+                _unitOfWork.ContractTerminationRequest
+                .GetEntityWithIncludeAsync(x => x.Id == id && x.CompanyId == currentCompanyId, "StatuesOfRequest");
             if (_contractTerminationRequest != null)
             {
                 if (_contractTerminationRequest.StatuesOfRequest.ApporvalStatus != 1)
@@ -222,9 +248,23 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region UpdateContractTerminationRequest
-        public async Task<Response<Domain.Models.EmployeeRequests.Requests.ContractTerminationRequest>> UpdateContractTerminationRequest(int id, DTOContractTerminationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.TerminateContract)
+        public async
+            Task<Response<Domain.Models.EmployeeRequests.Requests
+                .ContractTerminationRequest>>
+            UpdateContractTerminationRequest(int id, DTOContractTerminationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.TerminateContract)
         {
-            var _contract = await _unitOfWork.ContractTerminationRequest.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            if (!await _unitOfWork.Employees.ExistAsync(x =>
+            x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]
+                };
+            }
+            var _contract = await _unitOfWork.ContractTerminationRequest.GetFirstOrDefaultAsync
+                (x => x.CompanyId == currentCompanyId && x.Id == id);
             if (_contract == null || _contract.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
                 var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotPending];
@@ -268,8 +308,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region Status
         public async Task<Response<string>> ApproveRequest(int requestId)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.ContractTerminationRequest.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+            var result = await
+                _unitOfWork.ContractTerminationRequest.
+                UpdateApporvalStatus(x => x.Id == requestId && x.CompanyId == currentCompanyId,
+                RequestStatusTypes.Approved, userId);
             if (result > 0)
             {
                 return new Response<string>()

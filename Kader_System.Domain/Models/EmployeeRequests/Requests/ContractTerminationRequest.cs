@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kader_System.Domain.Models.EmployeeRequests.Requests
+﻿namespace Kader_System.Domain.Models.EmployeeRequests.Requests
 {
     [Table("hr_contract_termination")]
     public class ContractTerminationRequest : BaseEntity
@@ -13,6 +7,7 @@ namespace Kader_System.Domain.Models.EmployeeRequests.Requests
         public int Id { get; set; }
         public string? Notes { get; set; }
         public string? AttachmentPath { get; set; }
+        public int CompanyId { get; set; }
         public int? EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public HrEmployee? Employee { get; set; }

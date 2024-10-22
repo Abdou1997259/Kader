@@ -13,7 +13,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
 
-    public class ResignationRequestService(IUnitOfWork unitOfWork, ILogger<ResignationRequestService> logger, KaderDbContext context, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IResignationRequestService
+    public class ResignationRequestService(IUnitOfWork unitOfWork, IUserContextService userContextService, ILogger<ResignationRequestService> logger, KaderDbContext context, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : IResignationRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -24,11 +24,13 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         private readonly KaderDbContext _context = context;
         private readonly IRequestService _requestService = requestService;
         private readonly ILogger<ResignationRequestService> _logger = logger;
-
+        private readonly IUserContextService _userContextService = userContextService;
         #region ListOfResignationRequest
         public async Task<Response<IEnumerable<ListOfResignationRequestResponse>>> ListOfResignationRequest()
         {
-            var result = await unitOfWork.ResignationRepository.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, orderBy: x => x.OrderBy(x => x.Id));
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            var result = await unitOfWork.ResignationRepository
+                .GetSpecificSelectAsync(x => x.IsDeleted == false && x.CompanyId == currentCompanyId, x => x, orderBy: x => x.OrderBy(x => x.Id));
             var msg = _sharLocalizer[Localization.NotFound];
             if (result == null)
             {
@@ -53,9 +55,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region PaginatedResignationRequest
         public async Task<Response<GetAllResignationRequestResponse>> GetAllResignationRequest(GetFillterationResignationRequest model, string host)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             #region ApprovalExpression
             Expression<Func<ResignationRequest, bool>> filter = x =>
-                x.IsDeleted == false &&
+                x.IsDeleted == false && x.CompanyId == currentCompanyId &&
                 (model.ApporvalStatus == RequestStatusTypes.All ||
                 (model.ApporvalStatus == RequestStatusTypes.Approved && x.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved) ||
                 (model.ApporvalStatus == RequestStatusTypes.ApprovedRejected &&
@@ -137,7 +140,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region GetResignationRequetById
         public async Task<Response<DtoListOfResignationResposne>> GetById(int id)
         {
-            var result = await unitOfWork.ResignationRepository.GetByIdAsync(id);
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            var result = await unitOfWork.ResignationRepository.GetFirstOrDefaultAsync(
+                x => x.CompanyId == currentCompanyId && x.Id == id);
             if (result == null)
             {
                 var msg = _sharLocalizer[Localization.NotFoundData];
@@ -164,7 +169,19 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region AddResignationRequest
         public async Task<Response<ResignationRequest>> AddNewResignationRequest(DTOResignationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.ResignationRequest)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id ==
+            model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+
+            }
             var newRequest = _mapper.Map<ResignationRequest>(model);
+            newRequest.CompanyId = currentCompanyId;
             StatuesOfRequest statues = new()
             {
                 ApporvalStatus = (int)RequestStatusTypes.Pending
@@ -189,9 +206,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         {
             try
             {
+                var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
                 var userId = _httpContextAccessor.HttpContext.User.GetUserId();
 
-                var resignationRequest = await _unitOfWork.ResignationRepository.GetByIdAsync(id);
+                var resignationRequest = await _unitOfWork.ResignationRepository
+                    .GetFirstOrDefaultAsync(x => x.CompanyId == currentCompanyId && x.Id == id);
                 if (resignationRequest == null)
                 {
                     return new()
@@ -248,8 +267,18 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region UpdateResignationRequest
         public async Task<Response<ResignationRequest>> UpdateResignationRequest(int id, DTOResignationRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.ResignationRequest)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+            }
 
-            var resignation = await _unitOfWork.ResignationRepository.GetByIdAsync(id);
+            var resignation = await _unitOfWork
+                .ResignationRepository.GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompanyId);
             if (resignation == null || resignation.StatuesOfRequest.ApporvalStatus != (int)RequestStatusTypes.Pending)
             {
                 var msg = _sharLocalizer[Localization.NotFound] + " or " + _sharLocalizer[Localization.NotPending];
@@ -297,8 +326,13 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region Status
         public async Task<Response<string>> ApproveRequest(int requestId)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.ResignationRepository.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+            var result = await _unitOfWork.ResignationRepository
+                .UpdateApporvalStatus(x =>
+                x.Id == requestId &&
+                x.CompanyId == currentCompanyId, RequestStatusTypes.Approved, userId);
             if (result > 0)
             {
                 return new Response<string>()
@@ -315,8 +349,10 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {
+            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await _unitOfWork.ResignationRepository.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Rejected, userId, resoan);
+            var result = await _unitOfWork.ResignationRepository
+                .UpdateApporvalStatus(x => x.Id == requestId && x.CompanyId == currentCompanyId, RequestStatusTypes.Rejected, userId, resoan);
             if (result > 0)
             {
                 return new Response<string>()
