@@ -123,7 +123,8 @@ namespace Kader_System.Services.Services.HR
             var empFiles = await unitOfWork.EmployeeAttachments.GetSpecificSelectAsync(x => x.EmployeeId == id,
                 x => x);
 
-
+            var dirType = HrDirectoryTypes.EmployeeProfile;
+            var dir = dirType.GetModuleNameWithType(Modules.HR);
             return new()
             {
                 Data = new()
@@ -175,7 +176,7 @@ namespace Kader_System.Services.Services.HR
                     ShiftId = obj.ShiftId,
                     TotalSalary = obj.TotalSalary,
                     Username = obj.User!.UserName,
-                    EmployeeImage = fileServer.CombinePath(Modules.Employees, obj.EmployeeImage),
+                    EmployeeImage = fileServer.CombinePath(dir, obj.EmployeeImage),
                     qualification_name = lang == Localization.Arabic ? obj.Qualification!.NameAr : obj.Qualification!.NameEn,
                     company_name = lang == Localization.Arabic ? obj.Company!.NameAr : obj.Company!.NameEn,
                     management_name = lang == Localization.Arabic ? obj.Management!.NameAr : obj.Management!.NameEn,
@@ -582,11 +583,15 @@ namespace Kader_System.Services.Services.HR
                     var newEmployee = mapper.Map<HrEmployee>(model);
                     newEmployee.IsActive = model.is_active;
 
-                    GetFileNameAndExtension imageFile = new();
-                    if (model.employee_image != null)
+
+
+                    if (model.employee_image is not null)
                     {
-                        imageFile.FileName = await fileServer.UploadFileAsync(Modules.Employees, model.employee_image);
-                        imageFile.FileExtension = Path.GetExtension(imageFile.FileName);
+                        var dirType = HrDirectoryTypes.EmployeeProfile;
+                        var dir = dirType.GetModuleNameWithType(Modules.HR);
+                        newEmployee.EmployeeImage = await fileServer.UploadFileAsync(dir,
+                            model.employee_image);
+
                     }
 
                     List<GetFileNameAndExtension> employeeAttachments = [];
@@ -599,8 +604,7 @@ namespace Kader_System.Services.Services.HR
                         employeeAttachments = await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
                     }
 
-                    newEmployee.EmployeeImage = imageFile?.FileName;
-                    newEmployee.EmployeeImageExtension = imageFile?.FileExtension;
+
                     newEmployee.ListOfAttachments = employeeAttachments.Select(f => new HrEmployeeAttachment
                     {
                         FileExtension = f.FileExtension,
@@ -690,7 +694,8 @@ namespace Kader_System.Services.Services.HR
             try
             {
                 List<GetFileNameAndExtension> getFileNameAnds = [];
-                GetFileNameAndExtension imageFile = new();
+
+
                 #region UpdateEmployeeMedia
                 if (model.employee_attachments is not null)
                 {
@@ -699,11 +704,7 @@ namespace Kader_System.Services.Services.HR
                     await unitOfWork.EmployeeAttachments.AddRangeAsync(employeeAttachment);
                     await unitOfWork.CompleteAsync();
                 }
-                if (model.employee_image is not null)
-                {
-                    imageFile.FileName = await fileServer.UploadFileAsync(directoryProfileName, model.employee_image);
-                    imageFile.FileExtension = fileServer.GetFileEXE(imageFile.FileName);
-                }
+
                 #endregion
 
                 int CurrentCompanyYearId = 0;
@@ -740,12 +741,18 @@ namespace Kader_System.Services.Services.HR
                 obj.HiringDate = model.hiring_date;
                 obj.ImmediatelyDate = model.immediately_date;
                 obj.IsActive = model.is_active;
-                obj.EmployeeImage = imageFile?.FileName;
-                obj.EmployeeImageExtension = imageFile?.FileExtension;
+
                 obj.ReligionId = model.religion_id;
                 obj.MaritalStatusId = model.marital_status_id;
                 obj.SalaryPaymentWayId = model.salary_payment_way_id;
+                if (model.employee_image is not null)
+                {
+                    var dirType = HrDirectoryTypes.EmployeeProfile;
+                    var dir = dirType.GetModuleNameWithType(Modules.HR);
+                    obj.EmployeeImage = await fileServer.UploadFileAsync(dir,
+                        model.employee_image);
 
+                }
 
                 if (model.children_number != null)
                 {

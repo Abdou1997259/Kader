@@ -290,7 +290,7 @@ namespace Kader_System.Services.Services.HR
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var haveContract = await unitOfWork.Contracts.ExistAsync
                 (x => x.employee_id ==
-            model.employee_id && x.company_id == currentCompany);
+            model.employee_id && x.company_id == currentCompany && x.IsDeleted == false);
             if (haveContract)
             {
                 var Msg = string.Format(shareLocalizer[Localization.HaveContract],
@@ -356,7 +356,8 @@ namespace Kader_System.Services.Services.HR
             using var transaction = unitOfWork.BeginTransaction();
             {
 
-                var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.id == id
+                var obj = await unitOfWork.Contracts.GetFirstOrDefaultAsync
+                    (x => x.id == id
                 && x.company_id == currentCompany);
                 if (obj is null)
                 {

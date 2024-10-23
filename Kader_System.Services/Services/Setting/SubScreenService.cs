@@ -276,7 +276,9 @@ public class SubScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, I
 
     }
 
-    public async Task<Response<StUpdateSubScreenRequest>> UpdateSubScreenAsync(int id, StUpdateSubScreenRequest model, string appPath, string moduleName)
+    public async Task<Response<StUpdateSubScreenRequest>>
+        UpdateSubScreenAsync
+        (int id, StUpdateSubScreenRequest model, string appPath, string moduleName)
     {
 
 
@@ -319,6 +321,7 @@ public class SubScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, I
         obj.Screen_sub_title_en = model.screen_sub_title_en;
         obj.ScreenCatId = model.screen_cat_id;
         obj.Url = model.url;
+        obj.ScreenCode = model.screen_code;
         _unitOfWork.SubScreens.Update(obj);
 
         if (model.actions is not null)

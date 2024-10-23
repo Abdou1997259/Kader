@@ -9,9 +9,13 @@ using System.Transactions;
 
 namespace Kader_System.Services.Services.Auth;
 
-public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService premissionsevice, IMapper mapper, UserManager<ApplicationUser> userManager,
-                   JwtSettings jwt, IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
-                   IHttpContextAccessor accessor, SignInManager<ApplicationUser> signInManager,
+public class AuthService(IUnitOfWork unitOfWork
+    , IPermessionStructureService premissionsevice,
+    IMapper mapper, UserManager<ApplicationUser> userManager,
+                   JwtSettings jwt,
+                   IStringLocalizer<SharedResource> sharLocalizer, ILogger<AuthService> logger,
+                   IHttpContextAccessor accessor,
+                   SignInManager<ApplicationUser> signInManager,
                    IFileServer fileServer,
                    RoleManager<ApplicationRole> roleManager,
                    KaderDbContext db,
@@ -46,7 +50,7 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
         var test = _db.Database.GetConnectionString();
         var usernormalize = await _userManager.Users.SingleOrDefaultAsync(u => u.NormalizedUserName == normalizedUserName);
         var user = await _userManager.FindByNameAsync(model.UserName);
-        if (user == null)
+        if (user == null || (_userContext.IsAdmin() || user.IsDeleted))
             return new()
             {
                 Data = new()
@@ -54,7 +58,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
                     UserName = model.UserName
                 },
                 Error = err,
-                Msg = string.Format(_sharLocalizer[Localization.CannotBeFound],
+                Msg = string.Format(
+                    _sharLocalizer[Localization.CannotBeFound],
                 _sharLocalizer[Localization.UserName]),
                 Check = false
             };
@@ -158,8 +163,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
             };
         }
 
-        model.current_title ??= model.title_id.FirstOrDefault();
-        model.current_company ??= model.company_id.FirstOrDefault();
+        model.current_title = model.title_id.FirstOrDefault();
+        model.current_company = model.company_id.FirstOrDefault();
 
         string err = _sharLocalizer[Localization.Error];
         var obj = await _userManager.FindByIdAsync(id);
@@ -1266,7 +1271,8 @@ public class AuthService(IUnitOfWork unitOfWork, IPermessionStructureService pre
 
         _unitOfWork.Users.Update(obj);
         await _unitOfWork.CompleteAsync();
-
+        if (!_userContext.IsAdmin())
+            await signInManager.SignOutAsync();
         return new()
         {
             Check = true,

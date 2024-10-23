@@ -1,6 +1,7 @@
 ﻿using Kader_System.Domain.DTOs;
 using Kader_System.Domain.DTOs.Request.HR.Loan;
 using Kader_System.Domain.DTOs.Response.Loan;
+using Microsoft.EntityFrameworkCore;
 
 namespace Kader_System.Services.Services.Trans
 {
@@ -430,69 +431,66 @@ namespace Kader_System.Services.Services.Trans
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             Expression<Func<TransLoan, bool>> filter = x => x.Id == id && x.CompanyId == currentCompany;
-            var obj = (await _unitOfWork.LoanRepository.GetSpecificSelectAsync(filter: filter, select: x => x, includeProperties: "TransLoanDetails")).FirstOrDefault();
-            var empolyee = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
 
-            if (empolyee is null)
+            var obj = (await _unitOfWork.LoanRepository
+                .GetSpecificSelectAsync(filter: filter, select: x => x, includeProperties: "TransLoanDetails"))
+                .FirstOrDefault();
+
+            var employee = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
+
+            if (employee is null)
             {
-                string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                    _sharLocalizer[Localization.Employee]);
-
-                return new()
-                {
-                    Data = null,
-                    Error = resultMsg,
-                    Msg = resultMsg
-                };
-
+                string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound], _sharLocalizer[Localization.Employee]);
+                return new() { Data = null, Error = resultMsg, Msg = resultMsg };
             }
 
             if (obj == null)
             {
-                string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                    _sharLocalizer[Localization.Loan]);
-
-                return new()
-                {
-                    Data = null,
-                    Error = resultMsg,
-                    Msg = resultMsg
-                };
+                string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound], _sharLocalizer[Localization.Loan]);
+                return new() { Data = null, Error = resultMsg, Msg = resultMsg };
             }
 
+            // Map the model to the entity
             _mapper.Map(model, obj);
             obj.CompanyId = currentCompany;
-            var startMonth = model.StartCalculationDate;
+
+            // Remove existing loan details
             var objOfDetails = await _unitOfWork.TransLoanDetails
-                .GetSpecificSelectTrackingAsync(x => x.TransLoanId == id, x => x);
+                .GetSpecificSelectAsync(x => x.TransLoanId == id, x => x);
             _unitOfWork.TransLoanDetails.RemoveRange(objOfDetails);
-            await _unitOfWork.CompleteAsync();
+
+            await _unitOfWork.CompleteAsync(); // Save changes before adding new details
+
+            // Add new loan details
+            var startMonth = model.StartCalculationDate;
+            var listOfTransDetails = new List<TransLoanDetails>();
             for (int i = 1; i <= model.InstallmentCount; i++)
             {
-                await _unitOfWork.TransLoanDetails.AddAsync(new TransLoanDetails
+                listOfTransDetails.Add(new TransLoanDetails
                 {
+
                     DeductionDate = startMonth,
                     Amount = model.MonthlyDeducted,
                     PaymentDate = null,
                     TransLoanId = id
 
-
                 });
 
                 startMonth = startMonth.AddMonths(1);
             }
-
-
-            _unitOfWork.LoanRepository.Update(obj);
-            await _unitOfWork.CompleteAsync();
-
-
-            return new()
+            await _unitOfWork.TransLoanDetails.AddRangeAsync(listOfTransDetails);
+            try
             {
-                Check = true,
-                Data = null,
-                Msg = _sharLocalizer[Localization.Updated]
-            };
+
+                await _unitOfWork.CompleteAsync(); // Save changes
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // Handle concurrency issue
+                return new() { Data = null, Error = "The loan has been modified by another user.", Msg = "Concurrency issue." };
+            }
+
+            return new() { Check = true, Data = null, Msg = _sharLocalizer[Localization.Updated] };
         }
 
         public async Task<Response<PayForLoanDetailsResponse>> PayForLoanDetails(PayForLoanDetailsRequest model, int id)

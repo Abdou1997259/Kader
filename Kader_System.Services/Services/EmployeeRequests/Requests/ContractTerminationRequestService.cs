@@ -134,7 +134,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region GetContractTerminationRequestById
-        public async Task<Response<ListOfContractTerminationRequestResponse>> GetById(int id)
+        public async Task<Response<
+            ListOfContractTerminationRequestResponse>> GetById(int id)
         {
             var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var result = await unitOfWork.ContractTerminationRequest
@@ -175,7 +176,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 return new()
                 {
                     Check = false,
-                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]
+                    Msg = _sharLocalizer[Localization.IsNotExisted,
+                    _sharLocalizer[Localization.Employee]]
                 };
             }
             var newRequest =
@@ -260,7 +262,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 return new()
                 {
                     Check = false,
-                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]
+                    Msg = _sharLocalizer[Localization.IsNotExisted,
+                    _sharLocalizer[Localization.Employee]]
                 };
             }
             var _contract = await _unitOfWork.ContractTerminationRequest.GetFirstOrDefaultAsync

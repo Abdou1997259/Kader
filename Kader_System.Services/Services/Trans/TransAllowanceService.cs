@@ -248,7 +248,8 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IUserContextService u
         if (await unitOfWork.TransAllowances.ExistAsync(x => x.EmployeeId ==
         model.EmployeeId && x.CompanyId == currentCompany &&
           x.AllowanceId == model.AllowanceId &&
-          DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now)))
+
+                x.ActionMonth == model.ActionMonth))
         {
             return new()
             {

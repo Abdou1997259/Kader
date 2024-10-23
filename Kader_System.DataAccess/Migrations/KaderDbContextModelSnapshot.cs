@@ -255,7 +255,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "588ea475-0ddf-4e8f-9e25-40359d23d87e",
+                            ConcurrencyStamp = "2c6695d7-198f-4045-bf90-2e7e8fddb111",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -269,10 +269,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMLmRx/S8Hd3PxTCPai/x8Brue7cVpOSKqJqEdY2UePPABUEGrpuF6yKkxjsd6FU/w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEK9X2g7cZTEc0aEmXRgkZ+C/2TtjBopzACVPx6FXUdJe1eu5S0Q0Y/jOZmwHYhK2Hg==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "03095568-f46e-46bb-a502-fee60bbfb667",
+                            SecurityStamp = "202bddf4-42cf-4e1f-855b-e8b724e5f4d2",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -741,9 +741,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("SalaryEffectId")
-                        .HasColumnType("int");
-
                     b.Property<string>("UpdateBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -772,8 +769,6 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.HasIndex("SalaryEffectId");
-
                     b.HasIndex("allowance_id");
 
                     b.ToTable("hr_allowance_request");
@@ -795,6 +790,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
@@ -846,6 +844,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
@@ -901,6 +902,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -952,6 +956,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -959,6 +966,9 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IncreaseType")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -980,6 +990,8 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasIndex("EmployeeId");
 
+                    b.HasIndex("IncreaseType");
+
                     b.ToTable("Hr_SalaryIncreaseRequest");
                 });
 
@@ -999,6 +1011,9 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.Property<string>("AttachmentPath")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
 
                     b.Property<int>("DayCounts")
                         .HasColumnType("int");
@@ -8445,12 +8460,6 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("Kader_System.Domain.Models.Trans.TransSalaryEffect", "SalaryEffect")
-                        .WithMany()
-                        .HasForeignKey("SalaryEffectId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("Kader_System.Domain.Models.HR.HrAllowance", "HrAllowance")
                         .WithMany()
                         .HasForeignKey("allowance_id")
@@ -8493,8 +8502,6 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("HrAllowance");
-
-                    b.Navigation("SalaryEffect");
 
                     b.Navigation("StatuesOfRequest");
                 });
@@ -8643,6 +8650,12 @@ namespace Kader_System.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("Kader_System.Domain.Models.HR.HrValueType", "ValueType")
+                        .WithMany()
+                        .HasForeignKey("IncreaseType")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.OwnsOne("Kader_System.Domain.Models.EmployeeRequests.Requests.StatuesOfRequest", "StatuesOfRequest", b1 =>
                         {
                             b1.Property<int>("SalaryIncreaseRequestId")
@@ -8677,6 +8690,8 @@ namespace Kader_System.DataAccess.Migrations
                         });
 
                     b.Navigation("StatuesOfRequest");
+
+                    b.Navigation("ValueType");
 
                     b.Navigation("employee");
                 });

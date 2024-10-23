@@ -167,7 +167,8 @@ namespace Kader_System.Services.Services.Trans
             }
 
             if (await unitOfWork.TransCovenants.ExistAsync(x => x.company_id
-            == currentCompany && (x.name_ar.Trim() == model.name_ar.Trim() ||
+            == currentCompany && (x.name_ar.Trim() ==
+            model.name_ar.Trim() ||
             x.name_en.Trim() == model.name_en.Trim())))
             {
                 return new()

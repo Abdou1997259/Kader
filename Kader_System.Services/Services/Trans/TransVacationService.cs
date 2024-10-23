@@ -218,7 +218,7 @@ namespace Kader_System.Services.Services.Trans
             if (await unitOfWork.TransVacations.ExistAsync(x =>
             x.employee_id == model.employee_id && x.company_id == currentCompany &&
             x.vacation_id == model.vacation_id &&
-            DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now)))
+            x.start_date == model.start_date))
             {
                 return new()
                 {
