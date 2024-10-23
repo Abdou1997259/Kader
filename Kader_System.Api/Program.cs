@@ -89,7 +89,8 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
     options.Password.RequiredLength = 6;
-}).AddEntityFrameworkStores<KaderDbContext>().AddDefaultTokenProviders();
+}).AddEntityFrameworkStores<KaderDbContext>()
+.AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews().AddJsonOptions(x =>
 {
@@ -101,7 +102,8 @@ builder.Services.AddControllersWithViews().AddJsonOptions(x =>
     );
 
 builder.Services.AddDbContext<KaderAuthorizationContext>(options =>
- options.UseSqlServer(builder.Configuration.GetConnectionString("KaderAuthorizationConnection"))
+ options.UseSqlServer(builder.Configuration.
+ GetConnectionString("KaderAuthorizationConnection"))
  );
 builder.Services.AddDbContext<KaderDbContext>(options =>
      options.UseSqlServer(builder.Configuration.GetConnectionString(Shared.KaderSystemConnection),

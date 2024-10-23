@@ -266,7 +266,7 @@ namespace Kader_System.Services.Services.Trans
             if (await unitOfWork.TransDeductions.ExistAsync(x => x.employee_id ==
             model.employee_id && x.company_id == currentCompany &&
             x.deduction_id == model.deduction_id &&
-            DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now)))
+            x.action_month == model.action_month))
             {
                 return new()
                 {

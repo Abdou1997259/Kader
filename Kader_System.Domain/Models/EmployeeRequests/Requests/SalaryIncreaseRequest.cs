@@ -11,6 +11,9 @@
         public string? AttachmentPath { get; set; }
         public string? Notes { get; set; }
         public int CompanyId { get; set; }
+        public int IncreaseType { get; set; }
+        [ForeignKey(nameof(IncreaseType))]
+        public HrValueType ValueType { get; set; } = default!;
         public int EmployeeId { get; set; }
         [ForeignKey(nameof(EmployeeId))]
         public HrEmployee employee { get; set; }

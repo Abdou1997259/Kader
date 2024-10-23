@@ -53,7 +53,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
         #region PaginatedAllwanceRequest
-        public async Task<Response<GetAllowanceRequestRequestResponse>> GetAllowanceRequest(GetAllFilterationAllowanceRequest model, string host)
+        public async Task<Response<GetAllowanceRequestRequestResponse>>
+            GetAllowanceRequest(GetAllFilterationAllowanceRequest model, string host)
         {
             var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             #region ApprovalExpression

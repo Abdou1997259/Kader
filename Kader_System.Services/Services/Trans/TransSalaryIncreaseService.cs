@@ -261,7 +261,8 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<CreateTransSalaryIncreaseRequest>> CreateTransSalaryIncreaseAsync(CreateTransSalaryIncreaseRequest model, string lang)
+        public async Task<Response<CreateTransSalaryIncreaseRequest>>
+            CreateTransSalaryIncreaseAsync(CreateTransSalaryIncreaseRequest model, string lang)
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
 
@@ -277,7 +278,8 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
             var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x
-                => x.employee_id == model.Employee_id && x.company_id == currentCompany, x => x)).FirstOrDefault();
+                => x.employee_id == model.Employee_id
+                && x.company_id == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";
@@ -378,7 +380,8 @@ namespace Kader_System.Services.Services.Trans
             return new()
             {
                 Check = true,
-                Data = await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang, currentCompany)
+                Data = await _unitOfWork.TransSalaryIncrease
+                .GetEmployeeWithSalary(lang, currentCompany)
             };
 
         }

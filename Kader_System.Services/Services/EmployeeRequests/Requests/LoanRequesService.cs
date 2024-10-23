@@ -302,8 +302,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         {
             var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var loanRequest = await _unitOfWork.LoanRequestRepository
-                .GetFirstOrDefaultAsync(x => x.Id == requestId && x.CompanyId == currentCompanyId);
+            var loanRequest = await _unitOfWork.LoanRequestRepository.GetFirstOrDefaultAsync(x => x.Id == requestId);
             if (loanRequest == null)
             {
                 var msg = _sharLocalizer[Localization.NotFound];

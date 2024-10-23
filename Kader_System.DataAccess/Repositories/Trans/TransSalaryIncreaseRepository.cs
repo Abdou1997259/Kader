@@ -5,13 +5,15 @@ namespace Kader_System.DataAccess.Repositories.Trans
     public class TransSalaryIncreaseRepository(KaderDbContext context) : BaseRepository<TransSalaryIncrease>(context), ITransSalaryIncreaseRepository
     {
         private readonly KaderDbContext _context = context;
-        public async Task<IEnumerable<EmployeeWithSalary>> GetEmployeeWithSalary(string lang, int companyId)
+        public async Task<IEnumerable<EmployeeWithSalary>>
+            GetEmployeeWithSalary(string lang, int companyId)
         {
             var today = DateOnly.FromDateTime(DateTime.Now);
             var query = from e in _context.Employees
                         join c in _context.Contracts
                         on e.Id equals c.employee_id
-                        where e.IsDeleted == false && c.IsDeleted == false && e.CompanyId == companyId &&
+                        where e.IsDeleted == false &&
+                        c.IsDeleted == false && e.CompanyId == companyId &&
                         c.company_id == companyId
                         select new
                         {

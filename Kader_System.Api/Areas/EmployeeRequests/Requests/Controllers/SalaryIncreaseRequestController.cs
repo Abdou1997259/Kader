@@ -1,7 +1,6 @@
 ﻿using Kader_System.Api.Helpers;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
-using Kader_System.Services.IServices;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
@@ -13,12 +12,12 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
     [ApiController]
     [Route("api/v1/")]
     //[Authorize(Permissions.Setting.View)]
-    public class SalaryIncreaseRequestController(ISalaryIncreaseRequestService increaseRequestService,IRequestService requestService, IWebHostEnvironment hostEnvironment, IFileServer fileServer) : ControllerBase
+    public class SalaryIncreaseRequestController(ISalaryIncreaseRequestService increaseRequestService, IRequestService requestService, IWebHostEnvironment hostEnvironment, IFileServer fileServer) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
         private readonly IWebHostEnvironment _hostEnvironment = hostEnvironment;
         private readonly IFileServer _fileServer = fileServer;
-    
+
         #region Retrieve
         [HttpGet(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.GetAllSalaryIncreaseRequests)]
         [Permission(Permission.View, 19)]
@@ -45,19 +44,22 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Add, 19)]
         public async Task<IActionResult> SalaryIncreaseRequest([FromForm] DTOSalaryIncreaseRequest model)
         {
-            var response = await increaseRequestService.AddNewSalaryIncreaseRequest(model,
-                Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.SalaryIncreaseRequest);
+            var response = await increaseRequestService
+                .AddNewSalaryIncreaseRequest(model,
+                Modules.EmployeeRequest,
+                Domain.Constants.Enums.HrEmployeeRequestTypesEnums
+                .SalaryIncreaseRequest);
 
             if (response != null)
                 return Ok(response);
-            else return BadRequest(response);   
+            else return BadRequest(response);
         }
         #endregion
 
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.SalaryIncreaseRequest.UpdateIncreaseSalary)]
         [Permission(Permission.Edit, 19)]
-        public async Task<IActionResult> UpdateIncreaseSalary([FromRoute]int id ,[FromForm] DTOSalaryIncreaseRequest model)
+        public async Task<IActionResult> UpdateIncreaseSalary([FromRoute] int id, [FromForm] DTOSalaryIncreaseRequest model)
         {
             var response = await increaseRequestService.UpdateSalaryIncreaseRequest(id, model,
                  Modules.EmployeeRequest, Domain.Constants.Enums.HrEmployeeRequestTypesEnums.SalaryIncreaseRequest);
@@ -75,7 +77,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Delete, 19)]
         public async Task<IActionResult> DeleteSalaryIncreaseRequest(int id)
         {
-            var response = await increaseRequestService.DeleteSalaryIncreaseRequest(id,Modules.EmployeeRequest);
+            var response = await increaseRequestService.DeleteSalaryIncreaseRequest(id, Modules.EmployeeRequest);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -90,7 +92,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         [Permission(Permission.Edit, 19)]
         public async Task<IActionResult> ApproveSalaryIncreaseRequest([FromRoute] int id)
         {
-            var response = await increaseRequestService.ApproveRequest(id,requestService.GetRequestHeaderLanguage);
+            var response = await increaseRequestService.ApproveRequest(id, requestService.GetRequestHeaderLanguage);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

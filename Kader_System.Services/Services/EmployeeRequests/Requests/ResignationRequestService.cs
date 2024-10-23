@@ -328,7 +328,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         {
             var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
 
-            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var userId = _httpContextAccessor.HttpContext
+                .User.GetUserId();
             var result = await _unitOfWork.ResignationRepository
                 .UpdateApporvalStatus(x =>
                 x.Id == requestId &&

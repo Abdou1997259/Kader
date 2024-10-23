@@ -7,11 +7,10 @@ using Kader_System.Services.IServices;
 using Kader_System.Services.IServices.AppServices;
 using Kader_System.Services.IServices.EmployeeRequests.Requests;
 using Kader_System.Services.IServices.HTTP;
-using Kader_System.Services.Services.Auth;
 
 namespace Kader_System.Services.Services.EmployeeRequests.Requests
 {
-    public class SalaryIncreaseRequestService(IUnitOfWork unitOfWork, UserContextService userContextService, ITransSalaryIncreaseService transSalaryIncrease, KaderDbContext context, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ISalaryIncreaseRequestService
+    public class SalaryIncreaseRequestService(IUnitOfWork unitOfWork, IUserContextService userContextService, ITransSalaryIncreaseService transSalaryIncrease, KaderDbContext context, IRequestService requestService, IHttpContextAccessor httpContextAccessor, IHttpContextService contextService, IStringLocalizer<SharedResource> sharLocalizer, IFileServer fileServer, IMapper mapper) : ISalaryIncreaseRequestService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
@@ -177,7 +176,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddSalaryIncrease
-        public async Task<Response<SalaryIncreaseRequest>> AddNewSalaryIncreaseRequest(DTOSalaryIncreaseRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.SalaryIncreaseRequest)
+        public async Task<Response<SalaryIncreaseRequest>>
+            AddNewSalaryIncreaseRequest(DTOSalaryIncreaseRequest model
+            , string moduleName, HrEmployeeRequestTypesEnums
+            hrEmployeeRequest =
+            HrEmployeeRequestTypesEnums.SalaryIncreaseRequest)
         {
             var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
             if (!await _unitOfWork.Employees.ExistAsync(x =>
@@ -190,15 +193,27 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 };
 
             }
+            if (!await _unitOfWork.SalaryIncreaseTypeRepository.ExistAsync(x => x.Id == model.IncreaseType))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.AmountTypes]]
+
+                };
+            }
+
 
             var newRequest = _mapper.Map<SalaryIncreaseRequest>(model);
+
             newRequest.CompanyId = currentCompanyId;
             StatuesOfRequest statues = new()
             {
                 ApporvalStatus = (int)RequestStatusTypes.Pending
             };
             newRequest.StatuesOfRequest = statues;
-            var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
+            var moduleNameWithType = hrEmployeeRequest
+                .GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
                 await _fileServer.UploadFileAsync(moduleNameWithType, model.Attachment);
             await _unitOfWork.SalaryIncreaseRequest.AddAsync(newRequest);
@@ -214,7 +229,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
         #region UpdateSalaryIncrease
-        public async Task<Response<SalaryIncreaseRequest>> UpdateSalaryIncreaseRequest(int id, DTOSalaryIncreaseRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.SalaryIncreaseRequest)
+        public async Task<Response<SalaryIncreaseRequest>>
+            UpdateSalaryIncreaseRequest(int id, DTOSalaryIncreaseRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.SalaryIncreaseRequest)
         {
             var currentCompanyId =
                 await _userContextService.GetLoggedCurrentCompany();
@@ -226,6 +242,16 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 {
                     Check = false,
                     Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+            }
+            if (!await _unitOfWork.SalaryIncreaseTypeRepository.
+                ExistAsync(x => x.Id == model.IncreaseType))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.AmountTypes]]
+
                 };
             }
 
@@ -361,44 +387,74 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
 
-
-
-
-
-
-
-            var createresult = await _transSalaryIncreaseService.CreateTransSalaryIncreaseAsync(new CreateTransSalaryIncreaseRequest
-            {
-                Amount = increaseRequest.Amount,
-                Employee_id = increaseRequest.EmployeeId,
-                Increase_type = 1,
-                TransactionDate = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day)
-
-            }, lang);
-
-            if (!createresult.Check)
-            {
-                return new Response<string>()
-                {
-                    Check = false,
-                    Msg = createresult.Msg
-                };
-            }
-            var result = await _unitOfWork.SalaryIncreaseRequest.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
-
+            var result = await _unitOfWork
+              .VacationRequests.UpdateApporvalStatus(
+              x => x.Id == requestId, RequestStatusTypes.Approved, userId);
             if (result > 0)
             {
-                return new Response<string>()
+                HrEmployeeRequestTypesEnums hrEmployeeRequests =
+                    HrEmployeeRequestTypesEnums.SalaryIncreaseRequest;
+                var moduleNameWithType = hrEmployeeRequests
+                    .GetModuleNameWithType(Modules.EmployeeRequest);
+                SalaryIncreaseRequest transIncreaseRequest = new();
+
+                var emp = await
+                _unitOfWork.Employees.GetFirstOrDefaultAsync(
+                        x => x.Id == increaseRequest.EmployeeId && x.CompanyId
+                        == currentCompanyId);
+                var vacations = await _unitOfWork.
+                    Vacations.GetFirstOrDefaultAsync(x => x.Id ==
+                    emp.VacationId);
+
+
+
+                transIncreaseRequest.IncreaseType = increaseRequest.IncreaseType;
+                transIncreaseRequest.EmployeeId = increaseRequest.EmployeeId;
+                transIncreaseRequest.Amount = increaseRequest.Amount;
+                transIncreaseRequest.CompanyId = increaseRequest.CompanyId;
+                #region CopyFileAttachment
+                if (increaseRequest.AttachmentPath != null)
                 {
-                    Check = true,
-                    Msg = _sharLocalizer[Localization.Approved]
-                };
+                    var SourceFilePath = _fileServer.CombinePathWithServerPath
+                        (moduleNameWithType, increaseRequest.AttachmentPath);
+                    var newFileName = $"{Guid.NewGuid()}{_fileServer.
+                        GetFileEXE(increaseRequest.AttachmentPath)}";
+                    moduleNameWithType = hrEmployeeRequests.
+                        GetModuleNameWithType(Modules.Trans);
+                    var desitnationFile = _fileServer.
+                        CombinePathWithServerPath(moduleNameWithType, newFileName);
+                    _fileServer.CopyFile(SourceFilePath, desitnationFile);
+                    transIncreaseRequest.AttachmentPath = desitnationFile;
+                }
+                else
+                {
+                    transIncreaseRequest.AttachmentPath = null;
+
+                }
+                #endregion
+
+                await _unitOfWork.SalaryIncreaseRequest.AddAsync(transIncreaseRequest);
+                var saveResult = await _unitOfWork.CompleteAsync();
+                if (saveResult > 0)
+                {
+                    return new Response<string>
+                    {
+                        Msg = _sharLocalizer[Localization.Approved],
+                        Check = true,
+                    };
+                }
+
+
+
+
             }
+
             return new Response<string>()
             {
                 Check = false,
                 Msg = _sharLocalizer[Localization.NotApproved]
             };
+
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {

@@ -333,15 +333,21 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 };
 
             }
-            var result = await _unitOfWork.VacationRequests.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+            var result = await _unitOfWork
+                .VacationRequests.UpdateApporvalStatus(
+                x => x.Id == requestId, RequestStatusTypes.Approved, userId);
             if (result > 0)
             {
                 HrEmployeeRequestTypesEnums hrEmployeeRequests = HrEmployeeRequestTypesEnums.VacationRequest;
                 var moduleNameWithType = hrEmployeeRequests.GetModuleNameWithType(Modules.EmployeeRequest);
                 TransVacation transVacation = new();
 
-                var emp = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == vacationrequest.EmployeeId);
-                var vacations = await _unitOfWork.Vacations.GetFirstOrDefaultAsync(x => x.Id == emp.VacationId);
+                var emp = await
+                    _unitOfWork.Employees.GetFirstOrDefaultAsync(
+                        x => x.Id == vacationrequest.EmployeeId && x.CompanyId == currentCompany);
+                var vacations = await _unitOfWork.
+                    Vacations.GetFirstOrDefaultAsync(x => x.Id ==
+                    emp.VacationId);
 
 
                 transVacation.vacation_id = vacations.Id;
@@ -349,7 +355,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 transVacation.employee_id = vacationrequest.EmployeeId;
                 transVacation.notes = vacationrequest.Notes;
                 transVacation.days_count = vacationrequest.DayCounts;
-
+                transVacation.company_id = vacationrequest.CompanyId;
                 #region CopyFileAttachment
                 if (vacationrequest.AttachmentPath != null)
                 {

@@ -247,10 +247,11 @@ namespace Kader_System.Services.Services.Trans
             }
 
 
-            if (await unitOfWork.TransBenefits.ExistAsync(x => x.employee_id ==
+            if (await unitOfWork.TransBenefits.ExistAsync(x =>
+           x.employee_id ==
             model.employee_id && x.company_id == currentCompany &&
                 x.benefit_id == model.benefit_id &&
-                DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now)))
+                x.action_month == model.action_month))
             {
                 return new()
                 {

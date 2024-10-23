@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-
-namespace Kader_System.Domain.Models.HR;
+﻿namespace Kader_System.Domain.Models.HR;
 
 [Table("hr_employees")]
 public class HrEmployee : BaseEntity
@@ -138,13 +136,14 @@ public class HrEmployee : BaseEntity
 
 
     public ICollection<TransLoan> TransLoans { get; set; } = [];
-  
-    public string SetName() { 
-      if(Thread.CurrentThread.CurrentCulture.Name== "en-US")
+
+    public string SetName()
+    {
+        if (Thread.CurrentThread.CurrentCulture.Name == "en-US")
         {
             return this.FirstNameEn;
         }
         return this.FirstNameAr;
-    
+
     }
 }

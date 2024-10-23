@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests
+﻿namespace Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests
 {
     public class DTOSalaryIncreaseRequest
     {
-        [Required(ErrorMessage = "please Insert Employee Id")]
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
 
         public int EmployeeId { get; set; }
-        [Required(ErrorMessage = "please Insert Amount")]
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
 
         public double Amount { get; set; }
+
+        [Required(ErrorMessage = Annotations.FieldIsRequired)]
+        public int IncreaseType { get; set; }
         public string? Notes { get; set; }
         [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
 
         public IFormFile? Attachment { get; set; }
-     }
+    }
 }
