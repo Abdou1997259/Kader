@@ -171,7 +171,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         {
 
             var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
-            if (!await _unitOfWork.Employees.ExistAsync(x => x.Id == model.EmployeeId && x.CompanyId == currentCompanyId))
+            if (!await _unitOfWork.Employees.ExistAsync(x =>
+            x.Id == model.EmployeeId &&
+            x.CompanyId == currentCompanyId))
             {
                 return new()
                 {

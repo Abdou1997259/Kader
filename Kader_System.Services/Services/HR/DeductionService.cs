@@ -1,5 +1,4 @@
 ﻿using Kader_System.Domain.DTOs;
-using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.HR;
 
@@ -41,7 +40,7 @@ public class DeductionService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
         };
     }
 
-    public async Task<Response<HrGetAllDeductionsResponse>> GetAllDeductionsAsync(string lang, HrGetAllFiltrationsForDeductionsRequest model,string host)
+    public async Task<Response<HrGetAllDeductionsResponse>> GetAllDeductionsAsync(string lang, HrGetAllFiltrationsForDeductionsRequest model, string host)
     {
         Expression<Func<HrDeduction, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
                                                           (string.IsNullOrEmpty(model.Word) || x.Name_ar.Contains(model.Word) || x.Name_en.Contains(model.Word));
@@ -59,15 +58,16 @@ public class DeductionService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
         {
             TotalRecords = await _unitOfWork.Deductions.CountAsync(filter: filter),
 
-            Items = (await _unitOfWork.Deductions.GetSpecificSelectAsync(filter: filter,
+            Items = (await _unitOfWork.Deductions.GetSpecificSelectAsync
+            (filter: filter,
                  take: model.PageSize,
                  skip: (model.PageNumber - 1) * model.PageSize,
                  select: x => new DeductionData
                  {
                      Id = x.Id,
                      Name = lang == Localization.Arabic ? x.Name_ar : x.Name_en,
-                     Added_by = x.Added_by,
-                 }, orderBy: x =>
+                     Added_by = x.User.UserName,
+                 }, includeProperties: "User", orderBy: x =>
                    x.OrderByDescending(x => x.Id))).ToList(),
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
@@ -107,8 +107,9 @@ public class DeductionService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
     public async Task<Response<HrCreateDeductionRequest>> CreateDeductionAsync(HrCreateDeductionRequest model)
     {
         bool exists = false;
-        exists = await _unitOfWork.Deductions.ExistAsync(x => x.Name_ar.Trim() == model.Name_ar
-        && x.Name_en.Trim() == model.Name_en.Trim());
+        exists = await _unitOfWork.Deductions.ExistAsync(x => x.Name_ar.Trim()
+        == model.Name_ar
+        || x.Name_en.Trim() == model.Name_en.Trim());
 
         if (exists)
         {
@@ -122,7 +123,7 @@ public class DeductionService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
             };
         }
 
-        
+
 
         await _unitOfWork.Deductions.AddAsync(new()
         {
@@ -169,6 +170,17 @@ public class DeductionService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
 
     public async Task<Response<HrUpdateDeductionRequest>> UpdateDeductionAsync(int id, HrUpdateDeductionRequest model)
     {
+        if (await _unitOfWork.Deductions.ExistAsync(x => x.Id != id &&
+        (x.Name_ar.Trim() == model.Name_ar.Trim() ||
+        x.Name_en.Trim() == model.Name_en.Trim())))
+        {
+            return new()
+            {
+                Check = false,
+                Msg = _sharLocalizer[Localization.AlreadyExitedWithSameName, _sharLocalizer[Localization.Deduction]]
+            };
+
+        }
         var obj = await _unitOfWork.Deductions.GetByIdAsync(id);
 
         if (obj == null)

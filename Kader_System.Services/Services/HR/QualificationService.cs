@@ -1,6 +1,4 @@
 ﻿using Kader_System.Domain.DTOs;
-using Kader_System.Domain.DTOs.Response.EmployeesRequests;
-using Kader_System.Services.IServices.HTTP;
 
 namespace Kader_System.Services.Services.HR;
 
@@ -163,7 +161,7 @@ public class QualificationService(IUnitOfWork unitOfWork, IStringLocalizer<Share
     {
         bool exists = false;
         exists = await _unitOfWork.Qualifications.ExistAsync(x => x.NameAr.Trim() == model.Name_ar
-        && x.NameEn.Trim() == model.Name_en.Trim());
+        || x.NameEn.Trim() == model.Name_en.Trim());
 
         if (exists)
         {
@@ -222,6 +220,7 @@ public class QualificationService(IUnitOfWork unitOfWork, IStringLocalizer<Share
 
     public async Task<Response<HrUpdateQualificationRequest>> UpdateQualificationAsync(int id, HrUpdateQualificationRequest model)
     {
+
         var obj = await _unitOfWork.Qualifications.GetByIdAsync(id);
 
         if (obj == null)
@@ -236,6 +235,19 @@ public class QualificationService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                 Msg = resultMsg
             };
         }
+        if (await unitOfWork.Qualifications.ExistAsync(x => x.Id != id
+     && (x.NameAr.Trim() == model.Name_ar.Trim()
+     || x.NameEn.Trim() == model.Name_en.Trim())))
+        {
+            string resultMsg = string.Format(sharLocalizer[Localization.AlreadyExitedWithSameName],
+              sharLocalizer[Localization.Qualification]);
+            return new()
+            {
+                Check = false,
+                Msg = resultMsg
+            };
+        }
+
 
         obj.NameAr = model.Name_ar;
         obj.NameEn = model.Name_en;
@@ -254,7 +266,7 @@ public class QualificationService(IUnitOfWork unitOfWork, IStringLocalizer<Share
 
     public async Task<Response<HrUpdateQualificationRequest>> RestoreQualificationAsync(int id)
     {
-        var obj = await _unitOfWork.Qualifications.GetFirstOrDefaultAsync(q=>q.Id==id);
+        var obj = await _unitOfWork.Qualifications.GetFirstOrDefaultAsync(q => q.Id == id);
 
         if (obj == null)
         {

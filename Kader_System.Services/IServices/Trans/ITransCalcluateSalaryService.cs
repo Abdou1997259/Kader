@@ -11,7 +11,7 @@ namespace Kader_System.Services.IServices.Trans
 
         Task<Response<string>> DeleteCalculator(int Id);
         Task<Response<GetLookupsCalculatedSalaries>> GetLookups(string lang);
-        Task<Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>> GetById(int id, string lang);
+        Task<Response<SalaryResponse>> GetById(int id, string lang);
 
 
     }

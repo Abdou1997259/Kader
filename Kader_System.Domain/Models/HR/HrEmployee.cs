@@ -130,8 +130,10 @@ public class HrEmployee : BaseEntity
 
     public long? AccountNo { get; set; }
     public string? Note { get; set; }
-    public HrContract Contract { get; set; }
+    public ICollection<HrContract> Contract { get; set; } = new HashSet<HrContract>();
     public ICollection<HrEmployeeAttachment> ListOfAttachments { get; set; } = [];
+    public ICollection<TransSalaryIncrease> SalaryIncreases { get; set; } = new HashSet<TransSalaryIncrease>();
+
 
 
 

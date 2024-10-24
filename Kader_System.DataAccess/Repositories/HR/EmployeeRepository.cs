@@ -1,5 +1,6 @@
 ﻿using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.DTOs.Response.HR;
+using Kader_System.Domain.DTOs.Response.Loan;
 
 namespace Kader_System.DataAccess.Repositories.HR;
 
@@ -12,6 +13,9 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
     {
         try
         {
+
+            var dirType = HrDirectoryTypes.EmployeeProfile;
+            var dir = dirType.GetModuleNameWithType(Modules.HR);
             HrDirectoryTypes directoryTypes = new();
             directoryTypes = HrDirectoryTypes.Attachments;
             var directoryAttachmentsName = directoryTypes.GetModuleNameWithType(Modules.Employees);
@@ -102,7 +106,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                              ShiftId = employee.ShiftId,
                              TotalSalary = cGroup.fixed_salary == null ? 0 : cGroup.fixed_salary +
                              cGroup.housing_allowance == null ? cGroup.housing_allowance : cGroup.housing_allowance,
-                             EmployeeImage = Path.Combine(directoryProfileName, employee.EmployeeImage == null ? " " : employee.EmployeeImage),
+                             EmployeeImage = Path.Combine(dir, employee.EmployeeImage == null ? " " : employee.EmployeeImage),
                              qualification_name = lang == Localization.Arabic ? qual.NameAr : qual.NameEn,
                              company_name = lang == Localization.Arabic ? com.NameAr : com.NameEn,
                              management_name = lang == Localization.Arabic ? man.NameAr : man.NameEn,
@@ -206,14 +210,28 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
     public async Task<object> GetEmployeesDataNameAndIdAsLookUp(string lang, int companyId)
     {
 
-        return await context.Employees.
-            Where(e => !e.IsDeleted && e.IsActive && e.CompanyId == companyId)
+        return await context.Employees
 
+                .Join(_context.Contracts, e => e.Id, c => c.employee_id, (e, c) => new { c, e }).
+                Where(e => !e.e.IsDeleted && e.e.IsActive && e.e.CompanyId == companyId && !e.c.IsDeleted)
             .Select(e => new
             {
-                id = e.Id,
-                employee_name = lang == Localization.Arabic ? e.FullNameAr : e.FullNameEn,
+                id = e.e.Id,
+                employee_name = lang == Localization.Arabic ? e.e.FullNameAr : e.e.FullNameEn,
             }).ToArrayAsync();
+    }
+
+    public async Task<IEnumerable<EmployeeLookup>> GetEmployeesDataNameAndIdAsCustomTypeLookUp(string lang, int companyId)
+    {
+        return await context.Employees
+
+                .Join(_context.Contracts, e => e.Id, c => c.employee_id, (e, c) => new { c, e }).
+                Where(e => !e.e.IsDeleted && e.e.IsActive && e.e.CompanyId == companyId && !e.c.IsDeleted)
+            .Select(e => new EmployeeLookup
+            {
+                Id = e.e.Id,
+                EmployeeName = lang == Localization.Arabic ? e.e.FullNameAr : e.e.FullNameEn,
+            }).ToListAsync();
     }
     public async Task<object> GetEmployeesNameIdSalaryAsLookUp(string lang)
     {
@@ -234,9 +252,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
         var employees = await _context.QueryLookups.FromSql($@"
                 select Id,FullNameAr,FullNameEn from hr_employees
                 where CompanyId={companyId} 
-               and IsDeleted=0 and IsActive=1 and Id not in (
-                select employee_id from hr_contracts
-                where company_id={companyId}  and IsDeleted=0 and IsActive=1)")
+               and IsDeleted=0 and IsActive=1")
            .ToListAsync();
         return employees.Select(e => new
         {

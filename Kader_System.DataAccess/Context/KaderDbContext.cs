@@ -60,6 +60,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<HrSectionDepartment> SectionDepartments { get; set; }
     public DbSet<HrVacationDistribution> VacationDistributions { get; set; }
     public DbSet<HrShift> Shifts { get; set; }
+    public DbSet<EmployeeLookupQuery> EmployeeLookupQueries { get; set; }
     public DbSet<HrVacation> Vacations { get; set; }
     public DbSet<HrVacationType> VacationTypes { get; set; }
     public DbSet<HrValueType> ValueTypes { get; set; }

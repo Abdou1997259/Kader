@@ -147,8 +147,11 @@ namespace Kader_System.Services.Services.HR
         public async Task<Response<CreateVacationRequest>> CreateVacationAsync(CreateVacationRequest model)
         {
             bool exists = false;
-            exists = await unitOfWork.Vacations.ExistAsync(x => x.NameAr.Trim() == model.NameAr
-                                                                      && x.NameEn.Trim() == model.NameEn.Trim());
+            exists = await unitOfWork.Vacations.ExistAsync(x => x.NameAr.Trim() ==
+            model.NameAr.Trim()
+
+
+            || x.NameEn.Trim() == model.NameEn.Trim());
 
             if (exists)
             {
@@ -204,7 +207,15 @@ namespace Kader_System.Services.Services.HR
 
             HrVacation instanceVacation;
             var obj = await unitOfWork.Vacations.GetFirstOrDefaultAsync(v => v.Id == id, nameof(instanceVacation.VacationDistributions));
+            if (await unitOfWork.Vacations.ExistAsync(x => x.Id != id && (x.NameAr.Trim() == model.NameAr.Trim() || x.NameEn.Trim() == model.NameEn.Trim())))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.AlreadyExitedWithSameName, sharLocalizer[Localization.Vacation]]
+                };
 
+            }
             if (obj == null)
             {
                 string resultMsg = string.Format(sharLocalizer[Localization.CannotBeFound],

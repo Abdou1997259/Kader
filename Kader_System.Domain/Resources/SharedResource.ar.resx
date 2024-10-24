@@ -124,10 +124,10 @@
     <value>البدل</value>
   </data>
   <data name="AlreadyExited" xml:space="preserve">
-    <value>موجود بافعل {0}</value>
+    <value> {0} موجود بافعل</value>
   </data>
   <data name="AlreadyExitedWithSameName" xml:space="preserve">
-    <value>موجود بافعل {0} بنفس الاسم </value>
+    <value>{0} موجود بالفعل بنفس الاسم</value>
   </data>
   <data name="AmountTypes" xml:space="preserve">
     <value>نوع الخصم او الزيادة </value>
@@ -156,8 +156,11 @@
   <data name="CalculatedAready" xml:space="preserve">
     <value>تم حساب الراتب لهذا الموطف من قبل</value>
   </data>
+  <data name="CanceledContract" xml:space="preserve">
+    <value>العقد ملغي </value>
+  </data>
   <data name="CannotBeFound" xml:space="preserve">
-    <value>{0} ليست موجودة</value>
+    <value>لايوجد{0}</value>
   </data>
   <data name="CannotDeleteItemHasRelativeData" xml:space="preserve">
     <value>لايمكن حذف {0}لوجود بيانات مرتبطه به</value>
@@ -231,6 +234,9 @@
   <data name="IsNotExistedIn" xml:space="preserve">
     <value>ليس موجود في</value>
   </data>
+  <data name="Job" xml:space="preserve">
+    <value>الوظيفة</value>
+  </data>
   <data name="Loan" xml:space="preserve">
     <value>السلف</value>
   </data>
@@ -297,6 +303,9 @@
   <data name="ScreenInAction" xml:space="preserve">
     <value>هذه الشاشة لاتحتوي علي صلاحيات </value>
   </data>
+  <data name="SelfDeleteUser" xml:space="preserve">
+    <value>لايمكن للمستخدم ان يمسح نفسه </value>
+  </data>
   <data name="SubMainScreen" xml:space="preserve">
     <value>الشاشة الفرعية</value>
   </data>
@@ -335,6 +344,9 @@
   </data>
   <data name="UserPermission" xml:space="preserve">
     <value>هذه المسئولية ليس لها صلاحيات في هذا المستخدم </value>
+  </data>
+  <data name="Vacation" xml:space="preserve">
+    <value>الاجازة</value>
   </data>
   <data name="ViewInclude" xml:space="preserve">
     <value>يجب ان يحتوي علي صلاحية العرض اولا</value>

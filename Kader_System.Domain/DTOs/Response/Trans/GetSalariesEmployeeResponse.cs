@@ -67,4 +67,9 @@
         public string ScreenName { get; set; }
         public List<string> MinuesValues { get; set; }
     }
+    public class SalaryResponse
+    {
+        public Header Headers { get; set; }
+        public List<GetSalariesEmployeeResponse> Details { get; set; }
+    }
 }

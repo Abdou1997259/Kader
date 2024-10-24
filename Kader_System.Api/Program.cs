@@ -183,11 +183,11 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 
     var cultures = new[]
     {
-        new CultureInfo("en-US"),
-        new CultureInfo("ar-EG")
+        new CultureInfo("en"),
+        new CultureInfo("ar")
     };
 
-    options.DefaultRequestCulture = new RequestCulture(uiCulture: "en-US", culture: "en-US");
+    options.DefaultRequestCulture = new RequestCulture(uiCulture: "en", culture: "en");
     options.SupportedCultures = cultures;
     options.SupportedUICultures = cultures;
 });
@@ -416,11 +416,14 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.ConfigureExceptionHandler(loggingRepository);    // custom as a global exception
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseRequestLocalization(localizationOptions);
+app.LocalizationMiddleWaresHandler();
 app.UseRouting();
 
 //app.UseExceptionHandler();
 //app.ConfigureStaticFilesHandler();                   // custom as Static files
-app.UseRequestLocalization(localizationOptions);
+
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 app.UseMiddleware<HeadersValidationMiddleware>();
 app.UseMiddleware<PathMiddleware>();

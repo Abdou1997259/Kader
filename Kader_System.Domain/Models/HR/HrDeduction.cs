@@ -7,5 +7,7 @@ public class HrDeduction : BaseEntity
     public int Id { get; set; }
     public required string Name_ar { get; set; }
     public required string Name_en { get; set; }
+    [ForeignKey(nameof(Added_by))]
+    public ApplicationUser User { get; set; }
     public long? AccountNo { get; set; }
 }

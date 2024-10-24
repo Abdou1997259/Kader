@@ -153,7 +153,7 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
             var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.employee_id ==
-            model.employee_id && x.company_id == currentCompany, x => x)).FirstOrDefault();
+            model.employee_id && !x.IsDeleted && x.company_id == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";

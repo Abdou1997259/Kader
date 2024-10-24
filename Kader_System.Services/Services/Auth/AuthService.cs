@@ -177,12 +177,7 @@ public class AuthService(IUnitOfWork unitOfWork
                 _fileServer.RemoveFile(moduleName, obj.ImagePath);
             obj.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
         }
-        else
-        {
-            if (obj?.ImagePath != null)
-                _fileServer.RemoveFile(moduleName, obj.ImagePath);
-            obj.ImagePath = null;
-        }
+
         obj.UpdateDate = new DateTime().NowEg();
         obj.UpdateBy = _accessor!.HttpContext == null ? string.Empty : _accessor!.HttpContext!.User.GetUserId();
 
@@ -1250,6 +1245,17 @@ public class AuthService(IUnitOfWork unitOfWork
 
     public async Task<Response<string>> DeleteUser(string id)
     {
+        var loggedUser = _userContext.UserId;
+
+        if (loggedUser == id)
+        {
+
+            return new()
+            {
+                Check = false,
+                Msg = _sharLocalizer[Localization.SelfDeleteUser]
+            };
+        }
         var obj = await _userManager.FindByIdAsync(id.ToString());
 
         if (obj == null)

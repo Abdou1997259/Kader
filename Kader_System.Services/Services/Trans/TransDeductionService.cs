@@ -144,14 +144,7 @@ namespace Kader_System.Services.Services.Trans
             try
             {
                 var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-                var employees = await unitOfWork.Employees.GetSpecificSelectAsync(
-                    filter => filter.IsDeleted == false
-                    && filter.CompanyId == currentCompany && filter.IsActive,
-                    select: x => new
-                    {
-                        Id = x.Id,
-                        Name = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn
-                    });
+                var employees = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany);
 
                 var deductions = await unitOfWork.Deductions
                     .GetSpecificSelectAsync(filter => filter.IsDeleted == false,
@@ -185,7 +178,7 @@ namespace Kader_System.Services.Services.Trans
                     Data = new DeductionLookUps()
                     {
                         deductions = deductions.ToArray(),
-                        employees = employees.ToArray(),
+                        employees = [employees],
                         salary_effects = salaryEffect.ToArray(),
                         trans_amount_types = amountType.ToArray()
                     }
@@ -222,7 +215,7 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
             var contract = (await unitOfWork.Contracts
-                .GetSpecificSelectAsync(x => x.employee_id == model.employee_id &&
+                .GetSpecificSelectAsync(x => x.employee_id == model.employee_id && !x.IsDeleted &&
                 x.company_id == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {

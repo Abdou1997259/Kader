@@ -16,6 +16,9 @@ namespace Kader_System.Services.Services.Trans
                 includeProperties: $"{nameof(_insatance.benefit)},{nameof(_insatance.employee)}" +
                 $",{nameof(_insatance.salary_effect)}" +
                                    $",{nameof(_insatance.amount_type)}",
+
+
+
                 select: x => new SelectListOfTransBenefitResponse
                 {
                     Id = x.Id,
@@ -136,15 +139,7 @@ namespace Kader_System.Services.Services.Trans
             try
             {
                 var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-                var employees = await unitOfWork.Employees
-                    .GetSpecificSelectAsync(filter
-                    => filter.IsDeleted == false && filter.IsActive && filter.CompanyId == currentCompany,
-                    select: x => new
-                    {
-                        Id = x.Id,
-                        Name = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn
-                    });
-
+                var employees = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsCustomTypeLookUp(lang, currentCompany);
                 var benefits = await unitOfWork.Benefits.GetSpecificSelectAsync(filter =>
 
                 !filter.IsDeleted,
@@ -178,7 +173,7 @@ namespace Kader_System.Services.Services.Trans
                     Data = new BenefitLookUps()
                     {
                         benefit = benefits.ToArray(),
-                        employees = employees.ToArray(),
+                        employees = employees.ToList(),
                         salary_effects = salaryEffect.ToArray(),
                         trans_amount_types = amountType.ToArray()
                     }
@@ -215,7 +210,7 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
             var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x => x.employee_id ==
-            model.employee_id && x.company_id == currentCompany, x => x)).FirstOrDefault();
+            model.employee_id && !x.IsDeleted && x.company_id == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
                 string resultMsg = $" {sharLocalizer[Localization.Employee]} {sharLocalizer[Localization.ContractNotFound]}";

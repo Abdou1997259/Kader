@@ -278,7 +278,7 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
             var contract = (await unitOfWork.Contracts.GetSpecificSelectAsync(x
-                => x.employee_id == model.Employee_id
+                => x.employee_id == model.Employee_id && !x.IsDeleted
                 && x.company_id == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
