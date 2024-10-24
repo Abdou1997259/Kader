@@ -156,6 +156,9 @@
   <data name="CalculatedAready" xml:space="preserve">
     <value>This Employee's Salary has been calculated this month.</value>
   </data>
+  <data name="CanceledContract" xml:space="preserve">
+    <value>Canceled Contract</value>
+  </data>
   <data name="CannotBeFound" xml:space="preserve">
     <value>{0} cannot be found</value>
   </data>
@@ -231,6 +234,9 @@
   <data name="IsNotExistedIn" xml:space="preserve">
     <value>Not Exited in </value>
   </data>
+  <data name="Job" xml:space="preserve">
+    <value>Job</value>
+  </data>
   <data name="Loan" xml:space="preserve">
     <value>Loan</value>
   </data>
@@ -297,6 +303,9 @@
   <data name="ScreenInAction" xml:space="preserve">
     <value>This Screen Does'nt Have This Permssion</value>
   </data>
+  <data name="SelfDeleteUser" xml:space="preserve">
+    <value>User Can't Remove Him Self</value>
+  </data>
   <data name="SubMainScreen" xml:space="preserve">
     <value>Sub main screen</value>
   </data>
@@ -335,6 +344,9 @@
   </data>
   <data name="UserPermission" xml:space="preserve">
     <value>This user dosen't have permssions</value>
+  </data>
+  <data name="Vacation" xml:space="preserve">
+    <value>Vacation</value>
   </data>
   <data name="ViewInclude" xml:space="preserve">
     <value>must have a view permission first</value>

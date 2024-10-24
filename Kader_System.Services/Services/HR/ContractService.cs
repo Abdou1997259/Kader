@@ -288,11 +288,12 @@ namespace Kader_System.Services.Services.HR
         {
 
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-            var haveContract = await unitOfWork.Contracts.ExistAsync
-                (x => x.employee_id ==
-            model.employee_id && x.company_id == currentCompany && x.IsDeleted == false);
-            if (haveContract)
+
+
+            if (await unitOfWork.Contracts.ExistAsync(x => x.employee_id == model.employee_id && x.company_id
+            == currentCompany && x.IsDeleted == false))
             {
+
                 var Msg = string.Format(shareLocalizer[Localization.HaveContract],
                   shareLocalizer[Localization.Contract]);
                 return new()

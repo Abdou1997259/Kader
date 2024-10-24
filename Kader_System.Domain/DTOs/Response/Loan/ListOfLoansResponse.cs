@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public DateOnly LoanDate { get; set; }
         public DateOnly StartLoanDate { get; set; }
-       
+
         public DateOnly DocumentDate { get; set; }
         public DateTime AddedOn { get; set; }
 
@@ -21,9 +21,9 @@
         public DateOnly StartCalculationDate { get; set; }
         public DateOnly EndCalculationDate { get; set; }
         public int PaidInstallmentCount { get; set; }
-        public decimal PaidTotalBalance { get; set; }    
+        public decimal PaidTotalBalance { get; set; }
         public decimal UnPaidTotalBalance { get; set; }
-
+        public int EmployeeId { get; set; }
         public string? Notes { get; set; }
     }
 }

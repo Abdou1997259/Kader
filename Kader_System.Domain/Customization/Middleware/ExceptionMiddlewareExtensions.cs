@@ -2,7 +2,8 @@
 
 public static class ExceptionMiddlewareExtensions
 {
-    public static void ConfigureExceptionHandler(this IApplicationBuilder app, ILoggingRepository loggingRepository)
+    public static void ConfigureExceptionHandler(this IApplicationBuilder app,
+        ILoggingRepository loggingRepository)
     {
         app.UseExceptionHandler(appError =>
         {

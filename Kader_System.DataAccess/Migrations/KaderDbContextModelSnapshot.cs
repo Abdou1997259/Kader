@@ -255,7 +255,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "2c6695d7-198f-4045-bf90-2e7e8fddb111",
+                            ConcurrencyStamp = "7dea26d7-f157-408c-bf6d-bc42c0ff473a",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -269,10 +269,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEK9X2g7cZTEc0aEmXRgkZ+C/2TtjBopzACVPx6FXUdJe1eu5S0Q0Y/jOZmwHYhK2Hg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBENsTPUcsa7CATLhSOgJ5LuGy6qjFlV1/22iFE3SCcHQQpgvdBD9QINLRmytkcnHA==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "202bddf4-42cf-4e1f-855b-e8b724e5f4d2",
+                            SecurityStamp = "23742615-a3f4-4e39-ab11-813b6a1cea5d",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -1474,8 +1474,7 @@ namespace Kader_System.DataAccess.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("employee_id")
-                        .IsUnique();
+                    b.HasIndex("employee_id");
 
                     b.ToTable("hr_contracts");
                 });
@@ -1548,7 +1547,7 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Added_by")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DeleteBy")
                         .HasColumnType("nvarchar(max)");
@@ -1577,6 +1576,8 @@ namespace Kader_System.DataAccess.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Added_by");
 
                     b.ToTable("hr_deductions");
                 });
@@ -8786,8 +8787,8 @@ namespace Kader_System.DataAccess.Migrations
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrContract", b =>
                 {
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "employee")
-                        .WithOne("Contract")
-                        .HasForeignKey("Kader_System.Domain.Models.HR.HrContract", "employee_id")
+                        .WithMany("Contract")
+                        .HasForeignKey("employee_id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -8811,6 +8812,16 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("Allowance");
 
                     b.Navigation("Contract");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.HR.HrDeduction", b =>
+                {
+                    b.HasOne("Kader_System.Domain.Models.Auth.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("Added_by")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrDepartment", b =>
@@ -9393,7 +9404,7 @@ namespace Kader_System.DataAccess.Migrations
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransSalaryIncrease", b =>
                 {
                     b.HasOne("Kader_System.Domain.Models.HR.HrEmployee", "Employee")
-                        .WithMany()
+                        .WithMany("SalaryIncreases")
                         .HasForeignKey("Employee_id")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -9458,13 +9469,14 @@ namespace Kader_System.DataAccess.Migrations
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrEmployee", b =>
                 {
-                    b.Navigation("Contract")
-                        .IsRequired();
+                    b.Navigation("Contract");
 
                     b.Navigation("ListOfAttachments");
 
                     b.Navigation("Management")
                         .IsRequired();
+
+                    b.Navigation("SalaryIncreases");
 
                     b.Navigation("TransLoans");
                 });

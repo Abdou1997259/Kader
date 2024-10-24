@@ -92,13 +92,13 @@ namespace Kader_System.DataAccess.Repositories.Trans
         {
             try
             {
-                var employees = await context.Employees.Where(e => !e.IsDeleted &&
-                e.IsActive && e.CompanyId == companyId)
+                var employees = await context.Employees.Join(context.Contracts, x => x.Id, x => x.employee_id, (e, c) => new { c, e }).Where(e => !e.e.IsDeleted &&
+                e.e.IsActive && e.e.CompanyId == companyId && !e.c.IsDeleted)
                     .Select(x => new
                     {
-                        id = x.Id,
-                        name = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn,
-                        vacations = context.VacationDistributions.Where(v => v.VacationId == x.VacationId && !v.IsDeleted)
+                        id = x.e.Id,
+                        name = lang == Localization.Arabic ? x.e.FullNameAr : x.e.FullNameEn,
+                        vacations = context.VacationDistributions.Where(v => v.VacationId == x.e.VacationId && !v.IsDeleted)
                             .Select(v => new
                             {
                                 id = v.Id,
@@ -106,7 +106,7 @@ namespace Kader_System.DataAccess.Repositories.Trans
                                 vacation_id = v.VacationId,
                                 total_days = v.DaysCount,
                                 used_days = context.TransVacations.Where(c => c.vacation_id
-                                == v.Id && c.employee_id == x.Id && !c.IsDeleted)
+                                == v.Id && c.employee_id == x.e.Id && !c.IsDeleted)
                                 .Sum(d => d.days_count)
                             }).ToList()
                     }).ToArrayAsync();

@@ -36,8 +36,8 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [Permission(Permission.View, 9)]
         public async Task<IActionResult> GetAll([FromQuery] HrGetAllFilterationForJobRequest model)
         {
-           
-            return Ok(await jobService.GetAllJobsAsync(requestService.GetRequestHeaderLanguage, model,requestService.GetCurrentHost));
+
+            return Ok(await jobService.GetAllJobsAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
         }
         #endregion
 
@@ -63,7 +63,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [Permission(Permission.Edit, 9)]
         public async Task<IActionResult> UpdateJob([FromRoute] int id, HrUpdateJobRequest model)
         {
-            var response =await jobService.UpdateJobAsync(id, model);
+            var response = await jobService.UpdateJobAsync(id, model);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -91,7 +91,8 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [Permission(Permission.Delete, 9)]
         public async Task<IActionResult> DeleteJob(int id)
         {
-            var response=await jobService.DeleteJobAsync(id);
+
+            var response = await jobService.DeleteJobAsync(id);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

@@ -661,6 +661,7 @@ public static class SD
     {
         public const string Arabic = "ar";
         public const string English = "en";
+        public const string SelfDeleteUser = "SelfDeleteUser";
         public const string IsExist = "IsExist";
         public const string SalaryEffect = "SalaryEffect";
         public const string Approved = "Approved";
@@ -703,6 +704,7 @@ public static class SD
 
         public const string Done = "Done";
         public const string HaveContract = "HaveContract";
+        public const string CanceledContract = "CanceledContract";
         public const string BalanceNotEnough = "BalanceNotEnough";
         public const string Error = "Error";
         public const string ThisAmountCannotBePaidFromTheMainTreasuryDueToItsAvailability = "ThisAmountCannotBePaidFromTheMainTreasuryDueToItsAvailability";

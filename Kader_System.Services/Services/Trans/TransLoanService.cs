@@ -70,8 +70,18 @@ namespace Kader_System.Services.Services.Trans
 
             var empolyee = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x
                 => x.Id == model.EmployeeId && x.CompanyId == currentCompany);
+
+            if (empolyee is null)
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
+                };
+            }
+
             var contract = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x
-                => x.employee_id == empolyee.Id &&
+                => x.employee_id == empolyee.Id && !x.IsDeleted &&
                 x.company_id == currentCompany, x => x)).FirstOrDefault();
             if (contract is null)
             {
@@ -186,7 +196,12 @@ namespace Kader_System.Services.Services.Trans
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             Expression<Func<TransLoan, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany &&
 
-                                                           (string.IsNullOrEmpty(model.Word) || x.StartLoanDate.ToString() == model.Word)
+                                                           (string.IsNullOrEmpty(model.Word) ||
+                                                           x.HrEmployee.FullNameAr.Contains(model.Word) ||
+                                                           x.HrEmployee.FullNameEn.Contains(model.Word) ||
+                                                           x.LoanAmount.ToString().Contains(model.Word))
+
+
                                                              && (!model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId);
 
 
@@ -212,6 +227,8 @@ namespace Kader_System.Services.Services.Trans
                      select: x => new ListOfLoansResponse
                      {
                          Id = x.Id,
+                         EmployeeId = x.EmployeeId,
+
                          EmployeeName = Localization.Arabic == lang ? x.HrEmployee.FirstNameAr : x.HrEmployee.FirstNameEn,
                          LoanType = x.LoanType == 1 ? (Localization.Arabic == lang ? "أنشاء سند دفع" : "Create Payment Voucher ") :
                     x.LoanType == 2 ? (Localization.Arabic == lang ? " تخصم من الراتب" : "Deducted From Salary ") :
@@ -342,19 +359,13 @@ namespace Kader_System.Services.Services.Trans
             try
             {
                 var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-                var employees = await _unitOfWork.Employees.GetSpecificSelectAsync(
-                    filter => filter.IsDeleted == false && filter.IsActive && filter.CompanyId == currentCompany,
-                    select: x => new EmployeeLookup
-                    {
-                        Id = x.Id,
-                        EmployeeName = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn
-                    });
+                var employees = await _unitOfWork.Employees.GetEmployeesDataNameAndIdAsCustomTypeLookUp(lang, currentCompany);
 
 
                 var advancesTypes = await unitOfWork.AdvancedTypesRepository.GetAllAdvancedTypes();
 
 
-
+                var objectO = employees as List<object>;
 
                 return new Response<TransLoanslookups>()
                 {
@@ -364,7 +375,7 @@ namespace Kader_System.Services.Services.Trans
                     Msg = "",
                     Data = new TransLoanslookups()
                     {
-                        HrEmployees = employees.ToArray(),
+                        HrEmployees = employees,
                         AdvancedTypes = advancesTypes.ToArray(),
 
                     }

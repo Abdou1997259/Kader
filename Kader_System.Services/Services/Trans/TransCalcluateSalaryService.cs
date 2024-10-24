@@ -3,7 +3,12 @@ using Kader_System.Domain.DTOs;
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransCalcluateSalaryService(IUnitOfWork unitOfWork, IUserContextService userContextService, UserManager<ApplicationUser> userManager, IStringLocalizer<SharedResource> localizer) : ITransCalcluateSalaryService
+    public class TransCalcluateSalaryService(
+        IUnitOfWork unitOfWork,
+        IUserContextService userContextService,
+        UserManager<ApplicationUser> userManager,
+        IStringLocalizer<SharedResource>
+        localizer) : ITransCalcluateSalaryService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _localizer = localizer;
@@ -245,6 +250,7 @@ namespace Kader_System.Services.Services.Trans
             }
             return new()
             {
+                Check = true,
                 Data = "Calculated successfully"
                ,
                 Msg = null,
@@ -398,7 +404,7 @@ namespace Kader_System.Services.Services.Trans
 
         }
 
-        public async Task<Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>> GetById(int id, string lang)
+        public async Task<Response<SalaryResponse>> GetById(int id, string lang)
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var transcation = (await _unitOfWork.TransSalaryCalculator
@@ -425,7 +431,7 @@ namespace Kader_System.Services.Services.Trans
             if (employees is null)
             {
                 var msg = _localizer[Localization.NotFoundData];
-                return new Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>
+                return new Response<SalaryResponse>
                 {
                     Data = null,
                     Msg = msg,
@@ -512,9 +518,13 @@ namespace Kader_System.Services.Services.Trans
                 }).ToList()
             }).ToList();
 
-            return new Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>
+            return new Response<SalaryResponse>
             {
-                Data = Tuple.Create(headers, Data),
+                Data = new SalaryResponse
+                {
+                    Details = Data,
+                    Headers = headers
+                },
                 Msg = string.Empty,
                 Check = true
             };

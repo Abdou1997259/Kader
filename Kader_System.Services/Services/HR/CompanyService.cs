@@ -87,7 +87,7 @@ public class CompanyService(IUnitOfWork unitOfWork, IUserContextService userCont
                      Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
                      Employees_count = x.HrEmployees.Count()
                  }, orderBy: x =>
-                   x.OrderByDescending(x => x.Id), includeProperties: "HrEmployees")).ToList(),
+                   x.OrderBy(x => x.Id), includeProperties: "HrEmployees")).ToList(),
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,
