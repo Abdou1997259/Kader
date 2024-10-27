@@ -139,7 +139,7 @@ namespace Kader_System.Services.Services.Trans
             try
             {
                 var currentCompany = await _userContextService.GetLoggedCurrentCompany();
-                var employees = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsCustomTypeLookUp(lang, currentCompany);
+                var employees = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany);
                 var benefits = await unitOfWork.Benefits.GetSpecificSelectAsync(filter =>
 
                 !filter.IsDeleted,
@@ -173,7 +173,7 @@ namespace Kader_System.Services.Services.Trans
                     Data = new BenefitLookUps()
                     {
                         benefit = benefits.ToArray(),
-                        employees = employees.ToList(),
+                        employees = employees,
                         salary_effects = salaryEffect.ToArray(),
                         trans_amount_types = amountType.ToArray()
                     }

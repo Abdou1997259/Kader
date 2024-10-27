@@ -193,19 +193,11 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 };
 
             }
-            if (!await _unitOfWork.SalaryIncreaseTypeRepository.ExistAsync(x => x.Id == model.IncreaseType))
-            {
-                return new()
-                {
-                    Check = false,
-                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.AmountTypes]]
 
-                };
-            }
 
 
             var newRequest = _mapper.Map<SalaryIncreaseRequest>(model);
-
+            newRequest.IncreaseType = 1;
             newRequest.CompanyId = currentCompanyId;
             StatuesOfRequest statues = new()
             {
@@ -244,16 +236,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
                 };
             }
-            if (!await _unitOfWork.SalaryIncreaseTypeRepository.
-                ExistAsync(x => x.Id == model.IncreaseType))
-            {
-                return new()
-                {
-                    Check = false,
-                    Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.AmountTypes]]
 
-                };
-            }
 
             var salaryIncrease = await _unitOfWork.SalaryIncreaseRequest
                 .GetFirstOrDefaultAsync(x => x.Id == id && x.CompanyId == currentCompanyId);

@@ -9,8 +9,6 @@
 
         public double Amount { get; set; }
 
-        [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        public int IncreaseType { get; set; }
         public string? Notes { get; set; }
         [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length), FileExtensionValidation(FileSettings.AllowedExtension)]
 

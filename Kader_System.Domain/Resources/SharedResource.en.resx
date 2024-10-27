@@ -129,6 +129,9 @@
   <data name="AlreadyExitedWithSameName" xml:space="preserve">
     <value>{0} is Already Exited With Same Name</value>
   </data>
+  <data name="AlreadyPaid" xml:space="preserve">
+    <value>Already Paid</value>
+  </data>
   <data name="AmountTypes" xml:space="preserve">
     <value>Amount Type</value>
   </data>
@@ -261,6 +264,9 @@
   <data name="NotFoundData" xml:space="preserve">
     <value>Not found data</value>
   </data>
+  <data name="Paid" xml:space="preserve">
+    <value>Paid Sucessfully</value>
+  </data>
   <data name="PaidSuccessfuly" xml:space="preserve">
     <value>Paid Successfuly</value>
   </data>
@@ -290,6 +296,9 @@
   </data>
   <data name="Role" xml:space="preserve">
     <value>Role</value>
+  </data>
+  <data name="SalaryCalculator" xml:space="preserve">
+    <value>SalaryCalculator</value>
   </data>
   <data name="SalaryEffect" xml:space="preserve">
     <value>Salary Effect</value>

@@ -34,6 +34,7 @@ namespace Kader_System.Api.Areas.Trans
                 return BadRequest(result);
             return Ok(result);
         }
+
         [HttpGet(ApiRoutes.TransSalaryCalculatorEndpoint.GetTransCalculator)]
         [Permission(Helpers.Permission.View, 26)]
         public async Task<IActionResult> GetAllAsync([FromQuery] GetSalaryCalculatorFilterRequest model)
@@ -54,6 +55,7 @@ namespace Kader_System.Api.Areas.Trans
                 return BadRequest(result);
             return Ok(result);
         }
+
         [HttpGet(ApiRoutes.TransSalaryCalculatorEndpoint.GetbyId)]
         [Permission(Helpers.Permission.View, 26)]
         public async Task<IActionResult> GetById(int id)
@@ -64,6 +66,17 @@ namespace Kader_System.Api.Areas.Trans
             return Ok(result);
 
         }
+        [HttpPost(ApiRoutes.TransSalaryCalculatorEndpoint.Payment)]
+        [Permission(Helpers.Permission.View, 26)]
+        public async Task<IActionResult> Pay(int id)
+        {
+            var result = await service.PaySalary(id);
+            if (!result.Check)
+                return BadRequest(result);
+            return Ok(result);
+
+        }
+
         private string GetCurrentRequestLanguage() =>
          Request.Headers.AcceptLanguage.ToString().Split(',').First();
         private string GetCurrentHost() =>

@@ -19,6 +19,6 @@ public class StScreenSub : BaseEntity
 
     public StScreenCat ScreenCat { get; set; } = default!;
     public int Order { get; set; }
-
+    public int incrementalScreenCode { get; set; }
     public ICollection<StSubMainScreenAction> ListOfActions { get; set; } = [];
 }

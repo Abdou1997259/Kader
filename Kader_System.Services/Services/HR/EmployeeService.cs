@@ -215,7 +215,10 @@ namespace Kader_System.Services.Services.HR
             //|| x.Company.Contains(model.Word)
             //|| x.Management.Contains(model.Word));
             var currentCompany = (await userManager.FindByIdAsync(currentUser)).CurrentCompanyId;
-            Expression<Func<HrEmployee, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany;
+            Expression<Func<HrEmployee, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany && (
+            string.IsNullOrEmpty(model.Word) ||
+            x.FullNameAr.Contains(model.Word) ||
+            x.FullNameEn.Contains(model.Word));
 
 
             var totalRecords = await unitOfWork.Employees.CountAsync(filter: filter);

@@ -179,6 +179,7 @@ namespace Kader_System.Services.Services.HR
             {
                 newVacation.VacationDistributions.Add(new HrVacationDistribution()
                 {
+
                     NameAr = vacationDistribution.NameAr,
                     NameEn = vacationDistribution.NameEn,
                     DaysCount = vacationDistribution.DaysCount,

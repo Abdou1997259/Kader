@@ -7,7 +7,7 @@ public interface IEmployeeRepository : IBaseRepository<HrEmployee>
 {
     Response<GetEmployeeByIdResponse> GetEmployeeByIdAsync(int id, string lang);
     Task<object> GetEmployeesDataAsLookUp(string lang);
-    Task<object> GetEmployeesDataNameAndIdAsLookUp(string lang, int companyId);
+    Task<object[]> GetEmployeesDataNameAndIdAsLookUp(string lang, int companyId);
 
     Task<IEnumerable<EmployeeLookup>> GetEmployeesDataNameAndIdAsCustomTypeLookUp(string lang, int companyId);
     Task<object> GetEmployeesNameIdSalaryAsLookUp(string lang);

@@ -255,7 +255,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "7dea26d7-f157-408c-bf6d-bc42c0ff473a",
+                            ConcurrencyStamp = "5e6b51ec-10d6-4b15-8d49-af1424719688",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -269,10 +269,10 @@ namespace Kader_System.DataAccess.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBENsTPUcsa7CATLhSOgJ5LuGy6qjFlV1/22iFE3SCcHQQpgvdBD9QINLRmytkcnHA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOHkFhfOC864QYmFimuTBHTtZEuedEjezJ013lcGcU8kbGfb0L9asClIoB/M97AM6A==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "23742615-a3f4-4e39-ab11-813b6a1cea5d",
+                            SecurityStamp = "2ede569c-dd74-424d-806b-283d6a498c89",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -1105,6 +1105,26 @@ namespace Kader_System.DataAccess.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("hr_company_licenses");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.HR.EmployeeLookupQuery", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Salary")
+                        .HasColumnType("real");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EmployeeLookupQueries");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.HR.HrAllowance", b =>
@@ -4618,6 +4638,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("incrementalScreenCode")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ScreenCatId");
@@ -4635,7 +4658,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "القائمة الرئيسية",
                             Screen_sub_title_en = "Main Screen",
-                            Url = "/main/screen_main"
+                            Url = "/main/screen_main",
+                            incrementalScreenCode = 1
                         },
                         new
                         {
@@ -4647,7 +4671,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "القائمة الفرعية",
                             Screen_sub_title_en = "Sub Cat",
-                            Url = "/main/screen_cat"
+                            Url = "/main/screen_cat",
+                            incrementalScreenCode = 2
                         },
                         new
                         {
@@ -4659,7 +4684,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "الشاشات",
                             Screen_sub_title_en = "Screen Sub",
-                            Url = "/main/screen_sub"
+                            Url = "/main/screen_sub",
+                            incrementalScreenCode = 3
                         },
                         new
                         {
@@ -4671,7 +4697,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "المسئوليات",
                             Screen_sub_title_en = "Titles",
-                            Url = "/main/title"
+                            Url = "/main/title",
+                            incrementalScreenCode = 4
                         },
                         new
                         {
@@ -4683,7 +4710,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "مستخدمين",
                             Screen_sub_title_en = "Users",
-                            Url = "/main/user"
+                            Url = "/main/user",
+                            incrementalScreenCode = 5
                         },
                         new
                         {
@@ -4695,7 +4723,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "صلاحيات المستخدمين",
                             Screen_sub_title_en = "Users Privilege",
-                            Url = "/main/user_permission"
+                            Url = "/main/user_permission",
+                            incrementalScreenCode = 6
                         },
                         new
                         {
@@ -4707,7 +4736,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "اعدادات",
                             Screen_sub_title_en = "Settings",
-                            Url = "/main/settings/10"
+                            Url = "/main/settings/10",
+                            incrementalScreenCode = 7
                         },
                         new
                         {
@@ -4719,7 +4749,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "شركات",
                             Screen_sub_title_en = "Company",
-                            Url = "/codes/company"
+                            Url = "/codes/company",
+                            incrementalScreenCode = 8
                         },
                         new
                         {
@@ -4731,7 +4762,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "الوظائف",
                             Screen_sub_title_en = "Jobs",
-                            Url = "/codes/job"
+                            Url = "/codes/job",
+                            incrementalScreenCode = 9
                         },
                         new
                         {
@@ -4743,7 +4775,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "المؤهلات",
                             Screen_sub_title_en = "Qualifications",
-                            Url = "/codes/qualification"
+                            Url = "/codes/qualification",
+                            incrementalScreenCode = 10
                         },
                         new
                         {
@@ -4755,7 +4788,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "الهيكل الاداري",
                             Screen_sub_title_en = "Structured Managements",
-                            Url = "/codes/admin_structure"
+                            Url = "/codes/admin_structure",
+                            incrementalScreenCode = 11
                         },
                         new
                         {
@@ -4767,7 +4801,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "الاجازات",
                             Screen_sub_title_en = "Vacations",
-                            Url = "/codes/vacation"
+                            Url = "/codes/vacation",
+                            incrementalScreenCode = 12
                         },
                         new
                         {
@@ -4779,7 +4814,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "الموظفين",
                             Screen_sub_title_en = "Employees",
-                            Url = "/codes/employee"
+                            Url = "/codes/employee",
+                            incrementalScreenCode = 13
                         },
                         new
                         {
@@ -4791,7 +4827,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "بدلات",
                             Screen_sub_title_en = "Allowances",
-                            Url = "/codes/allowance"
+                            Url = "/codes/allowance",
+                            incrementalScreenCode = 14
                         },
                         new
                         {
@@ -4803,7 +4840,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "استقطاعات",
                             Screen_sub_title_en = "Deductions",
-                            Url = "/codes/deduction"
+                            Url = "/codes/deduction",
+                            incrementalScreenCode = 15
                         },
                         new
                         {
@@ -4815,7 +4853,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "استحقاقات",
                             Screen_sub_title_en = "Benefits",
-                            Url = "/codes/benefit"
+                            Url = "/codes/benefit",
+                            incrementalScreenCode = 16
                         },
                         new
                         {
@@ -4827,7 +4866,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "العقود",
                             Screen_sub_title_en = "Contracts",
-                            Url = "/codes/contract"
+                            Url = "/codes/contract",
+                            incrementalScreenCode = 17
                         },
                         new
                         {
@@ -4839,7 +4879,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "اجهزة البصمة",
                             Screen_sub_title_en = "Fingerprint Devices",
-                            Url = "/codes/fingerprint"
+                            Url = "/codes/fingerprint",
+                            incrementalScreenCode = 18
                         },
                         new
                         {
@@ -4851,7 +4892,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "متابعة الطلبات",
                             Screen_sub_title_en = "Request Tracking",
-                            Url = "/requests/follow_request"
+                            Url = "/requests/follow_request",
+                            incrementalScreenCode = 19
                         },
                         new
                         {
@@ -4863,7 +4905,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "طلب",
                             Screen_sub_title_en = "Request",
-                            Url = "/requests/request"
+                            Url = "/requests/request",
+                            incrementalScreenCode = 20
                         },
                         new
                         {
@@ -4875,7 +4918,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "الاستقطاعات",
                             Screen_sub_title_en = "Deductions",
-                            Url = "/transactions/deduction_transaction"
+                            Url = "/transactions/deduction_transaction",
+                            incrementalScreenCode = 21
                         },
                         new
                         {
@@ -4887,7 +4931,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "الاستحقاقات",
                             Screen_sub_title_en = "Benefits",
-                            Url = "/transactions/benefit_transaction"
+                            Url = "/transactions/benefit_transaction",
+                            incrementalScreenCode = 22
                         },
                         new
                         {
@@ -4899,7 +4944,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "السلف",
                             Screen_sub_title_en = "Loans",
-                            Url = "/transactions/loan_transaction"
+                            Url = "/transactions/loan_transaction",
+                            incrementalScreenCode = 23
                         },
                         new
                         {
@@ -4911,7 +4957,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "البدلات",
                             Screen_sub_title_en = "Allowances Transactions",
-                            Url = "/transactions/allowance_transaction"
+                            Url = "/transactions/allowance_transaction",
+                            incrementalScreenCode = 24
                         },
                         new
                         {
@@ -4923,7 +4970,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "الاجازات",
                             Screen_sub_title_en = "Vacations Transactions",
-                            Url = "/transactions/vacation_transaction"
+                            Url = "/transactions/vacation_transaction",
+                            incrementalScreenCode = 25
                         },
                         new
                         {
@@ -4935,7 +4983,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "حساب الرواتب",
                             Screen_sub_title_en = "Salary Calculator",
-                            Url = "/transactions/salary_calculator_transaction"
+                            Url = "/transactions/salary_calculator_transaction",
+                            incrementalScreenCode = 26
                         },
                         new
                         {
@@ -4947,7 +4996,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "الصرف",
                             Screen_sub_title_en = "Disbursement",
-                            Url = "/transactions/disbursement_transaction"
+                            Url = "/transactions/disbursement_transaction",
+                            incrementalScreenCode = 27
                         },
                         new
                         {
@@ -4959,7 +5009,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "زيادة المرتبات",
                             Screen_sub_title_en = "Salary Increase",
-                            Url = "/transactions/salary_increase"
+                            Url = "/transactions/salary_increase",
+                            incrementalScreenCode = 28
                         },
                         new
                         {
@@ -4971,7 +5022,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "العهد العينية",
                             Screen_sub_title_en = "Covenants",
-                            Url = "/transactions/covenant_transaction"
+                            Url = "/transactions/covenant_transaction",
+                            incrementalScreenCode = 29
                         },
                         new
                         {
@@ -4983,7 +5035,8 @@ namespace Kader_System.DataAccess.Migrations
                             ScreenCode = "01001",
                             Screen_sub_title_ar = "الدوام",
                             Screen_sub_title_en = "Shifts",
-                            Url = "/codes/shift"
+                            Url = "/codes/shift",
+                            incrementalScreenCode = 30
                         });
                 });
 
@@ -7361,6 +7414,67 @@ namespace Kader_System.DataAccess.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.PaymentSalary", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
+
+                    b.Property<DateTime?>("Add_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Added_by")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeleteBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeleteDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UpdateBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("company_id")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly?>("disposable_date")
+                        .HasColumnType("date");
+
+                    b.Property<string>("disposable_user")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("employee_number")
+                        .HasColumnType("int");
+
+                    b.Property<double>("total_amount")
+                        .HasColumnType("float");
+
+                    b.Property<int?>("transSalary_calculator_id")
+                        .HasColumnType("int");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("company_id");
+
+                    b.HasIndex("disposable_user");
+
+                    b.HasIndex("transSalary_calculator_id");
+
+                    b.ToTable("trans_payment_salary");
+                });
+
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.SpCaclauateSalaryDetailedTrans", b =>
                 {
                     b.Property<double?>("AccommodationAllowance")
@@ -9260,6 +9374,31 @@ namespace Kader_System.DataAccess.Migrations
                     b.Navigation("ScreenSub");
 
                     b.Navigation("Title");
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Trans.PaymentSalary", b =>
+                {
+                    b.HasOne("Kader_System.Domain.Models.HR.HrCompany", "company")
+                        .WithMany()
+                        .HasForeignKey("company_id")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Kader_System.Domain.Models.Auth.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("disposable_user")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Kader_System.Domain.Models.Trans.TransSalaryCalculator", "TransSalaryCalculator")
+                        .WithMany()
+                        .HasForeignKey("transSalary_calculator_id")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("TransSalaryCalculator");
+
+                    b.Navigation("User");
+
+                    b.Navigation("company");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Trans.TransAllowance", b =>
