@@ -178,7 +178,7 @@ namespace Kader_System.Services.Services.Trans
                     Data = new DeductionLookUps()
                     {
                         deductions = deductions.ToArray(),
-                        employees = [employees],
+                        employees = employees,
                         salary_effects = salaryEffect.ToArray(),
                         trans_amount_types = amountType.ToArray()
                     }

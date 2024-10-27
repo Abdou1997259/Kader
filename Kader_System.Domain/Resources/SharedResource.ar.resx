@@ -129,6 +129,9 @@
   <data name="AlreadyExitedWithSameName" xml:space="preserve">
     <value>{0} موجود بالفعل بنفس الاسم</value>
   </data>
+  <data name="AlreadyPaid" xml:space="preserve">
+    <value> مدفوع مسبقا </value>
+  </data>
   <data name="AmountTypes" xml:space="preserve">
     <value>نوع الخصم او الزيادة </value>
   </data>
@@ -261,6 +264,9 @@
   <data name="NotFoundData" xml:space="preserve">
     <value>لا يوجد بيانات</value>
   </data>
+  <data name="Paid" xml:space="preserve">
+    <value>تم الدفع</value>
+  </data>
   <data name="PaidSuccessfuly" xml:space="preserve">
     <value>تم الدفع بنجاح</value>
   </data>
@@ -290,6 +296,9 @@
   </data>
   <data name="Role" xml:space="preserve">
     <value>المسئولية</value>
+  </data>
+  <data name="SalaryCalculator" xml:space="preserve">
+    <value>حركة حساب الراتب</value>
   </data>
   <data name="SalaryEffect" xml:space="preserve">
     <value>كيفيه التاثير علي الراتب</value>

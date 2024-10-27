@@ -366,6 +366,7 @@ public static class SD
 
             public const string DeleteCalculator = "transSalary/delete/{id}";
             public const string GetbyId = "transSalary/getById/{id}";
+            public const string Payment = "transSalary/Pay/{id}";
 
 
         }
@@ -666,6 +667,7 @@ public static class SD
         public const string SalaryEffect = "SalaryEffect";
         public const string Approved = "Approved";
         public const string AlreadyExited = "AlreadyExited";
+        public const string SalaryCalculator = "SalaryCalculator";
         public const string NoAdminCreate = "NoAdminCreate";
         public const string NotApproved = "NotApproved";
         public const string LoanRequest = "LoanRequest";
@@ -685,6 +687,8 @@ public static class SD
         public const string Accepted = "Accepted";
         public const string Rejected = "Rejected";
         public const string Rated = "Rated";
+        public const string Paid = "Paid";
+        public const string AlreadyPaid = "AlreadyPaid";
         public const string SaveSuccessfully = "SaveSuccessfully";
         public const string Task = "Task";
         public const string Resignation = "Resignation";

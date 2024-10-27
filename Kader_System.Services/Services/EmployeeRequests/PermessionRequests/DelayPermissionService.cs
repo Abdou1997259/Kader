@@ -161,7 +161,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.PermessionRequests
                                {
                                    Id = x.Id,
                                    EmployeeId = x.EmployeeId,
-                                   request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                                   request_date = x.Add_date.Value.ToString("yyyy-MM-dd"),
                                    HoursDelay = x.DelayHours,
                                    ArrivalTime = x.Employee.Shift.Start_shift.AddHours(x.DelayHours.Value),
                                    EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FullNameEn : x.Employee.FullNameAr,

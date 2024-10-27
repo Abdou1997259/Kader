@@ -81,7 +81,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                                {
                                    Id = x.Id,
                                    EmployeeId = x.EmployeeId,
-                                   request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                                   request_date = x.Add_date.Value.ToString("yyyy-MM-dd"),
                                    EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FullNameEn : x.Employee.FullNameAr,
                                    allowance_id = x.allowance_id,
                                    allowance_type_id = x.allowance_type_id,

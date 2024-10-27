@@ -207,7 +207,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
             }).ToListAsync();
     }
 
-    public async Task<object> GetEmployeesDataNameAndIdAsLookUp(string lang, int companyId)
+    public async Task<object[]> GetEmployeesDataNameAndIdAsLookUp(string lang, int companyId)
     {
 
         return await context.Employees
@@ -217,7 +217,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
             .Select(e => new
             {
                 id = e.e.Id,
-                employee_name = lang == Localization.Arabic ? e.e.FullNameAr : e.e.FullNameEn,
+                name = lang == Localization.Arabic ? e.e.FullNameAr : e.e.FullNameEn,
             }).ToArrayAsync();
     }
 

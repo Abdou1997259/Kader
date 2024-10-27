@@ -69,7 +69,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 InstallmentsCount = x.InstallmentsCount,
                 Amount = x.Amount,
                 StartDate = x.StartDate,
-                request_date = x.Add_date.Value.ToString("yyyy-mm-dd"),
+                request_date = x.Add_date.Value.ToString("yyyy-MM-dd"),
                 EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.Employee.FullNameEn : x.Employee.FullNameAr,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,

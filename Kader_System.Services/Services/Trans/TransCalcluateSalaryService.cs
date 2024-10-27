@@ -1,5 +1,7 @@
 ﻿
+using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace Kader_System.Services.Services.Trans
 {
@@ -8,12 +10,19 @@ namespace Kader_System.Services.Services.Trans
         IUserContextService userContextService,
         UserManager<ApplicationUser> userManager,
         IStringLocalizer<SharedResource>
-        localizer) : ITransCalcluateSalaryService
+        localizer,
+        KaderDbContext context
+
+
+
+
+        ) : ITransCalcluateSalaryService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _localizer = localizer;
         private readonly IUserContextService _userContextService = userContextService;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
+        private readonly KaderDbContext _context = context;
         public async Task<Response<string>> CalculateSalaryDetailedTrans(CalcluateSalaryModelRequest model)
         {
             var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
@@ -744,6 +753,46 @@ namespace Kader_System.Services.Services.Trans
             };
 
 
+        }
+
+        public async Task<Response<string>> PaySalary(int id)
+        {
+            try
+            {
+                var transSalary = await _unitOfWork.TransSalaryCalculator.GetFirstOrDefaultAsync(x => x.Id == id, includeProperties: "TransSalaryCalculatorsDetails");
+                if (transSalary is null)
+                {
+                    return new()
+                    {
+                        Check = false,
+                        Msg = _localizer[Localization.IsNotExisted, Localization.SalaryCalculator]
+                    };
+                }
+                var paymnetTrans = new PaymentSalary
+                {
+                    company_id = transSalary.CompanyId,
+                    employee_number = transSalary.TransSalaryCalculatorsDetails.Count(),
+                    transSalary_calculator_id = transSalary.Id,
+                    total_amount = transSalary.TransSalaryCalculatorsDetails.Sum(x => x.Total).Value,
+
+
+                };
+                await _context.PaymentSalaries.AddAsync(paymnetTrans);
+                await _context.SaveChangesAsync();
+                return new()
+                {
+                    Check = true,
+                    Msg = _localizer[Localization.Paid]
+                };
+            }
+            catch (Exception ex)
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = ex?.InnerException?.Message
+                };
+            }
         }
     }
 }
