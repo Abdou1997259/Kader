@@ -519,6 +519,7 @@ namespace Kader_System.Services.Services.InterviewServices
                                 company_name = exp.company_name,
                                 from = exp.from,
                                 to = exp.to,
+                                job_title = exp.job_title,
                             });
                         }
                     }
@@ -557,7 +558,8 @@ namespace Kader_System.Services.Services.InterviewServices
         {
             try
             {
-                var applicant = await _unitOfWork.Applicant.GetFirstOrDefaultAsync(x => x.IsDeleted == false);
+
+                var applicant = await _unitOfWork.Applicant.GetFirstOrDefaultAsync(x => x.id == id);
 
                 if (applicant == null)
                 {
@@ -758,10 +760,11 @@ namespace Kader_System.Services.Services.InterviewServices
             new ApplicantList
             {
                 id = x.id,
-                gender = lang == Localization.Arabic ? x.gender == 1 ? "ذكر" : "انثي" : x.gender == 1 ? "Male" : "Female",
+                gender = x.gender,
                 full_name = x.full_name,
                 rate = x.rate,
-                state = Localization.Arabic == lang ? x.state.name_ar : x.state.name_en,
+                state = x.state_id,
+                age = x.age,
                 image_path = _fileServer.CombinePath(directoryName, x.image_path)
             }, orderBy: x => x.OrderBy(x => x.id), skip: (model.PageSize) * (model.PageNumber - 1), take: model.PageSize);
             int page = 1;

@@ -181,6 +181,9 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -255,7 +258,7 @@ namespace Kader_System.DataAccess.Migrations
                             AccessFailedCount = 0,
                             CompanyId = "3,2,1",
                             CompanyYearId = 1,
-                            ConcurrencyStamp = "5e6b51ec-10d6-4b15-8d49-af1424719688",
+                            ConcurrencyStamp = "639e110c-f973-4800-89ce-c529b440466f",
                             CurrentCompanyId = 3,
                             CurrentTitleId = 1,
                             Email = "mohammed88@gmail.com",
@@ -264,15 +267,16 @@ namespace Kader_System.DataAccess.Migrations
                             FullName = "Mohamed abdou",
                             ImagePath = "/",
                             IsActive = true,
+                            IsAdmin = false,
                             IsDeleted = false,
                             JobId = 0,
                             LockoutEnabled = false,
                             NormalizedEmail = "MOHAMMED88@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOHkFhfOC864QYmFimuTBHTtZEuedEjezJ013lcGcU8kbGfb0L9asClIoB/M97AM6A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPz5oQwcrA7HxtQagEutfZxKK+SULmuM5o1+0Gj3sJLywA2aEtDgR2PwdqTQf6QugA==",
                             PhoneNumber = "1202200",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "2ede569c-dd74-424d-806b-283d6a498c89",
+                            SecurityStamp = "cea742cc-e842-42e9-9e47-ea77a4c3219b",
                             TitleId = "1,2",
                             TwoFactorEnabled = false,
                             UserName = "admin",
@@ -3776,7 +3780,7 @@ namespace Kader_System.DataAccess.Migrations
                     b.Property<int>("state_id")
                         .HasColumnType("int");
 
-                    b.Property<DateOnly>("to")
+                    b.Property<DateOnly?>("to")
                         .HasColumnType("date");
 
                     b.HasKey("id");
@@ -6292,6 +6296,33 @@ namespace Kader_System.DataAccess.Migrations
                             IsDeleted = false,
                             ScreenSubId = 30
                         });
+                });
+
+            modelBuilder.Entity("Kader_System.Domain.Models.Setting.SuperUserPermssion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Permission")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SubScreenId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TitleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SuperUserPermssions");
                 });
 
             modelBuilder.Entity("Kader_System.Domain.Models.Setting.UserPermission", b =>

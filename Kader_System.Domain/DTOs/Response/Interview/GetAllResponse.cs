@@ -9,11 +9,11 @@
     public class JobList
     {
         public int id { get; set; }
-        public DateOnly to { get; set; }
+        public DateOnly? to { get; set; }
         public DateOnly from { get; set; }
         public string name { get; set; }
         public int applicant_count { get; set; }
-        public string state { get; set; }
+        public int state { get; set; }
 
     }
 }

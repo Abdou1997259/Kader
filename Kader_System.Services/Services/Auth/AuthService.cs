@@ -5,7 +5,6 @@ using Kader_System.Domain.DTOs.Response;
 using Kader_System.Domain.DTOs.Response.Auth;
 using Kader_System.Services.IServices.AppServices;
 using Microsoft.EntityFrameworkCore;
-using System.Transactions;
 
 namespace Kader_System.Services.Services.Auth;
 
@@ -208,12 +207,23 @@ public class AuthService(IUnitOfWork unitOfWork
                 );
             await _unitOfWork.UserPermssionRepositroy.AddRangeAsync(titlePermissions);
             await _unitOfWork.CompleteAsync();
-
         }
 
         if (model.password != null)
         {
+            var changePasswordResult = await _userManager.ChangePasswordAsync(obj, obj.PasswordHash, model.password);
+            if (!changePasswordResult.Succeeded)
+            {
+                // Handle failed password change (optional, but good for debugging)
+                return new Response<UpdateUserRequest>
+                {
+                    Check = false,
+                    //Msg = _sharLocalizer[Localization.PasswordChangeFailed],
+                    Data = null
+                };
+            }
             obj.VisiblePassword = model.password;
+
         }
         obj.FullName = model.full_name;
         obj.Email = model.email;
@@ -661,82 +671,79 @@ public class AuthService(IUnitOfWork unitOfWork
             };
         }
 
-        using (var transaction = new TransactionScope(TransactionScopeOption.Required,
-            new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted }, TransactionScopeAsyncFlowOption.Enabled))
+
+        try
         {
-            try
+            var user = _mapper.Map<ApplicationUser>(model);
+            user.VisiblePassword = model.password;
+            user.PhoneNumber = model.phone;
+            user.FullName = model.full_name;
+            user.Email = model.email;
+            user.FinancialYear = model.financial_year;
+            user.CompanyId = model.company_id.NulalbleConcater();
+            user.TitleId = model.title_id.NulalbleConcater();
+            user.CurrentTitleId = model.current_title.Value;
+            user.CurrentCompanyId = model.current_company.Value;
+            user.JobId = model.job_title;
+            user.UserName = model.user_name;
+            user.Add_date = DateTime.UtcNow;
+            user.CompanyYearId = model.financial_year;
+            user.Added_by = _accessor.HttpContext?.User.GetUserId() ?? string.Empty;
+            user.Id = Guid.NewGuid().ToString();
+
+            var moduleNameWithType = hrDirectoryTypes.GetModuleNameWithType(moduleName);
+            if (model.image != null && model.image.Length > 0)
             {
-                var user = _mapper.Map<ApplicationUser>(model);
-                user.VisiblePassword = model.password;
-                user.PhoneNumber = model.phone;
-                user.FullName = model.full_name;
-                user.Email = model.email;
-                user.FinancialYear = model.financial_year;
-                user.CompanyId = model.company_id.NulalbleConcater();
-                user.TitleId = model.title_id.NulalbleConcater();
-                user.CurrentTitleId = model.current_title.Value;
-                user.CurrentCompanyId = model.current_company.Value;
-                user.JobId = model.job_title;
-                user.UserName = model.user_name;
-                user.Add_date = DateTime.UtcNow;
-                user.CompanyYearId = model.financial_year;
-                user.Added_by = _accessor.HttpContext?.User.GetUserId() ?? string.Empty;
-                user.Id = Guid.NewGuid().ToString();
+                user.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
+            }
 
-                var moduleNameWithType = hrDirectoryTypes.GetModuleNameWithType(moduleName);
-                if (model.image != null && model.image.Length > 0)
-                {
-                    user.ImagePath = await _fileServer.UploadFileAsync(moduleNameWithType, model.image);
-                }
-
-                var result = await _userManager.CreateAsync(user, model.password);
-                if (!result.Succeeded)
-                {
-                    var errorMsg = _sharLocalizer[Localization.Error];
-                    return new Response<CreateUserResponse>
-                    {
-                        Check = false,
-                        Msg = string.Join(',', result.Errors.Select(e => e.Description)),
-                        Data = null
-                    };
-                }
-
-                var token = await CreateJwtToken(user); // Implement this method if needed
-
-                var response = new CreateUserResponse
-                {
-                    CompanyId = model.company_id,
-                    FullName = model.full_name,
-                    Email = model.email,
-                    JobTitle = model.job_title,
-                    CompanyYear = DateTime.Now.Year,
-                    TitleId = model.title_id,
-                    Token = "Bearer " + new JwtSecurityTokenHandler().WriteToken(token),
-                    UserName = model.user_name,
-                };
-
-                await AddPermissionByTitleToUser(model.title_id, user.Id);
-                transaction.Complete(); // Commit the transaction scope
-
+            var result = await _userManager.CreateAsync(user, model.password);
+            if (!result.Succeeded)
+            {
+                var errorMsg = _sharLocalizer[Localization.Error];
                 return new Response<CreateUserResponse>
                 {
-                    Check = true,
-                    Data = response,
-                    DynamicData = user.Id
-                };
-            }
-            catch (Exception ex)
-            {
-                return new()
-                {
-                    Msg = string.Format(_sharLocalizer[Localization.Error],
-                        _sharLocalizer[Localization.Employee]),
                     Check = false,
-                    Data = null,
-                    Error = ex.InnerException != null ? ex.InnerException.ToString() : ex.Message
+                    Msg = string.Join(',', result.Errors.Select(e => e.Description)),
+                    Data = null
                 };
             }
+
+            var token = await CreateJwtToken(user); // Implement this method if needed
+
+            var response = new CreateUserResponse
+            {
+                CompanyId = model.company_id,
+                FullName = model.full_name,
+                Email = model.email,
+                JobTitle = model.job_title,
+                CompanyYear = DateTime.Now.Year,
+                TitleId = model.title_id,
+                Token = "Bearer " + new JwtSecurityTokenHandler().WriteToken(token),
+                UserName = model.user_name,
+            };
+
+            await AddPermissionByTitleToUser(model.title_id, user.Id);
+
+            return new Response<CreateUserResponse>
+            {
+                Check = true,
+                Data = response,
+                DynamicData = user.Id
+            };
         }
+        catch (Exception ex)
+        {
+            return new()
+            {
+                Msg = string.Format(_sharLocalizer[Localization.Error],
+                    _sharLocalizer[Localization.Employee]),
+                Check = false,
+                Data = null,
+                Error = ex.InnerException != null ? ex.InnerException.ToString() : ex.Message
+            };
+        }
+
     }
 
     private async Task AddPermissionByTitleToUser(List<int?> titles, string userId)

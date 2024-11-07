@@ -33,7 +33,7 @@ public class TransDeductionRepository(KaderDbContext context) : BaseRepository<T
                     {
                         ActionMonth = trans.action_month,
                         AddedBy = u.UserName,
-                        AddedOn = trans.Add_date,
+                        AddedOn = DateOnly.FromDateTime(trans.Add_date.Value),
                         Amount = trans.amount,
                         AmountTypeId = trans.amount_type_id,
                         DeductionId = trans.deduction_id,

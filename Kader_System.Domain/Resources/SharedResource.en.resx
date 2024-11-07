@@ -237,6 +237,9 @@
   <data name="IsNotExistedIn" xml:space="preserve">
     <value>Not Exited in </value>
   </data>
+  <data name="IsPending" xml:space="preserve">
+    <value>Request Is Pending</value>
+  </data>
   <data name="Job" xml:space="preserve">
     <value>Job</value>
   </data>

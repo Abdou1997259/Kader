@@ -2,10 +2,10 @@ namespace Kader_System.Domain.Models.Auth;
 
 public class ApplicationUser : IdentityUser, IBaseEntity
 {
-   
+
     public string FullName { get; set; }
-   
-    public string  TitleId { get; set; }
+
+    public string TitleId { get; set; }
     public int JobId { get; set; }
     public string CompanyId { get; set; }
     public int CurrentCompanyId { get; set; }
@@ -23,8 +23,10 @@ public class ApplicationUser : IdentityUser, IBaseEntity
     public string? ImagePath { get; set; }
 
     public required string VisiblePassword { get; set; }
-    public int CompanyYearId { get; set; }  
+    public int CompanyYearId { get; set; }
     public CompanyYear CompanyYear { get; set; }
+
+    public bool IsAdmin { get; set; }
 
     public ICollection<ApplicationUserDevice> ListOfDevices { get; set; } = new HashSet<ApplicationUserDevice>();
     public ICollection<AuthRefreshToken> RefreshTokens { get; set; } = new HashSet<AuthRefreshToken>();

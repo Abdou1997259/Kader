@@ -237,6 +237,9 @@
   <data name="IsNotExistedIn" xml:space="preserve">
     <value>ليس موجود في</value>
   </data>
+  <data name="IsPending" xml:space="preserve">
+    <value>الطلب معلق</value>
+  </data>
   <data name="Job" xml:space="preserve">
     <value>الوظيفة</value>
   </data>

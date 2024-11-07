@@ -133,7 +133,7 @@ namespace Kader_System.DataAccess.Repositories
         public async Task<GetMyProfilePermissionAndScreen> SpGetScreen(string userId, int titleId, string lang)
         {
 
-            var userlogincontext = UserPermissionFactory.CreatePermissionsUserStrategy(_db, userId, titleId, lang);
+            var userlogincontext = await UserPermissionFactory.CreatePermissionsUserStrategy(_db, userId, titleId, lang);
             var rawData = await userlogincontext.GetPermissions();
 
             rawData = rawData.Distinct().ToList();

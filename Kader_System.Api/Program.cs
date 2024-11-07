@@ -1,5 +1,6 @@
 using Kader_System.Api.Helpers;
 using Kader_System.Api.Helpers.SwaggerHelper;
+using Kader_System.DataAccess.DbMiddlewares;
 using Kader_System.DataAccess.Models;
 using Kader_System.DataAccess.Repositories;
 using Kader_System.DataAccess.Repositories.EmployeeRequests;
@@ -422,12 +423,12 @@ app.LocalizationMiddleWaresHandler();
 app.UseRouting();
 
 //app.UseExceptionHandler();
-//app.ConfigureStaticFilesHandler();                   // custom as Static files
+/*app.ConfigureStaticFilesHandler();       */            // custom as Static files
 
 app.UseCors(b => b.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 app.UseMiddleware<HeadersValidationMiddleware>();
 app.UseMiddleware<PathMiddleware>();
-//app.UseMiddleware<ClientDatabaseMiddleware>();
+app.UseMiddleware<ClientDatabaseMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

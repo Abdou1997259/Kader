@@ -8,8 +8,9 @@
         public int id { get; set; }
         public string full_name { get; set; }
         public float? rate { get; set; }
-        public string gender { get; set; }
-        public string state { get; set; }
+        public int gender { get; set; }
+        public int state { get; set; }
         public string image_path { get; set; }
+        public int age { get; set; }
     }
 }

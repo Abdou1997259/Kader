@@ -5,7 +5,7 @@
     {
         public int id { get; set; }
         public DateOnly from { get; set; }
-        public DateOnly to { get; set; }
+        public DateOnly? to { get; set; }
         public int applicant_count { get; set; }
         public string name_ar { get; set; }
         public string name_en { get; set; }

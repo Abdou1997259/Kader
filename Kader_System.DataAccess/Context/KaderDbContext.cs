@@ -91,7 +91,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<Faculty> Faculties { get; set; }
     public DbSet<University> Universities { get; set; }
     public DbSet<PaymentSalary> PaymentSalaries { get; set; }
-
+    public DbSet<SuperUserPermssion> SuperUserPermssions { get; set; }
 
 
 

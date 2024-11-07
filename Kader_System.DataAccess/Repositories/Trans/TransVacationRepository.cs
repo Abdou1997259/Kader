@@ -42,7 +42,7 @@ namespace Kader_System.DataAccess.Repositories.Trans
                             EndDate = trans.start_date.AddDays((int)trans.days_count - 1),
                             VacationType = lang == Localization.Arabic ?
                             vacationType.NameAr : vacationType.NameEn,
-                            AddedDate = trans.Add_date,
+                            AddedDate = DateOnly.FromDateTime(trans.Add_date.Value),
                             TotalBalance = vacation.TotalBalance - (int)trans.days_count
 
 

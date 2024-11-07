@@ -4,7 +4,7 @@
     {
         public int? Id { get; set; }
 
-        public DateTime? AddedDate { get; set; }
+        public DateOnly? AddedDate { get; set; }
         public DateOnly CalculationDate { get; set; }
         public double? Total { get; set; }
         public string? Description { get; set; }

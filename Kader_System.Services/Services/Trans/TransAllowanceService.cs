@@ -170,7 +170,7 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IUserContextService u
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var employees = await unitOfWork.Employees.
-                GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany);
+                GetEmployeesDataNameAndIdAsCustomTypeLookUp(lang, currentCompany);
 
             var allowances = await unitOfWork.Allowances.GetSpecificSelectAsync(filter => filter.IsDeleted == false,
                 select: x => new

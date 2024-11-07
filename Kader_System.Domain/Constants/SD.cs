@@ -669,6 +669,7 @@ public static class SD
         public const string AlreadyExited = "AlreadyExited";
         public const string SalaryCalculator = "SalaryCalculator";
         public const string NoAdminCreate = "NoAdminCreate";
+        public const string IsPending = "IsPending";
         public const string NotApproved = "NotApproved";
         public const string LoanRequest = "LoanRequest";
         public const string SuspendedSuccessfully = "SuspendedSuccessfully";

@@ -508,7 +508,7 @@ namespace Kader_System.Services.Services.HR
             var result = new
             {
                 employees = await unitOfWork.Employees
-                .GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany)
+                .GetEmployeesDataNameAndIdAsCustomTypeLookUp(lang, currentCompany)
             };
 
             return new()
@@ -563,11 +563,10 @@ namespace Kader_System.Services.Services.HR
                 CurrentCompanyYearId = (await unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == _accessor.HttpContext.User.GetUserId())).CompanyYearId;
 
             using (var transaction = new TransactionScope(TransactionScopeOption.Required,
-                new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted }, TransactionScopeAsyncFlowOption.Enabled))
+      new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted, Timeout = new TimeSpan(0, 15, 0) }, TransactionScopeAsyncFlowOption.Enabled))
             {
                 try
                 {
-
                     var user = await _authService.CreateUserAsync(new Domain.DTOs.Request.Auth.CreateUserRequest
                     {
                         user_name = model.username,
@@ -583,30 +582,24 @@ namespace Kader_System.Services.Services.HR
                         title_id = new List<int?> { model.title_id },
                         company_id = new List<int?> { model.CompanyId }
                     }, Modules.Auth, HrDirectoryTypes.User);
+
                     var newEmployee = mapper.Map<HrEmployee>(model);
                     newEmployee.IsActive = model.is_active;
 
-
-
-                    if (model.employee_image is not null)
+                    if (model.employee_image != null)
                     {
                         var dirType = HrDirectoryTypes.EmployeeProfile;
                         var dir = dirType.GetModuleNameWithType(Modules.HR);
-                        newEmployee.EmployeeImage = await fileServer.UploadFileAsync(dir,
-                            model.employee_image);
-
+                        newEmployee.EmployeeImage = await fileServer.UploadFileAsync(dir, model.employee_image);
                     }
 
-                    List<GetFileNameAndExtension> employeeAttachments = [];
-                    if (model.employee_attachments is not null && model.employee_attachments.Any())
+                    List<GetFileNameAndExtension> employeeAttachments = new List<GetFileNameAndExtension>();
+                    if (model.employee_attachments != null && model.employee_attachments.Any())
                     {
-                        HrDirectoryTypes directoryTypes = new();
-                        directoryTypes = HrDirectoryTypes.Attachments;
-
+                        HrDirectoryTypes directoryTypes = HrDirectoryTypes.Attachments;
                         var directoryName = directoryTypes.GetModuleNameWithType(Modules.Employees);
                         employeeAttachments = await fileServer.UploadFilesAsync(directoryName, model.employee_attachments);
                     }
-
 
                     newEmployee.ListOfAttachments = employeeAttachments.Select(f => new HrEmployeeAttachment
                     {
@@ -617,35 +610,39 @@ namespace Kader_System.Services.Services.HR
 
                     newEmployee.UserId = user.DynamicData;
                     await unitOfWork.Employees.AddAsync(newEmployee);
-                    await unitOfWork.CompleteAsync();
+                    await unitOfWork.CompleteAsync(); // Ensure this completes successfully before committing the transaction
 
-
-                    // Commit changes in unit of work
                     transaction.Complete(); // Commit the transaction scope
 
                     return new()
                     {
-                        Msg = string.Format(shareLocalizer[Localization.Done],
-                            shareLocalizer[Localization.Employee]),
+                        Msg = string.Format(shareLocalizer[Localization.Done], shareLocalizer[Localization.Employee]),
                         Check = true,
                         Data = model
                     };
                 }
                 catch (Exception ex)
                 {
+                    // Log the detailed error for debugging
+                    Console.WriteLine($"Error: {ex.Message}");
+                    Console.WriteLine($"StackTrace: {ex.StackTrace}");
+
+                    if (ex.InnerException != null)
+                    {
+                        Console.WriteLine($"InnerException: {ex.InnerException.Message}");
+                    }
+
                     return new()
                     {
-                        Msg = string.Format(shareLocalizer[Localization.Error],
-                            shareLocalizer[Localization.Employee]),
+                        Msg = string.Format(shareLocalizer[Localization.Error], shareLocalizer[Localization.Employee]),
                         Check = false,
                         Data = model,
                         Error = ex.InnerException != null ? ex.InnerException.ToString() : ex.Message
                     };
                 }
             }
+
         }
-
-
 
         #endregion
 
