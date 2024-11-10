@@ -179,9 +179,9 @@ public class SubScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, I
 
         var lastSubScreen = await _unitOfWork.SubScreens.GetLast(x => x.Id);
 
-        var screenCode = "01-" + $"{lastSubScreen.Id + 1}".PadLeft(3, '0');
+        var screenCode = "01-" + $"{lastSubScreen.incrementalScreenCode + 1}".PadLeft(3, '0');
         var maxId = await _unitOfWork.SubScreens.MaxInCloumn(x => x.Id);
-        await _unitOfWork.SubScreens.AddAsync(new()
+        var subScreen = new StScreenSub
         {
             Screen_sub_title_ar = model.screen_sub_title_ar,
             Screen_sub_title_en = model.screen_sub_title_en,
@@ -194,9 +194,31 @@ public class SubScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, I
 
             }).ToList(),
             Url = model.url,
-        });
-        await _unitOfWork.CompleteAsync();
 
+        };
+        await _unitOfWork.SubScreens.AddAsync(subScreen);
+        var result = await _unitOfWork.CompleteAsync();
+
+        if (result > 0)
+        {
+            var usersId = await _unitOfWork.Users.GetSpecificSelectAsync(x => x.IsAdmin, x => x.Id);
+            var superAdmins = new List<SuperUserPermssion>();
+            foreach (var user in usersId)
+            {
+                superAdmins.Add(new SuperUserPermssion
+                {
+
+                    Permission = "1,2,3,4,5",
+                    SubScreenId = subScreen.Id,
+                    UserId = user,
+                    TitleId = 1,
+                });
+
+
+            }
+            await _context.SuperUserPermssions.AddRangeAsync(superAdmins);
+            await _context.SaveChangesAsync();
+        }
         return new()
         {
             Msg = _sharLocalizer[Localization.Done],
@@ -253,7 +275,7 @@ public class SubScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, I
         if (obj == null)
         {
             string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                _sharLocalizer[Localization.Allowance]);
+                _sharLocalizer[Localization.SubMainScreen]);
 
             return new()
             {
@@ -266,6 +288,29 @@ public class SubScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, I
         //obj.IsDeleted = false;
         //_unitOfWork.Allowances.Update(obj);
         //await _unitOfWork.CompleteAsync();
+
+
+
+        var usersId = await _unitOfWork.Users.GetSpecificSelectAsync(x => x.IsAdmin, x => x.Id);
+        var superAdmins = new List<SuperUserPermssion>();
+        foreach (var user in usersId)
+        {
+            superAdmins.Add(new SuperUserPermssion
+            {
+
+                Permission = "1,2,3,4,5",
+                SubScreenId = obj.Id,
+                UserId = user,
+                TitleId = 1,
+            });
+
+
+        }
+        await _context.SuperUserPermssions.AddRangeAsync(superAdmins);
+
+        await _context.SaveChangesAsync();
+
+
         return new()
         {
             Check = true,
@@ -379,6 +424,7 @@ public class SubScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, I
         _unitOfWork.SubMainScreenActions.RemoveRange(obj.ListOfActions);
         _unitOfWork.SubScreens.Remove(obj);
 
+
         bool result = await _unitOfWork.CompleteAsync() > 0;
 
         if (!result)
@@ -389,6 +435,15 @@ public class SubScreenService(KaderDbContext _context, IUnitOfWork unitOfWork, I
                 Error = err,
                 Msg = err
             };
+        var usersId = await _unitOfWork.Users.GetSpecificSelectAsync(x => x.IsAdmin, x => x.Id);
+        var superAdmins = await _context.SuperUserPermssions.Where(x => usersId.Any(n => n == x.UserId) && x.SubScreenId == obj.Id).ToListAsync();
+        if (superAdmins.Any())
+        {
+            _context.SuperUserPermssions.RemoveRange(superAdmins);
+            _context.SaveChanges();
+        }
+
+
         return new()
         {
             Check = true,

@@ -20,7 +20,7 @@ namespace Kader_System.Services.IServices.InterviewServices
         Task<Response<object>> GetDetails(int id, string lang);
         Task<Response<string>> Accept(int id, AcceptApplicantRequest model);
         Task<Response<string>> Reject(int id);
-        Task<Response<string>> RateMe(int id, float rate);
+        Task<Response<string>> RateMe(int id, RateApplicantRequest request);
         Task<Response<GetAllApplicantsResponse>> GetPaginatedApplicants
             (GetApplicantsFilterationRequest model, string lang, string host);
         Task<Response<string>> RestoreAsync(int id);

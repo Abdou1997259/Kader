@@ -180,11 +180,21 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 };
 
             }
+            if (await _unitOfWork.ResignationRepository.ExistAsync(x =>
+            x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompanyId &&
+            x.StatuesOfRequest.StatusTypes == RequestStatusTypes.Pending))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.IsPending]
+                };
+            }
             var newRequest = _mapper.Map<ResignationRequest>(model);
             newRequest.CompanyId = currentCompanyId;
             StatuesOfRequest statues = new()
             {
-                ApporvalStatus = (int)RequestStatusTypes.Pending
+                StatusTypes = RequestStatusTypes.Pending
             };
             newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
@@ -334,8 +344,17 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 .UpdateApporvalStatus(x =>
                 x.Id == requestId &&
                 x.CompanyId == currentCompanyId, RequestStatusTypes.Approved, userId);
+
+
             if (result > 0)
             {
+
+
+                var request = await _unitOfWork.ResignationRepository.GetFirstOrDefaultAsync(x => x.Id == requestId && x.CompanyId == currentCompanyId);
+                var employee = await _unitOfWork.Employees.GetByIdAsync(request.Id);
+                employee.IsActive = false;
+                await _unitOfWork.CompleteAsync();
+
                 return new Response<string>()
                 {
                     Check = true,

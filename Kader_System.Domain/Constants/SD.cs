@@ -582,7 +582,7 @@ public static class SD
             public const string GetDetailedApplicant = "Applicant/GetDetails/{id}";
             public const string Reject = "Applicant/Reject/{id}";
             public const string Accept = "Applicant/Accept/{id}";
-            public const string RateMe = "Applicant/RateMe/{id}/{rate}";
+            public const string RateMe = "Applicant/RateMe/{id}";
         }
         public class InterJobRoute
         {
@@ -669,6 +669,7 @@ public static class SD
         public const string AlreadyExited = "AlreadyExited";
         public const string SalaryCalculator = "SalaryCalculator";
         public const string NoAdminCreate = "NoAdminCreate";
+        public const string IsPending = "IsPending";
         public const string NotApproved = "NotApproved";
         public const string LoanRequest = "LoanRequest";
         public const string SuspendedSuccessfully = "SuspendedSuccessfully";
@@ -770,6 +771,7 @@ public static class SD
         public const string IsNotExisted = "IsNotExisted";
         public const string Employee = "Employee";
         public const string Contract = "Contract";
+        public const string RateValue = "RateValue";
 
         public const string TitleUser = "TitleUser";
         public const string HasNoDocument = "HasNoDocument";
@@ -921,6 +923,7 @@ public static class SD
         public const string ConfirmationPassword = "Confirmation password";
         public const string DepartmentName = "Department";
         public const string ConfirmationPasswordNotMatch = "Password and confirmation password must match.";
+        public const string AllowedValues = "Value not Allowed";
         public const string AttachmentsNotes = "Attachments notes.";
 
         public const string AttachmentsType = "Attachments type.";
@@ -930,6 +933,7 @@ public static class SD
         public const string IsPhoneEmailUnique = "the phone and email is not unique";
         public const string NationalID = "National ID";
         public const string FieldIsEqual = "The {0} field length must be equal 14.";
+
         public const string ProfilePhoto = "Profile photo.";
         public const string Files = "Personal files.";
         public const string CourseMatrial = "Course matrial.";

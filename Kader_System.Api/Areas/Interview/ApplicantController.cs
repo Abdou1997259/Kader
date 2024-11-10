@@ -32,11 +32,9 @@ namespace Kader_System.Api.Areas.Interview
         {
             var response = await _service.GetPaginatedApplicants(model,
                 _requestService.GetRequestHeaderLanguage, _requestService.GetCurrentHost);
-            if (response.Check)
-                return Ok(response);
-            else if (!response.Check)
-                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+
+            return Ok(response);
+
         }
         [HttpGet(ApiRoutes.ApplicantRoute.GetDetailedApplicant)]
 
@@ -110,9 +108,9 @@ namespace Kader_System.Api.Areas.Interview
         }
         [HttpPut(ApiRoutes.ApplicantRoute.RateMe)]
 
-        public async Task<IActionResult> RateMe([FromRoute] int id, [FromRoute] float rate)
+        public async Task<IActionResult> RateMe([FromRoute] int id, [FromBody] RateApplicantRequest request)
         {
-            var response = await _service.RateMe(id, rate);
+            var response = await _service.RateMe(id, request);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

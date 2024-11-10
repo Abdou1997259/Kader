@@ -25,11 +25,9 @@ namespace Kader_System.Api.Areas.Interview
         public async Task<IActionResult> GetPaginatedJobs([FromQuery] GetAllFilteredJobRequests model)
         {
             var response = await _service.GetPaginatedJobs(model, _requestService.GetRequestHeaderLanguage, _requestService.GetCurrentHost);
-            if (response.Check)
-                return Ok(response);
-            else if (!response.Check)
-                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
-            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+
+            return Ok(response);
+
         }
 
         [HttpGet(ApiRoutes.InterJobRoute.GetInterJobById)]

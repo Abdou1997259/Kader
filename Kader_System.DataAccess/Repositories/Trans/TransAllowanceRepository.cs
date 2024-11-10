@@ -22,12 +22,12 @@ public class TransAllowanceRepository(KaderDbContext context) : BaseRepository<T
                     from allowance in benefitGroup.DefaultIfEmpty()
                     join salary in context.TransSalaryEffects on trans.SalaryEffectId equals salary.Id into salaryGroup
                     from salary in salaryGroup.DefaultIfEmpty()
-                    
+
                     select new TransAllowanceData()
                     {
                         ActionMonth = trans.ActionMonth,
                         AddedBy = u.UserName,
-                        AddedOn = trans.Add_date,
+                        AddedOn = DateOnly.FromDateTime(trans.Add_date.Value),
                         Amount = trans.Amount,
                         AllowanceId = trans.AllowanceId,
                         AllowanceName = lang == Localization.Arabic ? allowance.Name_ar : allowance.Name_en,
@@ -37,7 +37,7 @@ public class TransAllowanceRepository(KaderDbContext context) : BaseRepository<T
                         Notes = trans.Notes,
                         SalaryEffect = lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
                         SalaryEffectId = trans.SalaryEffectId,
-                        IncreaseTypeName= lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
+                        IncreaseTypeName = lang == Localization.Arabic ? salary.Name : salary.NameInEnglish,
 
                     };
 
@@ -47,7 +47,7 @@ public class TransAllowanceRepository(KaderDbContext context) : BaseRepository<T
             query = query.Skip(skip.Value);
         if (take.HasValue)
             query = query.Take(take.Value);
-        
+
 
         return query.ToList();
 

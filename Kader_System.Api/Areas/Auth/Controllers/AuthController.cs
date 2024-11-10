@@ -54,8 +54,8 @@ public class AuthController(IAuthService service, IWebHostEnvironment hostEnviro
         return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
     }
     [HttpPost(ApiRoutes.User.AddUser)]
-    [Permission(Permission.Add, 5)]
-
+    //[Permission(Permission.Add, 5)]
+    [AllowAnonymous]
     public async Task<IActionResult> CreateUser(CreateUserRequest model)
     {
         var serverPath = HttpContext.Items["ServerPath"]?.ToString();

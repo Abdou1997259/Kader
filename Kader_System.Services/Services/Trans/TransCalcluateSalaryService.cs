@@ -348,7 +348,7 @@ namespace Kader_System.Services.Services.Trans
                         Status = x.Status,
                         Total = x.TransSalaryCalculatorsDetails.Sum(s => s.Total),
                         CalculationDate = x.DocumentDate,
-                        AddedDate = x.Add_date,
+                        AddedDate = DateOnly.FromDateTime(x.Add_date.Value),
                         AddedBy = x.DeleteBy,
 
 
@@ -757,8 +757,10 @@ namespace Kader_System.Services.Services.Trans
 
         public async Task<Response<string>> PaySalary(int id)
         {
+            var transaction = _unitOfWork.BeginTransaction();
             try
             {
+
                 var transSalary = await _unitOfWork.TransSalaryCalculator.GetFirstOrDefaultAsync(x => x.Id == id, includeProperties: "TransSalaryCalculatorsDetails");
                 if (transSalary is null)
                 {
@@ -768,6 +770,7 @@ namespace Kader_System.Services.Services.Trans
                         Msg = _localizer[Localization.IsNotExisted, Localization.SalaryCalculator]
                     };
                 }
+                transSalary.Status = Status.PaidOff;
                 var paymnetTrans = new PaymentSalary
                 {
                     company_id = transSalary.CompanyId,
@@ -779,6 +782,7 @@ namespace Kader_System.Services.Services.Trans
                 };
                 await _context.PaymentSalaries.AddAsync(paymnetTrans);
                 await _context.SaveChangesAsync();
+                transaction.Commit();
                 return new()
                 {
                     Check = true,
@@ -787,6 +791,7 @@ namespace Kader_System.Services.Services.Trans
             }
             catch (Exception ex)
             {
+                transaction.Rollback();
                 return new()
                 {
                     Check = false,

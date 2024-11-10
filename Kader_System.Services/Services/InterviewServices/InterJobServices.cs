@@ -67,6 +67,7 @@ namespace Kader_System.Services.Services.InterviewServices
                     applicant.name_ar,
                     applicant.name_en,
                     applicant.description,
+                    applicant_id = applicant.id,
 
 
 
@@ -315,8 +316,8 @@ namespace Kader_System.Services.Services.InterviewServices
             Expression<Func<Job, bool>> filters = x =>
       !x.IsDeleted && (
           (!model.IsFinished.HasValue ||
-              (model.IsFinished == true && x.to < dateNow) ||
-              (model.IsFinished == false && x.to > dateNow)) &&
+              (model.IsFinished == true && (x.to < dateNow || x.to == null)) ||
+              (model.IsFinished == false && x.to > dateNow && x.to != null)) &&
           (string.IsNullOrEmpty(model.Word) ||
               x.name_ar.Contains(model.Word) ||
               x.name_en.Contains(model.Word)) &&
@@ -333,7 +334,7 @@ namespace Kader_System.Services.Services.InterviewServices
 
                 name = lang == Localization.Arabic ? x.name_ar : x.name_en,
                 applicant_count = x.applicant_count,
-                state = lang == Localization.Arabic ? x.state.name_ar : x.state.name_en,
+                state = x.state_id,
 
             }, orderBy: x => x.OrderBy(x => x.id), skip: (model.PageSize) * (model.PageNumber - 1), take: model.PageSize);
             int page = 1;
@@ -379,10 +380,12 @@ namespace Kader_System.Services.Services.InterviewServices
                     Path = host,
                     PerPage = model.PageSize,
                     Links = pageLinks,
-                    finished_job_count = _context.InterJobs.Where(x => x.to > dateNow).Count(),
+                    finished_job_count = _context.InterJobs.Where(x => x.to < dateNow || x.to == null).Count(),
                     job_count = _context.InterJobs.Count(),
-                    all_applicant_count = _context.InterJobs.Include("applicants")
-                    .Select(x => x.applicants.Count()).FirstOrDefault()
+                    all_applicant_count = _context.InterJobs
+                                .SelectMany(job => job.applicants.Where(applicant => !applicant.IsDeleted))
+                                .Count()
+
                 },
                 Check = true
             };
@@ -475,7 +478,7 @@ namespace Kader_System.Services.Services.InterviewServices
                     };
 
                 }
-                job.to = new DateOnly(1000, 01, 01);
+                job.to = null;
                 job.state_id = 3;
                 _unitOfWork.InterJob.Update(job);
                 await _unitOfWork.CompleteAsync();
