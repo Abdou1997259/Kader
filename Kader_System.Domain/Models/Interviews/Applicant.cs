@@ -22,6 +22,10 @@
         [Required]
         public int gender { get; set; }
         public float? rate { get; set; }
+        public float? hygiene_rate { get; set; }
+        public float? character_rate { get; set; }
+        public float? hr_rate { get; set; }
+        public float? technical_rate { get; set; }
 
         public int age { get; set; }
         public string? image_path { get; set; }

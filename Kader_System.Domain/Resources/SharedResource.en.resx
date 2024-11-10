@@ -282,6 +282,9 @@
   <data name="Rated" xml:space="preserve">
     <value>Rated</value>
   </data>
+  <data name="RateValue" xml:space="preserve">
+    <value>Rate value must be less than five or equal five </value>
+  </data>
   <data name="Rejected" xml:space="preserve">
     <value>Rejected</value>
   </data>

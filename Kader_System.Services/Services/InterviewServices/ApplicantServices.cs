@@ -582,6 +582,8 @@ namespace Kader_System.Services.Services.InterviewServices
               .GetSpecificSelectAsync(x => x.applicant_id == applicant.id,
                x => x, includeProperties: "faculty,faculty.university"));
 
+
+
                 return new()
                 {
                     Check = true,
@@ -715,7 +717,7 @@ namespace Kader_System.Services.Services.InterviewServices
             };
 
         }
-        public async Task<Response<string>> RateMe(int id, float rate)
+        public async Task<Response<string>> RateMe(int id, RateApplicantRequest requet)
         {
 
             var applicant = await _unitOfWork.Applicant.GetFirstOrDefaultAsync(x => x.id == id);
@@ -729,7 +731,19 @@ namespace Kader_System.Services.Services.InterviewServices
                 };
 
             }
-            applicant.rate = rate;
+            if (requet.technical_rate >= 5 || requet.character_rate >= 5 || requet.hr_rate >= 5 || requet.rate >= 5 || requet.hygiene_rate >= 5)
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.RateValue]
+                };
+            }
+            applicant.rate = requet.rate;
+            applicant.character_rate = requet.character_rate;
+            applicant.hr_rate = requet.hr_rate;
+            applicant.hygiene_rate = requet.hygiene_rate;
+            applicant.technical_rate = requet.technical_rate;
 
             _unitOfWork.Applicant.Update(applicant);
             await _unitOfWork.CompleteAsync();
@@ -745,18 +759,58 @@ namespace Kader_System.Services.Services.InterviewServices
             (GetApplicantsFilterationRequest model, string lang, string host)
         {
             var dateNow = DateOnly.FromDateTime(DateTime.Now);
-            Expression<Func<Applicant, bool>> filters = x =>
-      !x.IsDeleted && (
 
-          (string.IsNullOrEmpty(model.Word) ||
-              x.full_name.Contains(model.Word)
-           ) && (!model.job_id.HasValue || x.job_id == model.job_id));
+            Expression<Func<Applicant, bool>> filters = x =>
+               !x.IsDeleted &&
+              ((string.IsNullOrEmpty(model.Word) ||
+              x.full_name.Contains(model.Word)) &&
+              (!model.job_id.HasValue || x.job_id == model.job_id) &&
+              (!model.rate.HasValue || x.rate == model.rate) &&
+              (!model.year_of_experiences.HasValue || x.year_of_experiences == model.year_of_experiences) &&
+              (!model.age.HasValue || x.age == model.year_of_experiences) &&
+              (!model.faculty_jd.HasValue || x.educations.Any(f => f.faculty_id == model.faculty_jd)) &&
+               (!model.university_id.HasValue || x.educations.Any(f => f.faculty.university_id == model.university_id))
+
+          );
+
+
+
+
             var directoryTypes = HrDirectoryTypes.Applicant;
+
+
+            Func<IQueryable<Applicant>, IOrderedQueryable<Applicant>> orderBy = null!;
+
+            switch (model.sortby)
+            {
+                case 1:
+                    orderBy = query => query.OrderBy(x => x.full_name); // Sort by full name
+                    break;
+                case 2:
+                    orderBy = query => query.OrderBy(x => x.Added_by); // Sort by age
+                    break;
+                case 3:
+                    orderBy = query => query.OrderByDescending(x => x.rate); // Sort by rate
+                    break;
+                case 4:
+                    orderBy = query => query.OrderBy(x => x.rate); // Default sort by id
+                    break;
+                default:
+                    orderBy = query => query.OrderBy(x => x.id);
+                    break;
+
+            }
+
+
+
+
+
 
             var directoryName = directoryTypes.GetModuleNameWithType(Modules.Interview);
 
             var totalRecords = await _unitOfWork.Applicant.CountAsync(filters);
-            var result = await _unitOfWork.Applicant.GetSpecificSelectAsync(filters, includeProperties: "state", select: x =>
+
+            var result = await _unitOfWork.Applicant.GetSpecificSelectAsync(filters, includeProperties: "state,educations,educations.faculty", select: x =>
             new ApplicantList
             {
                 id = x.id,
@@ -766,7 +820,7 @@ namespace Kader_System.Services.Services.InterviewServices
                 state = x.state_id,
                 age = x.age,
                 image_path = _fileServer.CombinePath(directoryName, x.image_path)
-            }, orderBy: x => x.OrderBy(x => x.id), skip: (model.PageSize) * (model.PageNumber - 1), take: model.PageSize);
+            }, orderBy: orderBy, skip: (model.PageSize) * (model.PageNumber - 1), take: model.PageSize);
             int page = 1;
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
             if (model.PageNumber < 1)

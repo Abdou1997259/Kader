@@ -108,9 +108,9 @@ namespace Kader_System.Api.Areas.Interview
         }
         [HttpPut(ApiRoutes.ApplicantRoute.RateMe)]
 
-        public async Task<IActionResult> RateMe([FromRoute] int id, [FromRoute] float rate)
+        public async Task<IActionResult> RateMe([FromRoute] int id, [FromBody] RateApplicantRequest request)
         {
-            var response = await _service.RateMe(id, rate);
+            var response = await _service.RateMe(id, request);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

@@ -380,10 +380,12 @@ namespace Kader_System.Services.Services.InterviewServices
                     Path = host,
                     PerPage = model.PageSize,
                     Links = pageLinks,
-                    finished_job_count = _context.InterJobs.Where(x => x.to > dateNow).Count(),
+                    finished_job_count = _context.InterJobs.Where(x => x.to < dateNow || x.to == null).Count(),
                     job_count = _context.InterJobs.Count(),
-                    all_applicant_count = _context.InterJobs.Include("applicants")
-                    .Select(x => x.applicants.Count()).FirstOrDefault()
+                    all_applicant_count = _context.InterJobs
+                                .SelectMany(job => job.applicants.Where(applicant => !applicant.IsDeleted))
+                                .Count()
+
                 },
                 Check = true
             };
