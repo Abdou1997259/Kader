@@ -25,6 +25,7 @@ namespace Kader_System.Services.IServices.InterviewServices
         Task<Response<string>> ResumeJob(int id);
         Task<Response<string>> FinishJob(int id);
         Task<Response<string>> ReplayJob(int id, ReplayJobRequest model);
+        Task<Response<object>> GetUniversitiesAndFacultiesLookups(string lang);
 
 
     }

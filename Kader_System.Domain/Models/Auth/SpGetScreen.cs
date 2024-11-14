@@ -1,30 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Kader_System.Domain.Models.Auth
+﻿namespace Kader_System.Domain.Models.Auth
 {
     public class SpGetScreen
     {
 
         public string actions { get; set; }        // "1"
 
-    
+
         public int cat_id { get; set; }            // 29
 
- 
-        public string cat_title { get; set; }      // "توظيف"
+
+        public string? cat_title { get; set; }      // "توظيف"
 
 
         public int main_id { get; set; }           // 1
 
 
-        public string main_image { get; set; }     // "/upload/screen_main/107115a0-65e3-41eb-9000-a3d186eb9435.jpeg"
+        public string? main_image { get; set; }     // "/upload/screen_main/107115a0-65e3-41eb-9000-a3d186eb9435.jpeg"
 
 
-        public string main_title { get; set; }     // "البيانات الرئيسية"
+        public string? main_title { get; set; }     // "البيانات الرئيسية"
 
 
         public string permission { get; set; } // [1]
@@ -33,13 +27,13 @@ namespace Kader_System.Domain.Models.Auth
 
         public int sub_id { get; set; }            // 150
 
- 
+
         public string sub_title { get; set; }      // "aaa"
 
 
         public string url { get; set; }
 
-        public int  Order { get; set; }
+        public int Order { get; set; }
 
 
         // "aaa"
