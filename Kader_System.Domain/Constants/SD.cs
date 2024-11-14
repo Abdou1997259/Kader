@@ -596,6 +596,7 @@ public static class SD
             public const string SuspendedJob = "InterJob/Suspended/{id}";
             public const string FinishJob = "InterJob/FinishJob/{id}";
             public const string ReplayJob = "InterJob/Replay/{id}";
+            public const string GetUniversitiesAndFaculties = "InterJob/GetUniversitiesAndFaculties";
         }
         public class Vacation
         {

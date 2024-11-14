@@ -499,7 +499,41 @@ namespace Kader_System.Services.Services.InterviewServices
 
             }
         }
+        public async Task<Response<object>> GetUniversitiesAndFacultiesLookups(string lang)
+        {
+            try
+            {
+                var faculties = await _context.Faculties.Select(x => new
+                {
+                    id = x.id,
+                    name = lang == Localization.Arabic ? x.name_ar : x.name_en,
 
+                }).ToArrayAsync();
+                var universities = await _context.Universities.Select(x => new
+                {
+                    x.id,
+                    name = lang == Localization.Arabic ? x.name_ar : x.name_en,
+                }).ToArrayAsync();
+                return new Response<object>
+                {
+                    Check = true,
+                    Data = new
+                    {
+                        faculties,
+                        universities
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = "An error occurred: " + ex.Message
+                };
+
+            }
+        }
         public async Task<Response<string>> ReplayJob(int id, ReplayJobRequest model)
         {
             using var transaction = _unitOfWork.BeginTransaction();

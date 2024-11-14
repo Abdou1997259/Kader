@@ -766,8 +766,10 @@ namespace Kader_System.Services.Services.InterviewServices
               x.full_name.Contains(model.Word)) &&
               (!model.job_id.HasValue || x.job_id == model.job_id) &&
               (!model.rate.HasValue || x.rate == model.rate) &&
+              (!model.current_salary.HasValue || x.current_salary <= model.current_salary) &&
+              (!model.expected_salary.HasValue || x.expected_salary <= model.expected_salary) &&
               (!model.year_of_experiences.HasValue || x.year_of_experiences == model.year_of_experiences) &&
-              (!model.age.HasValue || x.age == model.year_of_experiences) &&
+              (!model.age.HasValue || x.age <= model.age) &&
               (!model.faculty_jd.HasValue || x.educations.Any(f => f.faculty_id == model.faculty_jd)) &&
                (!model.university_id.HasValue || x.educations.Any(f => f.faculty.university_id == model.university_id))
 

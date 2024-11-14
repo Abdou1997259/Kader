@@ -146,5 +146,16 @@ namespace Kader_System.Api.Areas.Interview
 
         }
         #endregion
+
+
+
+        #region Lookups
+        [HttpGet(ApiRoutes.InterJobRoute.GetUniversitiesAndFaculties)]
+
+        public async Task<IActionResult> GetUniversitiesAndFaculties() =>
+
+           Ok(await _service.GetUniversitiesAndFacultiesLookups(_requestService.GetRequestHeaderLanguage));
+
+        #endregion
     }
 }
