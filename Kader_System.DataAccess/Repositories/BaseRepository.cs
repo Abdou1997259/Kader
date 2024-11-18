@@ -206,7 +206,7 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
     {
         IQueryable<T> query = dbSet.AsNoTracking();
 
-        var xx = query.ToList();
+
 
         if (filter != null)
             query = query.Where(filter);

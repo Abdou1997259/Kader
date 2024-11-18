@@ -8,7 +8,8 @@ namespace Kader_System.DataAccess.Repositories
     {
         private readonly KaderDbContext _db = db;
 
-        public async Task<IEnumerable<SpCacluateSalary>> SpCalculateSalary(DateOnly startCalculationDate, int days, string listEmployeesString)
+        public async Task<IEnumerable<SpCacluateSalary>> SpCalculateSalary(DateOnly startCalculationDate,
+            int days, string listEmployeesString, int? companyId, int? departmentId, int? empId)
         {
             // Calculate the end of the month based on startCalculationDate
             int year = startCalculationDate.Year;
@@ -33,7 +34,7 @@ namespace Kader_System.DataAccess.Repositories
 
             // Execute stored procedure and return result
             var result = await _db.SpCacluateSalariesModel
-                .FromSqlInterpolated($"exec sp_calculate_salary {startOfMonth}, {endCalculationDate}, {empsParameter}")
+                .FromSqlInterpolated($@"exec sp_calculate_salary {startOfMonth}, {endCalculationDate}, {empsParameter} ,{companyId},{departmentId},{empId}")
                 .ToListAsync();
 
             return result;

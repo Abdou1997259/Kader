@@ -759,15 +759,68 @@ namespace Kader_System.Services.Services.InterviewServices
             (GetApplicantsFilterationRequest model, string lang, string host)
         {
             var dateNow = DateOnly.FromDateTime(DateTime.Now);
+            #region Handling Current Salary filter
+            bool current_sal_is_number = false;
+            decimal? start_range_curr_sal = null;
+            decimal? end_range_curr_sal = null;
+            string? all_curr_sal = null;
 
+
+            if (model.current_salary is not null)
+            {
+                model.current_salary[0] += "000";
+                model.current_salary[1] += "000";
+                if (decimal.TryParse(model.current_salary[0], out decimal numberResult))
+                {
+                    current_sal_is_number = true;
+                    start_range_curr_sal = numberResult;
+                    end_range_curr_sal = int.Parse(model.current_salary[1]);
+
+                }
+                else
+                {
+                    all_curr_sal = model.current_salary[0];
+
+                }
+            }
+            #endregion
+
+            #region Handling Expected Salary Filter
+            bool exp_sal_is_number = false;
+            decimal? start_range_exp_sal = null;
+            decimal? end_range_exp_sal = null;
+            string? all_exp_sal = null;
+            if (model.expected_salary is not null)
+            {
+                model.expected_salary[0] += "000";
+                model.expected_salary[1] += "000";
+                if (decimal.TryParse(model.expected_salary[0], out decimal numberResultexp))
+                {
+                    exp_sal_is_number = true;
+                    start_range_exp_sal = numberResultexp;
+                    end_range_exp_sal = int.Parse(model.current_salary[1]);
+
+                }
+                else
+                {
+                    all_exp_sal = model.expected_salary[0];
+
+                }
+            }
+            #endregion
             Expression<Func<Applicant, bool>> filters = x =>
                !x.IsDeleted &&
               ((string.IsNullOrEmpty(model.Word) ||
               x.full_name.Contains(model.Word)) &&
               (!model.job_id.HasValue || x.job_id == model.job_id) &&
               (!model.rate.HasValue || x.rate == model.rate) &&
-              (!model.current_salary.HasValue || x.current_salary <= model.current_salary) &&
-              (!model.expected_salary.HasValue || x.expected_salary <= model.expected_salary) &&
+              (!string.IsNullOrEmpty(all_curr_sal) || !current_sal_is_number ||
+              (x.current_salary >= start_range_curr_sal
+              && x.current_salary <= end_range_curr_sal)) &&
+               (!string.IsNullOrEmpty(all_exp_sal) || !exp_sal_is_number ||
+              (x.current_salary >= start_range_exp_sal
+              && x.current_salary <= end_range_exp_sal))
+             &&
               (!model.year_of_experiences.HasValue || x.year_of_experiences == model.year_of_experiences) &&
               (!model.age.HasValue || x.age <= model.age) &&
               (!model.faculty_jd.HasValue || x.educations.Any(f => f.faculty_id == model.faculty_jd)) &&
@@ -871,6 +924,43 @@ namespace Kader_System.Services.Services.InterviewServices
                 },
                 Check = true
             };
+        }
+
+        public async Task<Response<object>> GetFacultiesLookups(string lang, int id)
+        {
+            if (await _context.Faculties.FindAsync(id) is null)
+            {
+                return new Response<object>
+                {
+                    Msg = _sharLocalizer[Localization.CannotBeFound],
+                    Check = false,
+                };
+            }
+            var faculties = await _context.Faculties.Where(x => x.university_id == id).Select(x => new
+            {
+                x.id,
+                name = lang == Localization.Arabic ? x.name_ar : x.name_en
+
+            }).ToListAsync();
+            return new Response<object>
+            {
+                Data = faculties,
+            };
+        }
+
+        public async Task<Response<object>> GetUniversity(string lang)
+        {
+            var universities = await _context.Universities.Select(x => new
+            {
+                x.id,
+                name = lang == Localization.Arabic ? x.name_ar : x.name_en
+            }).ToListAsync();
+
+            return new Response<object>
+            {
+                Data = universities
+            };
+
         }
     }
 }

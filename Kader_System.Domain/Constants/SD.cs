@@ -583,6 +583,8 @@ public static class SD
             public const string Reject = "Applicant/Reject/{id}";
             public const string Accept = "Applicant/Accept/{id}";
             public const string RateMe = "Applicant/RateMe/{id}";
+            public const string Faculties = "Applicant/Faculties/{id}";
+            public const string Universities = "Applicant/Universities";
         }
         public class InterJobRoute
         {
