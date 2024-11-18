@@ -26,7 +26,8 @@ namespace Kader_System.Services.IServices.InterviewServices
         Task<Response<string>> RestoreAsync(int id);
         //Task<Response<string>> UpdateActiveOrNotContractAsync(int id);
         Task<Response<string>> DeleteAsync(int id);
-
+        Task<Response<object>> GetFacultiesLookups(string lang, int id);
+        Task<Response<object>> GetUniversity(string lang);
 
     }
 }

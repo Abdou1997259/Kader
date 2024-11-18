@@ -5,8 +5,8 @@
         public int? job_id { get; set; }
         public int? gender { get; set; }
         public int? age { get; set; }
-        public decimal? current_salary { get; set; }
-        public decimal? expected_salary { get; set; }
+        public string[]? current_salary { get; set; }
+        public string[]? expected_salary { get; set; }
         public float? rate { get; set; }
         [AllowedValues([1, 2, 3, 4, null], ErrorMessage = Annotations.AllowedValues)]
         public int? state { get; set; }

@@ -60,8 +60,22 @@ namespace Kader_System.Api.Areas.Interview
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
+        [HttpGet(ApiRoutes.ApplicantRoute.Faculties)]
 
+        public async Task<IActionResult> Faculties(int id)
+        {
+            var response = await _service.GetFacultiesLookups(_requestService.GetRequestHeaderLanguage, id);
+            if (response.Check)
+                return Ok(response);
+            else if (!response.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
+        }
 
+        [HttpGet(ApiRoutes.ApplicantRoute.Universities)]
+
+        public async Task<IActionResult> Faculties() =>
+            Ok(await _service.GetUniversity(_requestService.GetRequestHeaderLanguage));
 
         #endregion
 
