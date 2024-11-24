@@ -11,15 +11,34 @@ namespace Kader_System.Api.Areas.Trans
     public class TransCacluateSalaryController(ITransCalcluateSalaryService service) : ControllerBase
     {
 
+        //[HttpPost(ApiRoutes.TransSalaryCalculatorEndpoint.Calculate)]
+        //[Permission(Helpers.Permission.Edit, 26)]
+        //public async Task<IActionResult> Calculate([FromBody] CalcluateSalaryModelRequest model)
+        //{
+        //    var result = await service.CalculateSalaryDetailedTrans(model);
+        //    if (result.Check)
+        //        return Ok(result);
+        //    else if (!result.Check)
+        //        return StatusCode(statusCode: StatusCodes.Status400BadRequest, result.Msg);
+
+        //    return StatusCode(statusCode:StatusCodes.Status500InternalServerError, result.Msg); 
+        //}
         [HttpPost(ApiRoutes.TransSalaryCalculatorEndpoint.Calculate)]
         [Permission(Helpers.Permission.Edit, 26)]
-        public async Task<IActionResult> Calculate([FromBody] CalcluateSalaryModelRequest model)
+        public async Task<IActionResult> Calculate([FromBody] UpdateCalculateSalaryModelRequest model)
         {
-            return Ok(await service.CalculateSalaryDetailedTrans(model));
+            var result = await service.CalculateSalary(model);
+            if (result.Check)
+                return Ok(result);
+            else if (!result.Check)
+                return StatusCode(statusCode: StatusCodes.Status400BadRequest, result);
+
+            return StatusCode(statusCode: StatusCodes.Status500InternalServerError, result);
+
         }
         [HttpPost(ApiRoutes.TransSalaryCalculatorEndpoint.DetailedCalculations)]
         [Permission(Helpers.Permission.View, 26)]
-        public async Task<IActionResult> DetailedCalculation([FromBody] CalcluateEmpolyeeFilters model)
+        public async Task<IActionResult> DetailedCalculation([FromBody] EmployeeTransactionDetailsFilters model)
         {
             return Ok(await service.GetDetailsOfCalculation(model, GetCurrentRequestLanguage()));
         }

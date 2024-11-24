@@ -670,6 +670,8 @@ public static class SD
         public const string SalaryEffect = "SalaryEffect";
         public const string Approved = "Approved";
         public const string AlreadyExited = "AlreadyExited";
+        public const string EmployeesRelated = "EmployeesRelated";
+        public const string RequestedBefore = "RequestedBefore";
         public const string SalaryCalculator = "SalaryCalculator";
         public const string NoAdminCreate = "NoAdminCreate";
         public const string IsPending = "IsPending";
@@ -835,6 +837,7 @@ public static class SD
         public const string CanNotAddCommentToSpecificComment = "CanNotAddCommentToSpecificComment";
         public const string Technician = "Technician";
         public const string UserIsAlreadyLoggedIn = "UserIsAlreadyLoggedIn";
+        public const string CalculatedBefore = "CalculatedBefore";
         public const string HasAnyRelation = "HasAnyRelation";
         public const string Item = "Item";
         public const string Data = "Data";
@@ -911,6 +914,8 @@ public static class SD
         public const string ApplicantJobNumber = "ApplicantJobNumber";
         public const string EndJobDate = "EndJobDate";
         public const string SuspendedJob = "SuspendedJob";
+        public const string ActiveSelf = "ActiveSelf";
+        public const string RemoveAdmin = "RemoveAdmin";
     }
 
     public class LoggingMessages

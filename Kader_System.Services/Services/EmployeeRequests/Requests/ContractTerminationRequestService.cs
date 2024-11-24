@@ -182,6 +182,14 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     _sharLocalizer[Localization.Employee]]
                 };
             }
+            if (await _unitOfWork.ContractTerminationRequest.ExistAsync(x => x.EmployeeId == x.EmployeeId && x.CompanyId == currentCompanyId))
+            {
+                return new()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.RequestedBefore]
+                };
+            }
             var newRequest =
                 _mapper.Map<Domain.Models.EmployeeRequests.Requests
                 .ContractTerminationRequest>(model);
@@ -313,25 +321,66 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region Status
         public async Task<Response<string>> ApproveRequest(int requestId)
         {
-            var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
-            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
-            var result = await
-                _unitOfWork.ContractTerminationRequest.
-                UpdateApporvalStatus(x => x.Id == requestId && x.CompanyId == currentCompanyId,
-                RequestStatusTypes.Approved, userId);
-            if (result > 0)
+            var transaction = _unitOfWork.BeginTransaction();
+            try
             {
+                var contractTermination = await _unitOfWork.ContractTerminationRequest.GetByIdAsync(requestId);
+                var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+                var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+                if (contractTermination == null)
+                {
+                    return new Response<string>()
+                    {
+                        Check = false,
+                        Msg = _sharLocalizer[Localization.CannotBeFound]
+                    };
+
+                }
+                var empId = contractTermination.EmployeeId;
+                var contract = await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.employee_id == empId);
+                if (contract == null)
+                {
+                    return new Response<string>()
+                    {
+                        Check = false,
+                        Msg = _sharLocalizer[Localization.ContractNotFound]
+                    };
+                }
+
+
+
+                var result = await
+                  _unitOfWork.ContractTerminationRequest.
+                  UpdateApporvalStatus(x => x.Id == requestId && x.CompanyId == currentCompanyId,
+                  RequestStatusTypes.Approved, userId);
+
+                contract.IsDeleted = true;
+
+                if (result > 0)
+                {
+                    transaction.Commit();
+                    return new Response<string>()
+                    {
+                        Check = true,
+                        Msg = "Approved sucessfully"
+                    };
+                }
                 return new Response<string>()
                 {
-                    Check = true,
-                    Msg = "Approved sucessfully"
+                    Check = false,
+                    Msg = "Cannot approve , request is not pending or is deleted"
                 };
             }
-            return new Response<string>()
+            catch (Exception ex)
             {
-                Check = false,
-                Msg = "Cannot approve , request is not pending or is deleted"
-            };
+                transaction.Rollback();
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = ex.Message
+                };
+            }
+
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)
         {

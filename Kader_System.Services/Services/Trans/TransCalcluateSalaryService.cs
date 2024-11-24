@@ -1,6 +1,7 @@
 ﻿
 using Kader_System.DataAccesss.Context;
 using Kader_System.Domain.DTOs;
+using Kader_System.Services.Design_Patterns;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace Kader_System.Services.Services.Trans
@@ -23,6 +24,30 @@ namespace Kader_System.Services.Services.Trans
         private readonly IUserContextService _userContextService = userContextService;
         private readonly UserManager<ApplicationUser> _userManager = userManager;
         private readonly KaderDbContext _context = context;
+
+        public async Task<Response<string>> CalculateSalary(UpdateCalculateSalaryModelRequest request)
+        {
+
+            FinalSalaryCalculator cal = new FinalSalaryCalculator(_unitOfWork, _localizer, _userContextService, _context);
+            var result = await cal.Calculate(request);
+
+            if (result.EmpNotExited)
+            {
+                var msg = $"{_localizer[Localization.Contract]}  {_localizer[Localization.NotFound]}";
+                return new()
+                {
+                    Check = false,
+                    Msg = msg
+                };
+            }
+            return new()
+            {
+                Check = true,
+                Msg = _localizer[Localization.Calculated]
+
+            };
+        }
+
         public async Task<Response<string>> CalculateSalaryDetailedTrans(CalcluateSalaryModelRequest model)
         {
             var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
@@ -84,13 +109,13 @@ namespace Kader_System.Services.Services.Trans
             try
             {
 
-                var TransCalculatorMaster = (await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.DocumentDate == model.DocumentDate, x => x)).FirstOrDefault();
+                var TransCalculatorMaster = (await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.CalculationDate == model.DocumentDate, x => x)).FirstOrDefault();
 
                 if (TransCalculatorMaster == null)
                 {
                     TransCalculatorMaster = new TransSalaryCalculator
                     {
-                        DocumentDate = model.DocumentDate,
+                        //DocumentDate = model.DocumentDate,
 
                         Status = Status.Waiting,
                         CalculationDate = model.StartCalculationDate,
@@ -337,20 +362,17 @@ namespace Kader_System.Services.Services.Trans
                     Check = false
                 };
             }
-            var result = new GetSalaryCalculatorResponse
-            {
-                TotalRecords = await _unitOfWork.TransSalaryCalculator.CountAsync(filter: filter),
 
-                Items = (await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(filter: filter,
+            var data = (await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(filter: filter,
                     take: model.PageSize,
                     skip: (model.PageNumber - 1) * model.PageSize,
                     select: x => new GetSalaryCalculatorList
                     {
                         Id = x.Id,
-                        Description = x.Description,
+                        //Description = x.Description,
                         Status = x.Status,
                         Total = x.TransSalaryCalculatorsDetails.Sum(s => s.Total),
-                        CalculationDate = x.DocumentDate,
+                        CalculationDate = x.CalculationDate,
                         AddedDate = DateOnly.FromDateTime(x.Add_date.Value),
                         AddedBy = x.DeleteBy,
 
@@ -375,8 +397,13 @@ namespace Kader_System.Services.Services.Trans
                     }
 
 
-                    ).ToList()
+                    ).ToList();
 
+            var result = new GetSalaryCalculatorResponse
+            {
+                TotalRecords = await _unitOfWork.TransSalaryCalculator.CountAsync(filter: filter),
+
+                Items = data
 
 
                 ,
@@ -454,9 +481,9 @@ namespace Kader_System.Services.Services.Trans
             var employeeIds = string.Join('-', employees);
             var employeeWithCalculatedSalary = await _unitOfWork.StoredProcuduresRepo
                 .SpCalculateSalary(
-                transcation.CalculationDate, transcation.DocumentDate.Day, employeeIds, null, null, null);
+                transcation.CalculationDate, transcation.CalculationDate.Day, employeeIds, null, null, null);
             var spCalculatedSalaryTransDetails = (await _unitOfWork.StoredProcuduresRepo.SpCalculatedSalaryDetailedInfo(
-               transcation.CalculationDate, transcation.DocumentDate.Day, employeeIds)).Where(x => x.CalculateSalaryId != null);
+               transcation.CalculationDate, transcation.CalculationDate.Day, employeeIds)).Where(x => x.CalculateSalaryId != null);
 
             var vacations = await _unitOfWork.TransVacations.GetSpecificSelectAsync(x => x.company_id == currentCompany && x.IsDeleted == false, x => x);
             var contracts = await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.company_id == currentCompany && x.IsDeleted == false, x => x);
@@ -470,28 +497,24 @@ namespace Kader_System.Services.Services.Trans
                 EmployeeId = lang == Localization.Arabic ? "الرقم الوظيفي" : "Employee Id",
                 EmployeeName = lang == Localization.Arabic ? "الاسم الوظيفي" : "Employee Name",
                 Fixed = lang == Localization.Arabic ? "الاساسي" : "Fixed",
-                AdditionalValues = spCalculatedSalaryTransDetails
-                    .Where(e => e.JournalType == JournalType.Benefit || e.JournalType == JournalType.Allowance)
-                    .Select(s => s.JournalType.ToString())
-                    .ToList(),
-                MinuesValues = spCalculatedSalaryTransDetails
-                    .Where(e => e.JournalType == JournalType.Deduction
-                    || e.JournalType == JournalType.Loan)
-                    .Select(s => s.JournalType.ToString())
-                    .ToList()
+                AdditionalValues = lang == Localization.Arabic ? new[] { "استحقاقات", "البدلات" } : new[] { "Benefits", "Allowance" },
+                MinuesValues = lang == Localization.Arabic ? new[] { "السلف", "الخصومات" } : new[] { "Loans", "Deductions" },
+                PaymentMethod = lang == Localization.Arabic ? "طريقة الدفغ" : "Payment Method"
+
+
             };
 
             var Data = employeeWithCalculatedSalary.Select(x => new GetSalariesEmployeeResponse
             {
                 EmployeeId = x.EmployeeId ?? 0,
                 EmployeeName = Localization.Arabic == lang ? x.FullNameAr : x.FullNameEn,
-                AccommodationAllowance = x.AccommodationAllowance ?? 0,
-                BasicSalary = x.FixedSalary ?? 0,
-                HousingAllownces = contracts.Where(c =>
+                //AccommodationAllowance = x.AccommodationAllowance ?? 0,
+                BasicSalary = x.FixedSalary,
+                HousingAllowances = contracts.Where(c =>
                 c.employee_id == x.EmployeeId).Select(s => s.housing_allowance).FirstOrDefault(),
                 WrokingDay = 30,
 
-                DisbursementType = DisbursementType.BankingType,
+
 
                 AdditionalValues = spCalculatedSalaryTransDetails
                 .Where(e => e.EmployeeId == x.EmployeeId && (e.JournalType == JournalType.Allowance || e.JournalType == JournalType.Benefit))
@@ -517,18 +540,19 @@ namespace Kader_System.Services.Services.Trans
                         Id = t.TransId,
                         Value = t.CalculatedSalary
                     }).ToList()
-                },
-                Absents = spCalculatedSalaryTransDetails
-                .Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Vacation)
-                .Select(v => new Absent
-                {
-                    Days = vacations.Where(vv => vv.employee_id == x.EmployeeId &&
-                    vv.start_date == v.JournalDate && vv.id == v.TransId).FirstOrDefault()?
-                    .days_count ?? 0,
-                    Sum = vacations.Where(vv => vv.employee_id == x.EmployeeId
-                    && vv.start_date == v.JournalDate && vv.id ==
-                    v.TransId).FirstOrDefault()?.days_count == null ? 0 : v.CalculatedSalary
-                }).ToList()
+                }
+
+                //Absents = spCalculatedSalaryTransDetails
+                //.Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Vacation)
+                //.Select(v => new Absent
+                //{
+                //    Days = vacations.Where(vv => vv.employee_id == x.EmployeeId &&
+                //    vv.start_date == v.JournalDate && vv.id == v.TransId).FirstOrDefault()?
+                //    .days_count ?? 0,
+                //    Sum = vacations.Where(vv => vv.employee_id == x.EmployeeId
+                //    && vv.start_date == v.JournalDate && vv.id ==
+                //    v.TransId).FirstOrDefault()?.days_count == null ? 0 : v.CalculatedSalary
+                //}).ToList()
             }).ToList();
 
             return new Response<SalaryResponse>
@@ -545,39 +569,66 @@ namespace Kader_System.Services.Services.Trans
         }
 
         public async Task<Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>>
-            GetDetailsOfCalculation(CalcluateEmpolyeeFilters model, string lang)
+            GetDetailsOfCalculation(EmployeeTransactionDetailsFilters model, string lang)
         {
-            var currentCompanies = await _userContextService.GetLoggedCurrentCompanies();
-            var employees = await _unitOfWork.Employees.GetSpecificSelectAsync(x =>
-                x.IsDeleted == false && currentCompanies.Contains(x.CompanyId) &&
-                (!model.EmployeeId.HasValue || x.Id == model.EmployeeId) &&
-                (!model.CompanyId.HasValue || x.CompanyId == model.CompanyId) &&
-                (!model.ManagerId.HasValue || x.ManagementId == model.ManagerId) &&
-                (!model.DepartmentId.HasValue || x.DepartmentId == model.DepartmentId),
-                x => x);
 
-            if (employees == null || !employees.Any())
-            {
-                var msg = _localizer[Localization.NotFoundData];
-                return new Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>
+            (DateOnly startDate, DateOnly endDate) = DateManipulation.GetLastDateOfMonth(
+               model.StartCalculationDate,
+               model.StartActionDay);
+
+            var result = (await _unitOfWork.StoredProcuduresRepo.Get_Details_Calculations(
+                startDate,
+                endDate, model.CompanyId, model.DepartmentId,
+                model.EmployeeId, lang == Localization.Arabic ? 1 : 2)).Select(x => new GetSalariesEmployeeResponse
                 {
-                    Data = null,
-                    Msg = msg,
-                    Check = false
-                };
-            }
+                    EmployeeId = x.Id,
+                    EmployeeName = x.FullName,
+                    HousingAllowances = x.HousingAllowance,
+                    Absents = new Absent
+                    {
+                        Days = x.AbsDays,
+                        Sum = x.AbsSum
+                    },
+                    BasicSalary = x.FixedSalary,
 
-            var employeeIds = string.Join('-', employees.Select(x => x.Id));
-            var employeeWithCalculatedSalary = await _unitOfWork.StoredProcuduresRepo.SpCalculateSalary(
-                model.StartCalculationDate, model.StartActionDay, employeeIds, model?.CompanyId, model.DepartmentId, model.EmployeeId);
-            var spCalculatedSalaryTransDetails = (await _unitOfWork.StoredProcuduresRepo
-                .SpCalculatedSalaryDetailedInfo(
-                model.StartCalculationDate, model.StartActionDay, employeeIds)).Where(x => x.CalculateSalaryId == null);
+                    MinuesValues = new MinuesValues
+                    {
+                        Deductions = new List<Deduction>
+                                     {
+                           new Deduction
+                           {
 
-            var vacations = await _unitOfWork.TransVacations.GetSpecificSelectAsync(x =>
-            currentCompanies.Contains(x.company_id) && x.IsDeleted == false, x => x);
-            var contracts = await _unitOfWork.Contracts.GetSpecificSelectAsync(x => currentCompanies.Contains(x.company_id) && x.IsDeleted == false, x => x);
+                               Value = x.Deduction
+                           }
+                       },
+                        Loans = new List<Loan> { new Loan
+                       {
 
+                                 Value=x.Loan
+                       } }
+                    },
+                    PaymentMethod = x.PaymentWay,
+                    WorkingDay = x.WorkingDays,
+                    TotalAll = x.Total,
+                    TotalAdditionalValues = x.AdditionalValues,
+                    TotalMinues = x.MinuesValues,
+                    AdditionalValues = new List<AdditionalValues> {
+                   new AdditionalValues
+                   {
+                       Id=1,
+                       Name=lang==Localization.Arabic?"استحقاقات":"Benefits",
+                       Value=x.Allowance
+                   }
+                   ,new AdditionalValues
+                   {
+                       Id=2,
+                       Name=lang==Localization.Arabic?"البدلات":"Allowance",
+                   }
+
+                   }
+
+
+                });
             var headers = new Header
             {
                 WorkedDays = lang == Localization.Arabic ? "ايام العمل" : "Working Days",
@@ -588,72 +639,16 @@ namespace Kader_System.Services.Services.Trans
                 EmployeeId = lang == Localization.Arabic ? "الرقم الوظيفي" : "Employee Id",
                 EmployeeName = lang == Localization.Arabic ? "الاسم الوظيفي" : "Employee Name",
                 Fixed = lang == Localization.Arabic ? "الاساسي" : "Fixed",
-                AdditionalValues = spCalculatedSalaryTransDetails
-                    .Where(e => e.JournalType == JournalType.Benefit || e.JournalType == JournalType.Allowance)
-                    .Select(s => Localization.Arabic == lang ? s.TransNameAr : s.TransNameEn)
-                    .ToList(),
-                MinuesValues = spCalculatedSalaryTransDetails
-                    .Where(e => e.JournalType == JournalType.Deduction || e.JournalType == JournalType.Loan)
-                    .Select(s => Localization.Arabic == lang ? s.TransNameAr : s.TransNameEn)
-                    .ToList()
+                AdditionalValues = lang == Localization.Arabic ? new[] { "استحقاقات", "البدلات" } : new[] { "Benefits", "Allowance" },
+                MinuesValues = lang == Localization.Arabic ? new[] { "السلف", "الخصومات" } : new[] { "Loans", "Deductions" },
+                PaymentMethod = lang == Localization.Arabic ? "طريقة الدفغ" : "Payment Method"
             };
 
-            var details = employeeWithCalculatedSalary.Select(x => new GetSalariesEmployeeResponse
-            {
-                EmployeeId = x.EmployeeId ?? 0,
-                EmployeeName = lang == Localization.Arabic ? x.FullNameAr : x.FullNameEn,
-                AccommodationAllowance = x.AccommodationAllowance ?? 0,
-                BasicSalary = x.FixedSalary ?? 0,
-                HousingAllowances = contracts.Where(c =>
-                c.employee_id == x.EmployeeId).Select(s => s.housing_allowance).FirstOrDefault(),
-                WorkingDay = 30,
 
-                DisbursementType = DisbursementType.BankingType,
-
-
-                AdditionalValues = spCalculatedSalaryTransDetails
-                    .Where(e => e.EmployeeId == x.EmployeeId && (e.JournalType == JournalType.Allowance || e.JournalType == JournalType.Benefit))
-                    .Select(t => new AdditionalValues
-                    {
-                        Id = t.TransId,
-                        Name = Localization.Arabic == lang ? t.TransNameAr : t.TransNameEn,
-                        Value = t.CalculatedSalary
-                    }).ToList(),
-                MinuesValues = new MinuesValues
-                {
-                    Deductions = spCalculatedSalaryTransDetails
-                        .Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Deduction)
-                        .Select(t => new Deduction
-                        {
-                            Id = t.TransId,
-                            Value = t.CalculatedSalary
-                        }).ToList(),
-                    Loans = spCalculatedSalaryTransDetails
-                        .Where(e => e.EmployeeId == x.EmployeeId && e.JournalType == JournalType.Loan)
-                        .Select(t => new Loan
-                        {
-                            Id = t.TransId,
-                            Value = t.CalculatedSalary
-                        }).ToList()
-                },
-                Absents = spCalculatedSalaryTransDetails
-                    .Where(e => e.EmployeeId == x.EmployeeId &&
-                    e.JournalType == JournalType.Vacation)
-                    .Select(v => new Absent
-                    {
-                        Days = vacations.Where(vv => vv.employee_id ==
-
-                        x.EmployeeId && vv.start_date == v.JournalDate
-                        && vv.id == v.TransId).FirstOrDefault()
-                        ?.days_count ?? 0,
-                        Sum = vacations.Where(vv => vv.employee_id == x.EmployeeId &&
-                        vv.start_date == v.JournalDate && vv.id == v.TransId).FirstOrDefault()?.days_count == null ? 0 : v.CalculatedSalary
-                    }).ToList()
-            }).ToList();
 
             return new Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>
             {
-                Data = Tuple.Create(headers, details),
+                Data = Tuple.Create(headers, result.ToList()),
                 Msg = string.Empty,
                 Check = true
             };

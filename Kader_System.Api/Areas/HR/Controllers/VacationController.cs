@@ -11,7 +11,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiController]
     //[Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
-    public class VacationController (IVacationService service, IRequestService requestService): ControllerBase
+    public class VacationController(IVacationService service, IRequestService requestService) : ControllerBase
     {
 
         private readonly IRequestService requestService = requestService;
@@ -27,7 +27,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [HttpGet(ApiRoutes.Vacation.GetAllVacations)]
         [Permission(Permission.View, 12)]
         public async Task<IActionResult> GetAllVacationsAsync([FromQuery] GetAllFilterationFoVacationRequest model) =>
-            Ok(await service.GetAllVacationsWithJoinAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
+                Ok(await service.GetAllVacationsWithJoinAsync(requestService.GetRequestHeaderLanguage, model, requestService.GetCurrentHost));
 
 
         [HttpGet(ApiRoutes.Vacation.GetVacationById)]

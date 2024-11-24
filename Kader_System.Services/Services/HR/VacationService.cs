@@ -57,20 +57,29 @@ namespace Kader_System.Services.Services.HR
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
+            var items = await unitOfWork.Vacations.GetSpecificSelectAsync(filter, x => new VacationData
+            {
+                Id = x.Id,
+                EmployeesCount = x.Employees.Count(),
+                ApplyAfterMonth = x.ApplyAfterMonth,
+                TotalBalance = x.TotalBalance,
+                VacationType = lang == Localization.Arabic ? x.VacationType.Name : x.VacationType.NameInEnglish,
+                Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
+                AddedBy = x.User.FullName,
+
+            },
+            includeProperties: "VacationType,User",
+            orderBy: x => x.OrderByDescending(o => o.Id),
+            take: model.PageSize,
+            skip: (model.PageNumber - 1) * model.PageSize);
             var result = new GetAllVacationResponse();
 
             result.TotalRecords = totalRecords;
-            var items = (unitOfWork.Vacations.GetVacationInfo(filter,
-                        take: model.PageSize,
-                        skip: (model.PageNumber - 1) * model.PageSize,
-                        lang: lang));
+
             result.From = (page - 1) * model.PageSize + 1;
 
 
-            result.Items = (unitOfWork.Vacations.GetVacationInfo(filter,
-                        take: model.PageSize,
-                        skip: (model.PageNumber - 1) * model.PageSize,
-                        lang: lang)).OrderByDescending(x => x.Id).ToList();
+            result.Items = items.ToList();
             result.From = (page - 1) * model.PageSize + 1;
             result.CurrentPage = model.PageNumber;
             result.LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}";
