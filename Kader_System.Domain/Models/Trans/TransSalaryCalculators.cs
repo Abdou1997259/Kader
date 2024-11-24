@@ -6,9 +6,8 @@
         [Key]
         public int Id { get; set; }
 
-        public DateOnly DocumentDate { get; set; }
         public Status Status { get; set; }
-        public string? Description { get; set; }
+
         public DateOnly CalculationDate { get; set; }
 
         public bool IsMigrated { get; set; }

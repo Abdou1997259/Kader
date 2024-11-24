@@ -3,27 +3,25 @@
     public class GetSalariesEmployeeResponse
     {
 
-        public int EmployeeId { get; set; }//
-        public string EmployeeName { get; set; }//
-        public double HousingAllownces { get; set; }
-        public int WrokingDay { get; set; }//
-        public double BasicSalary { get; set; }
-        public double AccommodationAllowance { get; set; }
+        public int? EmployeeId { get; set; }//
+        public string? EmployeeName { get; set; }//
+
+        public int? WrokingDay { get; set; }//
+        public double? BasicSalary { get; set; }
+
         public IEnumerable<AdditionalValues> AdditionalValues { get; set; }
-        //public Header Headers { get; set; }
+        public double? TotalAdditionalValues { get; set; }
+        public double? TotalMinues { get; set; }
+        public double? TotalAll { get; set; }
 
         public MinuesValues MinuesValues { get; set; }
 
-        public IEnumerable<Absent> Absents { get; set; }
-        public DisbursementType DisbursementType { get; set; }
-        public double HousingAllowances { get; set; }
-        public int WorkingDay { get; set; }
+        public Absent Absents { get; set; }
+        public string? PaymentMethod { get; set; }
+        public double? HousingAllowances { get; set; }
+        public double? WorkingDay { get; set; }
     }
-    public enum DisbursementType
-    {
-        BankingType = 1,
-        CachingType
-    }
+
     public class Absent
     {
         public double? Days { get; set; }
@@ -64,9 +62,9 @@
         public string TotalAll { get; set; }
         public string PaymentMethod { get; set; }
         public string[] Absent { get; set; }
-        public List<string> AdditionalValues { get; set; }
+        public string[] AdditionalValues { get; set; }
         public string ScreenName { get; set; }
-        public List<string> MinuesValues { get; set; }
+        public string[] MinuesValues { get; set; }
     }
     public class SalaryResponse
     {

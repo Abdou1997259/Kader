@@ -237,7 +237,7 @@ namespace Kader_System.Services.Services.HR
             }
             Expression<Func<HrEmployee, bool>> filter = x => x.DepartmentId == id;
             var inUsed = await unitOfWork.Employees.GetFirstOrDefaultAsync(filter);
-            if (inUsed == null)
+            if (inUsed != null)
             {
                 string resultMsg = string.Format(shareLocalizer[Localization.CannotDeleteItemHasRelativeData],
                      shareLocalizer[Localization.Department]);

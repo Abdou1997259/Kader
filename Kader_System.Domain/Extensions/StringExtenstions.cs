@@ -1,8 +1,4 @@
-﻿
-
-using Kader_System.Domain.DTOs.Response;
-
-namespace Kader_System.Domain.Extensions
+﻿namespace Kader_System.Domain.Extensions
 {
     public static class StringExtenstions
     {
@@ -76,7 +72,14 @@ namespace Kader_System.Domain.Extensions
             return result;
 
         }
-
+        public static string JoinEmployeeIds(this IEnumerable<HrEmployee> employees, char separator = '-')
+        {
+            return string.Join(separator, employees.Select(x => x.Id));
+        }
+        public static string JoinIntergers(this IEnumerable<int> intergers, char separator = '-')
+        {
+            return string.Join(separator, intergers);
+        }
 
     }
 }

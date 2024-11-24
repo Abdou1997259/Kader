@@ -120,6 +120,9 @@
   <data name="Accepted" xml:space="preserve">
     <value>تم القبول</value>
   </data>
+  <data name="ActiveSelf" xml:space="preserve">
+    <value>لايمكن للمستخدم تفعيل نفسه </value>
+  </data>
   <data name="Allowance" xml:space="preserve">
     <value>البدل</value>
   </data>
@@ -154,10 +157,13 @@
     <value>اسم المستحق</value>
   </data>
   <data name="Calculated" xml:space="preserve">
-    <value>هذا الحركه تم عمل اعادة احتساب لها</value>
+    <value>تم الحساب</value>
   </data>
   <data name="CalculatedAready" xml:space="preserve">
     <value>تم حساب الراتب لهذا الموطف من قبل</value>
+  </data>
+  <data name="CalculatedBefore" xml:space="preserve">
+    <value>محسوب من قبل  في شهر المحاسبة المدخل</value>
   </data>
   <data name="CanceledContract" xml:space="preserve">
     <value>العقد ملغي </value>
@@ -200,6 +206,9 @@
   </data>
   <data name="Employee" xml:space="preserve">
     <value>الموظف</value>
+  </data>
+  <data name="EmployeesRelated" xml:space="preserve">
+    <value>لايمكن المسح لوجود موظفين </value>
   </data>
   <data name="EndJobDate" xml:space="preserve">
     <value>انتهي وقت التقديم </value>
@@ -287,6 +296,12 @@
   </data>
   <data name="Rejected" xml:space="preserve">
     <value>الرفض</value>
+  </data>
+  <data name="RemoveAdmin" xml:space="preserve">
+    <value>لايمكن خذف المستخدم الرئيسي</value>
+  </data>
+  <data name="RequestedBefore" xml:space="preserve">
+    <value>تم عمل هذا الطلب بالفعل</value>
   </data>
   <data name="Resignation" xml:space="preserve">
     <value>طلب الاستقالة</value>

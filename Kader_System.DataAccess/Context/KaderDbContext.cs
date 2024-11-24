@@ -22,6 +22,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
     public DbSet<UserPermission> UserPermissions { get; set; }
     public DbSet<SpGetScreen> SpGetScreens { get; set; }
     public DbSet<CompanyYear> CompanyYears { get; set; }
+    public DbSet<Get_Details_Calculations> Get_Details_Calculations { get; set; }
     public DbSet<SpCaclauateSalaryDetails> SpCaclauateSalaryDetailsModel { get; set; }
     public DbSet<SpCaclauateSalaryDetailedTrans> SpCaclauateSalaryDetailedTransModel { get; set; }
 
@@ -310,7 +311,12 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
         #endregion
 
     }
-
+    public async Task ExecuteUpdateTransactionAsync(DateOnly startCalculationDate
+        , DateOnly endCalculationDate,
+        string listEmployeesString)
+    {
+        await Database.ExecuteSqlAsync($"EXEC UpdateTransaction {startCalculationDate},{endCalculationDate},{listEmployeesString}");
+    }
 
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
     {

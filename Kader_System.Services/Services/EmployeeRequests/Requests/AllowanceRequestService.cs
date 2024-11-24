@@ -180,7 +180,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region AddAllowanceRequest
-        public async Task<Response<GetAllowanceRequestRequestResponse>> AddNewAllowanceRequest(DTOAllowanceRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.AllowanceRequest)
+        public async Task<Response<GetAllowanceRequestRequestResponse>>
+            AddNewAllowanceRequest(DTOAllowanceRequest model, string moduleName, HrEmployeeRequestTypesEnums hrEmployeeRequest = HrEmployeeRequestTypesEnums.AllowanceRequest)
         {
 
 
@@ -193,6 +194,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
                 };
             }
+
 
             var newRequest = _mapper.Map<AllowanceRequest>(model);
             newRequest.company_id = currentCompanyId;
@@ -370,6 +372,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
             }, lang);
+
 
             if (!createresult.Check)
             {

@@ -6,6 +6,7 @@ public enum JournalType
     Benefit,
     Allowance,
     Loan,
-    Vacation
+    Vacation,
+    None
 }
 

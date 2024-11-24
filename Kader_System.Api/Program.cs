@@ -102,6 +102,9 @@ builder.Services.AddControllersWithViews().AddJsonOptions(x =>
 }
     );
 
+
+
+
 builder.Services.AddDbContext<KaderAuthorizationContext>(options =>
  options.UseSqlServer(builder.Configuration.
  GetConnectionString("KaderAuthorizationConnection"))
@@ -318,6 +321,7 @@ builder.Services.AddScoped<IEmployeeNotesServices, EmployeeNotesServices>();
 builder.Services.AddScoped<IApplicantServices, ApplicantServices>();
 builder.Services.AddScoped<IInterJobServices, InterJobServices>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+
 #region Employee_Requests
 builder.Services.AddScoped<IEmployeeRequestsRepository, EmployeeRequestsRepository>();
 builder.Services.AddScoped<IVacationRequestService, VacationRequestService>();

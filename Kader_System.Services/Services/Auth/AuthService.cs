@@ -136,6 +136,7 @@ public class AuthService(IUnitOfWork unitOfWork
         UpdateUserRequest model, string moduleName, HrDirectoryTypes userenum = HrDirectoryTypes.User)
 
     {
+
         if (id == null)
         {
             string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
@@ -148,6 +149,20 @@ public class AuthService(IUnitOfWork unitOfWork
                 Msg = resultMsg
             };
         }
+        if (id == _userContext.UserId)
+        {
+            if (model.is_active == true)
+            {
+                return new Response<UpdateUserRequest>()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.ActiveSelf],
+                };
+            }
+
+        }
+
+
         var companyList = await _unitOfWork.Companies.GetAllAsync();
         var validCompanyIds = companyList.Select(c => c.Id).ToHashSet();
 
@@ -161,6 +176,7 @@ public class AuthService(IUnitOfWork unitOfWork
                 Data = null
             };
         }
+
 
         model.current_title = model.title_id.FirstOrDefault();
         model.current_company = model.company_id.FirstOrDefault();
@@ -491,6 +507,7 @@ public class AuthService(IUnitOfWork unitOfWork
         string err = _sharLocalizer[Localization.Error];
         try
         {
+
             _unitOfWork.UserDevices.RemoveRange(lsitOfObjects);
 
             bool result = await _unitOfWork.CompleteAsync() > 0;
@@ -1253,6 +1270,14 @@ public class AuthService(IUnitOfWork unitOfWork
     public async Task<Response<string>> DeleteUser(string id)
     {
         var loggedUser = _userContext.UserId;
+        if (_userContext.IsAdmin())
+        {
+            return new Response<string>()
+            {
+                Check = false,
+                Msg = _sharLocalizer[Localization.RemoveAdmin]
+            };
+        }
 
         if (loggedUser == id)
         {

@@ -120,6 +120,9 @@
   <data name="Accepted" xml:space="preserve">
     <value>Accepted</value>
   </data>
+  <data name="ActiveSelf" xml:space="preserve">
+    <value>User Can't Active them self</value>
+  </data>
   <data name="Allowance" xml:space="preserve">
     <value>Allowance</value>
   </data>
@@ -154,10 +157,13 @@
     <value>Benefit</value>
   </data>
   <data name="Calculated" xml:space="preserve">
-    <value>has been already calculated</value>
+    <value>Calculated</value>
   </data>
   <data name="CalculatedAready" xml:space="preserve">
     <value>This Employee's Salary has been calculated this month.</value>
+  </data>
+  <data name="CalculatedBefore" xml:space="preserve">
+    <value>Calculated Before based on Calculate Date you gave </value>
   </data>
   <data name="CanceledContract" xml:space="preserve">
     <value>Canceled Contract</value>
@@ -200,6 +206,9 @@
   </data>
   <data name="Employee" xml:space="preserve">
     <value>Employee</value>
+  </data>
+  <data name="EmployeesRelated" xml:space="preserve">
+    <value>Can't remove cuase there are Empolyees </value>
   </data>
   <data name="EndJobDate" xml:space="preserve">
     <value>Time of Applicant of job is up</value>
@@ -287,6 +296,12 @@
   </data>
   <data name="Rejected" xml:space="preserve">
     <value>Rejected</value>
+  </data>
+  <data name="RemoveAdmin" xml:space="preserve">
+    <value>You can't remove admin user.</value>
+  </data>
+  <data name="RequestedBefore" xml:space="preserve">
+    <value> Requested Before</value>
   </data>
   <data name="Resignation" xml:space="preserve">
     <value>Resignation</value>

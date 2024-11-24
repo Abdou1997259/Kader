@@ -40,6 +40,48 @@ namespace Kader_System.DataAccess.Repositories
             return result;
         }
 
+        public async Task<IEnumerable<SpCacluateSalary>> Sp_GET_EMP_SALARY(DateOnly startCalculationDate,
+        int days, int? companyId, int? departmentId, int? empId)
+        {
+            // Calculate the end of the month based on startCalculationDate
+            int year = startCalculationDate.Year;
+            int month = startCalculationDate.Month;
+            int daysInMonth = DateTime.DaysInMonth(year, month);
+            days = Math.Min(daysInMonth, days);
+            var startOfMonth = new DateOnly(year, month, days);
+            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+
+
+            // Adjust endCalculationDate to the last day of the month with the specified day
+            var endCalculationDate = new DateOnly(year, month, days).AddMonths(1).AddDays(-1);
+
+            // Create SqlParameter for listEmployeesString
+
+
+            // Execute stored procedure and return result
+            var result = await _db.SpCacluateSalariesModel
+                .FromSqlInterpolated($@"exec Sp_GET_EMP_SALARY {startOfMonth}, {endCalculationDate} ,{companyId},{departmentId},{empId}")
+                .ToListAsync();
+
+            return result;
+        }
+        public async Task<IEnumerable<SpCaclauateSalaryDetails>>
+       CalculateSalaryDetails(DateOnly startCalculationDate,
+       DateOnly EndCalculationDate, string listEmployeesString)
+        {
+            // Adjust endCalculationDate to the last day of the month with the specified day
+
+            var empsParameter = new SqlParameter
+            {
+                ParameterName = "@listEmployeesString",
+                SqlDbType = SqlDbType.VarChar,
+                Value = listEmployeesString
+            };
+            var result = await _db.SpCaclauateSalaryDetailsModel.FromSqlInterpolated($"exec sp_calculate_salary_details {startCalculationDate}, {EndCalculationDate}, {empsParameter}").ToListAsync();
+            return result;
+
+        }
         public async Task<IEnumerable<SpCaclauateSalaryDetails>> SpCalculateSalaryDetails(DateOnly startCalculationDate, int days, string listEmployeesString)
         {
             int year = startCalculationDate.Year;
@@ -58,7 +100,7 @@ namespace Kader_System.DataAccess.Repositories
                 Value = listEmployeesString
             };
             var result = await _db.SpCaclauateSalaryDetailsModel.FromSqlInterpolated($"exec sp_calculate_salary_details {startOfMonth}, {endCalculationDate}, {empsParameter}").ToListAsync();
-            return null;
+            return result;
 
         }
         public async Task<IEnumerable<SpCaclauateSalaryDetails>> SpCalculateSalaryDetails(DateOnly startCalculationDate, DateOnly endCalculationDate, string listEmployeesString)
@@ -209,6 +251,36 @@ namespace Kader_System.DataAccess.Repositories
                 getAllStMainScreens = data,
                 myPermissions = permission
             };
+        }
+
+        public async Task<IEnumerable<SpCaclauateSalaryDetails>> SpCalculateSalaryDetails(DateOnly startCalculationDate, DateOnly EndCalculationDate, string listEmployeesString, string EmpId,
+            int? companyId, int? departmentId, int? empId)
+        {
+
+            var empsParameter = new SqlParameter
+            {
+                ParameterName = "@listEmployeesString",
+                SqlDbType = SqlDbType.VarChar,
+                Value = listEmployeesString
+            };
+            return await _db.SpCaclauateSalaryDetailsModel.FromSqlInterpolated($"exec sp_calculate_salary_details {startCalculationDate}, {EndCalculationDate}, {empsParameter} ,{companyId},{departmentId},{empId}").ToListAsync();
+        }
+
+        public async Task<IEnumerable<Get_Details_Calculations>> Get_Details_Calculations(
+            DateOnly startCalculationDate, DateOnly EndCalculationDate, int? companyId,
+            int? departmentId, int? empId, int lang)
+        {
+
+
+
+            // Adjust endCalculationDate to the last day of the month with the specified day
+
+            return await _db.Get_Details_Calculations.FromSqlInterpolated(@$"exec Get_Details_Calculations {startCalculationDate}, {EndCalculationDate} ,{companyId},{departmentId},{empId},{lang}").ToListAsync();
+
+
+
+
+
         }
     }
 }

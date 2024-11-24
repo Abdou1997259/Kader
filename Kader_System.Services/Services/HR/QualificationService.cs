@@ -58,15 +58,23 @@ public class QualificationService(IUnitOfWork unitOfWork, IStringLocalizer<Share
         var pageLinks = Enumerable.Range(1, totalPages)
             .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
             .ToList();
+
+        var items = await _unitOfWork.Qualifications.GetSpecificSelectAsync(filter, x => new QualificationData
+        {
+            Name = lang == Localization.Arabic ? x.NameAr : x.NameEn,
+            EmployeesCount = x.Employees.Count(),
+            Id = x.Id,
+            AddedByUser = x.User.FullName
+
+        }, includeProperties: "User,Employees", take: model.PageSize,
+                    skip: (model.PageNumber - 1) * model.PageSize
+                    , orderBy: x => x.OrderByDescending(s => s.Id));
+
         var result = new HrGetAllQualificationsResponse
         {
             TotalRecords = totalRecords,
 
-            Items = _unitOfWork.Qualifications.GetQualificationInfo(qualFilter: filter,
-                 take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize,
-                 lang: lang
-                ).OrderByDescending(x => x.Id).ToList(),
+            Items = items.ToList(),
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,
             To = Math.Min(page * model.PageSize, totalRecords),
@@ -305,7 +313,9 @@ public class QualificationService(IUnitOfWork unitOfWork, IStringLocalizer<Share
 
     public async Task<Response<string>> DeleteQualificationAsync(int id)
     {
-        var obj = await _unitOfWork.Qualifications.GetByIdAsync(id);
+        var obj = await _unitOfWork.Qualifications.GetFirstOrDefaultAsync(x => x.Id == id, includeProperties: "Employees");
+
+
 
         if (obj == null)
         {
@@ -319,7 +329,15 @@ public class QualificationService(IUnitOfWork unitOfWork, IStringLocalizer<Share
                 Msg = resultMsg
             };
         }
+        if (obj.Employees.Any())
+        {
+            return new()
+            {
+                Data = string.Empty,
 
+                Msg = _sharLocalizer[Localization.EmployeesRelated]
+            };
+        }
         _unitOfWork.Qualifications.Remove(obj);
         await _unitOfWork.CompleteAsync();
 
