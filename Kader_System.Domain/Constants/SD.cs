@@ -666,8 +666,11 @@ public static class SD
         public const string Arabic = "ar";
         public const string English = "en";
         public const string SelfDeleteUser = "SelfDeleteUser";
+        public const string LessThanAllowedAge = "LessThanAllowedAge";
+        public const string BirthDateEqualAge = "BirthDateEqualAge";
         public const string IsExist = "IsExist";
         public const string SalaryEffect = "SalaryEffect";
+        public const string InvalidDateFormat = "InvalidDateFormat";
         public const string Approved = "Approved";
         public const string AlreadyExited = "AlreadyExited";
         public const string EmployeesRelated = "EmployeesRelated";
@@ -681,6 +684,7 @@ public static class SD
         public const string FinishedSuccessfully = "FinishedSuccessfully";
         public const string ResumeSuccessfully = "ResumeSuccessfully";
         public const string TodayTrans = "TodayTrans";
+        public const string TodayTransDeleted = "TodayTransDeleted";
         public const string CompanyLinkedToUser = "CompanyLinkedToUser";
         public const string CompanyContainsEmployee = "CompanyContainsEmployee";
         public const string ApprovedAready = "ApprovedAready";

@@ -18,7 +18,7 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IUserContextService u
                 select: x => new SelectListForTransAllowancesResponse
                 {
                     Id = x.Id,
-                    ActionMonth = x.ActionMonth,
+                    ActionDate = x.ActionMonth,
                     SalaryEffect = lang == Localization.Arabic ? x.SalaryEffect!.Name : x.SalaryEffect!.NameInEnglish,
                     AddedOn = x.Add_date,
                     AllowanceId = x.AllowanceId,
@@ -247,14 +247,27 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IUserContextService u
         }
         if (await unitOfWork.TransAllowances.ExistAsync(x => x.EmployeeId ==
         model.EmployeeId && x.CompanyId == currentCompany &&
-          x.AllowanceId == model.AllowanceId &&
+          x.AllowanceId == model.AllowanceId && !x.IsDeleted &&
 
-                x.ActionMonth == model.ActionMonth))
+                DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now)))
         {
             return new()
             {
                 Check = false,
                 Msg = sharLocalizer[Localization.TodayTrans,
+                Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn]
+            };
+        }
+        if (await unitOfWork.TransAllowances.ExistAsync(x => x.EmployeeId ==
+      model.EmployeeId && x.CompanyId == currentCompany &&
+        x.AllowanceId == model.AllowanceId &&
+
+              DateOnly.FromDateTime(x.Add_date.Value) == DateOnly.FromDateTime(DateTime.Now) && x.IsDeleted))
+        {
+            return new()
+            {
+                Check = false,
+                Msg = sharLocalizer[Localization.TodayTransDeleted,
                 Localization.Arabic == lang ? emp.FullNameAr : emp.FullNameEn]
             };
         }

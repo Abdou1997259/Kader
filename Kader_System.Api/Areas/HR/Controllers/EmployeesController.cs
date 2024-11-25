@@ -10,7 +10,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
     [ApiController]
     //[Authorize(Permissions.HR.View)]
     [Route("api/v1/")]
-    public class EmployeesController(IEmployeeService employeeService, IRequestService requestService,IFileServer fileServer) : ControllerBase
+    public class EmployeesController(IEmployeeService employeeService, IRequestService requestService, IFileServer fileServer) : ControllerBase
     {
         private readonly IRequestService requestService = requestService;
         private readonly IFileServer _fileServer = fileServer;
@@ -97,7 +97,8 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
         [HttpPut(ApiRoutes.Employee.UpdateEmployee)]
         [Permission(Permission.Edit, 13)]
-        public async Task<IActionResult> UpdateEmployeeAsyncTask([FromRoute] int id, [FromForm] CreateEmployeeRequest request)
+        public async Task<IActionResult> UpdateEmployeeAsyncTask([FromRoute] int id, [FromForm]
+        CreateEmployeeRequest request)
         {
             var response = await employeeService.UpdateEmployeeAsync(id, request);
             if (response.Check)
@@ -110,7 +111,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [Permission(Permission.Edit, 13)]
         public async Task<IActionResult> UpdateEmployeeAttachment([FromRoute] int id, [FromForm] UpdateEmployeeAttachemnt request)
         {
-            var response = await employeeService.UpdateEmployeeAttachemnt(request,id);
+            var response = await employeeService.UpdateEmployeeAttachemnt(request, id);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
@@ -137,14 +138,14 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [Permission(Permission.Delete, 13)]
         public async Task<IActionResult> DeleteEmployeeAttachement(int id)
         {
-          
+
             var response = await employeeService.RemoveEmployeeAttachement(id);
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)
                 return StatusCode(statusCode: StatusCodes.Status400BadRequest, response);
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
-        } 
+        }
         [HttpDelete(ApiRoutes.Employee.DeleteEmployeeProfileImage)]
         [Permission(Permission.Delete, 13)]
         public async Task<IActionResult> DeleteEmployeeProfileImage(int id)
@@ -162,7 +163,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
 
         [HttpGet(ApiRoutes.Employee.DownloadDocument)]
         [Permission(Permission.View, 8)]
-        public async Task<IActionResult> DownloadEmployeeDocument([FromRoute]int id)
+        public async Task<IActionResult> DownloadEmployeeDocument([FromRoute] int id)
         {
             var response = await employeeService.DownloadEmployeeAttachement(id);
             if (response.Check)

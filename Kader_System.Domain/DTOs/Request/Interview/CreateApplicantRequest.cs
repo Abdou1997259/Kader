@@ -24,7 +24,7 @@ namespace Kader_System.Domain.DTOs.Request.Interview
         public int year_of_experiences { get; set; }
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-
+        [BirthDate(MinAge = 18, ValueCompareTo = nameof(age))]
         public DateOnly date_of_birth { get; set; }
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]

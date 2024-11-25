@@ -215,7 +215,8 @@ namespace Kader_System.Services.Services.HR
             //|| x.Company.Contains(model.Word)
             //|| x.Management.Contains(model.Word));
             var currentCompany = (await userManager.FindByIdAsync(currentUser)).CurrentCompanyId;
-            Expression<Func<HrEmployee, bool>> filter = x => x.IsDeleted == model.IsDeleted && x.CompanyId == currentCompany && (
+            Expression<Func<HrEmployee, bool>> filter = x => x.IsDeleted == model.IsDeleted
+            && x.CompanyId == currentCompany && (
             string.IsNullOrEmpty(model.Word) ||
             x.FullNameAr.Contains(model.Word) ||
             x.FullNameEn.Contains(model.Word));
@@ -236,7 +237,7 @@ namespace Kader_System.Services.Services.HR
             {
                 TotalRecords = totalRecords,
 
-                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, currentCompany, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, lang: lang),
+                Items = await unitOfWork.Employees.GetAllEmployeeDetails(model.Word, isDeleted: model.IsDeleted, currentCompany, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, lang: lang),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -302,7 +303,7 @@ namespace Kader_System.Services.Services.HR
             {
                 TotalRecords = totalRecords,
 
-                Items = await unitOfWork.Employees.GetAllEmployeeDetails(isDeleted: model.IsDeleted, currentCompany, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, lang: lang),
+                Items = await unitOfWork.Employees.GetAllEmployeeDetails(model.Word, isDeleted: model.IsDeleted, currentCompany, skip: (model.PageNumber - 1) * model.PageSize, take: model.PageSize, lang: lang),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -741,10 +742,11 @@ namespace Kader_System.Services.Services.HR
                 obj.HiringDate = model.hiring_date;
                 obj.ImmediatelyDate = model.immediately_date;
                 obj.IsActive = model.is_active;
-
+                obj.ManagementId = model.management_id;
                 obj.ReligionId = model.religion_id;
                 obj.MaritalStatusId = model.marital_status_id;
                 obj.SalaryPaymentWayId = model.salary_payment_way_id;
+
                 if (model.employee_image is not null)
                 {
                     var dirType = HrDirectoryTypes.EmployeeProfile;
@@ -764,6 +766,8 @@ namespace Kader_System.Services.Services.HR
                 {
                     userExist.VisiblePassword = model.password;
                     userExist.Email = obj.Email;
+                    userExist.TitleId = model.title_id.ToString();
+                    userExist.CurrentTitleId = model.title_id;
                     userExist.CompanyYearId = CurrentCompanyYearId;
                     userExist.NormalizedEmail = obj.Email.ToUpper();
                     userExist.PasswordHash =

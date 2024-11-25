@@ -156,6 +156,9 @@
   <data name="Benefit" xml:space="preserve">
     <value>Benefit</value>
   </data>
+  <data name="BirthDateEqualAge" xml:space="preserve">
+    <value>BirthDate is not Equal Age</value>
+  </data>
   <data name="Calculated" xml:space="preserve">
     <value>Calculated</value>
   </data>
@@ -228,6 +231,9 @@
   <data name="HaveContract" xml:space="preserve">
     <value>this {0} Employee already has a contract</value>
   </data>
+  <data name="InvalidDateFormat" xml:space="preserve">
+    <value>Invalid Date Format</value>
+  </data>
   <data name="InvalidSubId" xml:space="preserve">
     <value>Invalid Sub id </value>
   </data>
@@ -251,6 +257,9 @@
   </data>
   <data name="Job" xml:space="preserve">
     <value>Job</value>
+  </data>
+  <data name="LessThanAllowedAge" xml:space="preserve">
+    <value>Employee's Age must be more than 18 years age from birthdate</value>
   </data>
   <data name="Loan" xml:space="preserve">
     <value>Loan</value>
@@ -353,6 +362,9 @@
   </data>
   <data name="TodayTrans" xml:space="preserve">
     <value>You Already Made This Transation On This Employee {0} Today</value>
+  </data>
+  <data name="TodayTransDeleted" xml:space="preserve">
+    <value>There is a transaction today for the same emloyee in Delted Transaction</value>
   </data>
   <data name="University" xml:space="preserve">
     <value>University or Institue</value>

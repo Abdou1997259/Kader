@@ -266,7 +266,8 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
 
     }
 
-    public async Task<List<EmployeesData>> GetAllEmployeeDetails(bool isDeleted, int companyId, int skip = 0, int take = 10, string lang = "en")
+    public async Task<List<EmployeesData>> GetAllEmployeeDetails(
+    string word, bool isDeleted, int companyId, int skip = 0, int take = 10, string lang = "en")
     {
         HrDirectoryTypes directoryTypes = new();
         directoryTypes = HrDirectoryTypes.Attachments;
@@ -277,7 +278,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
 
 
         var query = await _context.SPEmployeeDetails
-            .FromSql($"EXEC SP_GetEmployeeDetails {isDeleted}, {lang} ,{companyId}")
+            .FromSql($"EXEC SP_GetEmployeeDetails {isDeleted}, {lang} ,{companyId},{word}")
 
 
             .AsNoTracking().
