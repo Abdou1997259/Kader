@@ -17,7 +17,7 @@
         public MinuesValues MinuesValues { get; set; }
 
         public Absent Absents { get; set; }
-        public string? PaymentMethod { get; set; }
+        public int? DisbursementType { get; set; }
         public double? HousingAllowances { get; set; }
         public double? WorkingDay { get; set; }
     }

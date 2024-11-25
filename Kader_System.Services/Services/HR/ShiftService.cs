@@ -1,5 +1,4 @@
 ﻿using Kader_System.Domain.DTOs;
-using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.HR;
 
@@ -42,7 +41,7 @@ public class ShiftService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResourc
     }
 
     public async Task<Response<HrGetAllShiftsResponse>> GetAllShiftsAsync(string lang,
-        HrGetAllFiltrationsForShiftsRequest model,string host)
+        HrGetAllFiltrationsForShiftsRequest model, string host)
     {
         Expression<Func<HrShift, bool>> filter = x => x.IsDeleted == model.IsDeleted
                                                       && (string.IsNullOrEmpty(model.Word) ||
@@ -50,7 +49,7 @@ public class ShiftService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResourc
                                                           || x.Name_en.Contains(model.Word)
                                                           || x.Start_shift.ToString().Contains(model.Word)
                                                           || x.End_shift.ToString().Contains(model.Word));
-                                               
+
         var totalRecords = await _unitOfWork.Shifts.CountAsync(filter: filter);
         int page = 1;
         int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
@@ -65,9 +64,9 @@ public class ShiftService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResourc
         {
             TotalRecords = totalRecords,
 
-            Items = ( _unitOfWork.Shifts.GetShiftInfo(shiftFilter: filter,
+            Items = (_unitOfWork.Shifts.GetShiftInfo(shiftFilter: filter,
                  take: model.PageSize,
-                 skip: (model.PageNumber - 1) * model.PageSize)).OrderByDescending(x=>x.Id).ToList(),
+                 skip: (model.PageNumber - 1) * model.PageSize)).OrderByDescending(x => x.Id).ToList(),
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
             From = (page - 1) * model.PageSize + 1,
@@ -127,7 +126,7 @@ public class ShiftService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResourc
             Name_ar = model.Name_ar,
             Start_shift = model.Start_shift.ToTimeOnly(),
             End_shift = model.End_shift.ToTimeOnly(),
-            
+
         });
         await _unitOfWork.CompleteAsync();
 
@@ -188,8 +187,8 @@ public class ShiftService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResourc
 
         obj.Name_ar = model.Name_ar;
         obj.Name_en = model.Name_en;
-        obj.Start_shift=model.Start_shift.ToTimeOnly();
-        obj.End_shift=model.End_shift.ToTimeOnly();
+        obj.Start_shift = model.Start_shift.ToTimeOnly();
+        obj.End_shift = model.End_shift.ToTimeOnly();
         _unitOfWork.Shifts.Update(obj);
         await _unitOfWork.CompleteAsync();
 
@@ -203,7 +202,7 @@ public class ShiftService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResourc
 
     public async Task<Response<HrUpdateShiftRequest>> RestoreShiftAsync(int id)
     {
-        var obj = await _unitOfWork.Shifts.GetFirstOrDefaultAsync(s=>s.Id==id);
+        var obj = await _unitOfWork.Shifts.GetFirstOrDefaultAsync(s => s.Id == id);
 
         if (obj == null)
         {
@@ -225,7 +224,7 @@ public class ShiftService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResourc
         return new()
         {
             Check = true,
-            Data =new ()
+            Data = new()
             {
                 Name_ar = obj.Name_ar,
                 Name_en = obj.Name_en,
@@ -275,8 +274,8 @@ public class ShiftService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResourc
             };
         }
 
-        var oldShiftEmpls =await unitOfWork.Employees.GetAllAsync(e => e.ShiftId == from);
-        if (oldShiftEmpls!=null &&oldShiftEmpls.Any())
+        var oldShiftEmpls = await unitOfWork.Employees.GetAllAsync(e => e.ShiftId == from);
+        if (oldShiftEmpls != null && oldShiftEmpls.Any())
         {
             foreach (var emp in oldShiftEmpls.ToList())
             {
@@ -303,18 +302,27 @@ public class ShiftService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResourc
 
     public async Task<Response<string>> DeleteShiftAsync(int id)
     {
-        var obj = await _unitOfWork.Shifts.GetByIdAsync(id);
+
+        var obj = await _unitOfWork.Shifts.GetFirstOrDefaultAsync(x => x.Id == id, includeProperties: "Employees");
 
         if (obj == null)
         {
             string resultMsg = string.Format(_sharLocalizer[Localization.CannotBeFound],
-                _sharLocalizer[Localization.Qualification]);
+                _sharLocalizer[Localization.Shift]);
 
             return new()
             {
                 Data = string.Empty,
                 Error = resultMsg,
                 Msg = resultMsg
+            };
+        }
+        if (obj.Employees.Any())
+        {
+            return new Response<string>()
+            {
+                Check = false,
+                Msg = _sharLocalizer[Localization.EmployeesRelated]
             };
         }
 

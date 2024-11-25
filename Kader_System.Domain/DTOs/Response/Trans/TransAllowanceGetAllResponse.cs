@@ -8,7 +8,7 @@
     public class TransAllowanceData
     {
         public int Id { get; set; }
-        public DateOnly ActionMonth { get; set; }
+        public DateOnly ActionDate { get; set; }
         public DateOnly? AddedOn { get; set; }
         public string? Notes { get; set; }
         public double Amount { get; set; }

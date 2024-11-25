@@ -9,4 +9,5 @@ public class HrShift : BaseEntity
     public required string Name_ar { get; set; }
     public TimeOnly Start_shift { get; set; }
     public TimeOnly End_shift { get; set; }
+    public ICollection<HrEmployee> Employees { get; set; } = new HashSet<HrEmployee>();
 }

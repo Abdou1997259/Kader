@@ -53,6 +53,7 @@
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "birth_date")]
+        [BirthDate(MinAge = 18)]
         public DateOnly birth_date { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "religion_id")]

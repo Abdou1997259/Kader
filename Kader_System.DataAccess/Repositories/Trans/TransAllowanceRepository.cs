@@ -25,7 +25,7 @@ public class TransAllowanceRepository(KaderDbContext context) : BaseRepository<T
 
                     select new TransAllowanceData()
                     {
-                        ActionMonth = trans.ActionMonth,
+                        ActionDate = trans.ActionMonth,
                         AddedBy = u.UserName,
                         AddedOn = DateOnly.FromDateTime(trans.Add_date.Value),
                         Amount = trans.Amount,

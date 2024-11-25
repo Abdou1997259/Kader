@@ -4,7 +4,7 @@
     {
         public int? Id { get; set; } // Employee ID
         public string? FullName { get; set; } // Full name in Arabic
-        public string? PaymentWay { get; set; }
+        public int? PaymentWay { get; set; }
         public double? WorkingDays { get; set; } // Number of working days
         public double? Allowance { get; set; }
         // Financial Details

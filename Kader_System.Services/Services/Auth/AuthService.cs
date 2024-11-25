@@ -151,7 +151,7 @@ public class AuthService(IUnitOfWork unitOfWork
         }
         if (id == _userContext.UserId)
         {
-            if (model.is_active == true)
+            if (model.is_active == false)
             {
                 return new Response<UpdateUserRequest>()
                 {

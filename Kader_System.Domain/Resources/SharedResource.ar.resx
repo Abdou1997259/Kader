@@ -156,6 +156,9 @@
   <data name="Benefit" xml:space="preserve">
     <value>اسم المستحق</value>
   </data>
+  <data name="BirthDateEqualAge" xml:space="preserve">
+    <value>السن لايناسب يوم الميلاد</value>
+  </data>
   <data name="Calculated" xml:space="preserve">
     <value>تم الحساب</value>
   </data>
@@ -228,6 +231,9 @@
   <data name="HaveContract" xml:space="preserve">
     <value>هذا {0} الموظف بالفعل له عقد </value>
   </data>
+  <data name="InvalidDateFormat" xml:space="preserve">
+    <value>تاريخ الميلاد ليس  صحيح</value>
+  </data>
   <data name="InvalidSubId" xml:space="preserve">
     <value>لاتوجد شاشه بهذا الرقم </value>
   </data>
@@ -251,6 +257,9 @@
   </data>
   <data name="Job" xml:space="preserve">
     <value>الوظيفة</value>
+  </data>
+  <data name="LessThanAllowedAge" xml:space="preserve">
+    <value>يحب ان يكون سن الموظف اكبر من 18 من تاريخ الميلاد</value>
   </data>
   <data name="Loan" xml:space="preserve">
     <value>السلف</value>
@@ -353,6 +362,9 @@
   </data>
   <data name="TodayTrans" xml:space="preserve">
     <value>لقد نفذت هذا الحركة علي هذا الوظف {0} اليوم </value>
+  </data>
+  <data name="TodayTransDeleted" xml:space="preserve">
+    <value>يوجد حركة في نفس اليوم في المحزوفات </value>
   </data>
   <data name="University" xml:space="preserve">
     <value>الجامعة او المعهد</value>

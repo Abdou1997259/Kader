@@ -607,7 +607,7 @@ namespace Kader_System.Services.Services.Trans
                                  Value=x.Loan
                        } }
                     },
-                    PaymentMethod = x.PaymentWay,
+                    DisbursementType = x.PaymentWay,
                     WorkingDay = x.WorkingDays,
                     TotalAll = x.Total,
                     TotalAdditionalValues = x.AdditionalValues,
@@ -617,12 +617,13 @@ namespace Kader_System.Services.Services.Trans
                    {
                        Id=1,
                        Name=lang==Localization.Arabic?"استحقاقات":"Benefits",
-                       Value=x.Allowance
+                       Value=x.Benefit
                    }
                    ,new AdditionalValues
                    {
                        Id=2,
                        Name=lang==Localization.Arabic?"البدلات":"Allowance",
+                       Value=x.Allowance
                    }
 
                    }
