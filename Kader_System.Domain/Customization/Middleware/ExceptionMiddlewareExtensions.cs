@@ -30,4 +30,5 @@ public static class ExceptionMiddlewareExtensions
             });
         });
     }
+
 }

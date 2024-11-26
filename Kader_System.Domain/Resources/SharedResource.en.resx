@@ -285,6 +285,9 @@
   <data name="NotFoundData" xml:space="preserve">
     <value>Not found data</value>
   </data>
+  <data name="OtherRemoveAdmin" xml:space="preserve">
+    <value>Admin can't be removed </value>
+  </data>
   <data name="Paid" xml:space="preserve">
     <value>Paid Sucessfully</value>
   </data>

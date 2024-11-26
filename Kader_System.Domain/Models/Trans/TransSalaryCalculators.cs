@@ -13,7 +13,8 @@
         public bool IsMigrated { get; set; }
         public int CompanyId { get; set; }
         public ICollection<TransSalaryCalculatorDetail>? TransSalaryCalculatorsDetails { get; set; } = [];
-
+        [ForeignKey(nameof(Added_by))]
+        public ApplicationUser User { get; set; } = default!;
 
     }
 }

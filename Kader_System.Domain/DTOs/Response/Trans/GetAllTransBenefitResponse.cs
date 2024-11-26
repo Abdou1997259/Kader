@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.DTOs.Response.Trans
 {
-    public class GetAllTransBenefitResponse:PaginationData<TransBenefitData>
+    public class GetAllTransBenefitResponse : PaginationData<TransBenefitData>
     {
     }
 
@@ -8,7 +8,7 @@
     {
         public int Id { get; set; }
         public DateOnly ActionMonth { get; set; }
-        public DateTime? AddedOn { get; set; }
+        public DateOnly? AddedOn { get; set; }
         public int AmountTypeId { get; set; }
         public string ValueTypeName { get; set; }
         public int SalaryEffectId { get; set; }

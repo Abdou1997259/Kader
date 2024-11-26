@@ -679,6 +679,7 @@ public static class SD
         public const string NoAdminCreate = "NoAdminCreate";
         public const string IsPending = "IsPending";
         public const string NotApproved = "NotApproved";
+        public const string OtherRemoveAdmin = "OtherRemoveAdmin";
         public const string LoanRequest = "LoanRequest";
         public const string SuspendedSuccessfully = "SuspendedSuccessfully";
         public const string FinishedSuccessfully = "FinishedSuccessfully";

@@ -79,6 +79,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
                 reason = x.StatuesOfRequest.StatusMessage,
                 Notes = x.Notes,
+
                 AttachmentPath = x.AttachmentPath != null ? _fileServer.CombinePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.ResignationRequest.ToString(), x.AttachmentPath) : null
             },
             orderBy: x => x.OrderByDescending(x => x.Id),
@@ -194,8 +195,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
             newRequest.CompanyId = currentCompanyId;
             StatuesOfRequest statues = new()
             {
-                StatusTypes = RequestStatusTypes.Pending
+                ApporvalStatus = (int)RequestStatusTypes.Pending
             };
+
             newRequest.StatuesOfRequest = statues;
             var moduleNameWithType = hrEmployeeRequest.GetModuleNameWithType(moduleName);
             newRequest.AttachmentPath = (model.Attachment == null || model.Attachment.Length == 0) ? null :
@@ -336,31 +338,47 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #region Status
         public async Task<Response<string>> ApproveRequest(int requestId)
         {
+            var resignation = await _unitOfWork.ResignationRepository.GetByIdAsync(requestId);
             var currentCompanyId = await _userContextService.GetLoggedCurrentCompany();
+            var userId = _userContextService.UserId;
+            if (resignation == null)
+            {
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.CannotBeFound]
+                };
 
-            var userId = _httpContextAccessor.HttpContext
-                .User.GetUserId();
+            }
+            var empId = resignation.EmployeeId;
+            var contract = await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x => x.employee_id == empId);
+            if (contract == null)
+            {
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.ContractNotFound]
+                };
+            }
+
             var result = await _unitOfWork.ResignationRepository
                 .UpdateApporvalStatus(x =>
                 x.Id == requestId &&
                 x.CompanyId == currentCompanyId, RequestStatusTypes.Approved, userId);
 
 
+
+            contract.IsDeleted = true;
+
             if (result > 0)
             {
-
-
-                var request = await _unitOfWork.ResignationRepository.GetFirstOrDefaultAsync(x => x.Id == requestId && x.CompanyId == currentCompanyId);
-                var employee = await _unitOfWork.Employees.GetByIdAsync(request.Id);
-                employee.IsActive = false;
-                await _unitOfWork.CompleteAsync();
-
                 return new Response<string>()
                 {
                     Check = true,
                     Msg = "Approved sucessfully"
                 };
             }
+
             return new Response<string>()
             {
                 Check = false,

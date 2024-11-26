@@ -137,6 +137,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
         //modelBuilder.AddQueryFilterToAllEntitiesAssignableFrom<BaseEntity>(x => x.IsDeleted == false);
         modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()).ToList().ForEach(x => x.DeleteBehavior = DeleteBehavior.NoAction);
 
+        #region Configure Identity Tables
         modelBuilder.Entity<ApplicationUser>().ToTable("Auth_Users", "dbo");
         modelBuilder.Entity<ApplicationRole>().ToTable("Auth_Roles", "dbo");
         modelBuilder.Entity<ApplicationUserRole>().ToTable("Auth_UserRoles", "dbo");
@@ -148,6 +149,11 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasComputedColumnSql("[FirstNameAr]+' '+[FatherNameAr]+' '+[GrandFatherNameAr]+' '+[FamilyNameAr]");
         modelBuilder.Entity<HrEmployee>().Property(e => e.FullNameEn)
             .HasComputedColumnSql("[FirstNameEn]+' '+[FatherNameEn]+' '+[GrandFatherNameEn]+' '+[FamilyNameEn]");
+
+        #endregion
+
+
+
 
         modelBuilder.Entity<HrContract>()
             .HasMany(contract => contract.list_of_allowances_details)
@@ -181,6 +187,8 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
                ? Status.None
                : (Status)Enum.Parse(typeof(Status), v)
       );
+
+
 
         modelBuilder.Entity<SpCacluateSalary>().HasNoKey();
 
@@ -310,7 +318,14 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
 
         #endregion
 
+        modelBuilder.HasDbFunction(typeof(KaderDbContext)
+            .GetMethod(nameof(GetSalaryWithIncrease),
+            new[] { typeof(int) })).HasName("GetSalaryWithIncrease");
+
     }
+    public static double GetSalaryWithIncrease(int employeeId)
+        => throw new NotSupportedException();
+
     public async Task ExecuteUpdateTransactionAsync(DateOnly startCalculationDate
         , DateOnly endCalculationDate,
         string listEmployeesString)

@@ -21,6 +21,8 @@
         public int CompanyId { get; set; }
         [ForeignKey(nameof(TransSalaryCalculatorsId))]
         public TransSalaryCalculator? TransSalaryCalculators { get; set; } = default!;
+        [ForeignKey(nameof(EmployeeId))]
+        public HrEmployee Employee { get; set; } = default!;
 
 
     }

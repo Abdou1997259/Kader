@@ -13,7 +13,7 @@ namespace Kader_System.DataAccess.Repositories.Trans
 
 
 
-                    select query.Id,Name,SUM(Salary) + SUM( c.fixed_salary) as Salary from (select e.Id as Id,case when {lang}='ar'
+                    select query.Id,Name,SUM(isnull(Salary,0)) + SUM(ISNULL( c.fixed_salary,0)) as Salary from (select e.Id as Id,case when {lang}='ar'
                     then e.FullNameAr 
                     else e.FullNameEn
                     end as Name,
