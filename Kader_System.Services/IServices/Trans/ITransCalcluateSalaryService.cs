@@ -6,8 +6,7 @@ namespace Kader_System.Services.IServices.Trans
         Task<Response<Tuple<Header, List<GetSalariesEmployeeResponse>>>>
             GetDetailsOfCalculation(EmployeeTransactionDetailsFilters model, string lang);
 
-        Task<Response<string>> CalculateSalaryDetailedTrans(
-            CalcluateSalaryModelRequest model);
+
 
         Task<Response<GetSalaryCalculatorResponse>> GetAllCalculators(
             GetSalaryCalculatorFilterRequest model, string host, string lang);

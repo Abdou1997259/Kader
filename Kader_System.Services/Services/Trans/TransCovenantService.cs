@@ -78,9 +78,9 @@ namespace Kader_System.Services.Services.Trans
                 .ToList();
 
             var items = await unitOfWork.TransCovenants.GetSpecificSelectAsync(filter,
-                includeProperties: "employee,employee.User,employee.Job", select: x => new TransCovenantData
+                includeProperties: "employee,AddedByUser,employee.Job", select: x => new TransCovenantData
                 {
-                    AddedBy = x.employee.User.FullName,
+                    AddedBy = x.AddedByUser.FullName,
                     AddedOn = x.Add_date,
                     Amount = x.amount,
                     EmployeeId = x.employee_id,
@@ -223,7 +223,7 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
-            var lookups = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsLookUp(lang, currentCompany);
+            var lookups = await unitOfWork.Employees.GetEmployeesDataNameAndIdAsCustomTypeLookUp(lang, currentCompany);
             var dirType = HrDirectoryTypes.Covenant;
             var dir = dirType.GetModuleNameWithType(Modules.Trans);
             return new()

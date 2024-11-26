@@ -142,7 +142,7 @@ namespace Kader_System.Services.Services.Trans
                 .Select(x => new Salaries
                 {
                     EmployeeId = x.employee_id,
-                    Salary = x.fixed_salary,
+                    Salary = KaderDbContext.GetSalaryWithIncrease(x.employee_id),
 
 
 

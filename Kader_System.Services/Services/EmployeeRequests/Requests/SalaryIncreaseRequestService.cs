@@ -371,7 +371,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
             var result = await _unitOfWork
-              .VacationRequests.UpdateApporvalStatus(
+              .SalaryIncreaseRequest.UpdateApporvalStatus(
               x => x.Id == requestId, RequestStatusTypes.Approved, userId);
             if (result > 0)
             {

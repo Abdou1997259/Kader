@@ -285,6 +285,9 @@
   <data name="NotFoundData" xml:space="preserve">
     <value>لا يوجد بيانات</value>
   </data>
+  <data name="OtherRemoveAdmin" xml:space="preserve">
+    <value>لا يمكن مسح المتسخدم الرئيسي</value>
+  </data>
   <data name="Paid" xml:space="preserve">
     <value>تم الدفع</value>
   </data>

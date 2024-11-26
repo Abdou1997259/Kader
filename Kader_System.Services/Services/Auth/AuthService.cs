@@ -1288,6 +1288,7 @@ public class AuthService(IUnitOfWork unitOfWork
                 Msg = _sharLocalizer[Localization.SelfDeleteUser]
             };
         }
+
         var obj = await _userManager.FindByIdAsync(id.ToString());
 
         if (obj == null)
@@ -1300,6 +1301,19 @@ public class AuthService(IUnitOfWork unitOfWork
                 Data = string.Empty,
                 Error = resultMsg,
                 Msg = resultMsg
+            };
+        }
+        if (obj.IsAdmin)
+        {
+
+
+
+
+            return new()
+            {
+                Data = string.Empty,
+
+                Msg = _sharLocalizer[Localization.OtherRemoveAdmin]
             };
         }
         obj.IsDeleted = true;

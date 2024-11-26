@@ -331,7 +331,8 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
         return await dbSet.MaxAsync(selector);
     }
 
-    public async Task<int> UpdateApporvalStatus(Expression<Func<T, bool>> filter, RequestStatusTypes status, string userId, string reason = null)
+    public async Task<int> UpdateApporvalStatus(Expression<Func<T, bool>> filter,
+        RequestStatusTypes status, string userId, string reason = null)
     {
         var entity = await context.Set<T>()
       .Include(e => EF.Property<object>(e, nameof(StatuesOfRequest)))

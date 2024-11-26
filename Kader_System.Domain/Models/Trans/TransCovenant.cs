@@ -14,6 +14,8 @@ public class TransCovenant : BaseEntity
     public int employee_id { get; set; }
     [ForeignKey(nameof(employee_id))]
     public HrEmployee employee { get; set; } = default!;
+    [ForeignKey(nameof(Added_by))]
+    public ApplicationUser AddedByUser { get; set; } = default!;
     public int company_id { get; set; }
     public string? attachment { get; set; }
 

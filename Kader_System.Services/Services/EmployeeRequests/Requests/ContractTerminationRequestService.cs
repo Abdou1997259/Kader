@@ -182,7 +182,8 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     _sharLocalizer[Localization.Employee]]
                 };
             }
-            if (await _unitOfWork.ContractTerminationRequest.ExistAsync(x => x.EmployeeId == x.EmployeeId && x.CompanyId == currentCompanyId))
+            if (await _unitOfWork.ContractTerminationRequest.ExistAsync(
+                x => x.EmployeeId == model.EmployeeId && x.CompanyId == currentCompanyId))
             {
                 return new()
                 {

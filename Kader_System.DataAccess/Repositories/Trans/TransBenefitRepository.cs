@@ -32,7 +32,7 @@ public class TransBenefitRepository(KaderDbContext context) : BaseRepository<Tra
                     {
                         ActionMonth = trans.action_month,
                         AddedBy = u.UserName,
-                        AddedOn = trans.Add_date,
+                        AddedOn = DateOnly.FromDateTime(trans.Add_date.Value),
                         Amount = trans.amount,
                         AmountTypeId = trans.amount_type_id,
                         BenefitId = trans.benefit_id,
