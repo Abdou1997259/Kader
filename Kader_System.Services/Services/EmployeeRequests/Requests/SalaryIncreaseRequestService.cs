@@ -83,6 +83,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 EmployeeName = _requestService.GetRequestHeaderLanguage == Localization.English ? x.employee.FullNameEn : x.employee.FullNameAr,
                 Amount = x.Amount,
                 ApporvalStatus = x.StatuesOfRequest.ApporvalStatus,
+
                 reason = x.StatuesOfRequest.StatusMessage,
                 Notes = x.Notes,
                 AttachmentPath = x.AttachmentPath != null ? _fileServer.CombinePath(Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.SalaryIncreaseRequest.ToString(), x.AttachmentPath) : null
@@ -337,11 +338,12 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
         #endregion
 
         #region Status
-        public async Task<Response<string>> ApproveRequest(int requestId, string lang)
+        public async Task<Response<string>> ApproveRequest(int
+            requestId, string lang)
         {
             var currentCompanyId =
                 await _userContextService.GetLoggedCurrentCompany();
-            var userId = _httpContextAccessor.HttpContext.User.GetUserId();
+            var userId = _userContextService.UserId;
             var increaseRequest = await
                 _unitOfWork.SalaryIncreaseRequest
                 .GetFirstOrDefaultAsync(x => x.Id == requestId &&
@@ -369,74 +371,62 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
 
 
 
-
-            var result = await _unitOfWork
-              .SalaryIncreaseRequest.UpdateApporvalStatus(
-              x => x.Id == requestId, RequestStatusTypes.Approved, userId);
-            if (result > 0)
+            var transaction = _unitOfWork.BeginTransaction();
+            try
             {
-                HrEmployeeRequestTypesEnums hrEmployeeRequests =
-                    HrEmployeeRequestTypesEnums.SalaryIncreaseRequest;
-                var moduleNameWithType = hrEmployeeRequests
-                    .GetModuleNameWithType(Modules.EmployeeRequest);
-                SalaryIncreaseRequest transIncreaseRequest = new();
-
-                var emp = await
-                _unitOfWork.Employees.GetFirstOrDefaultAsync(
-                        x => x.Id == increaseRequest.EmployeeId && x.CompanyId
-                        == currentCompanyId);
-                var vacations = await _unitOfWork.
-                    Vacations.GetFirstOrDefaultAsync(x => x.Id ==
-                    emp.VacationId);
 
 
+                var result = await _unitOfWork.SalaryIncreaseRequest.
+                    UpdateApporvalStatus(x => x.Id == requestId,
+                    RequestStatusTypes.Approved, userId);
 
-                transIncreaseRequest.IncreaseType = increaseRequest.IncreaseType;
-                transIncreaseRequest.EmployeeId = increaseRequest.EmployeeId;
-                transIncreaseRequest.Amount = increaseRequest.Amount;
-                transIncreaseRequest.CompanyId = increaseRequest.CompanyId;
-                #region CopyFileAttachment
-                if (increaseRequest.AttachmentPath != null)
+                if (result > 0)
                 {
-                    var SourceFilePath = _fileServer.CombinePathWithServerPath
-                        (moduleNameWithType, increaseRequest.AttachmentPath);
-                    var newFileName = $"{Guid.NewGuid()}{_fileServer.
-                        GetFileEXE(increaseRequest.AttachmentPath)}";
-                    moduleNameWithType = hrEmployeeRequests.
-                        GetModuleNameWithType(Modules.Trans);
-                    var desitnationFile = _fileServer.
-                        CombinePathWithServerPath(moduleNameWithType, newFileName);
-                    _fileServer.CopyFile(SourceFilePath, desitnationFile);
-                    transIncreaseRequest.AttachmentPath = desitnationFile;
-                }
-                else
-                {
-                    transIncreaseRequest.AttachmentPath = null;
+                    var createResult = await _transSalaryIncreaseService
+                          .CreateTransSalaryIncreaseAsync(new CreateTransSalaryIncreaseRequest
+                          {
+                              Amount = increaseRequest.Amount,
+                              Employee_id = increaseRequest.EmployeeId,
+                              Increase_type = increaseRequest.IncreaseType,
+                              TransactionDate = DateOnly.FromDateTime(increaseRequest.Add_date.Value),
+                              Notes = increaseRequest.Notes
 
-                }
-                #endregion
 
-                await _unitOfWork.SalaryIncreaseRequest.AddAsync(transIncreaseRequest);
-                var saveResult = await _unitOfWork.CompleteAsync();
-                if (saveResult > 0)
-                {
+                          }, lang);
+
+
+
+
+                    transaction.Commit();
                     return new Response<string>
                     {
                         Msg = _sharLocalizer[Localization.Approved],
                         Check = true,
                     };
-                }
 
+
+
+                }
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.NotApproved]
+                };
 
 
 
             }
-
-            return new Response<string>()
+            catch (Exception ex)
             {
-                Check = false,
-                Msg = _sharLocalizer[Localization.NotApproved]
-            };
+                transaction.Rollback();
+
+                return new Response<string>()
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.Error]
+                };
+
+            }
 
         }
         public async Task<Response<string>> RejectRequest(int requestId, string resoan)

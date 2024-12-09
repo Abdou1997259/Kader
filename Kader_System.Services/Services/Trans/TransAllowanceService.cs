@@ -401,7 +401,6 @@ public class TransAllowanceService(IUnitOfWork unitOfWork, IUserContextService u
                 Msg = resultMsg
             };
         }
-
         unitOfWork.TransAllowances.Remove(obj);
         await unitOfWork.CompleteAsync();
         return new()

@@ -177,7 +177,15 @@ public class AuthService(IUnitOfWork unitOfWork
             };
         }
 
-
+        var validtitle = await _unitOfWork.Titles.GetFirstOrDefaultAsync(x => model.title_id.Contains(x.Id));
+        if (validtitle.IsDeleted || !validtitle.IsActive)
+        {
+            return new Response<UpdateUserRequest>
+            {
+                Check = false,
+                Msg = _sharLocalizer[Localization.TitleDeleted]
+            };
+        }
         model.current_title = model.title_id.FirstOrDefault();
         model.current_company = model.company_id.FirstOrDefault();
 
@@ -649,6 +657,8 @@ public class AuthService(IUnitOfWork unitOfWork
             };
         }
 
+
+
         var companyList = await _unitOfWork.Companies.GetAllAsync();
         var validCompanyIds = companyList.Select(c => c.Id).ToHashSet();
 
@@ -688,6 +698,15 @@ public class AuthService(IUnitOfWork unitOfWork
             };
         }
 
+        var title = await _unitOfWork.Titles.GetFirstOrDefaultAsync(x => model.title_id.Contains(x.Id));
+        if (title.IsDeleted || !title.IsActive)
+        {
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = _sharLocalizer[Localization.TitleDeleted]
+            };
+        }
 
         try
         {

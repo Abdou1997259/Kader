@@ -12,13 +12,16 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests
     {
         private readonly IRequestService requestService = requestService;
         private readonly IUserContextService _userContextService = userContextService;
+
         #region Insert
         [HttpGet(ApiRoutes.EmployeeRequests.GetEmployeeRequestsLookups)]
         public async Task<IActionResult> GetEmployeeRequestsLookups()
         {
 
             var response = await service.GetEmployeeRequestsLookUpsData(
-                requestService.GetRequestHeaderLanguage, await _userContextService.GetLoggedCurrentCompany());
+                requestService.GetRequestHeaderLanguage,
+                await _userContextService.GetLoggedCurrentCompany(),
+                _userContextService?.UserId, _userContextService.IsAdmin());
             if (response.Check)
                 return Ok(response);
             else if (!response.Check)

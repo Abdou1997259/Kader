@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!--<Trimming>full</Trimming>-->
     <!--<InvariantGlobalization>true</InvariantGlobalization>-->
-    <!--<UseSSL>true</UseSSL>
+    <!--<UseSSL>true</UseSSL> 
     <SSLPort>44300</SSLPort>-->
     
   </PropertyGroup>

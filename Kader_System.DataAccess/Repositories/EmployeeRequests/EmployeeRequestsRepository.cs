@@ -8,12 +8,14 @@ namespace Kader_System.DataAccess.Repositories.EmployeeRequests
         ) : BaseRepository<HrEmployeeRequests>(context), IEmployeeRequestsRepository
     {
         public async Task<Domain.Dtos.Response.Response<EmployeeRequestsLookUpsData>>
-            GetEmployeeRequestsLookUpsData(string lang, int companyId)
+            GetEmployeeRequestsLookUpsData(string lang, int companyId, string userid, bool isAdmin)
         {
             try
             {
+
                 var employees = await (from q in context.Employees.AsNoTracking()
                                        where !q.IsDeleted && q.IsActive && q.CompanyId == companyId
+                                       & (isAdmin || q.UserId == userid)
                                        select new
                                        {
                                            id = q.Id,

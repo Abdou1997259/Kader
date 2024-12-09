@@ -18,7 +18,7 @@ namespace Kader_System.Services.DesignPatterns
             _stringLocalizer = stringLocalizer;
             _userContext = userContext;
         }
-        public abstract Task<List<Salaries>> GetSalaries(List<int> empIds);
+        public abstract Task<List<Salaries>> GetSalaries(List<int> empIds, DateOnly date);
 
         public async Task<bool> CheckOnEmpolyees(UpdateCalculateSalaryModelRequest model)
         {

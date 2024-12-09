@@ -1,8 +1,6 @@
-using Kader_System.Api.Helpers;
 using Kader_System.Domain.Constants.Enums;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.PermessionRequests;
-using Kader_System.Domain.Interfaces;
 using Kader_System.Services.IServices.EmployeeRequests.PermessionRequests;
 using Kader_System.Services.IServices.HTTP;
 namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
@@ -20,7 +18,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Insert
         [HttpPost(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.CreateLeavePermessionasRequests)]
-        [Permission(Permission.Add, 19)]
+
         public async Task<IActionResult> CreateLeavePermessionasRequests([FromForm] DTOCreateLeavePermissionRequest model)
         {
             var response = await service.AddNewLeavePermissionRequest(model,
@@ -35,7 +33,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Read
         [HttpGet(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.GetAllLeavePermessionasRequests)]
-        [Permission(Permission.View, 19)]
+
         public async Task<IActionResult> GetAllLeavePermessionasRequests([FromQuery] GetAllFilltrationForEmployeeRequests model)
         {
 
@@ -50,7 +48,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Update
         [HttpPut(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.UpdateLeavePermessionasRequests)]
-        [Permission(Permission.Edit, 19)]
+
         public async Task<IActionResult> UpdateLeavePermessionasRequests([FromRoute] int id, [FromForm] DTOCreateLeavePermissionRequest model)
         {
             var response = await service.UpdateLeavePermissionRequest(id, model, Modules.EmployeeRequest, HrEmployeeRequestTypesEnums.LeavePermission);
@@ -64,7 +62,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Delete
         [HttpDelete(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.DeleteLeavePermessionasRequests)]
-        [Permission(Permission.Delete, 19)]
+
         public async Task<IActionResult> DeleteLeavePermessionasRequests(int id)
         {
             var response = await service.DeleteLeavePermissionRequest(id, Modules.EmployeeRequest);
@@ -78,7 +76,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
 
         #region Status
         [HttpPut(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.ApproveLeavePermessionasRequests)]
-        [Permission(Permission.Edit, 19)]
+
         public async Task<IActionResult> ApproveLeavePermessionasRequests([FromRoute] int id)
         {
             var response = await service.ApproveRequest(id);
@@ -89,7 +87,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.PermessionRequests.Controllers
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
         [HttpPut(ApiRoutes.EmployeeRequests.LeavePermessionasRequests.RejectLeavePermessionasRequests)]
-        [Permission(Permission.Edit, 19)]
+
         public async Task<IActionResult> RejectLeavePermessionasRequests([FromRoute] int id, [FromBody] GlobalEmployeeRequests model)
         {
             var response = await service.RejectRequest(id, model.reson);

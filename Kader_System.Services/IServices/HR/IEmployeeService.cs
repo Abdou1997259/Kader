@@ -13,7 +13,7 @@ public interface IEmployeeService
     Task<Response<CreateEmployeeRequest>> CreateEmployeeAsync(CreateEmployeeRequest model);
     Task<Response<GetEmployeeByIdResponse>> GetEmployeeByIdAsync(int id, string lang);
     Response<GetEmployeeByIdResponse> GetEmployeeById(int id, string lang);
-    Task<Response<CreateEmployeeRequest>> UpdateEmployeeAsync(int id, CreateEmployeeRequest model);
+    Task<Response<UpdateEmployeeRequest>> UpdateEmployeeAsync(int id, UpdateEmployeeRequest model);
     Task<Response<CreateEmployeeRequest>> RestoreEmployeeAsync(int id);
     Task<Response<string>> UpdateEmployeeAttachemnt(UpdateEmployeeAttachemnt model, int id);
     Task<Response<string>> UpdateActiveOrNotEmployeeAsync(int id);

@@ -233,7 +233,7 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
                 EmployeeName = lang == Localization.Arabic ? e.e.FullNameAr : e.e.FullNameEn,
             }).ToListAsync();
     }
-    public async Task<object> GetEmployeesNameIdSalaryAsLookUp(string lang)
+    public async Task<object> GetEmployeesNameIdSalaryAsLookUp(string lang, DateOnly date)
     {
 
         return await context.Employees.
@@ -242,7 +242,8 @@ public class EmployeeRepository(KaderDbContext context) : BaseRepository<HrEmplo
             {
                 id = e.Id,
                 employee_name = lang == Localization.Arabic ? e.FullNameAr : e.FullNameEn,
-                Salary = e.FixedSalary
+                Salary = KaderDbContext.GetSalaryWithIncrease(e.Id, date) == null ? 0.0d :
+                KaderDbContext.GetSalaryWithIncrease(e.Id, date)
             }).ToArrayAsync();
     }
     public async Task<object> GetEmployeesNameIdSalaryWithoutContractAsLookUp(string lang, int companyId)

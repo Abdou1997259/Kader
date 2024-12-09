@@ -1,122 +1,20 @@
-﻿using Kader_System.Domain.DTOs;
+﻿using Kader_System.DataAccesss.Context;
+using Kader_System.Domain.DTOs;
 using Kader_System.Services.IServices;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace Kader_System.Services.Services.Trans
 {
-    public class TransSalaryIncreaseService(IUnitOfWork unitOfWork, IUserContextService userContextService, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransSalaryIncreaseService
+    public class TransSalaryIncreaseService(IUnitOfWork unitOfWork, KaderDbContext context, IUserContextService userContextService, IStringLocalizer<SharedResource> sharLocalizer, IMapper mapper) : ITransSalaryIncreaseService
     {
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IStringLocalizer<SharedResource> _sharLocalizer = sharLocalizer;
         private readonly IMapper _mapper = mapper;
         private readonly IUserContextService _userContextService = userContextService;
 
+        private readonly KaderDbContext _context = context;
 
-        #region Old_Code
-        //public async Task<int> AddNewSalaryIncrease(CreateTransSalaryIncreaseRequest createTransSalary)
-        //{
-        //    var empSalary = (await _unitOfWork.Contracts.GetSpecificSelectAsync(x => x.EmployeeId == createTransSalary.employeeId, x => x)).Select(X => X.FixedSalary).FirstOrDefault();
-        //    #region SalaryTypesCases
-        //    double salaryAfterIncrease = (SalaryIncreaseTypes)createTransSalary.salrayIncreaseTypeId switch
-        //    {
-        //        SalaryIncreaseTypes.Amount => createTransSalary.increaseValue + empSalary,
-        //        SalaryIncreaseTypes.percentage => ((createTransSalary.increaseValue / 100) * empSalary) + empSalary,
-        //        _ => empSalary,
-        //    };
-        //    #endregion
-
-        //    var salaryIncrease = new TransSalaryIncrease()
-        //    {
-        //        Notes = createTransSalary.details,
-        //        Amount = createTransSalary.increaseValue,
-        //        Employee_id = createTransSalary.employeeId,
-        //        Increase_type = createTransSalary.salrayIncreaseTypeId,
-        //        transactionDate = DateTime.Now,
-        //        dueDate = DateTime.Now.AddMonths(1),
-        //        salaryAfterIncrease = salaryAfterIncrease,
-        //    };
-        //    await _unitOfWork.TransSalaryIncrease.AddAsync(salaryIncrease);
-        //   return await _unitOfWork.CompleteAsync();
-        //}
-
-        //public async Task<Response<GetAllSalaryIncreaseResponse>> GetAllSalaryIncreaseAsync(string lang, GetAlFilterationForSalaryIncreaseRequest model, string host)
-        //{
-        //    Expression<Func<TransSalaryIncrease, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-        //                                                  (string.IsNullOrEmpty(model.Word) || x.transactionDate.ToString() == model.Word);
-        //    var totalRecords = await _unitOfWork.TransSalaryIncrease.CountAsync(filter: filter);
-        //    int page = model.PageNumber < 1 ? 1 : model.PageNumber;
-        //    int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
-        //    var pageLinks = Enumerable.Range(1, totalPages)
-        //        .Select(p => new Link() { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
-        //        .ToList();
-        //    var result = new GetAllSalaryIncreaseResponse
-        //    {
-        //        TotalRecords = totalRecords,
-        //        Items = (await _unitOfWork.TransSalaryIncrease.GetSpecificSelectAsync(filter: filter,
-        //             take: model.PageSize,
-        //             skip: (page - 1) * model.PageSize,
-        //             select: x => new TransSalaryIncreaseResponse
-        //             {
-        //                 employeeId = x.Employee_id,
-        //                 details = x.Notes,
-        //                 dueDate = x.dueDate,
-        //                 transationDate = x.transactionDate,
-        //                 increaseValue = x.Amount,
-        //                 salrayIncreaseTypeId = x.Increase_type,
-        //                 salrayIncreaseTypeName = lang == "ar" ? x.ValueType.Name : x.ValueType.NameInEnglish,
-        //             }, orderBy: x => x.OrderByDescending(x => x.Id), includeProperties: "")).ToList(),
-        //        CurrentPage = model.PageNumber,
-        //        FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
-        //        From = (page - 1) * model.PageSize + 1,
-        //        To = Math.Min(page * model.PageSize, totalRecords),
-        //        LastPage = totalPages,
-        //        LastPageUrl = host + $"?PageSize={model.PageSize}&PageNumber={totalPages}&IsDeleted={model.IsDeleted}",
-        //        PreviousPage = page > 1 ? host + $"?PageSize={model.PageSize}&PageNumber={page - 1}&IsDeleted={model.IsDeleted}" : null,
-        //        NextPageUrl = page < totalPages ? host + $"?PageSize={model.PageSize}&PageNumber={page + 1}&IsDeleted={model.IsDeleted}" : null,
-        //        Path = host,
-        //        PerPage = model.PageSize,
-        //        Links = pageLinks,
-        //    };
-
-        //    if (result.TotalRecords == 0)
-        //    {
-        //        string resultMsg = _sharLocalizer[Localization.NotFoundData];
-
-        //        return new()
-        //        {
-        //            Data = new()
-        //            {
-        //                Items = new List<TransSalaryIncreaseResponse>()
-        //            },
-        //            Error = resultMsg,
-        //            Msg = resultMsg
-        //        };
-        //    }
-
-        //    return new()
-        //    {
-        //        Data = result,
-        //        Check = true
-        //    };
-        //}
-
-        //public async Task<TransSalaryIncreaseResponse> GetSalaryIncreaseById(int id)
-        //{
-        //    var result = (await _unitOfWork.TransSalaryIncrease.GetAllAsync(x => x.Id == id)).
-        //        Select(q => new TransSalaryIncreaseResponse()
-        //        {
-        //            employeeId = q.Employee_id,
-        //            details = q.Notes,
-        //            dueDate = q.dueDate,
-        //            transationDate = q.transactionDate,
-        //            increaseValue = q.Amount,
-        //            salrayIncreaseTypeId = q.Increase_type,
-        //        }).FirstOrDefault();
-
-        //    return result;
-        //}
-
-        #endregion
 
         private TransSalaryIncrease _insatance;
         public async Task<Response<IEnumerable<SelectListOfTransSalaryIncrementResponse>>> ListOfTransSalaryIncreaseAsync(string lang)
@@ -169,7 +67,8 @@ namespace Kader_System.Services.Services.Trans
 
 
             var totalRecords = await _unitOfWork.TransSalaryIncrease.CountAsync(filter: filter);
-            int page = 1; var lookups = await _unitOfWork.Employees.GetEmployeesNameIdSalaryAsLookUp(lang);
+            int page = 1;
+            var lookups = await _unitOfWork.Employees.GetEmployeesNameIdSalaryAsLookUp(lang, DateOnly.FromDateTime(DateTime.Now));
 
             int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
             var users = await _unitOfWork.Users.GetAllAsync();
@@ -185,19 +84,28 @@ namespace Kader_System.Services.Services.Trans
                     filter: filter,
                     take: model.PageSize,
                     skip: (model.PageNumber - 1) * model.PageSize,
-                    select: x => new
+                    select: x => new TransSalaryIncreaseResponse
                     {
-                        x.transactionDate,
-                        x.salaryAfterIncrease,
-                        x.PreviousSalary,
-                        x.Added_by,
-                        x.Employee_id,
-                        x.Id,
-                        EmployeeName = lang == Localization.Arabic ? x.Employee!.FullNameAr : x.Employee!.FullNameEn,
-                        x.Amount,
-                        IncreaseType = x.Increase_type,
+                        Id = x.Id,
+                        TransactionDate = x.transactionDate,
+                        AfterIncreaseSalary = x.salaryAfterIncrease,
+                        EmployeeId = x.Id,
+                        PreviousSalary = x.PreviousSalary,
+                        AddedBy = x.User.FullName,
+                        EmployeeName = lang == Localization.Arabic ? x.Employee.FullNameAr :
+                       x.Employee.FullNameEn,
+                        IncreaseValue = x.Increase_type == 2 ? (x.Amount / 100) *
+                        x.PreviousSalary : x.Amount,
+
+                        SalaryIncreaseType = x.Increase_type == 1 && lang == Localization.Arabic ? "قيمة" :
+                                             x.Increase_type == 2 && lang == Localization.Arabic ? "نسبة" :
+                                             x.Increase_type == 1 && lang == Localization.English ? "Value" :
+                                             x.Increase_type == 2 && lang == Localization.English ? "Percentage" :
+                                             string.Empty
+
+
                     },
-                    includeProperties: "Employee.User,Employee",
+                    includeProperties: "Employee,User",
                     orderBy: x => x.OrderByDescending(x => x.Id)
                 );
 
@@ -205,27 +113,8 @@ namespace Kader_System.Services.Services.Trans
             var result = new GetAllSalaryIncreaseResponse
             {
                 TotalRecords = await _unitOfWork.TransSalaryIncrease.CountAsync(filter: filter),
-                //? (x.grouIcemp.Increase_type == 2
-                //                        ? (x.grouIcemp.Amount / 100) * g.Key.FixedSalary
-                //                        : x.grouIcemp.Amount)
-                Items = transSalaryIncreases
-                    .AsEnumerable() // Switching to client-side evaluation for the next part
-                    .Select(x => new TransSalaryIncreaseResponse
-                    {
-                        Id = x.Id,
-                        EmployeeId = x.Employee_id,
-                        TransactionDate = x.transactionDate,
-                        AfterIncreaseSalary = x.salaryAfterIncrease,
-                        PreviousSalary = x.PreviousSalary,
-                        AddedBy = users.FirstOrDefault(u => u.Id == x.Added_by)?.UserName,
-                        EmployeeName = x.EmployeeName,
-                        IncreaseValue = x.IncreaseType == 2 ? (x.Amount / 100) * x.PreviousSalary : x.PreviousSalary,
-                        SalaryIncreaseType = x.IncreaseType == 1 && lang == Localization.Arabic ? "قيمة" :
-                                             x.IncreaseType == 2 && lang == Localization.Arabic ? "نسبة" :
-                                             x.IncreaseType == 1 && lang == Localization.English ? "Value" :
-                                             x.IncreaseType == 2 && lang == Localization.English ? "Percentage" :
-                                             string.Empty
-                    }).Where(x => !model.EmployeeId.HasValue || x.EmployeeId == model.EmployeeId).ToList(),
+
+                Items = transSalaryIncreases.ToList(),
                 CurrentPage = model.PageNumber,
                 FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
                 From = (page - 1) * model.PageSize + 1,
@@ -292,10 +181,13 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
             var newTrans = _mapper.Map<TransSalaryIncrease>(model);
+
             newTrans.CompanyId = currentCompany;
             newTrans.transactionDate = model.TransactionDate;
-            var empSalary = (await _unitOfWork.Contracts.GetFirstOrDefaultAsync(x
-                => x.employee_id == model.Employee_id && x.company_id == currentCompany)).fixed_salary;
+            var empSalary = await _context.Employees.Where(x => x.Id == model.Employee_id)
+                .Select(x => KaderDbContext.GetSalaryWithIncrease(x.Id, model.TransactionDate)).FirstOrDefaultAsync();
+
+
             #region SalaryTypesCases
             double salaryAfterIncrease = (SalaryIncreaseTypes)model.Increase_type switch
             {
@@ -320,7 +212,8 @@ namespace Kader_System.Services.Services.Trans
             };
         }
 
-        public async Task<Response<GetSalaryIncreaseByIdResponse>> GetTransSalaryIncreaseByIdAsync(int id, string lang)
+        public async Task<Response<GetSalaryIncreaseByIdResponse>> GetTransSalaryIncreaseByIdAsync(int id
+            , string lang)
         {
             var currentCompany = await _userContextService.GetLoggedCurrentCompany();
             var obj = await _unitOfWork.TransSalaryIncrease.GetFirstOrDefaultAsync(
@@ -346,10 +239,12 @@ namespace Kader_System.Services.Services.Trans
             var employee = await _unitOfWork.Employees.GetFirstOrDefaultAsync(x => x.Id == obj.Employee_id && x.CompanyId == currentCompany);
             var employeeName = lang == Localization.Arabic ? employee?.FullNameAr : employee?.FullNameEn;
 
-            var previousSalary = (await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang, currentCompany))
+            var previousSalary = (await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang,
+                currentCompany, DateOnly.FromDateTime(DateTime.Now)))
                 .FirstOrDefault(x => x.Id == obj.Employee_id)?.Salary ?? 0;
 
-            var lookups = await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang, currentCompany);
+            var lookups = await _unitOfWork.TransSalaryIncrease.GetEmployeeWithSalary(lang,
+                currentCompany, DateOnly.FromDateTime(DateTime.Now));
             var typeLookup = await _unitOfWork.SalaryIncreaseTypeRepository.GetSalaryIncreaseType(lang);
 
             return new()
@@ -381,7 +276,7 @@ namespace Kader_System.Services.Services.Trans
             {
                 Check = true,
                 Data = await _unitOfWork.TransSalaryIncrease
-                .GetEmployeeWithSalary(lang, currentCompany)
+                .GetEmployeeWithSalary(lang, currentCompany, DateOnly.FromDateTime(DateTime.Now))
             };
 
         }

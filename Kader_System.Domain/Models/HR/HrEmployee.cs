@@ -55,9 +55,11 @@ public class HrEmployee : BaseEntity
     public int ReligionId { get; set; }
     [ForeignKey(nameof(ReligionId))]
     public HrRelegion Religion { get; set; } = default!;
-
+    [UniquePhoneEmployee]
     public required string Phone { get; set; }
+    [UniqueEmailEmployee]
     public required string Email { get; set; }
+    [UniqueNationalId]
     public string NationalId { get; set; }
     public string JobNumber { get; set; }
 
