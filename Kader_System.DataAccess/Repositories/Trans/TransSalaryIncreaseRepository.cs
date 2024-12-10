@@ -9,7 +9,7 @@ namespace Kader_System.DataAccess.Repositories.Trans
         {
             // Ensure you're using the correct 
 
-            var result = _context.Employees.Select(x => new EmployeeWithSalary
+            var result = _context.Employees.Where(x => x.CompanyId == companyId).Select(x => new EmployeeWithSalary
             {
                 Id = x.Id,
                 Salary = KaderDbContext.GetSalaryWithIncrease(x.Id, date),

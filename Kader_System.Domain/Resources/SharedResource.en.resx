@@ -177,6 +177,9 @@
   <data name="CannotDeleteItemHasRelativeData" xml:space="preserve">
     <value>Cannot Delete {0} Has Relative Data</value>
   </data>
+  <data name="Companies" xml:space="preserve">
+    <value>User must have at least one company</value>
+  </data>
   <data name="Company" xml:space="preserve">
     <value>Company</value>
   </data>
@@ -363,6 +366,9 @@
   <data name="TitlePermisson" xml:space="preserve">
     <value>Please send the Title</value>
   </data>
+  <data name="Titles" xml:space="preserve">
+    <value>User must have at least one title </value>
+  </data>
   <data name="TitleUser" xml:space="preserve">
     <value> this title has already a user</value>
   </data>
@@ -410,6 +416,9 @@
   </data>
   <data name="VacationRequest" xml:space="preserve">
     <value>VacationRequest</value>
+  </data>
+  <data name="VacationTaken" xml:space="preserve">
+    <value>This empolyee has taken vactaion in this range of days</value>
   </data>
   <data name="ViewInclude" xml:space="preserve">
     <value>must have a view permission first</value>

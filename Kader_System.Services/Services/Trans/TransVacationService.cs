@@ -205,6 +205,19 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
+            var vacationTaken = await unitOfWork.TransVacations.GetFirstOrDefaultAsync(x => x.employee_id == model.employee_id && x.start_date == model.start_date);
+
+
+            if (await unitOfWork.TransVacations.ExistAsync(x => x.employee_id == model.employee_id &&
+            x.start_date == model.start_date || x.start_date.AddDays
+            ((int)model.days_count) == model.start_date.AddDays((int)model.days_count)))
+            {
+                return new Response<CreateTransVacationRequest>()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.VacationTaken]
+                };
+            }
             if (!await unitOfWork.VacationDistributions.ExistAsync(model.vacation_id))
             {
                 return new()
@@ -306,6 +319,15 @@ namespace Kader_System.Services.Services.Trans
                     Data = new(),
                     Error = resultMsg,
                     Msg = resultMsg
+                };
+            }
+            if (await unitOfWork.TransVacations.ExistAsync(x => x.employee_id == model.employee_id &&
+         x.start_date == model.start_date || x.start_date.AddDays((int)model.days_count) == model.start_date.AddDays((int)model.days_count)))
+            {
+                return new Response<GetTransVacationById>()
+                {
+                    Check = false,
+                    Msg = sharLocalizer[Localization.VacationTaken]
                 };
             }
             var emp = await unitOfWork.Employees.GetFirstOrDefaultAsync(x =>

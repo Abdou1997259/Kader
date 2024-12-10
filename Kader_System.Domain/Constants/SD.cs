@@ -666,6 +666,8 @@ public static class SD
         public const string Arabic = "ar";
         public const string English = "en";
         public const string SelfDeleteUser = "SelfDeleteUser";
+        public const string Companies = "Companies";
+        public const string VacationTaken = "VacationTaken";
         public const string TitleDeleted = "TitleDeleted";
         public const string UserTakeTitle = "UserTakeTitle";
         public const string LessThanAllowedAge = "LessThanAllowedAge";
@@ -673,6 +675,7 @@ public static class SD
         public const string BirthDateEqualAge = "BirthDateEqualAge";
         public const string IsExist = "IsExist";
         public const string UniqueEmail = "UniqueEmail";
+        public const string Titles = "Titles";
         public const string SalaryEffect = "SalaryEffect";
         public const string InvalidDateFormat = "InvalidDateFormat";
         public const string Approved = "Approved";

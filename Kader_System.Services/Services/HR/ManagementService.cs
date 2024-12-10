@@ -2,9 +2,10 @@
 
 namespace Kader_System.Services.Services.HR
 {
-    public class ManagementService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : IManagementService
+    public class ManagementService(IUnitOfWork unitOfWork, IUserContextService userContext, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : IManagementService
     {
         private HrManagement _instanceManagement;
+        private IUserContextService _userContextService = userContext;
 
         #region Retrieve
 
@@ -150,8 +151,11 @@ namespace Kader_System.Services.Services.HR
 
         public async Task<Response<CreateManagementRequest>> CreateManagementAsync(CreateManagementRequest model)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+
             var exists = await unitOfWork.Managements.ExistAsync(x => x.NameAr.Trim() == model.NameAr.Trim()
-                                                                    && x.NameEn.Trim() == model.NameEn.Trim());
+                                                                    && x.NameEn.Trim() == model.NameEn.Trim() &&
+                                                                    x.CompanyId == currentCompany);
 
             if (exists)
             {

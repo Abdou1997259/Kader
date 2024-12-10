@@ -175,7 +175,10 @@
     <value>لايوجد{0}</value>
   </data>
   <data name="CannotDeleteItemHasRelativeData" xml:space="preserve">
-    <value>لايمكن حذف {0}لوجود بيانات مرتبطه به</value>
+    <value>لايمكن  حذف {0} لوجود بيانات  مرتبطه  به</value>
+  </data>
+  <data name="Companies" xml:space="preserve">
+    <value>يجب ان يكون المستخد م لديه  شركة علي الاقل</value>
   </data>
   <data name="Company" xml:space="preserve">
     <value>الشركة</value>
@@ -363,6 +366,9 @@
   <data name="TitlePermisson" xml:space="preserve">
     <value>من فضلك ارسل المسئولية</value>
   </data>
+  <data name="Titles" xml:space="preserve">
+    <value>يجب ان يكون المستخدم لديه مسئوليه علي الاقل </value>
+  </data>
   <data name="TitleUser" xml:space="preserve">
     <value>هذه المسئوليه بلفعل لديها مستخدمة </value>
   </data>
@@ -403,13 +409,16 @@
     <value>هذه المسئولية ليس لها صلاحيات في هذا المستخدم </value>
   </data>
   <data name="UserTakeTitle" xml:space="preserve">
-    <value>لا يكمن مسح هذا المسؤليه لانها مريوطه بسمتخدم</value>
+    <value>لا يكمن مسح هذا المسؤليه لانها مربوطة  بسمتخدم</value>
   </data>
   <data name="Vacation" xml:space="preserve">
     <value>الاجازة</value>
   </data>
   <data name="VacationRequest" xml:space="preserve">
     <value>طب الاجازة </value>
+  </data>
+  <data name="VacationTaken" xml:space="preserve">
+    <value>هذا الموظف اخذ اجازة في هذا المده بالفعل </value>
   </data>
   <data name="ViewInclude" xml:space="preserve">
     <value>يجب ان يحتوي علي صلاحية العرض اولا</value>
