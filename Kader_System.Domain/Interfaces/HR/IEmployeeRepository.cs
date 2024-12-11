@@ -10,7 +10,7 @@ public interface IEmployeeRepository : IBaseRepository<HrEmployee>
     Task<object[]> GetEmployeesDataNameAndIdAsLookUp(string lang, int companyId);
 
     Task<IEnumerable<EmployeeLookup>> GetEmployeesDataNameAndIdAsCustomTypeLookUp(string lang, int companyId);
-    Task<object> GetEmployeesNameIdSalaryAsLookUp(string lang);
+    Task<object> GetEmployeesNameIdSalaryAsLookUp(string lang, DateOnly date);
     public Task<List<EmployeesData>> GetAllEmployeeDetails(
     string word, bool isDeleted, int currentCompany, int skip = 0, int take = 10, string lang = "en");
 

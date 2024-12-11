@@ -348,9 +348,12 @@ public class BaseRepository<T>(KaderDbContext context) : IBaseRepository<T> wher
 
 
         var statuesOfRequestType = statuesOfRequest.GetType();
-        statuesOfRequestType.GetProperty(nameof(StatuesOfRequest.ApporvalStatus))?.SetValue(statuesOfRequest, (int)status);
-        statuesOfRequestType.GetProperty(nameof(StatuesOfRequest.StatusMessage))?.SetValue(statuesOfRequest, reason);
-        statuesOfRequestType.GetProperty(nameof(StatuesOfRequest.ApprovedDate))?.SetValue(statuesOfRequest, DateTime.Now);
+        statuesOfRequestType.GetProperty(nameof(StatuesOfRequest.ApporvalStatus))
+            ?.SetValue(statuesOfRequest, (int)status);
+        statuesOfRequestType.GetProperty(nameof(StatuesOfRequest.StatusMessage))?
+            .SetValue(statuesOfRequest, reason);
+        statuesOfRequestType.GetProperty(nameof(StatuesOfRequest.ApprovedDate))?
+            .SetValue(statuesOfRequest, DateTime.Now);
         statuesOfRequestType.GetProperty(nameof(StatuesOfRequest.ApprovedBy))?.SetValue(statuesOfRequest, userId);
         context.Attach(entity);
         context.Entry(entity).State = EntityState.Modified;

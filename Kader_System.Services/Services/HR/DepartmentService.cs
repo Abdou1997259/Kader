@@ -2,10 +2,10 @@
 
 namespace Kader_System.Services.Services.HR
 {
-    public class DepartmentService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : IDepartmentService
+    public class DepartmentService(IUnitOfWork unitOfWork, IUserContextService userContext, IStringLocalizer<SharedResource> shareLocalizer, IMapper mapper) : IDepartmentService
     {
         private HrDepartment _instanceDepartment;
-
+        private IUserContextService _userContextService = userContext;
         #region Retrieve
 
         public async Task<Response<IEnumerable<ListOfDepartmentsResponse>>> ListOfDepartmentsAsync(string lang)
@@ -150,8 +150,13 @@ namespace Kader_System.Services.Services.HR
         #region Insert
         public async Task<Response<CreateDepartmentRequest>> CreateDepartmentAsync(CreateDepartmentRequest model)
         {
+            var currentCompany = await _userContextService.GetLoggedCurrentCompany();
+            int[] mangements = (await unitOfWork.Managements.GetSpecificSelectAsync(x => x.CompanyId == currentCompany, x => new { x.Id })).Select(x => x.Id).ToArray();
             var exists = await unitOfWork.Departments.ExistAsync(x => x.NameAr.Trim() == model.NameAr.Trim()
-                                                                      && x.NameEn.Trim() == model.NameEn.Trim());
+                                                                      && x.NameEn.Trim() == model.NameEn.Trim()
+                                                                      && mangements.Contains(x.ManagementId)
+
+                                                                      );
 
             if (exists)
             {

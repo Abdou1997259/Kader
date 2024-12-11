@@ -177,6 +177,9 @@
   <data name="CannotDeleteItemHasRelativeData" xml:space="preserve">
     <value>Cannot Delete {0} Has Relative Data</value>
   </data>
+  <data name="Companies" xml:space="preserve">
+    <value>User must have at least one company</value>
+  </data>
   <data name="Company" xml:space="preserve">
     <value>Company</value>
   </data>
@@ -357,8 +360,14 @@
   <data name="SuspendedSuccessfully" xml:space="preserve">
     <value>Suspended Successfully</value>
   </data>
+  <data name="TitleDeleted" xml:space="preserve">
+    <value>Title is deleted </value>
+  </data>
   <data name="TitlePermisson" xml:space="preserve">
     <value>Please send the Title</value>
+  </data>
+  <data name="Titles" xml:space="preserve">
+    <value>User must have at least one title </value>
   </data>
   <data name="TitleUser" xml:space="preserve">
     <value> this title has already a user</value>
@@ -368,6 +377,15 @@
   </data>
   <data name="TodayTransDeleted" xml:space="preserve">
     <value>There is a transaction today for the same emloyee in Delted Transaction</value>
+  </data>
+  <data name="UniqueEmail" xml:space="preserve">
+    <value>this email is taken before </value>
+  </data>
+  <data name="UniqueEmployeePhone" xml:space="preserve">
+    <value>phone number must be unique </value>
+  </data>
+  <data name="UniqueNationalId" xml:space="preserve">
+    <value>this NationalId has taken</value>
   </data>
   <data name="University" xml:space="preserve">
     <value>University or Institue</value>
@@ -390,8 +408,17 @@
   <data name="UserPermission" xml:space="preserve">
     <value>This user dosen't have permssions</value>
   </data>
+  <data name="UserTakeTitle" xml:space="preserve">
+    <value>this titlle has been taken </value>
+  </data>
   <data name="Vacation" xml:space="preserve">
     <value>Vacation</value>
+  </data>
+  <data name="VacationRequest" xml:space="preserve">
+    <value>VacationRequest</value>
+  </data>
+  <data name="VacationTaken" xml:space="preserve">
+    <value>This empolyee has taken vactaion in this range of days</value>
   </data>
   <data name="ViewInclude" xml:space="preserve">
     <value>must have a view permission first</value>

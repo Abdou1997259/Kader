@@ -1,4 +1,3 @@
-using Kader_System.Api.Helpers;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests;
 using Kader_System.Domain.DTOs.Request.EmployeesRequests.Requests;
 using Kader_System.Services.IServices.AppServices;
@@ -21,16 +20,16 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Retrieve
 
         [HttpGet(ApiRoutes.EmployeeRequests.VacationRequests.ListOfVacationRequests)]
-        [Permission(Permission.View, 19)]
+
         public async Task<IActionResult> ListOVacationRequestsAsync() =>
             Ok(await service.ListOfVacationRequest());
 
         [HttpGet(ApiRoutes.EmployeeRequests.VacationRequests.GetAllVacationRequests)]
-        [Permission(Permission.View, 19)]
+
         public async Task<IActionResult> GetAllResignationRequestsAsync([FromQuery] GetFilterationVacationRequestRequest model) =>
             Ok(await service.GetAllVacationRequest(model, requestService.GetCurrentHost));
         [HttpGet(ApiRoutes.EmployeeRequests.VacationRequests.GetVacationRequestsById)]
-        [Permission(Permission.View, 19)]
+
         public async Task<IActionResult> GetVacationRequestByIdAsync(int id)
         {
             var response = await service.GetById(id);
@@ -46,7 +45,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Insert
 
         [HttpPost(ApiRoutes.EmployeeRequests.VacationRequests.CreateVacationRequests)]
-        [Permission(Permission.Add, 19)]
+
         public async Task<IActionResult> CreateVacationRequestAsync
             ([FromForm] DTOVacationRequest model)
         {
@@ -67,7 +66,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Update
 
         [HttpPut(ApiRoutes.EmployeeRequests.VacationRequests.UpdateVacationRequests)]
-        [Permission(Permission.Edit, 19)]
+
         public async Task<IActionResult> UpdateVacationRequestAsync([FromRoute] int id, [FromForm] DTOVacationRequest model)
         {
             var serverPath = HttpContext.Items["ServerPath"]?.ToString();
@@ -88,7 +87,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
         #region Delete
 
         [HttpDelete(ApiRoutes.EmployeeRequests.VacationRequests.DeleteVacationRequests)]
-        [Permission(Permission.Delete, 19)]
+
         public async Task<IActionResult> DeleteVacationAsync(int id)
         {
             var response = await service.DeleteVacationRequest(id, Modules.EmployeeRequest);
@@ -103,7 +102,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
 
         #region Status
         [HttpPut(ApiRoutes.EmployeeRequests.VacationRequests.ApproveVacationRequests)]
-        [Permission(Permission.Edit, 19)]
+
         public async Task<IActionResult> ApproveVacationRequests([FromRoute] int id)
         {
             var response = await service.ApproveRequest(id, requestService.GetRequestHeaderLanguage);
@@ -114,7 +113,7 @@ namespace Kader_System.Api.Areas.EmployeeRequests.Requests.Controllers
             return StatusCode(statusCode: StatusCodes.Status500InternalServerError, response);
         }
         [HttpPut(ApiRoutes.EmployeeRequests.VacationRequests.RejectVacationRequests)]
-        [Permission(Permission.Edit, 19)]
+
         public async Task<IActionResult> RejectLeavePermessionasRequests([FromRoute] int id, [FromBody] GlobalEmployeeRequests model)
         {
             var response = await service.RejectRequest(id, model.reson);

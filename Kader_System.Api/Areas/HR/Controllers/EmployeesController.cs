@@ -98,7 +98,7 @@ namespace Kader_System.Api.Areas.HR.Controllers
         [HttpPut(ApiRoutes.Employee.UpdateEmployee)]
         [Permission(Permission.Edit, 13)]
         public async Task<IActionResult> UpdateEmployeeAsyncTask([FromRoute] int id, [FromForm]
-        CreateEmployeeRequest request)
+        UpdateEmployeeRequest request)
         {
             var response = await employeeService.UpdateEmployeeAsync(id, request);
             if (response.Check)

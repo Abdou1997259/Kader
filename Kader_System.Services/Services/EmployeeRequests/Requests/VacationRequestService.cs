@@ -188,7 +188,20 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     Msg = _sharLocalizer[Localization.IsNotExisted, _sharLocalizer[Localization.Employee]]
                 };
             }
+            if (await _unitOfWork.VacationRequests.ExistAsync
+                (x => x.CompanyId == currentCompanyId &&
+                x.StartDate == model.StartDate &&
+                 x.EmployeeId == model.EmployeeId &&
+                 x.VacationTypeId == model.VacationTypeId
 
+                ))
+            {
+                return new Response<VacationRequests>
+                {
+                    Check = false,
+                    Msg = _sharLocalizer[Localization.AlreadyExited, _sharLocalizer[Localization.VacationRequest]]
+                };
+            }
             var newRequest = _mapper.Map<VacationRequests>(model);
             newRequest.CompanyId = currentCompanyId;
             StatuesOfRequest statues = new()

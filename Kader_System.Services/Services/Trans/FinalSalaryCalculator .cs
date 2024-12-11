@@ -25,7 +25,8 @@ namespace Kader_System.Services.Services.Trans
 
         }
 
-        public async override Task AddCalculations(List<ResultOfCollect> model, UpdateCalculateSalaryModelRequest request)
+        public async override Task AddCalculations
+            (List<ResultOfCollect> model, UpdateCalculateSalaryModelRequest request)
         {
 
             int? masterId = null;
@@ -64,7 +65,9 @@ namespace Kader_System.Services.Services.Trans
                 throw new InvalidOperationException("Unable to determine master salary calculator ID.");
 
             // Fetch salaries and prepare details
-            _salaries = await GetSalaries(request.EmployeeIds);
+
+            (DateOnly startDate, DateOnly endDate) = DateManipulation.GetLastDateOfMonth(request.StartCalculationDate, request.StartActionDay);
+            _salaries = await GetSalaries(request.EmployeeIds, endDate);
             var detailsToInsert = new List<TransSalaryCalculatorDetail>();
 
             foreach (var result in model)
@@ -136,13 +139,13 @@ namespace Kader_System.Services.Services.Trans
 
         }
 
-        public async override Task<List<Salaries>> GetSalaries(List<int> empIds)
+        public async override Task<List<Salaries>> GetSalaries(List<int> empIds, DateOnly date)
         {
             return await _context.Contracts.Where(x => empIds.Contains(x.employee_id))
                 .Select(x => new Salaries
                 {
                     EmployeeId = x.employee_id,
-                    Salary = KaderDbContext.GetSalaryWithIncrease(x.employee_id),
+                    Salary = KaderDbContext.GetSalaryWithIncrease(x.employee_id, date),
 
 
 

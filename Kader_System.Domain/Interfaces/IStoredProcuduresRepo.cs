@@ -20,6 +20,6 @@ namespace Kader_System.Domain.Interfaces
 
         Task<IEnumerable<Get_Details_Calculations>> Get_Details_Calculations(DateOnly startCalculationDate,
              DateOnly EndCalculationDate, int?
-            companyId, int? departmentId, int? empId, int lang);
+            companyId, int? departmentId, int? empId, int? mangementId, int lang);
     }
 }

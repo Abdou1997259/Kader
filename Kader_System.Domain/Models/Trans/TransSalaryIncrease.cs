@@ -19,5 +19,7 @@ public class TransSalaryIncrease : BaseEntity
     public int Employee_id { get; set; }
     [ForeignKey(nameof(Employee_id))]
     public HrEmployee Employee { get; set; } = default!;
+    [ForeignKey(nameof(Added_by))]
+    public ApplicationUser User { get; set; } = default!;
     public int CompanyId { get; set; }
 }

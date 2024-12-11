@@ -268,7 +268,7 @@ namespace Kader_System.DataAccess.Repositories
 
         public async Task<IEnumerable<Get_Details_Calculations>> Get_Details_Calculations(
             DateOnly startCalculationDate, DateOnly EndCalculationDate, int? companyId,
-            int? departmentId, int? empId, int lang)
+            int? departmentId, int? empId, int? mangementId, int lang)
         {
 
 
@@ -276,7 +276,7 @@ namespace Kader_System.DataAccess.Repositories
             // Adjust endCalculationDate to the last day of the month with the specified day
 
             return await _db.Get_Details_Calculations.FromSqlInterpolated(@$"exec Get_Details_Calculations
-{startCalculationDate}, {EndCalculationDate} ,{companyId},{departmentId},{empId},{lang}").ToListAsync();
+              {startCalculationDate}, {EndCalculationDate} ,{companyId},{departmentId},{empId},{mangementId},{lang}").ToListAsync();
 
 
 

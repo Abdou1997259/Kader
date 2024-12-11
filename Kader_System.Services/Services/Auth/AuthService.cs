@@ -164,6 +164,29 @@ public class AuthService(IUnitOfWork unitOfWork
 
 
         var companyList = await _unitOfWork.Companies.GetAllAsync();
+
+        if (model.title_id.Count() <= 0)
+        {
+            var msg = _sharLocalizer[Localization.Titles];
+            return new Response<UpdateUserRequest>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+
+        }
+        if (model.company_id.Count() <= 0)
+        {
+            var msg = _sharLocalizer[Localization.Companies];
+            return new Response<UpdateUserRequest>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+
+        }
         var validCompanyIds = companyList.Select(c => c.Id).ToHashSet();
 
         if (!model.company_id.All(id => validCompanyIds.Contains(id.Value)))
@@ -176,8 +199,15 @@ public class AuthService(IUnitOfWork unitOfWork
                 Data = null
             };
         }
-
-
+        var validtitle = await _unitOfWork.Titles.GetFirstOrDefaultAsync(x => model.title_id.Contains(x.Id));
+        if (validtitle.IsDeleted || !validtitle.IsActive)
+        {
+            return new Response<UpdateUserRequest>
+            {
+                Check = false,
+                Msg = _sharLocalizer[Localization.TitleDeleted]
+            };
+        }
         model.current_title = model.title_id.FirstOrDefault();
         model.current_company = model.company_id.FirstOrDefault();
 
@@ -649,6 +679,29 @@ public class AuthService(IUnitOfWork unitOfWork
             };
         }
 
+
+        if (model.title_id.Count() <= 0)
+        {
+            var msg = _sharLocalizer[Localization.Titles];
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+
+        }
+        if (model.company_id.Count() <= 0)
+        {
+            var msg = _sharLocalizer[Localization.Companies];
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = msg,
+                Data = null
+            };
+
+        }
         var companyList = await _unitOfWork.Companies.GetAllAsync();
         var validCompanyIds = companyList.Select(c => c.Id).ToHashSet();
 
@@ -688,6 +741,15 @@ public class AuthService(IUnitOfWork unitOfWork
             };
         }
 
+        var title = await _unitOfWork.Titles.GetFirstOrDefaultAsync(x => model.title_id.Contains(x.Id));
+        if (title.IsDeleted || !title.IsActive)
+        {
+            return new Response<CreateUserResponse>
+            {
+                Check = false,
+                Msg = _sharLocalizer[Localization.TitleDeleted]
+            };
+        }
 
         try
         {
@@ -1230,19 +1292,20 @@ public class AuthService(IUnitOfWork unitOfWork
 
     public async Task<Response<UsersLookups>> UsersGetLookups(string lang)
     {
-        var jobs = (await _unitOfWork.Jobs.GetAllAsync()).Select(x => new JobsLookups
+        var jobs = await _unitOfWork.Jobs.GetSpecificSelectAsync(x => !x.IsDeleted, x => new JobsLookups
         {
+
             Id = x.Id,
             JobName = Localization.Arabic == lang ? x.NameAr : x.NameEn
         });
 
-        var compaines = (await _unitOfWork.Companies.GetAllAsync()).Select(x => new CompanyLookup
-        {
-            Id = x.Id,
-            CompnayName = Localization.Arabic == lang ? x.NameAr : x.NameEn
-        });
-
-        var titles = (await _unitOfWork.Titles.GetAllAsync()).Select(x => new TitleLookups
+        var compaines = await _unitOfWork.Companies.GetSpecificSelectAsync(x => !x.IsDeleted,
+            x => new CompanyLookup
+            {
+                Id = x.Id,
+                CompnayName = Localization.Arabic == lang ? x.NameAr : x.NameEn
+            });
+        var titles = await _unitOfWork.Titles.GetSpecificSelectAsync(x => !x.IsDeleted, x => new TitleLookups
         {
             Id = x.Id,
             TitleName = Localization.Arabic == lang ? x.TitleNameAr : x.TitleNameEn

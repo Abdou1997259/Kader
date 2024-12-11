@@ -12,7 +12,7 @@
         [DefaultValue(null)]
         public int? CompanyId { get; set; } = null;
 
-
+        public int? ManagerId { get; set; } = null;
         [DefaultValue(null)]
         public int? DepartmentId { get; set; } = null;
 

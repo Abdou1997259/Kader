@@ -7,6 +7,6 @@ namespace Kader_System.Domain.Interfaces.EmployeeRequest
     {
         //public Task<Domain.Dtos.Response.Response<GetAlVacationRequstsResponse>> GetAlVacationRequstsAsync(string lang, Domain.DTOs.Request.EmployeesRequests.GetAllFilltrationForEmployeeRequests model, string host, RequestStatusTypes types);
         public Task<Domain.Dtos.Response.Response<EmployeeRequestsLookUpsData>> GetEmployeeRequestsLookUpsData(
-            string lang, int companyId);
+            string lang, int companyId, string userId, bool isAdmin);
     }
 }

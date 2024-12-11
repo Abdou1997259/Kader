@@ -307,13 +307,14 @@ namespace Kader_System.Services.Services.Setting
 
         public async Task<Response<string>> DeleteTitleAsync(int id) // 1
         {
+            var isUserTakeThisTitle = await unitOfWork.Users
+    .AnyAsync(x => x.TitleId != null && x.TitleId.Contains(id.ToString()));
 
 
-            var isUserTakeThisTitle = await unitOfWork.Users.GetFirstOrDefaultAsync(x => x.CurrentTitleId == id);
 
-            if (isUserTakeThisTitle is not null)
+            if (isUserTakeThisTitle)
             {
-                string resultMsg = sharLocalizer[Localization.UserInTitle];
+                string resultMsg = sharLocalizer[Localization.UserTakeTitle];
 
                 return new()
                 {

@@ -16,6 +16,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
 {
     public IHttpContextAccessor Accessor { get; set; } = accessor;
 
+
     #region Data Sets
 
     public DbSet<SpCacluateSalary> SpCacluateSalariesModel { get; set; }
@@ -130,6 +131,7 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.SeedData();
@@ -151,6 +153,8 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
             .HasComputedColumnSql("[FirstNameEn]+' '+[FatherNameEn]+' '+[GrandFatherNameEn]+' '+[FamilyNameEn]");
 
         #endregion
+
+
 
 
 
@@ -320,12 +324,16 @@ public class KaderDbContext(DbContextOptions<KaderDbContext> options, IHttpConte
 
         modelBuilder.HasDbFunction(typeof(KaderDbContext)
             .GetMethod(nameof(GetSalaryWithIncrease),
-            new[] { typeof(int) })).HasName("GetSalaryWithIncrease");
+            new[] { typeof(int), typeof(DateOnly) })).HasName("GetSalaryWithIncrease");
 
+        modelBuilder.HasDbFunction(typeof(KaderDbContext).GetMethod(nameof(GetIncreaseSalaryComparingToDate),
+            new[] { typeof(int), typeof(DateOnly) }
+            ));
     }
-    public static double GetSalaryWithIncrease(int employeeId)
+    public static double GetSalaryWithIncrease(int employeeId, DateOnly transDate)
         => throw new NotSupportedException();
-
+    public static double GetIncreaseSalaryComparingToDate(int employeeId, DateOnly transDate) =>
+        throw new NotSupportedException();
     public async Task ExecuteUpdateTransactionAsync(DateOnly startCalculationDate
         , DateOnly endCalculationDate,
         string listEmployeesString)

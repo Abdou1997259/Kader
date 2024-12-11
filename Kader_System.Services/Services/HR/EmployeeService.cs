@@ -559,6 +559,15 @@ namespace Kader_System.Services.Services.HR
                     Check = false
                 };
             }
+            var title = await unitOfWork.Titles.GetFirstOrDefaultAsync(x => model.title_id == x.Id);
+            if (title.IsDeleted || !title.IsActive)
+            {
+                return new Response<CreateEmployeeRequest>
+                {
+                    Check = false,
+                    Msg = shareLocalizer[Localization.TitleDeleted]
+                };
+            }
             int CurrentCompanyYearId = 0;
             if (_accessor.HttpContext.User.GetUserId() is not null)
                 CurrentCompanyYearId = (await unitOfWork.Users.GetFirstOrDefaultAsync(x => x.Id == _accessor.HttpContext.User.GetUserId())).CompanyYearId;
@@ -649,7 +658,7 @@ namespace Kader_System.Services.Services.HR
 
         #region Update
 
-        public async Task<Response<CreateEmployeeRequest>> UpdateEmployeeAsync(int id, CreateEmployeeRequest model)
+        public async Task<Response<UpdateEmployeeRequest>> UpdateEmployeeAsync(int id, UpdateEmployeeRequest model)
         {
             HrDirectoryTypes directoryTypes = new();
             directoryTypes = HrDirectoryTypes.Attachments;
@@ -691,12 +700,43 @@ namespace Kader_System.Services.Services.HR
                     Check = false
                 };
             }
-
+            var title = await unitOfWork.Titles.GetFirstOrDefaultAsync(x => model.title_id == x.Id);
+            if (title.IsDeleted || !title.IsActive)
+            {
+                return new Response<UpdateEmployeeRequest>
+                {
+                    Check = false,
+                    Msg = shareLocalizer[Localization.TitleDeleted]
+                };
+            }
             try
             {
                 List<GetFileNameAndExtension> getFileNameAnds = [];
 
-
+                if (await unitOfWork.Employees.ExistAsync(x => x.Id != id && x.Phone == model.phone))
+                {
+                    return new Response<UpdateEmployeeRequest>()
+                    {
+                        Check = false,
+                        Msg = shareLocalizer[Localization.UniqueEmployeePhone]
+                    };
+                }
+                if (await unitOfWork.Employees.ExistAsync(x => x.Id != id && x.NationalId == model.national_id))
+                {
+                    return new Response<UpdateEmployeeRequest>()
+                    {
+                        Check = false,
+                        Msg = shareLocalizer[Localization.UniqueNationalId]
+                    };
+                }
+                if (await unitOfWork.Employees.ExistAsync(x => x.Id != id & x.Email == model.email))
+                {
+                    return new Response<UpdateEmployeeRequest>()
+                    {
+                        Check = false,
+                        Msg = shareLocalizer[Localization.UniqueEmail]
+                    };
+                }
                 #region UpdateEmployeeMedia
                 if (model.employee_attachments is not null)
                 {

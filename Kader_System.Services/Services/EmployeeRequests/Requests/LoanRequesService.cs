@@ -313,7 +313,7 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                     Msg = msg
                 };
             }
-            if (loanRequest.StatuesOfRequest.ApporvalStatus == (int)RequestStatusTypes.Approved)
+            if (loanRequest.StatuesOfRequest.ApporvalStatus == 1)
             {
                 return new Response<string>()
                 {
@@ -347,7 +347,9 @@ namespace Kader_System.Services.Services.EmployeeRequests.Requests
                 };
             }
 
-            var result = await _unitOfWork.LoanRequestRepository.UpdateApporvalStatus(x => x.Id == requestId, RequestStatusTypes.Approved, userId);
+            var result = await _unitOfWork.LoanRequestRepository.
+                UpdateApporvalStatus(x => x.Id == requestId,
+                RequestStatusTypes.Approved, userId);
 
 
 

@@ -1,6 +1,6 @@
 ﻿namespace Kader_System.Domain.DTOs.Request.HR
 {
-    public class CreateEmployeeRequest
+    public class UpdateEmployeeRequest
     {
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "first_name_ar")]
@@ -34,7 +34,6 @@
         [JsonProperty(PropertyName = "address")]
         public string address { get; set; }
         [JsonProperty(PropertyName = "national_id")]
-        [UniqueNationalId]
         public string national_id { get; set; }
         [JsonProperty(PropertyName = "job_number")]
         public string job_number { get; set; }
@@ -61,12 +60,12 @@
         public int religion_id { get; set; }
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
-        [UniquePhoneEmployee]
+
         [JsonProperty(PropertyName = "phone")]
         public string phone { get; set; }
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
         [JsonProperty(PropertyName = "email")]
-        [UniqueEmailEmployee]
+
         public string email { get; set; }
 
         [Required(ErrorMessage = Annotations.FieldIsRequired)]
@@ -151,10 +150,5 @@
         [AllowedLetters(FileSettings.SpecialChar), MaxFileLettersCount(FileSettings.Length),
          FileExtensionValidation(FileSettings.AllowedExtension)]
         public IFormFileCollection? employee_attachments { get; set; } = default!;
-
-
-
     }
-
-
 }

@@ -235,6 +235,10 @@ public class AuthController(IAuthService service, IWebHostEnvironment hostEnviro
 
     public async Task<IActionResult> UpdateCompany(int company)
     {
+
+
+
+
         var response = await _service.ChangeCompany(company);
         if (response.Check)
             return Ok(response);

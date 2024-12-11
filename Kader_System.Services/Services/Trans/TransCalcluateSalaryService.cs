@@ -103,9 +103,9 @@ namespace Kader_System.Services.Services.Trans
             var pageLinks = Enumerable.Range(1, totalPages)
                 .Select(p => new Link { label = p.ToString(), url = host + $"?PageSize={model.PageSize}&PageNumber={p}&IsDeleted={model.IsDeleted}", active = p == model.PageNumber })
                 .ToList();
-            var transations = await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, includeProperties: "TransSalaryCalculatorsDetails");
+            var transactions = await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(x => x.IsDeleted == false, x => x, includeProperties: "TransSalaryCalculatorsDetails");
             var msg = _localizer[Localization.NotFoundData];
-            if (transations is null)
+            if (transactions is null)
             {
 
                 return new()
@@ -116,41 +116,27 @@ namespace Kader_System.Services.Services.Trans
                 };
             }
 
-            var data = (await _unitOfWork.TransSalaryCalculator.GetSpecificSelectAsync(filter: filter,
+            var data = (await _unitOfWork.TransSalaryCalculator.
+                GetSpecificSelectAsync(filter: filter,
                     take: model.PageSize,
                     skip: (model.PageNumber - 1) * model.PageSize,
                     select: x => new GetSalaryCalculatorList
                     {
                         Id = x.Id,
-                        //Description = x.Description,
+
                         Status = x.Status,
                         Total = x.TransSalaryCalculatorsDetails.Sum(s => s.Total),
                         CalculationDate = x.CalculationDate,
                         AddedDate = DateOnly.FromDateTime(x.Add_date.Value),
-                        AddedBy = x.Added_by,
-
+                        AddedBy = x.User.FullName,
+                        JobName = lang == Localization.Arabic ? x.User.Job.name_ar : x.User.Job.name_en
 
                     }, orderBy: x =>
-                x.OrderByDescending(x => x.Id), includeProperties: "TransSalaryCalculatorsDetails")).AsEnumerable().Select(
-                    x => new GetSalaryCalculatorList
-                    {
-                        Id = x.Id,
-                        Description = x.Description,
-                        Status = x.Status,
-                        Total = x.Total,
-                        CalculationDate = x.CalculationDate,
-                        AddedDate = x.AddedDate,
-                        AddedBy = empolyeeWithJobs.Where(e => e.UserId == x.AddedBy)
-                                       .Select(e => lang == Localization.Arabic ? e.FirstNameAr + " " + e.FamilyNameAr : e.FirstNameEn + " " + e.FamilyNameEn)
-                                       .FirstOrDefault(),
-
-                        JobName = empolyeeWithJobs.Where(e => e.UserId == x.AddedBy)
-                                      .Select(e => lang == Localization.Arabic ? e.Job.NameAr : e.Job.NameEn)
-                                      .FirstOrDefault()
-                    }
+                x.OrderByDescending(x => x.Id), includeProperties:
+                "TransSalaryCalculatorsDetails,User.Job")).ToList();
 
 
-                    ).ToList();
+
 
             var result = new GetSalaryCalculatorResponse
             {
@@ -310,7 +296,7 @@ namespace Kader_System.Services.Services.Trans
             var result = (await _unitOfWork.StoredProcuduresRepo.Get_Details_Calculations(
                 startDate,
                 endDate, model.CompanyId, model.DepartmentId,
-                model.EmployeeId, lang == Localization.Arabic ? 1 : 2)).Select(x => new GetSalariesEmployeeResponse
+                model.EmployeeId, model.ManagerId, lang == Localization.Arabic ? 1 : 2)).Select(x => new GetSalariesEmployeeResponse
                 {
                     EmployeeId = x.Id,
                     EmployeeName = x.FullName,
@@ -405,7 +391,8 @@ namespace Kader_System.Services.Services.Trans
 
                 };
             }
-            var companies = await _unitOfWork.Companies.GetSpecificSelectAsync(x => currentCompnies.Contains(x.Id) && x.IsDeleted == false, x => x);
+            var companies = await _unitOfWork.Companies.GetSpecificSelectAsync(x
+                => currentCompnies.Contains(x.Id) && x.IsDeleted == false, x => x);
             if (companies is null)
             {
                 var msg = _localizer[Localization.NotFoundData];
@@ -474,7 +461,8 @@ namespace Kader_System.Services.Services.Trans
                 }).ToList(),
                 EmployeeLookups = emps.Select(x => new Empolyeelookups
                 {
-                    Name = Localization.Arabic == lang ? x.FirstNameAr + " " + x.FatherNameAr + " " + x.FatherNameAr : x.FirstNameEn + " " + x.FatherNameEn + " " + x.FatherNameEn,
+                    Name = Localization.Arabic == lang ? x.FullNameAr : x.FullNameEn,
+
                     Id = x.Id,
                     MangmentId = x.ManagementId,
                     DepartmentId = x.DepartmentId

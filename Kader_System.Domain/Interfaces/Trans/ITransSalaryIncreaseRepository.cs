@@ -2,7 +2,7 @@
 
 public interface ITransSalaryIncreaseRepository : IBaseRepository<TransSalaryIncrease>
 {
-    Task<IEnumerable<EmployeeWithSalary>> GetEmployeeWithSalary(string lang, int companyId);
+    Task<IEnumerable<EmployeeWithSalary>> GetEmployeeWithSalary(string lang, int companyId, DateOnly date);
 
 
 

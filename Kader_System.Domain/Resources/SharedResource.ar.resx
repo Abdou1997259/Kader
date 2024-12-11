@@ -175,7 +175,10 @@
     <value>لايوجد{0}</value>
   </data>
   <data name="CannotDeleteItemHasRelativeData" xml:space="preserve">
-    <value>لايمكن حذف {0}لوجود بيانات مرتبطه به</value>
+    <value>لايمكن  حذف {0} لوجود بيانات  مرتبطه  به</value>
+  </data>
+  <data name="Companies" xml:space="preserve">
+    <value>يجب ان يكون المستخد م لديه  شركة علي الاقل</value>
   </data>
   <data name="Company" xml:space="preserve">
     <value>الشركة</value>
@@ -357,8 +360,14 @@
   <data name="SuspendedSuccessfully" xml:space="preserve">
     <value>تم التعليق بنجاح </value>
   </data>
+  <data name="TitleDeleted" xml:space="preserve">
+    <value>المسئولية محزوفة بالفعل </value>
+  </data>
   <data name="TitlePermisson" xml:space="preserve">
     <value>من فضلك ارسل المسئولية</value>
+  </data>
+  <data name="Titles" xml:space="preserve">
+    <value>يجب ان يكون المستخدم لديه مسئوليه علي الاقل </value>
   </data>
   <data name="TitleUser" xml:space="preserve">
     <value>هذه المسئوليه بلفعل لديها مستخدمة </value>
@@ -368,6 +377,15 @@
   </data>
   <data name="TodayTransDeleted" xml:space="preserve">
     <value>يوجد حركة في نفس اليوم في المحزوفات </value>
+  </data>
+  <data name="UniqueEmail" xml:space="preserve">
+    <value>هذا البريد الالكتروني موجود من قبل </value>
+  </data>
+  <data name="UniqueEmployeePhone" xml:space="preserve">
+    <value>رقم التليفون موجود من قبل لهذا الموظف </value>
+  </data>
+  <data name="UniqueNationalId" xml:space="preserve">
+    <value>لايمكن ان يتكرر رقم الهوية </value>
   </data>
   <data name="University" xml:space="preserve">
     <value>الجامعة او المعهد</value>
@@ -390,8 +408,17 @@
   <data name="UserPermission" xml:space="preserve">
     <value>هذه المسئولية ليس لها صلاحيات في هذا المستخدم </value>
   </data>
+  <data name="UserTakeTitle" xml:space="preserve">
+    <value>لا يكمن مسح هذا المسؤليه لانها مربوطة  بسمتخدم</value>
+  </data>
   <data name="Vacation" xml:space="preserve">
     <value>الاجازة</value>
+  </data>
+  <data name="VacationRequest" xml:space="preserve">
+    <value>طب الاجازة </value>
+  </data>
+  <data name="VacationTaken" xml:space="preserve">
+    <value>هذا الموظف اخذ اجازة في هذا المده بالفعل </value>
   </data>
   <data name="ViewInclude" xml:space="preserve">
     <value>يجب ان يحتوي علي صلاحية العرض اولا</value>
