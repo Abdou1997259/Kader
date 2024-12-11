@@ -205,12 +205,12 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-            var vacationTaken = await unitOfWork.TransVacations.GetFirstOrDefaultAsync(x => x.employee_id == model.employee_id && x.start_date == model.start_date);
+
 
 
             if (await unitOfWork.TransVacations.ExistAsync(x => x.employee_id == model.employee_id &&
-            x.start_date == model.start_date || x.start_date.AddDays
-            ((int)model.days_count) == model.start_date.AddDays((int)model.days_count)))
+            (x.start_date == model.start_date || x.start_date.AddDays
+            ((int)model.days_count) == model.start_date.AddDays((int)model.days_count))))
             {
                 return new Response<CreateTransVacationRequest>()
                 {
@@ -321,8 +321,8 @@ namespace Kader_System.Services.Services.Trans
                     Msg = resultMsg
                 };
             }
-            if (await unitOfWork.TransVacations.ExistAsync(x => x.employee_id == model.employee_id &&
-         x.start_date == model.start_date || x.start_date.AddDays((int)model.days_count) == model.start_date.AddDays((int)model.days_count)))
+            if (await unitOfWork.TransVacations.ExistAsync(x => x.employee_id == model.employee_id && (
+         x.start_date == model.start_date || x.start_date.AddDays((int)model.days_count) == model.start_date.AddDays((int)model.days_count))))
             {
                 return new Response<GetTransVacationById>()
                 {
