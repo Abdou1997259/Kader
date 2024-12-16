@@ -66,11 +66,16 @@ public class AllowanceService(IUnitOfWork unitOfWork, IStringLocalizer<SharedRes
         {
             TotalRecords = totalRecords,
 
-            Items = _unitOfWork.Allowances.GetAllowanceInfo(filter: filter,
+            Items = (await _unitOfWork.Allowances.GetSpecificSelectAsync(filter: filter,
                  take: model.PageSize,
-
-                 skip: (model.PageNumber - 1) * model.PageSize,
-                lang: lang)
+                 includeProperties: "User",
+                 skip: (model.PageNumber - 1) * model.PageSize, select: x => new AllowanceData
+                 {
+                     Name = lang == Localization.Arabic ? x.Name_ar : x.Name_en,
+                     AddedByUser = x.User.FullName,
+                     Id = x.Id,
+                 }
+                )).ToList()
             ,
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",

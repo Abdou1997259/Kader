@@ -5,5 +5,6 @@ public class HrGetAllBenefitsResponse : PaginationData<BenefitData>
 }
 public class BenefitData : SelectListResponse
 {
+    public string? AddedByUser { get; set; }
 }
 

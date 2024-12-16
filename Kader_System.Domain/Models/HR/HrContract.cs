@@ -17,5 +17,7 @@ public class HrContract : BaseEntity
     [ForeignKey(nameof(employee_id))]
     public HrEmployee employee { get; set; } = default!;
     public int company_id { get; set; }
+    [ForeignKey(nameof(Added_by))]
+    public ApplicationUser? User { get; set; }
     public ICollection<HrContractAllowancesDetail> list_of_allowances_details { get; set; } = [];
 }

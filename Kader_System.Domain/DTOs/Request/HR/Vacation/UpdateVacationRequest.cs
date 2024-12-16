@@ -7,7 +7,7 @@
         public bool CanTransfer { get; set; }
         public required string NameEn { get; set; }
         public required string NameAr { get; set; }
-        public int VacationTypeId { get; set; }
+        public int? VacationTypeId { get; set; }
         public ICollection<UpdateVacationDistribution> VacationDistributions { get; set; }
     }
 
