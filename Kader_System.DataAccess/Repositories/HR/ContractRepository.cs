@@ -13,7 +13,9 @@ public class ContractRepository(KaderDbContext context) : BaseRepository<HrContr
     {
 
         var contractsData = context.Contracts
+                .Include(x => x.User)
                 .Include(e => e.employee)
+
                 .Include(d => d.list_of_allowances_details)
                 .ThenInclude(a => a.Allowance)
                 .AsQueryable();
@@ -43,13 +45,14 @@ public class ContractRepository(KaderDbContext context) : BaseRepository<HrContr
                 TotalSalary = groupedContract.Contract.total_salary,
                 FixedSalary = groupedContract.Contract.fixed_salary,
                 EmployeeId = groupedContract.Contract.employee_id,
+
                 EmployeeName = lang == Localization.Arabic ?
                 groupedContract.Contract.employee!.FullNameAr :
                 groupedContract.Contract.employee!.FullNameEn,
                 StartDate = groupedContract.Contract.start_date,
                 EndDate = groupedContract.Contract.end_date,
                 HousingAllowance = groupedContract.Contract.housing_allowance,
-                AddedByUser = groupedContract.UsersData.FirstOrDefault()!.UserName,
+                AddedByUser = groupedContract.Contract.User.FullName,
                 ContractFile = groupedContract.Contract.file_name != null ?
                 Path.Combine(directoryName, groupedContract.Contract.file_name) : null,
                 Details = groupedContract.Contract.list_of_allowances_details.Select(a => new GetAllContractDetailsResponse()

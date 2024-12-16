@@ -594,6 +594,7 @@ namespace Kader_System.Services.Services.HR
                     }, Modules.Auth, HrDirectoryTypes.User);
 
                     var newEmployee = mapper.Map<HrEmployee>(model);
+                    newEmployee.ImmediatelyDate = model.immediately_date;
                     newEmployee.IsActive = model.is_active;
 
                     if (model.employee_image != null)
@@ -786,6 +787,7 @@ namespace Kader_System.Services.Services.HR
                 obj.ReligionId = model.religion_id;
                 obj.MaritalStatusId = model.marital_status_id;
                 obj.SalaryPaymentWayId = model.salary_payment_way_id;
+                obj.ImmediatelyDate = model.immediately_date;
 
                 if (model.employee_image is not null)
                 {

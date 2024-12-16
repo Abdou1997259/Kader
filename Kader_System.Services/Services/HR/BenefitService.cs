@@ -1,5 +1,4 @@
 ﻿using Kader_System.Domain.DTOs;
-using Microsoft.Extensions.Hosting;
 
 namespace Kader_System.Services.Services.HR;
 
@@ -41,11 +40,11 @@ public class BenefitService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
         };
     }
 
-    public async Task<Response<HrGetAllBenefitsResponse>> GetAllBenefitsAsync(string lang, HrGetAllFiltrationsForBenefitsRequest model,string host)
+    public async Task<Response<HrGetAllBenefitsResponse>> GetAllBenefitsAsync(string lang, HrGetAllFiltrationsForBenefitsRequest model, string host)
     {
         Expression<Func<HrBenefit, bool>> filter = x => x.IsDeleted == model.IsDeleted &&
-            (string.IsNullOrEmpty(model.Word) || x.Name_ar.Contains(model.Word )|| x.Name_en.Contains(model.Word));
-        var totalRecords =await _unitOfWork.Benefits.CountAsync(filter: filter);
+            (string.IsNullOrEmpty(model.Word) || x.Name_ar.Contains(model.Word) || x.Name_en.Contains(model.Word));
+        var totalRecords = await _unitOfWork.Benefits.CountAsync(filter: filter);
         int page = 1;
         int totalPages = (int)Math.Ceiling((double)totalRecords / (model.PageSize == 0 ? 10 : model.PageSize));
         if (model.PageNumber < 1)
@@ -65,8 +64,9 @@ public class BenefitService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
                  select: x => new BenefitData
                  {
                      Id = x.Id,
-                     Name = lang == Localization.Arabic ? x.Name_ar : x.Name_en
-                 }, orderBy: x =>
+                     Name = lang == Localization.Arabic ? x.Name_ar : x.Name_en,
+                     AddedByUser = x.User.FullName
+                 }, includeProperties: "User", orderBy: x =>
                    x.OrderByDescending(x => x.Id))).ToList(),
             CurrentPage = model.PageNumber,
             FirstPageUrl = host + $"?PageSize={model.PageSize}&PageNumber=1&IsDeleted={model.IsDeleted}",
@@ -222,7 +222,7 @@ public class BenefitService(IUnitOfWork unitOfWork, IStringLocalizer<SharedResou
         return new()
         {
             Check = true,
-            Data =new()
+            Data = new()
             {
                 Id = obj.Id,
                 Name_ar = obj.Name_ar,

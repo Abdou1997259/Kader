@@ -9,4 +9,6 @@ public class HrAllowance : BaseEntity
     public required string Name_en { get; set; }
     public long? AccountNo { get; set; }
     public int Order { get; set; }
+    [ForeignKey(nameof(Added_by))]
+    public ApplicationUser? User { get; set; }
 }

@@ -15,7 +15,7 @@ public class HrVacation : BaseEntity
     public required string NameAr { get; set; }
     [ForeignKey(nameof(Added_by))]
     public ApplicationUser User { get; set; } = default!;
-    public int VacationTypeId { get; set; }
+    public int? VacationTypeId { get; set; }
     [ForeignKey(nameof(VacationTypeId))]
     public HrVacationType VacationType { get; set; } = default!;
 
